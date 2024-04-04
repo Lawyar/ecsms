@@ -1,0 +1,3 @@
+add_executable(test_library_tests test_library_tests.cpp)
+target_link_libraries(test_library_tests PRIVATE test_library gtest_main)
+target_include_directories(test_library_tests PRIVATE ${CMAKE_SOURCE_DIR}/libraries/test_library)
