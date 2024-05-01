@@ -7,14 +7,14 @@ namespace ecsms {
     template<typename T>
     class producing_stage : public stage {
     public:
-        producing_stage(std::shared_ptr<mpmc_cycle_queue> connection);
+        producing_stage(std::shared_ptr<mpmc_cycle_queue<T>> connection);
 
-        virtual ~producing_stage() = default;
+        void run() override;
 
-        virtual T produce() = 0;
+        virtual std::shared_ptr<T> produce(bool& item_produced) = 0;
 
     private:
-        std::shared_ptr<mpmc_cycle_queue> connection_;
+        std::shared_ptr<mpmc_cycle_queue<T>> connection_;
     };
 
     template<typename T>
@@ -23,5 +23,15 @@ namespace ecsms {
     {
         if (!connection)
             throw std::invalid_argument("connection is null");
+    }
+
+    template<typename T>
+    void producing_stage<T>::run() {
+        stage::run([this]() {
+            bool produced{};
+            auto item = produce(produced);
+            if(produced)
+                connection_->enqueue(std::move(item));
+        });
     }
 }

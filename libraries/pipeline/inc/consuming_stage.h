@@ -3,18 +3,20 @@
 #include "stage.h"
 #include "mpmc_cycle_queue.h"
 
+#include <iostream>
+
 namespace ecsms {
     template<typename T>
     class consuming_stage : public stage {
     public:
-        consuming_stage(std::shared_ptr<mpmc_cycle_queue> connection);
+        consuming_stage(std::shared_ptr<mpmc_cycle_queue<T>> connection);
 
-        virtual ~consuming_stage() = default;
+        void run() override;
 
-        virtual void consume(T) = 0;
+        virtual void consume(std::shared_ptr<T>, bool& item_consumed) = 0;
 
     private:
-        std::shared_ptr<mpmc_cycle_queue> connection_;
+        std::shared_ptr<mpmc_cycle_queue<T>> connection_;
     };
 
     template<typename T>
@@ -23,5 +25,18 @@ namespace ecsms {
     {
         if (!connection)
             throw std::invalid_argument("connection is null");
+    }
+
+    template<typename T>
+    void consuming_stage<T>::run() {
+        stage::run([this]() {
+            std::shared_ptr<T> item;
+            if (connection_->dequeue(item)) {
+                bool consumed{};
+                consume(item, consumed);
+                if (!consumed)
+                    connection_->enqueue(item);
+            }
+        });
     }
 }
