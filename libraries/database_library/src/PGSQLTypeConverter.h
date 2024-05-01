@@ -1,0 +1,25 @@
+#pragma once
+
+#include <DataType/ISQLTypeConverter.h>
+
+//------------------------------------------------------------------------------
+/**
+  Реализация конвертера в SQL-тип данных для PostgreSQL
+*/
+//---
+class PGSQLTypeConverter : public ISQLTypeConverter
+{
+public: // Получение пустых SQL-переменных
+	/// Получить пустую SQL-переменную
+	virtual ISQLTypePtr GetSQLVariable(SQLDataType type) const override;
+
+	/// Получить SQL-Integer переменную
+	virtual ISQLTypeIntegerPtr GetSQLTypeInteger(const std::optional<StrongType<int>> & value
+		= std::nullopt) const override;
+	/// Получить SQL-Text переменную
+	virtual ISQLTypeTextPtr GetSQLTypeText(const std::optional<StrongType<std::string>> & value
+		= std::nullopt) const override;
+	/// Получить SQL-ByteArray переменную
+	virtual ISQLTypeByteArrayPtr GetSQLTypeByteArray(const std::optional<StrongType<std::vector<char>>> &
+		value = std::nullopt) const override;
+};
