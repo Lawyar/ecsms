@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "configurePresets": [
+    {
+      "name": "default",
+      "generator": "Visual Studio 15 2017",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+      }
+    }
+  ]
+}
