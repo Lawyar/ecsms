@@ -9,9 +9,9 @@ namespace ecsms {
         : consuming_stage(connection)
     {}
 
-    void int32_visualizer::consume(std::shared_ptr<int32_t> item, bool& item_consumed) {
-        //if(item)
-        //    cout << *item << endl;
+    void int32_visualizer::consume(const int32_t& item, bool& item_consumed) {
+        if(item)
+            cout << item << endl;
         item_consumed = true;
     }
 }

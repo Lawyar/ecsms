@@ -7,6 +7,6 @@ namespace ecsms {
     public:
         int32_visualizer(std::shared_ptr<mpmc_cycle_queue<int32_t>> connection);
 
-        void consume(std::shared_ptr<int32_t>, bool& item_consumed) override;
+        void consume(const int32_t&, bool& item_consumed) override;
     };
 }

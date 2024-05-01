@@ -13,7 +13,7 @@ namespace ecsms {
 
         void run() override;
 
-        virtual void consume(std::shared_ptr<T>, bool& item_consumed) = 0;
+        virtual void consume(const T&, bool& item_consumed) = 0;
 
     private:
         std::shared_ptr<mpmc_cycle_queue<T>> connection_;
@@ -29,8 +29,8 @@ namespace ecsms {
 
     template<typename T>
     void consuming_stage<T>::run() {
-        stage::run([this]() {
-            std::shared_ptr<T> item;
+        stage::start_thread([&]() {
+            T item;
             if (connection_->dequeue(item)) {
                 bool consumed{};
                 consume(item, consumed);

@@ -15,19 +15,19 @@ namespace ecsms {
         void shutdown();
 
     protected:
-        template<typename F, class... Args>
-        void run(F&& function, Args&&... args);
+        template<typename F>
+        void start_thread(F&& function);
 
-    private:
+    protected:
         std::thread thread_;
         std::atomic_bool shutdown_signaled_;
     };
 
-    template<typename F, class... Args>
-    void stage::run(F&& function, Args&&... args) {
+    template<typename F>
+    void stage::start_thread(F&& function) {
         thread_ = std::thread([&]() {
             while(!shutdown_signaled_) {
-                std::invoke(std::forward<F>(function), std::forward<Args>(args)...);
+                function();
             }
         });
     }

@@ -9,9 +9,9 @@ namespace ecsms {
 		srand(time(nullptr));
 	}
 
-	shared_ptr<int32_t> ecsms::int32_random_generator::produce(bool& item_produced) {
+	int32_t ecsms::int32_random_generator::produce(bool& item_produced) {
 		this_thread::sleep_for(chrono::milliseconds(500));
 		item_produced = true;
-		return make_shared<int32_t>(rand() % 100);
+		return rand() % 100;
 	}
 }
