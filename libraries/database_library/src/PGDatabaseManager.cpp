@@ -1,9 +1,9 @@
 #include "PGDatabaseManager.h"
 
-#include "PGConnection.h"
-#include "PGExecutorEAV.h"
+#include <PGConnection.h>
+#include <PGExecutorEAV.h>
 
-#include "PGSQLTypeConverter.h"
+#include <PGSQLTypeConverter.h>
 
 //------------------------------------------------------------------------------
 /**

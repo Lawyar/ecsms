@@ -1,8 +1,8 @@
 #include "PGExecutorEAV.h"
 
-#include "InternalExecuteResultStatus.h"
+#include <InternalExecuteResultStatus.h>
 #include <Utils/StringUtils.h>
-#include "SQLUtility.h"
+#include <SQLUtility.h>
 
 #include <type_traits>
 #include <numeric>
@@ -422,6 +422,12 @@ IExecuteResultStatusPtr PGExecutorEAV::Update(const EntityName & entityName,
 	return resultStatus;
 }
 
+
+//------------------------------------------------------------------------------
+/**
+  Обновить значение для атрибута сущности или вставить, если такого значения ещё не было
+*/
+//---
 IExecuteResultStatusPtr PGExecutorEAV::InsertOrUpdate(const EntityName & entityName,
 	EntityId entityId, const AttrName & _attrName, const ValueType & value)
 {
@@ -684,6 +690,7 @@ IExecuteResultPtr PGExecutorEAV::GetEntries(const EntityName & entityName)
 /**
   Получить команду "получить значение по идентификатору сущности и названию атрибута".
 */
+//---
 std::string PGExecutorEAV::selectValueByEntityIdAndAttributeNameCommand(const EntityName & entityName,
 	EntityId entityId, const std::string & attributeType, const std::string & sqlAttrName) const
 {
@@ -703,6 +710,7 @@ std::string PGExecutorEAV::selectValueByEntityIdAndAttributeNameCommand(const En
 /**
   Получить команду "получить названия атрибутов и их значения"
 */
+//---
 std::string PGExecutorEAV::selectAttrValuesCommand(const EntityName & entityName, EntityId entityId,
 	const std::string & attributeType) const
 {
@@ -728,6 +736,7 @@ std::string PGExecutorEAV::selectAttrValuesCommand(const EntityName & entityName
 /**
   Получить значения атрибутов сущности из результата
 */
+//---
 IExecuteResultStatusPtr PGExecutorEAV::getAttributeValuesImpl(const IExecuteResultPtr & result,
 	std::vector<AttrValue> & attrValues) const
 {

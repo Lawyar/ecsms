@@ -1,7 +1,7 @@
 #include "PGConnection.h"
 
-#include "PGSQLDataTypeUtility.h"
-#include "PGExecuteResult.h"
+#include <PGSQLDataTypeUtility.h>
+#include <PGExecuteResult.h>
 
 
 //------------------------------------------------------------------------------

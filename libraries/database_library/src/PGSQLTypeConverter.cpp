@@ -1,8 +1,8 @@
 #include "PGSQLTypeConverter.h"
 
-#include "PGSQLTypeInteger.h"
-#include "PGSQLTypeText.h"
-#include "PGSQLTypeByteArray.h"
+#include <PGSQLTypeInteger.h>
+#include <PGSQLTypeText.h>
+#include <PGSQLTypeByteArray.h>
 
 #include <cassert>
 
