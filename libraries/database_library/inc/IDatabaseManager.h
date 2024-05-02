@@ -30,5 +30,13 @@ public:
 };
 
 
-/// Указатель на IDatabaseManager
-using IDatabaseManagerPtr = std::shared_ptr<IDatabaseManager>;
+/// Тип базы данных
+enum class DatabaseType
+{
+	PostgreSQL
+};
+
+
+/// Получить менеджер базы данных
+template<DatabaseType type = DatabaseType::PostgreSQL>
+extern IDatabaseManager & GetDatabaseManager();

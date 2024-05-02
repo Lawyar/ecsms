@@ -5,6 +5,20 @@
 
 #include <PGSQLTypeConverter.h>
 
+
+//------------------------------------------------------------------------------
+/**
+  Получить менеджер базы данных
+*/
+//---
+template<>
+IDatabaseManager & GetDatabaseManager<DatabaseType::PostgreSQL>()
+{
+	static PGDatabaseManager databaseManager;
+	return databaseManager;
+}
+
+
 //------------------------------------------------------------------------------
 /**
   Получить соединение
