@@ -31,7 +31,6 @@ public:
 	PGConnection& operator=(PGConnection &&) = delete;
 
 public:
-public:
 	/// Валидно ли соединение
 	virtual bool IsValid() const override;
 	/// Получить статус соединения
