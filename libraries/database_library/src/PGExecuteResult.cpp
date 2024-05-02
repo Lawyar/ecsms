@@ -122,9 +122,12 @@ SQLDataType PGExecuteResult::GetColType(size_t columnIndex) const
 //---
 IExecuteResult::CellType PGExecuteResult::GetValue(size_t rowIndex, size_t columnIndex)
 {
+	if (rowIndex >= GetRowCount() || columnIndex >= GetColCount())
+		return {};
+
 	int isNull = PQgetisnull(m_result, rowIndex, columnIndex);
 	if (static_cast<bool>(isNull))
-		return {};
+		return nullptr;
 
 	char * value = PQgetvalue(m_result, rowIndex, columnIndex);
 	if (!value)

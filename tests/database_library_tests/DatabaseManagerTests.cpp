@@ -12,20 +12,19 @@
 
 #include <IDatabaseManager.h>
 
-/// ћожем подключитьс€ к базе данных по валидному URL
+/// ћожем получить (валидное) соединение к базе данных, передав валидный URL
 TEST(DatabaseManager, CanGetConnectionWithValidURL) {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
-	ASSERT_TRUE(connection->IsValid());
+	ASSERT_NE(connection, nullptr);
 }
 
 
-/// Ќе можем подключитьс€ к базе данных по невалидному URL
-TEST(DatabaseManager, CantGetConnectionWithValidURL) {
+/// ћожем получить (невалидное) соединение к базе данных, передав невалидный URL
+TEST(DatabaseManager, CanGetConnectionWithInvalidURL) {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection("");
-	ASSERT_FALSE(connection->IsValid());
-	ASSERT_EQ(connection->GetStatus(), ConnectionStatus::Bad);
+	ASSERT_NE(connection, nullptr);
 }
 
 
@@ -39,7 +38,7 @@ TEST(DatabaseManager, CanGetExecutorEAVWithValidConnection) {
 
 
 /// Ќе можем получить исполнитель EAV-запросов, передав невалидное соединение
-TEST(DatabaseManager, CantGetExecutorEAVWithValidConnection) {
+TEST(DatabaseManager, CantGetExecutorEAVWithInvalidConnection) {
 	auto && databaseManager = GetDatabaseManager();
 	auto && connection = databaseManager.GetConnection("");
 	auto && executorEAV1 = databaseManager.GetExecutorEAV(std::move(connection));

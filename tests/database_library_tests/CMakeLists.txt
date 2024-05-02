@@ -1,5 +1,6 @@
 add_executable(database_library_tests
   DatabaseManagerTests.cpp
+  ConnectionTests.cpp
 
   TestSettings.h
 )
