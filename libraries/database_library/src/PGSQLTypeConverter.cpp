@@ -26,8 +26,7 @@ ISQLTypePtr PGSQLTypeConverter::GetSQLVariable(SQLDataType type) const
 		result = GetSQLTypeByteArray();
 		break;
 	case SQLDataType::Unknown:
-		// Нельзя получить неизвестный тип данных
-		assert(false);
+		// Нельзя получить неизвестный тип данных, вернем nullptr
 		break;
 	case SQLDataType::Invalid:
 		// Ок, вернем nullptr
