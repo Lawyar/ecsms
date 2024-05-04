@@ -8,11 +8,7 @@
 
 #include <gtest/gtest.h>
 
-#include "TestSettings.h"
-
 #include <IDatabaseManager.h>
-
-#include <typeinfo>
 
 /// Можем получить конвертер
 TEST(SQLTypeConverter, CanGetConverter) {
@@ -55,6 +51,7 @@ TEST(SQLTypeConverter, CanGetSQLTypeInteger) {
 	{
 		ASSERT_NE(sqlVar, nullptr);
 		ASSERT_EQ(sqlVar->GetType(), SQLDataType::Integer);
+		ASSERT_EQ(sqlVar->GetTypeName(), "INTEGER");
 	}
 }
 
@@ -92,4 +89,3 @@ TEST(SQLTypeConverter, CanGetSQLTypeByteArray) {
 		ASSERT_EQ(sqlVar->GetTypeName(), "BYTEA");
 	}
 }
-

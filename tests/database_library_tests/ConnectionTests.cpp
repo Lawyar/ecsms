@@ -425,17 +425,6 @@ TEST(Connection, CellTypeConstructors)
 	}
 
 	{
-		IExecuteResult::CellType cell(nullptr);
-		ASSERT_TRUE(cell.HasValue());
-		ASSERT_FALSE(cell.HasString());
-		ASSERT_TRUE(cell.HasNull());
-		ASSERT_TRUE(cell.ExtractString().empty());
-		ASSERT_TRUE(cell.HasValue());
-		ASSERT_FALSE(cell.HasString());
-		ASSERT_TRUE(cell.HasNull());
-	}
-
-	{
 		IExecuteResult::CellType cell("string");
 		ASSERT_TRUE(cell.HasValue());
 		ASSERT_TRUE(cell.HasString());

@@ -15,6 +15,8 @@ namespace utils::string
 	std::string ToLower(const std::string & sourceStr);
 	/// Перевести строку в верхний регистр
 	std::string ToUpper(const std::string & sourceStr);
+	/// Строка содержит только цифры
+	bool HasOnlyDigits(const std::string & str);
 	///  Замена всех подстрок
 	void ReplaceAll(std::string & str, const std::string & before, const std::string & after);
 

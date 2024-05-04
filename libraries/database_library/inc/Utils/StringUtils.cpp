@@ -37,6 +37,20 @@ std::string utils::string::ToUpper(const std::string & sourceStr)
 
 //------------------------------------------------------------------------------
 /**
+  Строка содержит только цифры
+*/
+//---
+bool utils::string::HasOnlyDigits(const std::string & str)
+{
+	return std::all_of(str.begin(), str.end(),
+		// Это безопасный способ использования isdigit
+		// (https://en.cppreference.com/w/cpp/string/byte/isdigit)
+		[](char c) { return std::isdigit(static_cast<unsigned char>(c)); });
+}
+
+
+//------------------------------------------------------------------------------
+/**
 	Замена всех подстрок
 	\param str Строка, в которой производится замена
 	\param before Подстрока, которую заменяем

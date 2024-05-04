@@ -1,6 +1,7 @@
 #include "PGSQLTypeInteger.h"
 
 #include <cassert>
+#include <cctype>
 
 //------------------------------------------------------------------------------
 /**
@@ -70,13 +71,28 @@ bool PGSQLTypeInteger::ReadFromSQL(std::string && value)
 {
 	m_value = std::nullopt;
 
+	if (value.empty())
+		return false;
+
+	if (value.size() >= 100)
+		// ≈сли в строке больше 100 символов, то она никак не поместитс€ в int
+		return false;
+
+	const bool startsWithDigit = std::isdigit(static_cast<unsigned char>(value[0]));
+	const bool startsWithPlus = value[0] == '+';
+	const bool startsWithMinus = value[0] == '-';
+	if (!startsWithDigit && !startsWithPlus && !startsWithMinus)
+		// „исло должно начинатьс€ с цифры, плюса или минуса
+		return false;
+
 	try
 	{
 		std::size_t pos;
 		int intValue = std::stoi(value, &pos);
 		if (pos == value.size())
-			// строка должна состо€ть только из числа
+			// ≈сли не прочитали строку полностью, значит в конце осталось что-то, не относ€щеес€ к числу
 			m_value = intValue;
+
 	}
 	catch (...)
 	{

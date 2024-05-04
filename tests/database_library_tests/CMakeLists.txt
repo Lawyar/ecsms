@@ -2,6 +2,7 @@ add_executable(database_library_tests
   DatabaseManagerTests.cpp
   ConnectionTests.cpp
   SQLTypeConverterTests.cpp
+  SQLTypeIntegerTests.cpp
 
   TestSettings.h
 )
