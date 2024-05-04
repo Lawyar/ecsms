@@ -173,8 +173,8 @@ TEST(Connection, ValidQueryReturnsValidResult) {
 		ASSERT_TRUE(result->GetValue(0, 0).HasString());
 		ASSERT_TRUE(result->GetValue(0, 1).HasString());
 
-		ASSERT_EQ(result->GetValue(0, 0).GetString(), std::to_string(id));
-		ASSERT_EQ(result->GetValue(0, 1).GetString(), data);
+		ASSERT_EQ(result->GetValue(0, 0).ExtractString(), std::to_string(id));
+		ASSERT_EQ(result->GetValue(0, 1).ExtractString(), data);
 	}
 
 	// Удалим таблицу
@@ -334,60 +334,115 @@ TEST(Connection, CanGetValue)
 			auto value = result->GetValue(0, 0);
 			ASSERT_TRUE(value.HasValue());
 			ASSERT_TRUE(value.HasString());
-			ASSERT_TRUE(!value.HasNull());
-			// ASSERT_TRUE(!value.HasByteArray());
-			ASSERT_EQ(value.GetString(), "1");
-			// ASSERT_TRUE(value.GetByteArray().empty());
+			ASSERT_FALSE(value.HasNull());
+			ASSERT_EQ(value.ExtractString(), "1");
+			ASSERT_FALSE(value.HasValue());
+			ASSERT_FALSE(value.HasString());
+			ASSERT_FALSE(value.HasNull());
 		}
 
 		{
 			auto value = result->GetValue(0, 1);
 			ASSERT_TRUE(value.HasValue());
 			ASSERT_TRUE(value.HasString());
-			ASSERT_TRUE(!value.HasNull());
-			// ASSERT_TRUE(!value.HasByteArray());
-			ASSERT_EQ(value.GetString(), "text");
-			// ASSERT_TRUE(value.GetByteArray().empty());
+			ASSERT_FALSE(value.HasNull());
+			ASSERT_EQ(value.ExtractString(), "text");
+			ASSERT_FALSE(value.HasValue());
+			ASSERT_FALSE(value.HasString());
+			ASSERT_FALSE(value.HasNull());
 		}
 
 		{
 			auto value = result->GetValue(0, 2);
 			ASSERT_TRUE(value.HasValue());
 			ASSERT_TRUE(value.HasString());
-			ASSERT_TRUE(!value.HasNull());
-			// ASSERT_TRUE(!value.HasByteArray());
-			ASSERT_EQ(value.GetString(), "\\xabcd");
-			// ASSERT_TRUE(value.GetByteArray().empty());
+			ASSERT_FALSE(value.HasNull());
+			ASSERT_EQ(value.ExtractString(), "\\xabcd");
+			ASSERT_FALSE(value.HasValue());
+			ASSERT_FALSE(value.HasString());
+			ASSERT_FALSE(value.HasNull());
 		}
 
 		{
 			auto value = result->GetValue(0, 3);
 			ASSERT_TRUE(value.HasValue());
-			ASSERT_TRUE(!value.HasString());
+			ASSERT_FALSE(value.HasString());
 			ASSERT_TRUE(value.HasNull());
-			// ASSERT_TRUE(!value.HasByteArray());
-			ASSERT_TRUE(value.GetString().empty());
-			// ASSERT_TRUE(value.GetByteArray().empty());
+			ASSERT_TRUE(value.ExtractString().empty());
+			ASSERT_TRUE(value.HasValue());
+			ASSERT_FALSE(value.HasString());
+			ASSERT_TRUE(value.HasNull());
 		}
 
 		{
 			auto value = result->GetValue(0, 4);
-			ASSERT_TRUE(!value.HasValue());
-			ASSERT_TRUE(!value.HasString());
-			ASSERT_TRUE(!value.HasNull());
-			// ASSERT_TRUE(!value.HasByteArray());
-			ASSERT_TRUE(value.GetString().empty());
-			// ASSERT_TRUE(value.GetByteArray().empty());
+			ASSERT_FALSE(value.HasValue());
+			ASSERT_FALSE(value.HasString());
+			ASSERT_FALSE(value.HasNull());
+			ASSERT_TRUE(value.ExtractString().empty());
+			ASSERT_FALSE(value.HasValue());
+			ASSERT_FALSE(value.HasString());
+			ASSERT_FALSE(value.HasNull());
 		}
 
 		{
 			auto value = result->GetValue(1, 0);
-			ASSERT_TRUE(!value.HasValue());
-			ASSERT_TRUE(!value.HasString());
-			ASSERT_TRUE(!value.HasNull());
-			// ASSERT_TRUE(!value.HasByteArray());
-			ASSERT_TRUE(value.GetString().empty());
-			// ASSERT_TRUE(value.GetByteArray().empty());
+			ASSERT_FALSE(value.HasValue());
+			ASSERT_FALSE(value.HasString());
+			ASSERT_FALSE(value.HasNull());
+			ASSERT_TRUE(value.ExtractString().empty());
+			ASSERT_FALSE(value.HasValue());
+			ASSERT_FALSE(value.HasString());
+			ASSERT_FALSE(value.HasNull());
 		}
+	}
+}
+
+
+// Проверка конструкторов CellType
+TEST(Connection, CellTypeConstructors)
+{
+	{
+		IExecuteResult::CellType cell;
+		ASSERT_FALSE(cell.HasValue());
+		ASSERT_FALSE(cell.HasString());
+		ASSERT_FALSE(cell.HasNull());
+		ASSERT_TRUE(cell.ExtractString().empty());
+		ASSERT_FALSE(cell.HasValue());
+		ASSERT_FALSE(cell.HasString());
+		ASSERT_FALSE(cell.HasNull());
+	}
+
+	{
+		IExecuteResult::CellType cell(nullptr);
+		ASSERT_TRUE(cell.HasValue());
+		ASSERT_FALSE(cell.HasString());
+		ASSERT_TRUE(cell.HasNull());
+		ASSERT_TRUE(cell.ExtractString().empty());
+		ASSERT_TRUE(cell.HasValue());
+		ASSERT_FALSE(cell.HasString());
+		ASSERT_TRUE(cell.HasNull());
+	}
+
+	{
+		IExecuteResult::CellType cell(nullptr);
+		ASSERT_TRUE(cell.HasValue());
+		ASSERT_FALSE(cell.HasString());
+		ASSERT_TRUE(cell.HasNull());
+		ASSERT_TRUE(cell.ExtractString().empty());
+		ASSERT_TRUE(cell.HasValue());
+		ASSERT_FALSE(cell.HasString());
+		ASSERT_TRUE(cell.HasNull());
+	}
+
+	{
+		IExecuteResult::CellType cell("string");
+		ASSERT_TRUE(cell.HasValue());
+		ASSERT_TRUE(cell.HasString());
+		ASSERT_FALSE(cell.HasNull());
+		ASSERT_EQ(cell.ExtractString(), "string");
+		ASSERT_FALSE(cell.HasValue());
+		ASSERT_FALSE(cell.HasString());
+		ASSERT_FALSE(cell.HasNull());
 	}
 }

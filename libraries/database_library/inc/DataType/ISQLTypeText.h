@@ -22,9 +22,9 @@ public:
 
 public:
 	/// Получить значение
-	virtual std::optional<std::string> GetValue() const = 0;
+	virtual const std::optional<std::string> & GetValue() const = 0;
 	/// Установить значение
-	virtual void SetValue(const std::string & value) = 0;
+	virtual void SetValue(std::string && value) = 0;
 };
 
 

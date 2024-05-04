@@ -20,7 +20,7 @@ public:
 
 public:
 	/// Сконвертировать в строку
-	virtual std::optional<std::string> ToString() const = 0;
+	virtual std::optional<std::string> ToSQLString() const = 0;
 	/// Получить название SQL-типа
 	virtual const std::string & GetTypeName() const = 0;
 
@@ -29,12 +29,16 @@ public:
 	virtual SQLDataType GetType() const = 0;
 
 public:
-	/// Прочитать значение из строки
+	/// Прочитать значение из строки, полученной из результата SQL-запроса
 	/// \return Валидно ли прочитанное значение
-	virtual bool ReadFrom(const std::string & value) = 0;
-	/// Прочитать значение из массива байт
+	virtual bool ReadFromSQL(std::string && value) = 0;
+
+protected:
+	// todo: IConnection::Execute перегрузка с бинарными данными
+
+	/// Прочитать значение из массива байт, полученного из результата SQL-запроса
 	/// \return Валидно ли прочитанное значение
-	virtual bool ReadFrom(const std::vector<char> & value) = 0;
+	virtual bool ReadFromSQL(std::vector<char> && value) = 0;
 };
 
 

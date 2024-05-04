@@ -29,12 +29,18 @@ public: // Получение SQL-переменных
 	/// Получить SQL-Integer переменную
 	virtual ISQLTypeIntegerPtr GetSQLTypeInteger(const std::optional<StrongType<int>> & value
 		= std::nullopt) const = 0;
+
 	/// Получить SQL-Text переменную
-	virtual ISQLTypeTextPtr GetSQLTypeText(const std::optional<StrongType<std::string>> & value
-		= std::nullopt) const = 0;
+	virtual ISQLTypeTextPtr GetSQLTypeText() const = 0;
+	/// Получить SQL-Text переменную по строке
+	/// (поскольку копирование может быть затратным и ненужным, используется перемещение)
+	virtual ISQLTypeTextPtr GetSQLTypeText(std::string && value) const = 0;
+
 	/// Получить SQL-ByteArray переменную
-	virtual ISQLTypeByteArrayPtr GetSQLTypeByteArray(const std::optional<StrongType<std::vector<char>>> &
-		value = std::nullopt) const = 0;
+	virtual ISQLTypeByteArrayPtr GetSQLTypeByteArray() const = 0;
+	/// Получить SQL-ByteArray переменную по массиву байт
+	/// (поскольку копирование может быть затратным и ненужным, используется перемещение)
+	virtual ISQLTypeByteArrayPtr GetSQLTypeByteArray(std::vector<char> && value) const = 0;
 };
 
 /// Тип указателя на ISQLTypeConverter

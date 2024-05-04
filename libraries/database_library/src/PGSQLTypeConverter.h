@@ -16,10 +16,14 @@ public: // Получение пустых SQL-переменных
 	/// Получить SQL-Integer переменную
 	virtual ISQLTypeIntegerPtr GetSQLTypeInteger(const std::optional<StrongType<int>> & value
 		= std::nullopt) const override;
+	
 	/// Получить SQL-Text переменную
-	virtual ISQLTypeTextPtr GetSQLTypeText(const std::optional<StrongType<std::string>> & value
-		= std::nullopt) const override;
+	virtual ISQLTypeTextPtr GetSQLTypeText() const override;
+	/// Получить SQL-Text переменную по строке
+	virtual ISQLTypeTextPtr GetSQLTypeText(std::string && value) const override;
+
 	/// Получить SQL-ByteArray переменную
-	virtual ISQLTypeByteArrayPtr GetSQLTypeByteArray(const std::optional<StrongType<std::vector<char>>> &
-		value = std::nullopt) const override;
+	virtual ISQLTypeByteArrayPtr GetSQLTypeByteArray() const override;
+	/// Получить SQL-ByteArray переменную по массиву байт
+	virtual ISQLTypeByteArrayPtr GetSQLTypeByteArray(std::vector<char> && value) const override;
 };

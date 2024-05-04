@@ -15,7 +15,7 @@ public:
 	/// Конструктор
 	PGSQLTypeText() = default;
 	/// Конструктор от аргумента
-	PGSQLTypeText(const std::string & value);
+	PGSQLTypeText(std::string && value);
 	/// Конструктор копирования
 	PGSQLTypeText(const PGSQLTypeText &) = default;
 	/// Конструктор перемещения
@@ -27,22 +27,24 @@ public:
 
 public: // ISQLTypeText
 	/// Получить значение
-	virtual std::optional<std::string> GetValue() const override;
+	virtual const std::optional<std::string> & GetValue() const override;
 	/// Установить значение
-	virtual void SetValue(const std::string & value) override;
+	virtual void SetValue(std::string && value) override;
 
 
 public: // ISQLType
 	/// Сконвертировать в строку
-	virtual std::optional<std::string> ToString() const override;
+	virtual std::optional<std::string> ToSQLString() const override;
 	/// Получить название SQL-типа
 	virtual const std::string & GetTypeName() const override;
 
 public:
 	/// Прочитать значение из строки
 	/// \return Валидно ли прочитанное значение
-	virtual bool ReadFrom(const std::string & value) override;
+	virtual bool ReadFromSQL(std::string && value) override;
+
+protected:
 	/// Прочитать значение из массива байт
 	/// \return Валидно ли прочитанное значение
-	virtual bool ReadFrom(const std::vector<char> & value) override;
+	virtual bool ReadFromSQL(std::vector<char> && value) override;
 };

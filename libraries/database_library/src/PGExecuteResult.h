@@ -44,8 +44,5 @@ public:
 	virtual SQLDataType GetColType(size_t columnIndex) const override;
 
 	/// Получить значение.
-	/// Возвращает std::nullopt, если ячейка содержит null или если переданы невалидные индексы.
-	/// В противном случае возвращает текст или бинарные данные
-	/// (в зависимости от того, в каком виде запрашивались данные в команде)
 	virtual CellType GetValue(size_t rowIndex, size_t columnIndex) override;
 };

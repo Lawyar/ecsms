@@ -115,9 +115,6 @@ SQLDataType PGExecuteResult::GetColType(size_t columnIndex) const
 //------------------------------------------------------------------------------
 /**
   Получить значение.
-  \return Значение в виде текста или std::nullopt, если тип данных в столбце
-		  результата был не текстовый.
-		  Если значение содержало null, то возвращается пустая строка.
 */
 //---
 IExecuteResult::CellType PGExecuteResult::GetValue(size_t rowIndex, size_t columnIndex)
@@ -136,11 +133,12 @@ IExecuteResult::CellType PGExecuteResult::GetValue(size_t rowIndex, size_t colum
 	CellType cell;
 	if (int format = PQfformat(m_result, columnIndex); format == 0)
 	{
-		cell = std::string(value);
+		cell = CellType(std::string(value));
 	}
 	else if (format == 1)
 	{
-		if (int intLength = PQgetlength(m_result, rowIndex, columnIndex);
+		// todo: IConnection::Execute перегрузка с бинарными данными
+		/*if (int intLength = PQgetlength(m_result, rowIndex, columnIndex);
 			intLength >= 0)
 		{
 			size_t length = static_cast<size_t>(intLength);
@@ -148,8 +146,8 @@ IExecuteResult::CellType PGExecuteResult::GetValue(size_t rowIndex, size_t colum
 			std::vector<char> byteArray;
 			byteArray.resize(length);
 			std::memcpy(byteArray.data(), value, length);
-			cell = byteArray;
-		}
+			cell = CellType(byteArray);
+		}*/
 	}
 
 	return cell;

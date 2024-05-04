@@ -40,7 +40,7 @@ void PGSQLTypeInteger::SetValue(int value)
   Сконвертировать в строку
 */
 //---
-std::optional<std::string> PGSQLTypeInteger::ToString() const
+std::optional<std::string> PGSQLTypeInteger::ToSQLString() const
 {
 	if (!m_value)
 		return std::nullopt;
@@ -66,7 +66,7 @@ const std::string & PGSQLTypeInteger::GetTypeName() const
   Прочитать значение из строки
 */
 //---
-bool PGSQLTypeInteger::ReadFrom(const std::string & value)
+bool PGSQLTypeInteger::ReadFromSQL(std::string && value)
 {
 	m_value = std::nullopt;
 
@@ -82,6 +82,9 @@ bool PGSQLTypeInteger::ReadFrom(const std::string & value)
 	{
 	}
 
+	bool result = m_value.has_value();
+	if (result)
+		value.clear();
 	return m_value.has_value();
 }
 
@@ -91,7 +94,7 @@ bool PGSQLTypeInteger::ReadFrom(const std::string & value)
   Прочитать значение из массива байт
 */
 //---
-bool PGSQLTypeInteger::ReadFrom(const std::vector<char>& value)
+bool PGSQLTypeInteger::ReadFromSQL(std::vector<char> && value)
 {
 	assert(false); // todo : Пока не реализовано
 	return false;

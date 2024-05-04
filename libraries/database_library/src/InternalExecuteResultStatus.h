@@ -14,7 +14,7 @@ struct ErrorMessages
 	static constexpr char * ISQLTypeConverter_GetSQLVariable = "ISQLTypeConverter::GetSQLVariable: Failed to get SQL-variable";
 	static constexpr char * IConnection_Execute = "IConnection::Execute: Failed to execute query";
 	static constexpr char * IExecuteResult_GetCurrentExecuteStatus = "IExecuteResult::GetCurrentExecuteStatus: Failed to get execute status";
-	static constexpr char * ISQLType_ReadFrom = "ISQLType::ReadFrom: Failed to read data into SQL-variable";
+	static constexpr char * ISQLType_ReadFromSQL = "ISQLType::ReadFromSQL: Failed to read data into SQL-variable";
 	static constexpr char * ISQLType_GetValue = "ISQLType::GetValue: Failed to get value from SQL-variable";
 };
 

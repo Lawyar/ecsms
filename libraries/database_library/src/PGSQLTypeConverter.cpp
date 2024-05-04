@@ -60,11 +60,20 @@ ISQLTypeIntegerPtr PGSQLTypeConverter::GetSQLTypeInteger(const std::optional<Str
   Получить пустую SQL-Text переменную
 */
 //---
-ISQLTypeTextPtr PGSQLTypeConverter::GetSQLTypeText(const std::optional<StrongType<std::string>> & value) const
+ISQLTypeTextPtr PGSQLTypeConverter::GetSQLTypeText() const
 {
-	return value.has_value()
-		? std::make_shared<PGSQLTypeText>(value->value)
-		: std::make_shared<PGSQLTypeText>();
+	return std::make_shared<PGSQLTypeText>();
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить пустую SQL-Text переменную по строке
+*/
+//---
+ISQLTypeTextPtr PGSQLTypeConverter::GetSQLTypeText(std::string && value) const
+{
+	return std::make_shared<PGSQLTypeText>(std::move(value));
 }
 
 
@@ -73,10 +82,18 @@ ISQLTypeTextPtr PGSQLTypeConverter::GetSQLTypeText(const std::optional<StrongTyp
   Получить пустую SQL-ByteArray переменную
 */
 //---
-ISQLTypeByteArrayPtr PGSQLTypeConverter::GetSQLTypeByteArray(const std::optional<StrongType<std::vector<char>>>
-	& value) const
+ISQLTypeByteArrayPtr PGSQLTypeConverter::GetSQLTypeByteArray() const
 {
-	return value.has_value()
-		? std::make_shared<PGSQLTypeByteArray>(value->value)
-		: std::make_shared<PGSQLTypeByteArray>();
+	return std::make_shared<PGSQLTypeByteArray>();
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить пустую SQL-ByteArray переменную по массиву байт
+*/
+//---
+ISQLTypeByteArrayPtr PGSQLTypeConverter::GetSQLTypeByteArray(std::vector<char> && value) const
+{
+	return std::make_shared<PGSQLTypeByteArray>(std::move(value));
 }

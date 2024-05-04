@@ -143,7 +143,7 @@ private: // ќбщие вспомогательные методы
 	bool executeQuery(const std::string query, IExecuteResultPtr & result, IExecuteResultStatusPtr & status);
 	/// ѕрочитать строку в SQL-переменную
 	template <class SQLConcreteType, class CppConcreteType>
-	bool readIntoSQLVariable(const std::string & str, SQLDataType type, CppConcreteType & value,
+	bool readIntoSQLVariable(std::string && str, SQLDataType type, CppConcreteType & value,
 		IExecuteResultStatusPtr & status) const;
 	/// ѕолучить название атрибута в форме, пригодной дл€ вставлени€ в запрос
 	IExecuteResultStatusPtr getSQLAttrName(const AttrName & attrName, std::string & sqlAttrName) const;

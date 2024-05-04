@@ -38,12 +38,21 @@ public:
 	public:
 		/// Конструктор
 		CellType() : m_value() {}
-		/// Конструктор от NULL
+		/// Конструктор от nullptr
 		CellType(nullptr_t) : m_value(nullptr) {}
 		/// Конструктор от строки
 		CellType(const std::string & str) : m_value(str) {}
-		/// Конструктор от массива байт
-		CellType(const std::vector<char> & arr) : m_value(arr) {}
+
+		/// Конструктор копирования
+		CellType(const CellType &) = delete;
+		/// Конструктор перемещения
+		CellType(CellType &&) = default;
+		/// Оператор присваивания копированием
+		CellType& operator=(const CellType &) = delete;
+		/// Оператор присваивания перемещением
+		CellType& operator=(CellType &&) = default;
+
+
 
 		/// Ячейка содержит значение
 		bool HasValue() const { return !!m_value; }
@@ -52,8 +61,17 @@ public:
 		/// Ячейка содержит NULL
 		bool HasNull() const { return m_value && std::holds_alternative<nullptr_t>(*m_value); }
 
-		/// Получить строку, если данные представлены строкой
-		std::string GetString() const { return HasString() ? std::get<std::string>(*m_value) : std::string(); }
+		/// Извлечь строку, если данные представлены строкой
+		std::string ExtractString()
+		{
+			std::string result;
+			if (HasString())
+			{
+				result = std::move(std::get<std::string>(*m_value));
+				m_value = std::nullopt;
+			}
+			return std::move(result);
+		}
 
 	private:
 		// todo: IConnection::Execute перегрузка с бинарными данными
@@ -61,14 +79,27 @@ public:
 		// которая в данный момент не используется и перемещена в protected-секцию.
 		// Поэтому и эти методы перемещу в private-секцию.
 
+		/// Конструктор от массива байт
+		CellType(const std::vector<char> & arr) : m_value(arr) {}
+
 		/// Ячейка содержит бинарные данные
 		bool HasByteArray() const { return m_value && std::holds_alternative<std::vector<char>>(*m_value); }
-		/// Получить массив байт, если данные представлены массивом байт
-		std::vector<char> GetByteArray() const { return HasByteArray() ? std::get<std::vector<char>>(*m_value) : std::vector<char>(); }
+		/// Извлечь массив байт, если данные представлены массивом байт
+		std::vector<char> ExtractByteArray()
+		{
+			std::vector<char> result;
+			if (HasByteArray())
+			{
+				result = std::move(std::get<std::vector<char>>(*m_value));
+				m_value = std::nullopt;
+			}
+			return std::move(result);
+		}
 	};
 
 public:
 	static constexpr size_t InvalidIndex = (size_t)(-1); ///< Невалидный индекс
+
 public:
 	/// Деструктор
 	virtual ~IExecuteResult() = default;
@@ -99,9 +130,6 @@ public:
 	virtual SQLDataType GetColType(size_t columnIndex) const = 0;
 
 	/// Получить значение.
-	/// Возвращает std::nullopt, если ячейка содержит null или если переданы невалидные индексы.
-	/// В противном случае возвращает текст или бинарные данные
-	/// (в зависимости от того, в каком виде запрашивались данные в команде)
 	virtual CellType GetValue(size_t rowIndex, size_t columnIndex) = 0;
 };
 

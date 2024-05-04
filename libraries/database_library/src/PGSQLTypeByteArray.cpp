@@ -8,8 +8,8 @@
   Конструктор
 */
 //---
-PGSQLTypeByteArray::PGSQLTypeByteArray(const std::vector<char>& value)
-	: m_value(value)
+PGSQLTypeByteArray::PGSQLTypeByteArray(std::vector<char> && value)
+	: m_value(std::move(value))
 {
 }
 
@@ -19,7 +19,7 @@ PGSQLTypeByteArray::PGSQLTypeByteArray(const std::vector<char>& value)
   Получить значение
 */
 //---
-std::optional<std::vector<char>> PGSQLTypeByteArray::GetValue() const
+const std::optional<std::vector<char>> & PGSQLTypeByteArray::GetValue() const
 {
 	return m_value;
 }
@@ -30,9 +30,9 @@ std::optional<std::vector<char>> PGSQLTypeByteArray::GetValue() const
   Установить значение
 */
 //---
-void PGSQLTypeByteArray::SetValue(const std::vector<char>& value)
+void PGSQLTypeByteArray::SetValue(std::vector<char> && value)
 {
-	m_value = value;
+	m_value = std::move(value);
 }
 
 
@@ -41,7 +41,7 @@ void PGSQLTypeByteArray::SetValue(const std::vector<char>& value)
   Установить значение
 */
 //---
-std::optional<std::string> PGSQLTypeByteArray::ToString() const
+std::optional<std::string> PGSQLTypeByteArray::ToSQLString() const
 {
 	if (!m_value)
 		return std::nullopt;
@@ -69,10 +69,15 @@ const std::string & PGSQLTypeByteArray::GetTypeName() const
    Прочитать значение из строки
 */
 //---
-bool PGSQLTypeByteArray::ReadFrom(const std::string & value)
+bool PGSQLTypeByteArray::ReadFromSQL(std::string && value)
 {
+	m_value = std::nullopt;
 	assert(false); // todo : Пока не реализовано
-	return false;
+
+	bool result = m_value.has_value();
+	if (result)
+		value.clear();
+	return result;
 }
 
 
@@ -81,8 +86,8 @@ bool PGSQLTypeByteArray::ReadFrom(const std::string & value)
    Прочитать значение из массива байт
 */
 //---
-bool PGSQLTypeByteArray::ReadFrom(const std::vector<char>& value)
+bool PGSQLTypeByteArray::ReadFromSQL(std::vector<char> && value)
 {
-	SetValue(value);
+	SetValue(std::move(value));
 	return m_value.has_value();
 }

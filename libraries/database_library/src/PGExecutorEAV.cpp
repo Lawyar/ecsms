@@ -261,10 +261,8 @@ IExecuteResultStatusPtr PGExecutorEAV::CreateNewEntity(const EntityName & entity
 
 	size_t idFieldIndex = result->GetColIndex(EntityTable::c_idField);
 	IExecuteResult::CellType newId = result->GetValue(0, idFieldIndex);
-	std::string newIdStr = newId.GetString();
-
 	if (IExecuteResultStatusPtr readStatus;
-		!readIntoSQLVariable<ISQLTypeInteger>(newIdStr, result->GetColType(idFieldIndex),
+		!readIntoSQLVariable<ISQLTypeInteger>(newId.ExtractString(), result->GetColType(idFieldIndex),
 			entityId, readStatus))
 		return readStatus;
 
@@ -310,10 +308,9 @@ IExecuteResultStatusPtr PGExecutorEAV::FindEntitiesByAttrValues(const EntityName
 		for (size_t i = 0, rowCount = result->GetRowCount(); i < rowCount; ++i)
 		{
 			IExecuteResult::CellType cellValue = result->GetValue(i, j);
-			auto cellValueStr = cellValue.GetString();
 			EntityId entityId;
 			if (IExecuteResultStatusPtr readStatus;
-				!readIntoSQLVariable<ISQLTypeInteger>(cellValueStr, colType, entityId, readStatus))
+				!readIntoSQLVariable<ISQLTypeInteger>(cellValue.ExtractString(), colType, entityId, readStatus))
 				return readStatus;
 			entityIds.push_back(entityId);
 		}
@@ -349,8 +346,8 @@ std::optional<std::string> PGExecutorEAV::getEntityIdByAttrValuePartCommand(cons
 	if (!attrValue.value || !attrValue.attrName)
 		return std::nullopt;
 
-	auto attrValueStrOpt = attrValue.value->ToString();
-	auto attrNameStrOpt = attrValue.attrName->ToString();
+	auto attrValueStrOpt = attrValue.value->ToSQLString();
+	auto attrNameStrOpt = attrValue.attrName->ToSQLString();
 	if (!attrValueStrOpt || !attrNameStrOpt)
 		return std::nullopt;
 
@@ -478,7 +475,7 @@ std::optional<std::string> PGExecutorEAV::insertValuePartCommand(const EntityNam
 	if (!value)
 		return std::nullopt;
 	auto && attributeType = value->GetTypeName();
-	auto && valueStrOpt = value->ToString();
+	auto && valueStrOpt = value->ToSQLString();
 	if (sqlAttrName.empty() || attributeType.empty() || !valueStrOpt || valueStrOpt->empty())
 		return std::nullopt;
 
@@ -538,7 +535,7 @@ std::optional<std::string> PGExecutorEAV::updateValueCommand(const EntityName & 
 	if (!value)
 		return std::nullopt;
 	auto && attributeType = value->GetTypeName();
-	auto && valueStrOpt = value->ToString();
+	auto && valueStrOpt = value->ToSQLString();
 	if (sqlAttrName.empty() || attributeType.empty() || !valueStrOpt || valueStrOpt->empty())
 		return std::nullopt;
 
@@ -612,8 +609,8 @@ IExecuteResultStatusPtr PGExecutorEAV::GetValue(const EntityName & entityName, E
 		return InternalExecuteResultStatus::GetInternalError(
 			"IExecutorEAV::GetValue: Unexpected result. Value is empty.");
 
-	if (!value->ReadFrom(cell.GetString()))
-		return InternalExecuteResultStatus::GetInternalError(ErrorMessages::ISQLType_ReadFrom);
+	if (!value->ReadFromSQL(cell.ExtractString()))
+		return InternalExecuteResultStatus::GetInternalError(ErrorMessages::ISQLType_ReadFromSQL);
 
 	return resultStatus;
 }
@@ -785,10 +782,9 @@ IExecuteResultStatusPtr PGExecutorEAV::getAttributeValuesImpl(const IExecuteResu
 			return InternalExecuteResultStatus::GetInternalError(
 				"PGExecutorEAV::getAttributeValuesImpl: The result cells are empty");
 		}
-		auto cellNameStr = cellName.GetString();
-		auto cellValueStr = cellValue.GetString();
-		if (!attrNameSqlVar->ReadFrom(cellNameStr) || !valueSqlVar->ReadFrom(cellValueStr))
-			return InternalExecuteResultStatus::GetInternalError(ErrorMessages::ISQLType_ReadFrom);
+		if (!attrNameSqlVar->ReadFromSQL(cellName.ExtractString()) ||
+			!valueSqlVar->ReadFromSQL(cellValue.ExtractString()))
+			return InternalExecuteResultStatus::GetInternalError(ErrorMessages::ISQLType_ReadFromSQL);
 		
 		attrValues.push_back(AttrValue{ attrNameSqlVar, valueSqlVar });
 	}
@@ -845,7 +841,7 @@ bool PGExecutorEAV::executeQuery(const std::string query, IExecuteResultPtr & re
 */
 //---
 template<class SQLConcreteType, class CppConcreteType>
-bool PGExecutorEAV::readIntoSQLVariable(const std::string & str, SQLDataType type,
+bool PGExecutorEAV::readIntoSQLVariable(std::string && str, SQLDataType type,
 	CppConcreteType & value, IExecuteResultStatusPtr & status) const
 {
 	ISQLTypePtr sqlVar = m_sqlTypeConverter->GetSQLVariable(type);
@@ -856,10 +852,10 @@ bool PGExecutorEAV::readIntoSQLVariable(const std::string & str, SQLDataType typ
 		status = InternalExecuteResultStatus::GetInternalError(ErrorMessages::ISQLTypeConverter_GetSQLVariable);
 		return false;
 	}
-	if (!sqlVar->ReadFrom(str))
+	if (!sqlVar->ReadFromSQL(std::move(str)))
 	{
 		status = InternalExecuteResultStatus::GetInternalError(
-			ErrorMessages::ISQLType_ReadFrom +
+			ErrorMessages::ISQLType_ReadFromSQL +
 			utils::string::Format(" (Data: {}, SQL variable type: {})", str, sqlVar->GetTypeName()));
 		return false;
 	}
@@ -875,7 +871,7 @@ bool PGExecutorEAV::readIntoSQLVariable(const std::string & str, SQLDataType typ
 	auto optValue = sqlConcreteVar->GetValue();
 	if (!optValue)
 	{
-		// ≈сли ReadFrom вернул true, то здесь не должны проваливатьс€
+		// ≈сли ReadFromSQL вернул true, то здесь не должны проваливатьс€
 		assert(false);
 		status = InternalExecuteResultStatus::GetInternalError(ErrorMessages::ISQLType_GetValue);
 		return false;
@@ -904,7 +900,7 @@ IExecuteResultStatusPtr PGExecutorEAV::getSQLAttrName(const AttrName & attrName,
 	if (!attrName)
 		return errorStatus;
 
-	auto && sqlTextStrOpt = attrName->ToString();
+	auto && sqlTextStrOpt = attrName->ToSQLString();
 	if (!sqlTextStrOpt)
 		return errorStatus;
 

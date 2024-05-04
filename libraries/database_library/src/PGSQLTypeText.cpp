@@ -8,8 +8,8 @@
   Конструктор
 */
 //---
-PGSQLTypeText::PGSQLTypeText(const std::string & value)
-	: m_value(value)
+PGSQLTypeText::PGSQLTypeText(std::string && value)
+	: m_value(std::move(value))
 {
 }
 
@@ -19,7 +19,7 @@ PGSQLTypeText::PGSQLTypeText(const std::string & value)
   Получить значение
 */
 //---
-std::optional<std::string> PGSQLTypeText::GetValue() const
+const std::optional<std::string> & PGSQLTypeText::GetValue() const
 {
 	return m_value;
 }
@@ -30,9 +30,9 @@ std::optional<std::string> PGSQLTypeText::GetValue() const
   Установить значение
 */
 //---
-void PGSQLTypeText::SetValue(const std::string & value)
+void PGSQLTypeText::SetValue(std::string && value)
 {
-	m_value = value;
+	m_value = std::move(value);
 }
 
 
@@ -41,7 +41,7 @@ void PGSQLTypeText::SetValue(const std::string & value)
   Сконвертировать в строку
 */
 //---
-std::optional<std::string> PGSQLTypeText::ToString() const
+std::optional<std::string> PGSQLTypeText::ToSQLString() const
 {
 	if (!m_value)
 		return std::nullopt;
@@ -67,9 +67,9 @@ const std::string & PGSQLTypeText::GetTypeName() const
   Прочитать значение из строки
 */
 //---
-bool PGSQLTypeText::ReadFrom(const std::string & value)
+bool PGSQLTypeText::ReadFromSQL(std::string && value)
 {
-	SetValue(value);
+	SetValue(std::move(value));
 	return m_value.has_value();
 }
 
@@ -79,7 +79,7 @@ bool PGSQLTypeText::ReadFrom(const std::string & value)
   Прочитать значение из массива байт
 */
 //---
-bool PGSQLTypeText::ReadFrom(const std::vector<char>& value)
+bool PGSQLTypeText::ReadFromSQL(std::vector<char> && value)
 {
 	// Определяем валидность строки
 	if (value.empty())
@@ -100,6 +100,10 @@ bool PGSQLTypeText::ReadFrom(const std::vector<char>& value)
 	// Возможно, надо также добавить проверки на наличие нечитаемых символов, но пока и так сойдет
 
 	std::string str(value.data(), value.size());
-	SetValue(str);
-	return m_value.has_value();
+	SetValue(std::move(str));
+
+	bool result = m_value.has_value();
+	if (result)
+		value.clear();
+	return result;
 }
