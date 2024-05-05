@@ -435,3 +435,35 @@ TEST(Connection, CellTypeConstructors)
 		ASSERT_FALSE(cell.HasNull());
 	}
 }
+
+
+/// Команды выполняются транзакционно
+TEST(Connection, CommandsAreExecutedTransactionally) {
+	auto && databaseManager = GetDatabaseManager();
+	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
+
+	{
+		auto && result = connection->Execute(
+			"DROP TABLE IF EXISTS CommandsAreExecutedTransactionally;\n"
+			"CREATE TABLE CommandsAreExecutedTransactionally(id INTEGER PRIMARY KEY);\n"
+			"INSERT INTO CommandsAreExecutedTransactionally VALUES(1);\n"
+			// В этой команде допущена ошибка - "FOM" вместо "FROM"
+			"SELECT * FOM CommandsAreExecutedTransactionally;\n"
+		);
+
+		auto && status = result->GetCurrentExecuteStatus();
+		ASSERT_TRUE(status->HasError());
+	}
+
+	{
+		auto && result = connection->Execute(
+			"SELECT * FROM CommandsAreExecutedTransactionally;\n"
+		);
+
+		auto && status = result->GetCurrentExecuteStatus();
+
+		// Если бы команды выполнялись не транзакционно, то таблица бы создалась на предыдущем вызове.
+		// И здесь мы бы получили корректный результат, а не ошибку.
+		ASSERT_TRUE(status->HasError());
+	}
+}
