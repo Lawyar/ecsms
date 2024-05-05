@@ -28,6 +28,8 @@ const std::optional<std::vector<char>> & PGSQLTypeByteArray::GetValue() const
 //------------------------------------------------------------------------------
 /**
   Установить значение
+  \param value Массив, из которого нужно установить значение.
+               При успехе массив будет очищен, иначе останется неизменным.
 */
 //---
 void PGSQLTypeByteArray::SetValue(std::vector<char> && value)
@@ -67,6 +69,8 @@ const std::string & PGSQLTypeByteArray::GetTypeName() const
 //------------------------------------------------------------------------------
 /**
    Прочитать значение из строки
+   \param value Строка, из которой нужно читать значение.
+                Если чтение прошло успешно, то строка будет очищена, иначе останется неизменной.
 */
 //---
 bool PGSQLTypeByteArray::ReadFromSQL(std::string && value)
@@ -84,6 +88,8 @@ bool PGSQLTypeByteArray::ReadFromSQL(std::string && value)
 //------------------------------------------------------------------------------
 /**
    Прочитать значение из массива байт
+   \param value Массив, из которого нужно читать значение.
+                Если чтение прошло успешно, то массив будет очищен, иначе останется неизменным.
 */
 //---
 bool PGSQLTypeByteArray::ReadFromSQL(std::vector<char> && value)

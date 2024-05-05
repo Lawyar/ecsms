@@ -29,6 +29,8 @@ public: // ISQLTypeText
 	/// Получить значение
 	virtual const std::optional<std::string> & GetValue() const override;
 	/// Установить значение
+	/// \param value Строка, из которой нужно установить значение.
+	///              При успехе строка будет очищена, иначе останется неизменной.
 	virtual void SetValue(std::string && value) override;
 
 
@@ -40,11 +42,19 @@ public: // ISQLType
 
 public:
 	/// Прочитать значение из строки
+	/// \param value Строка, из которой нужно читать значение.
+	///              Если чтение прошло успешно, то строка будет очищена, иначе останется неизменной.
 	/// \return Валидно ли прочитанное значение
 	virtual bool ReadFromSQL(std::string && value) override;
 
 protected:
 	/// Прочитать значение из массива байт
+	/// \param value Массив, из которого нужно читать значение.
+	///              Если чтение прошло успешно, то массив будет очищен, иначе останется неизменным.
 	/// \return Валидно ли прочитанное значение
 	virtual bool ReadFromSQL(std::vector<char> && value) override;
+
+private:
+	/// Это недопустимый символ
+	static bool isInvalidChar(char c);
 };

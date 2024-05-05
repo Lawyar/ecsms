@@ -24,6 +24,8 @@ public:
 	/// Получить значение
 	virtual const std::optional<std::vector<char>> & GetValue() const = 0;
 	/// Установить значение
+	/// \param value Массив, из которого нужно установить значение.
+	///              При успехе массив будет очищен, иначе останется неизменным.
 	virtual void SetValue(std::vector<char> && value) = 0;
 };
 

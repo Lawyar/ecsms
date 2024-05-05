@@ -24,6 +24,8 @@ public:
 	/// Получить значение
 	virtual const std::optional<std::string> & GetValue() const = 0;
 	/// Установить значение
+	/// \param value Строка, из которой нужно установить значение.
+	///              При успехе строка будет очищена, иначе останется неизменной.
 	virtual void SetValue(std::string && value) = 0;
 };
 
