@@ -5,10 +5,10 @@
 using namespace ecsms;
 
 TEST(test_library_tests, doFoo_valid) {
-    foo f;
+  foo f;
 
-    f.doFoo();
-    f.doFoo();
+  f.doFoo();
+  f.doFoo();
 
-    ASSERT_EQ(f.getFoos(), 2);
+  ASSERT_EQ(f.getFoos(), 2);
 }
