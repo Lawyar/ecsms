@@ -10,6 +10,6 @@ namespace ecsms {
 		static std::shared_ptr<pipeline> create();
 
 	private:
-		static constexpr size_t connection_capacity = 512;
+		static constexpr size_t connection_capacity = 10;
 	};
 }

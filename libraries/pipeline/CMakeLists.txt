@@ -1,4 +1,23 @@
-add_library(pipeline inc/stage.h inc/producing_stage.h inc/consuming_stage.h inc/pipeline.h inc/mpmc_cycle_queue.h src/stub.cpp src/stage.cpp src/pipeline.cpp)
+add_library(pipeline
+    inc/ConnectablePipelineStage.h
+    inc/ConsumerStage.h
+    inc/ConsumerTaskRetrieveStrategy.h
+    inc/InOutStageConnection.h
+    inc/InStageConnection.h
+    inc/OutStageConnection.h
+    src/Pipeline.cpp
+    inc/Pipeline.h
+    src/PipelineStage.cpp
+    inc/PipelineStage.h
+    inc/PipelineStageNameConverter.h
+    inc/ProducerAndConsumerStage.h
+    inc/ProducerStage.h
+    inc/StageConnection.h
+    inc/StageTask.h
+    src/SteadyClock.cpp
+    inc/SteadyClock.h
+    inc/TaskRetrieveStrategy.h
+    inc/PipelineException.h)
 
 target_include_directories(pipeline PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 
