@@ -3,6 +3,7 @@
 #include <PGSQLTypeInteger.h>
 #include <PGSQLTypeText.h>
 #include <PGSQLTypeByteArray.h>
+#include <PGSQLTypeRemoteFileId.h>
 
 #include <cassert>
 
@@ -24,6 +25,9 @@ ISQLTypePtr PGSQLTypeConverter::GetSQLVariable(SQLDataType type) const
 		break;
 	case SQLDataType::ByteArray:
 		result = GetSQLTypeByteArray();
+		break;
+	case SQLDataType::RemoteFileId:
+		result = GetSQLTypeRemoteFileId();
 		break;
 	case SQLDataType::Unknown:
 		// Нельзя получить неизвестный тип данных, вернем nullptr
@@ -95,4 +99,26 @@ ISQLTypeByteArrayPtr PGSQLTypeConverter::GetSQLTypeByteArray() const
 ISQLTypeByteArrayPtr PGSQLTypeConverter::GetSQLTypeByteArray(std::vector<char> && value) const
 {
 	return std::make_shared<PGSQLTypeByteArray>(std::move(value));
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить SQL-RemoteFileId переменную
+*/
+//---
+ISQLTypeRemoteFileIdPtr PGSQLTypeConverter::GetSQLTypeRemoteFileId() const
+{
+	return std::make_shared<PGSQLTypeRemoteFileId>();
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить SQL-RemoteFileId переменную
+*/
+//---
+ISQLTypeRemoteFileIdPtr PGSQLTypeConverter::GetSQLTypeRemoteFileId(const std::string & id) const
+{
+	return std::make_shared<PGSQLTypeRemoteFileId>(id);
 }

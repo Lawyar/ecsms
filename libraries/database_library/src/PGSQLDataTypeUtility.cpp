@@ -42,6 +42,7 @@ public:
 		{SQLDataType::Integer, INT4OID},
 		{SQLDataType::Text, TEXTOID},
 		{SQLDataType::ByteArray, BYTEAOID},
+		{SQLDataType::RemoteFileId, OIDOID},
 		{SQLDataType::Invalid, InvalidOid} })
 		, m_SQLDataTypeToOidMap(createSQLDataTypeToOidMap(m_idMatches))
 		, m_oidToSQLDataTypeMap(createOidToSQLDataTypeMap(m_idMatches))

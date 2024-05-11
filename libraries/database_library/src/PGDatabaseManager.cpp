@@ -26,7 +26,7 @@ IDatabaseManager & GetDatabaseManager<DatabaseType::PostgreSQL>()
 //---
 IConnectionPtr PGDatabaseManager::GetConnection(const std::string & connectionInfo)
 {
-	return std::make_shared<PGConnection>(connectionInfo);
+	return PGConnection::Create(connectionInfo);
 }
 
 

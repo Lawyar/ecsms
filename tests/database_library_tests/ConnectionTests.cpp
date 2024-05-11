@@ -198,7 +198,7 @@ TEST(Connection, CanGetColType)
 	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
 
 	// Порядок (типов) аргументов в запросе должен соответствовать порядку типов в SQLDataType
-	const std::string query = "SELECT 1, 'text', '\\x0123456789ABCDEF'::bytea, 1.5;";
+	const std::string query = "SELECT 1, 'text', '\\x0123456789ABCDEF'::bytea, 20000::oid, 1.5;";
 
 	auto && result = connection->Execute(query);
 	ASSERT_NE(result, nullptr);

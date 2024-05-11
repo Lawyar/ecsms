@@ -1,6 +1,7 @@
 #pragma once
 
 #include <IExecuteResult.h>
+#include <IFile.h>
 #include <DataType/SQLDataType.h>
 
 #include <memory>
@@ -43,6 +44,20 @@ public:
 	/// Выполнить запрос. Запрос может содержать несколько SQL команд, тогда они будут выполнены в рамках одной транзакции
 	/// (только если команды BEGIN/COMMIT не включены явно в запрос, чтобы разделить его на несколько транзакций)
 	virtual IExecuteResultPtr Execute(const std::string & query) = 0;
+
+	/// Открыть транзакцию.
+	/// Метод увеличивает счетчик открытых транзакций.
+	/// Транзакция создается только тогда, когда значение счетчика меняется с 0 на 1.
+	virtual IExecuteResultStatusPtr BeginTransaction() = 0;
+
+	/// Закрыть транзакцию.
+	/// Метод уменьшает счетчик открытых транзакций.
+	/// Транзакция закрывается только тогда, когда значение счетчика меняется с 1 на 0.
+	virtual IExecuteResultStatusPtr EndTransaction() = 0;
+
+public:
+	/// Создать удаленный файл
+	virtual IFilePtr CreateRemoteFile() = 0;
 
 protected:
 	// todo: IConnection::Execute перегрузка с бинарными данными

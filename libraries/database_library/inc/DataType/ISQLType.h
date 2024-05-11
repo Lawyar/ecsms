@@ -42,7 +42,7 @@ protected:
 	/// \param value ћассив, из которого нужно читать значение.
 	///              ≈сли чтение прошло успешно, то массив будет очищен, иначе останетс€ неизменным.
 	/// \return ¬алидно ли прочитанное значение
-	virtual bool ReadFromSQL(std::vector<char> && value) = 0;
+	virtual bool ReadFromSQL(std::vector<char> && value) { return false; }
 };
 
 

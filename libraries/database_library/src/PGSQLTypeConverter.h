@@ -26,4 +26,9 @@ public: // Получение пустых SQL-переменных
 	virtual ISQLTypeByteArrayPtr GetSQLTypeByteArray() const override;
 	/// Получить SQL-ByteArray переменную по массиву байт
 	virtual ISQLTypeByteArrayPtr GetSQLTypeByteArray(std::vector<char> && value) const override;
+
+	/// Получить SQL-RemoteFileId переменную
+	virtual ISQLTypeRemoteFileIdPtr GetSQLTypeRemoteFileId() const override;
+	/// Получить SQL-RemoteFileId переменную
+	virtual ISQLTypeRemoteFileIdPtr GetSQLTypeRemoteFileId(const std::string & id) const override;
 };

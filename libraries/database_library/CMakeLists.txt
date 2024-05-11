@@ -24,13 +24,19 @@ add_library(database_library
   src/PGSQLTypeInteger.h
   src/PGSQLTypeText.cpp
   src/PGSQLTypeText.h
+  src/PGSQLTypeRemoteFileId.cpp
+  src/PGSQLTypeRemoteFileId.h
+  src/PGRemoteFile.cpp
+  src/PGRemoteFile.h
 
   inc/IConnection.h
   inc/IDatabaseManager.h
   inc/IExecuteResult.h
   inc/IExecuteResultStatus.h
   inc/IExecutorEAV.h
+  inc/IFile.h
 
+  inc/DataType/ISQLTypeRemoteFileId.h
   inc/DataType/ISQLType.h
   inc/DataType/ISQLTypeByteArray.h
   inc/DataType/ISQLTypeConverter.h

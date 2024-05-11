@@ -2,7 +2,10 @@
 
 #include <PGSQLDataTypeUtility.h>
 #include <PGExecuteResult.h>
+#include <PGRemoteFile.h>
+#include <InternalExecuteResultStatus.h>
 
+#include <cassert>
 
 //------------------------------------------------------------------------------
 /**
@@ -43,6 +46,16 @@ static int ResultFormatToPQ(ResultFormat type)
 	return result;
 }
 
+
+//------------------------------------------------------------------------------
+/**
+  Создать объект
+*/
+//---
+PGConnectionSPtr PGConnection::Create(const std::string & connectionInfo)
+{
+	return PGConnectionSPtr(new PGConnection(connectionInfo));
+}
 
 
 //------------------------------------------------------------------------------
@@ -114,9 +127,94 @@ ConnectionStatus PGConnection::GetStatus() const
 IExecuteResultPtr PGConnection::Execute(const std::string & query)
 {
 	std::lock_guard guard(m_mutex);
+	return executeImpl(query);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Открыть транзакцию.
+*/
+//---
+IExecuteResultStatusPtr PGConnection::BeginTransaction()
+{
+	IExecuteResultStatusPtr status;
+
+	std::lock_guard guard(m_mutex);
+	m_transactionCount += 1;
+	if (m_transactionCount == 1)
+	{
+		auto result = executeImpl("BEGIN;");
+		status = result
+			? result->GetCurrentExecuteStatus()
+			: InternalExecuteResultStatus::GetInternalError(ErrorMessages::IConnection_Execute);
+	}
+	else
+	{
+		status = InternalExecuteResultStatus::GetSuccessStatus(ResultStatus::OkWithoutData);
+	}
+
+	return status;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Закрыть транзакцию.
+*/
+//---
+IExecuteResultStatusPtr PGConnection::EndTransaction()
+{
+	IExecuteResultStatusPtr status;
+
+	std::lock_guard guard(m_mutex);
+	m_transactionCount -= 1;
+	if (m_transactionCount == 0)
+	{
+		auto result = executeImpl("END;");
+		status = result
+			? result->GetCurrentExecuteStatus()
+			: InternalExecuteResultStatus::GetInternalError(ErrorMessages::IConnection_Execute);
+	}
+	else if (m_transactionCount < 0)
+	{
+		// Не должны закрывать транзакции при их отсутствии
+		m_transactionCount = 0;
+		status = InternalExecuteResultStatus::GetInternalError(
+			"IConnection::EndTransaction: "
+			"Attempt to close a transaction when there is no open transaction");
+	}
+	else
+	{
+		status = InternalExecuteResultStatus::GetSuccessStatus(ResultStatus::OkWithoutData);
+	}
+
+	return status;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Вспомогательный метод для реализации Execute. Не блокирует мьютекс.
+*/
+//---
+IExecuteResultPtr PGConnection::executeImpl(const std::string & query)
+{
 	PGresult * pqResult = PQexec(m_conn, query.c_str());
 	IExecuteResultPtr result(new PGExecuteResult(pqResult));
 	return result;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Создать удаленный файл
+*/
+//---
+IFilePtr PGConnection::CreateRemoteFile()
+{
+	Oid oid = LoCreate();
+	return oid == InvalidOid ? nullptr : std::make_shared<PGRemoteFile>(weak_from_this(), oid);
 }
 
 
@@ -161,4 +259,64 @@ IExecuteResultPtr PGConnection::Execute(const std::string & singleCommand,
 
 	IExecuteResultPtr result(new PGExecuteResult(pqResult));
 	return result;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Создать большой бинарный объект
+*/
+//---
+Oid PGConnection::LoCreate()
+{
+	std::lock_guard guard(m_mutex);
+	return lo_create(m_conn, InvalidOid);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Открыть большой бинарный объект
+*/
+//---
+int PGConnection::LoOpen(Oid objId, int mode)
+{
+	std::lock_guard guard(m_mutex);
+	return lo_open(m_conn, objId, mode);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Прочитать данные из большого бинарного объекта
+*/
+//---
+int PGConnection::LoRead(int fd, char * buffer, size_t len)
+{
+	std::lock_guard guard(m_mutex);	
+	return lo_read(m_conn, fd, buffer, len);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Записать данные в большой бинарный объект
+*/
+//---
+int PGConnection::LoWrite(int fd, const char * data, size_t len)
+{
+	std::lock_guard guard(m_mutex);
+	return lo_write(m_conn, fd, data, len);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Закрыть большой бинарный объект
+*/
+//---
+int PGConnection::LoClose(int fd)
+{
+	std::lock_guard guard(m_mutex);
+	return lo_close(m_conn, fd);
 }

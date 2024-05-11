@@ -4,6 +4,7 @@
 #include <DataType/ISQLTypeInteger.h>
 #include <DataType/ISQLTypeText.h>
 #include <DataType/ISQLTypeByteArray.h>
+#include <DataType/ISQLTypeRemoteFileId.h>
 
 #include <Utils/StrongType.h>
 
@@ -41,6 +42,11 @@ public: // Получение SQL-переменных
 	/// Получить SQL-ByteArray переменную по массиву байт
 	/// (поскольку копирование может быть затратным и ненужным, используется перемещение)
 	virtual ISQLTypeByteArrayPtr GetSQLTypeByteArray(std::vector<char> && value) const = 0;
+
+	/// Получить SQL-RemoteFileId переменную
+	virtual ISQLTypeRemoteFileIdPtr GetSQLTypeRemoteFileId() const = 0;
+	/// Получить SQL-RemoteFileId переменную
+	virtual ISQLTypeRemoteFileIdPtr GetSQLTypeRemoteFileId(const std::string & id) const = 0;
 };
 
 /// Тип указателя на ISQLTypeConverter

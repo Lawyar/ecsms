@@ -5,6 +5,7 @@ add_executable(database_library_tests
   SQLTypeIntegerTests.cpp
   SQLTypeTextTests.cpp
   SQLTypeByteArrayTests.cpp
+  SQLTypeRemoteFileIdTests.cpp
 
   TestSettings.h
 )
