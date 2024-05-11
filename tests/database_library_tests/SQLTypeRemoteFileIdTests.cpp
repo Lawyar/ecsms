@@ -18,7 +18,15 @@
 TEST(SQLTypeRemoteFileId, Test)
 {
 	auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+
+	// Откроем транзакцию перед началом работы с файлом
+	auto status = connection->BeginTransaction();
+	ASSERT_FALSE(status->HasError());
+
 	auto && remoteFile = connection->CreateRemoteFile();
+	auto objId = remoteFile->GetFileName();
+	ASSERT_FALSE(objId.empty());
+	
 	ASSERT_TRUE(remoteFile->Open({ FileOpenMode::Write }));
 
 	std::vector<char> bytes;
@@ -28,10 +36,10 @@ TEST(SQLTypeRemoteFileId, Test)
 	ASSERT_TRUE(remoteFile->WriteBytes(bytes));
 	remoteFile->Close();
 
-	auto objId = remoteFile->GetFileName();
-	ASSERT_FALSE(objId.empty());
+	// Закроем транзакцию, чтобы применить изменения
+	status = connection->CommitTransaction();
 
 	auto result = connection->Execute(utils::string::Format("SELECT lo_unlink({});", objId));
-	auto status = result->GetCurrentExecuteStatus();
-	ASSERT_FALSE(status->HasError());	
+	status = result->GetCurrentExecuteStatus();
+	ASSERT_FALSE(status->HasError());
 }

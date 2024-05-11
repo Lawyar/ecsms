@@ -133,63 +133,37 @@ IExecuteResultPtr PGConnection::Execute(const std::string & query)
 
 //------------------------------------------------------------------------------
 /**
-  Открыть транзакцию.
+  Открыть транзакцию
 */
 //---
 IExecuteResultStatusPtr PGConnection::BeginTransaction()
 {
-	IExecuteResultStatusPtr status;
-
-	std::lock_guard guard(m_mutex);
-	m_transactionCount += 1;
-	if (m_transactionCount == 1)
-	{
-		auto result = executeImpl("BEGIN;");
-		status = result
-			? result->GetCurrentExecuteStatus()
-			: InternalExecuteResultStatus::GetInternalError(ErrorMessages::IConnection_Execute);
-	}
-	else
-	{
-		status = InternalExecuteResultStatus::GetSuccessStatus(ResultStatus::OkWithoutData);
-	}
-
-	return status;
+	auto result = Execute("BEGIN;");
+	return result ? result->GetCurrentExecuteStatus() : nullptr;
 }
 
 
 //------------------------------------------------------------------------------
 /**
-  Закрыть транзакцию.
+  Закрыть транзакцию с применением изменений
 */
 //---
-IExecuteResultStatusPtr PGConnection::EndTransaction()
+IExecuteResultStatusPtr PGConnection::CommitTransaction()
 {
-	IExecuteResultStatusPtr status;
+	auto result = Execute("END;");
+	return result ? result->GetCurrentExecuteStatus() : nullptr;
+}
 
-	std::lock_guard guard(m_mutex);
-	m_transactionCount -= 1;
-	if (m_transactionCount == 0)
-	{
-		auto result = executeImpl("END;");
-		status = result
-			? result->GetCurrentExecuteStatus()
-			: InternalExecuteResultStatus::GetInternalError(ErrorMessages::IConnection_Execute);
-	}
-	else if (m_transactionCount < 0)
-	{
-		// Не должны закрывать транзакции при их отсутствии
-		m_transactionCount = 0;
-		status = InternalExecuteResultStatus::GetInternalError(
-			"IConnection::EndTransaction: "
-			"Attempt to close a transaction when there is no open transaction");
-	}
-	else
-	{
-		status = InternalExecuteResultStatus::GetSuccessStatus(ResultStatus::OkWithoutData);
-	}
 
-	return status;
+//------------------------------------------------------------------------------
+/**
+  Отменить транзакцию (без применения изменений)
+*/
+//---
+IExecuteResultStatusPtr PGConnection::RollbackTransaction()
+{
+	auto result = Execute("ROLLBACK;");
+	return result ? result->GetCurrentExecuteStatus() : nullptr;
 }
 
 

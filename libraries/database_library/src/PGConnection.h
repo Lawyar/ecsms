@@ -23,8 +23,6 @@ class PGConnection : public std::enable_shared_from_this<PGConnection>, public I
 	std::mutex m_mutex; ///< Мьютекс для корректной работы в многопоточной среде
 						///< (когда несколько потоков используют одно соединение)
 
-	int m_transactionCount = 0; ///< Счетчик открытых транзакций
-
 public:
 	/// Деструктор
 	virtual ~PGConnection() override;
@@ -54,22 +52,22 @@ public:
 	/// (только если команды BEGIN/COMMIT не включены явно в запрос, чтобы разделить его на несколько транзакций)
 	virtual IExecuteResultPtr Execute(const std::string & query) override;
 
-	/// Открыть транзакцию.
-	/// Метод увеличивает счетчик открытых транзакций.
-	/// Транзакция создается только тогда, когда значение счетчика меняется с 0 на 1.
+	/// Открыть транзакцию
 	virtual IExecuteResultStatusPtr BeginTransaction() override;
+	/// Закрыть транзакцию с применением изменений
+	virtual IExecuteResultStatusPtr CommitTransaction() override;
+	/// Отменить транзакцию (без применения изменений)
+	virtual IExecuteResultStatusPtr RollbackTransaction() override;
 
-	/// Закрыть транзакцию.
-	/// Метод уменьшает счетчик открытых транзакций.
-	/// Транзакция закрывается только тогда, когда значение счетчика меняется с 1 на 0.
-	virtual IExecuteResultStatusPtr EndTransaction() override;
 
 private:
 	/// Вспомогательный метод для реализации Execute. Не блокирует мьютекс.
 	IExecuteResultPtr executeImpl(const std::string & query);
 
 public:
-	/// Создать удаленный файл
+	/// Создать удаленный файл.
+	/// ПРЕДУПРЕЖЕДЕНИЕ: Последующая работа с удаленным файлом возможна только в рамках транзакции.
+	/// Рекомендуется также и создание файла производить в блоке транзакции.
 	virtual IFilePtr CreateRemoteFile() override;
 
 protected:

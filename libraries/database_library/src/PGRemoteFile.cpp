@@ -103,11 +103,6 @@ bool PGRemoteFile::Open(const std::vector<FileOpenMode> & openModes)
 	if (!connection)
 		return false;
 
-	// С объектом можно работать только в рамках транзакции
-	auto status = connection->BeginTransaction();
-	if (!status || status->HasError())
-		return false;
-
 	int fd = connection->LoOpen(m_objId, *flags);
 	if (fd == -1)
 		return false;
@@ -133,8 +128,7 @@ bool PGRemoteFile::Close()
 		return false;
 
 	int res = connection->LoClose(*m_fd);
-	auto status = connection->EndTransaction();
-	return res == 0 && status && !status->HasError();
+	return res == 0;
 }
 
 
