@@ -25,15 +25,23 @@ PGExecutorEAV::PGExecutorEAV(IConnectionPtr && connection,
 
 //------------------------------------------------------------------------------
 /**
-  Регистрация EAV-сущностей (создание необходимых таблиц для них)
+  Регистрация EAV-сущностей
+  \param createTables Требуется ли пытаться создать таблицы по зарегистрированным сущностям
 */
 //---
-IExecuteResultStatusPtr PGExecutorEAV::RegisterEntities(const EAVRegisterEntries & entries)
+IExecuteResultStatusPtr PGExecutorEAV::RegisterEntities(const EAVRegisterEntries & entries,
+	bool createTables)
 {
 	for (auto &&[entityName, _] : entries)
 		if (IsSQLKeyword(entityName))
 			return InternalExecuteResultStatus::GetInternalError(
 				utils::string::Format("The entity name ({}) matches the SQL keyword", entityName));
+
+	if (!createTables)
+	{
+		m_registerEntries = entries;
+		return InternalExecuteResultStatus::GetSuccessStatus(ResultStatus::OkWithoutData);
+	}
 
 	std::string query;
 	for (auto &&[entityName, attributeTypes] : entries)

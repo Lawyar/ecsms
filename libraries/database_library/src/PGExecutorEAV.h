@@ -22,8 +22,10 @@ public:
 	PGExecutorEAV(IConnectionPtr && connection, const ISQLTypeConverterPtr & sqlTypeConverter);
 
 public:
-	/// Регистрация EAV-сущностей (создание необходимых таблиц для них)
-	virtual IExecuteResultStatusPtr RegisterEntities(const EAVRegisterEntries & entries) override;
+	/// Регистрация EAV-сущностей
+	/// \param createTables Требуется ли пытаться создать таблицы по зарегистрированным сущностям
+	virtual IExecuteResultStatusPtr RegisterEntities(const EAVRegisterEntries & entries,
+		bool createTables) override;
 
 	/// Получить название таблицы сущностей
 	virtual std::string GetEntityTableName(const std::string & entityName) const override;

@@ -34,7 +34,8 @@
   Тогда в базе данных будут таблицы: user, user_attribute_text, user_attribute_timestamp, user_value_text, user_value_timestamp,
   product, product_attribute_text, product_attribute_numeric, product_value_text, product_value_numeric.
 
-  Метод RegisterEntities создает таблицы по указанным правилам.
+  Метод RegisterEntities может создать таблицы по указанным правилам, если передать в него
+  флаг createTables = true.
   Остальные методы не создают таблицы, а пользуются существующими, созданными этим методом.
   При отсутствии таких таблиц команды будут выдавать ошибку.
 */
@@ -90,8 +91,10 @@ public:
 	virtual ~IExecutorEAV() = default;
 
 public:
-	/// Регистрация EAV-сущностей (создание необходимых таблиц для них)
-	virtual IExecuteResultStatusPtr RegisterEntities(const EAVRegisterEntries & entries) = 0;
+	/// Регистрация EAV-сущностей
+	/// \param createTables Требуется ли пытаться создать таблицы по зарегистрированным сущностям
+	virtual IExecuteResultStatusPtr RegisterEntities(const EAVRegisterEntries & entries,
+		bool createTables) = 0;
 
 	/// Получить название таблицы сущностей
 	virtual std::string GetEntityTableName(const std::string & entityName) const = 0;
