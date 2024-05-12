@@ -191,6 +191,73 @@ TEST(Connection, ValidQueryReturnsValidResult) {
 }
 
 
+// Проверка открытия транзакции без корректного закрытия
+TEST(Connection, JustBeginTransaction)
+{
+	auto && databaseManager = GetDatabaseManager();
+
+	{
+		IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+
+		connection->Execute("CREATE TABLE JustBeginTransaction(id INTEGER PRIMARY KEY);");
+		// Не закрываем транзакцию
+	}
+
+	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
+	auto result = connection->Execute("SELECT * FROM JustBeginTransaction;");
+	ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
+}
+
+
+// Проверка открытия транзакции с последующим закрытием
+TEST(Connection, BeginCommitTransaction)
+{
+	auto && databaseManager = GetDatabaseManager();
+
+	{
+		IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+
+		connection->Execute("CREATE TABLE BeginCommitTransaction(id INTEGER PRIMARY KEY);");
+		
+		status = connection->CommitTransaction();
+		ASSERT_FALSE(status->HasError());
+	}
+
+	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
+	auto result = connection->Execute("SELECT * FROM BeginCommitTransaction;");
+	ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+
+	// Удалим таблицу
+	result = connection->Execute("DROP TABLE BeginCommitTransaction;");
+	ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+}
+
+
+// Проверка открытия транзакции с последующей отменой
+TEST(Connection, BeginRollbackTransaction)
+{
+	auto && databaseManager = GetDatabaseManager();
+
+	{
+		IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+
+		connection->Execute("CREATE TABLE BeginRollbackTransaction(id INTEGER PRIMARY KEY);");
+		status = connection->RollbackTransaction();
+		ASSERT_FALSE(status->HasError());
+	}
+
+	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
+	auto result = connection->Execute("SELECT * FROM BeginRollbackTransaction;");
+	ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
+}
+
+
 // Проверка GetColType для всех типов
 TEST(Connection, CanGetColType)
 {
