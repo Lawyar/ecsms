@@ -69,6 +69,8 @@ public:
 	/// ПРЕДУПРЕЖЕДЕНИЕ: Последующая работа с удаленным файлом возможна только в рамках транзакции.
 	/// Рекомендуется также и создание файла производить в блоке транзакции.
 	virtual IFilePtr CreateRemoteFile() override;
+	/// Удалить файл
+	virtual bool DeleteRemoteFile(const std::string & filename) override;
 
 protected:
 	// todo: IConnection::Execute перегрузка с бинарными данными
@@ -93,6 +95,8 @@ public: // Методы для работы с большими бинарными объектами
 
 	/// Создать большой бинарный объект
 	Oid LoCreate();
+	/// Удалить большой бинарный объект
+	int LoUnlink(Oid objId);
 	/// Открыть большой бинарный объект
 	int LoOpen(Oid objId, int mode);
 	/// Прочитать данные из большого бинарного объекта

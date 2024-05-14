@@ -534,3 +534,14 @@ TEST(Connection, CommandsAreExecutedTransactionally) {
 		ASSERT_TRUE(status->HasError());
 	}
 }
+
+
+/// Ïî âàëèäíîìó ñîåäèíåíèþ ìîæíî ñîçäàòü è óäàëèòü ôàéë
+TEST(Connection, ÑanCreateAndDeleteRemoteFileWithValidConnection)
+{
+	auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+	auto remoteFile = connection->CreateRemoteFile();
+	ASSERT_NE(remoteFile, nullptr);
+	ASSERT_FALSE(remoteFile->GetFileName().empty());
+	ASSERT_TRUE(connection->DeleteRemoteFile(remoteFile->GetFileName()));
+}

@@ -1,7 +1,6 @@
 #include "StringUtils.h"
 
 #include <algorithm>
-#include <cctype>
 
 //------------------------------------------------------------------------------
 /**

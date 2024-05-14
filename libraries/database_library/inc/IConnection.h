@@ -57,6 +57,8 @@ public:
 	/// ПРЕДУПРЕЖЕДЕНИЕ: Последующая работа с удаленным файлом возможна только в рамках транзакции.
 	/// Рекомендуется также и создание файла производить в блоке транзакции.
 	virtual IFilePtr CreateRemoteFile() = 0;
+	/// Удалить файл
+	virtual bool DeleteRemoteFile(const std::string & filename) = 0;
 
 protected:
 	// todo: IConnection::Execute перегрузка с бинарными данными

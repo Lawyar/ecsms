@@ -3,6 +3,8 @@
 #include <cassert>
 #include <cctype>
 
+#include <Utils/StringUtils.h>
+
 //------------------------------------------------------------------------------
 /**
   Конструктор
@@ -80,25 +82,8 @@ bool PGSQLTypeInteger::ReadFromSQL(std::string && value)
 		// Если в строке больше 100 символов, то она никак не поместится в int
 		return false;
 
-	const bool startsWithDigit = std::isdigit(static_cast<unsigned char>(value[0]));
-	const bool startsWithPlus = value[0] == '+';
-	const bool startsWithMinus = value[0] == '-';
-	if (!startsWithDigit && !startsWithPlus && !startsWithMinus)
-		// Число должно начинаться с цифры, плюса или минуса
-		return false;
-
-	try
-	{
-		std::size_t pos;
-		int intValue = std::stoi(value, &pos);
-		if (pos == value.size())
-			// Если не прочитали строку полностью, значит в конце осталось что-то, не относящееся к числу
-			m_value = intValue;
-
-	}
-	catch (...)
-	{
-	}
+	m_value = utils::string::StringToNumber(
+		static_cast<int(*)(const std::string&, size_t *, int)>(&std::stoi), value);
 
 	bool result = m_value.has_value();
 	if (result)

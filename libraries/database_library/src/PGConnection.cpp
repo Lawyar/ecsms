@@ -4,6 +4,7 @@
 #include <PGExecuteResult.h>
 #include <PGRemoteFile.h>
 #include <InternalExecuteResultStatus.h>
+#include <Utils/StringUtils.h>
 
 #include <cassert>
 
@@ -194,6 +195,23 @@ IFilePtr PGConnection::CreateRemoteFile()
 
 //------------------------------------------------------------------------------
 /**
+  Удалить удаленный файл
+*/
+//---
+bool PGConnection::DeleteRemoteFile(const std::string & filename)
+{
+	auto number = utils::string::StringToNumber(
+		static_cast<long(*)(const std::string&, size_t *, int)>(&std::stol), filename);
+	if (!number || *number < std::numeric_limits<Oid>::min() || *number > std::numeric_limits<Oid>::max())
+		return false;
+	
+	Oid oid = static_cast<Oid>(*number);
+	return LoUnlink(oid) == 1;
+}
+
+
+//------------------------------------------------------------------------------
+/**
   Выполнить запрос с аргументами
 */
 //---
@@ -245,6 +263,18 @@ Oid PGConnection::LoCreate()
 {
 	std::lock_guard guard(m_mutex);
 	return lo_create(m_conn, InvalidOid);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Удалить большой бинарный объект
+*/
+//---
+int PGConnection::LoUnlink(Oid objId)
+{
+	std::lock_guard guard(m_mutex);
+	return lo_unlink(m_conn, objId);
 }
 
 

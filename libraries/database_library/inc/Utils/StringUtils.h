@@ -1,11 +1,12 @@
 #pragma once
 
 #include <string>
-#include <string_view>
 #include <memory>
+#include <optional>
 
 #include <cstdio>
 #include <cassert>
+#include <cctype>
 
 #include <type_traits>
 
@@ -69,5 +70,42 @@ namespace utils::string
 		std::snprintf(buf.get(), size, format.c_str(), ToString(args).c_str() ...);
 		// Не берем '\0'
 		return std::string(buf.get(), buf.get() + size - 1);
+	}
+
+
+	//------------------------------------------------------------------------------
+	/**
+	  Перевести в число (с использованием стандартной функции std::sto*).
+	  \param standardFunctor Стандартная функция для конвертации числа.
+	  \param str Строка
+	  \param base Основание системы счисления
+	  \return Число при успешной конвертации, иначе std::nullopt.
+	          Конвертация считается выполненной успешно, если строка содержала только
+			  символы, относящиеся к числу, и её удалось привести к числу.
+	*/
+	//---
+	template <class Functor>
+	auto StringToNumber(Functor && standardFunctor, const std::string & str, int base = 10)
+		-> std::optional<decltype(standardFunctor(str, static_cast<size_t *>(nullptr), base))>
+	{
+		const bool startsWithDigit = std::isdigit(static_cast<unsigned char>(str[0]));
+		const bool startsWithPlus = str[0] == '+';
+		const bool startsWithMinus = str[0] == '-';
+		if (!startsWithDigit && !startsWithPlus && !startsWithMinus)
+			// Число должно начинаться с цифры, плюса или минуса
+			return std::nullopt;
+
+		try
+		{
+			std::size_t pos;
+			auto result = standardFunctor(str, &pos, base);
+			if (pos == str.size())
+				return result;
+		}
+		catch (...)
+		{
+		}
+
+		return std::nullopt;
 	}
 }
