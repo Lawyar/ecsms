@@ -545,3 +545,12 @@ TEST(Connection, ÑanCreateAndDeleteRemoteFileWithValidConnection)
 	ASSERT_FALSE(remoteFile->GetFileName().empty());
 	ASSERT_TRUE(connection->DeleteRemoteFile(remoteFile->GetFileName()));
 }
+
+
+/// Ïî íåâàëèäíîìó ñîåäèíåíèþ íåëüçÿ ñîçäàòü ôàéë
+TEST(Connection, ÑantCreateRemoteFileWithValidConnection)
+{
+	auto && connection = GetDatabaseManager().GetConnection("");
+	auto remoteFile = connection->CreateRemoteFile();
+	ASSERT_EQ(remoteFile, nullptr);
+}
