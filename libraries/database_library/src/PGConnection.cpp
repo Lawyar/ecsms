@@ -200,13 +200,32 @@ IFilePtr PGConnection::CreateRemoteFile()
 //---
 bool PGConnection::DeleteRemoteFile(const std::string & filename)
 {
-	auto number = utils::string::StringToNumber(
-		static_cast<long(*)(const std::string&, size_t *, int)>(&std::stol), filename);
-	if (!number || *number < std::numeric_limits<Oid>::min() || *number > std::numeric_limits<Oid>::max())
+	auto oid = fileNameToOid(filename);
+	if (!oid)
 		return false;
-	
-	Oid oid = static_cast<Oid>(*number);
-	return LoUnlink(oid) == 1;
+
+	return LoUnlink(*oid) == 1;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить удаленный файл
+  \return Если передано имя файла, которое не соответствует правилам именования, то возвращает nullptr.
+          В противном случае функция возвращает ненулевой указатель. При этом полученный файл может
+          не существовать - это проверяется на этапе его открытия методом IFile::Open.
+*/
+//---
+IFilePtr PGConnection::GetRemoteFile(const std::string & filename)
+{
+	if (!IsValid())
+		return nullptr;
+
+	auto oid = fileNameToOid(filename);
+	if (!oid)
+		return nullptr;
+
+	return std::make_shared<PGRemoteFile>(weak_from_this(), *oid);
 }
 
 
@@ -323,4 +342,20 @@ int PGConnection::LoClose(int fd)
 {
 	std::lock_guard guard(m_mutex);
 	return lo_close(m_conn, fd);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Перевод названия файла в числовой идентификатор
+*/
+//---
+std::optional<Oid> PGConnection::fileNameToOid(const std::string & filename)
+{
+	auto number = utils::string::StringToNumber(
+		static_cast<long(*)(const std::string&, size_t *, int)>(&std::stol), filename);
+	if (!number || *number < std::numeric_limits<Oid>::min() || *number > std::numeric_limits<Oid>::max())
+		return std::nullopt;
+
+	return static_cast<Oid>(*number);
 }

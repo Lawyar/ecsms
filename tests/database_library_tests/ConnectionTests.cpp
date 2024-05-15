@@ -554,3 +554,286 @@ TEST(Connection, СantCreateRemoteFileWithValidConnection)
 	auto remoteFile = connection->CreateRemoteFile();
 	ASSERT_EQ(remoteFile, nullptr);
 }
+
+
+/// По невалидному соединению нельзя получить файл
+TEST(Connection, CantGetExistingRemoteFileWithInvalidConnection)
+{
+	auto && connection = GetDatabaseManager().GetConnection("");
+	auto remoteFilePtr = connection->GetRemoteFile("100000");
+	ASSERT_EQ(remoteFilePtr, nullptr);
+}
+
+
+/// По валидному соединению можно получить существующий удаленный файл, и он доступен
+TEST(Connection, CanGetExistingRemoteFileWithValidConnection)
+{
+	std::string createdFileName;
+	{
+		// Создадим файл
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto remoteFile = connection->CreateRemoteFile();
+		createdFileName = remoteFile->GetFileName();
+		ASSERT_FALSE(createdFileName.empty());
+	}
+
+	{
+		// Попытаемся его получить
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto remoteFile = connection->GetRemoteFile(createdFileName);
+		ASSERT_EQ(remoteFile->GetFileName(), createdFileName);
+
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+
+		// Проверка на доступность
+		ASSERT_TRUE(remoteFile->Open());
+
+		status = connection->CommitTransaction();
+		ASSERT_FALSE(status->HasError());
+	}
+
+	{
+		// Удалим файл
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		ASSERT_TRUE(connection->DeleteRemoteFile(createdFileName));
+	}
+}
+
+
+/// По валидному соединению можно получить несуществующий удаленный файл, но он будет недоступен
+TEST(Connection, CanGetNonExistingRemoteFileWithValidConnection)
+{
+	{
+		// Попытаемся получить несуществующий файл
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto remoteFile = connection->GetRemoteFile("100000");
+		ASSERT_NE(remoteFile, nullptr);
+
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+
+		// Проверка на недоступность (раз файл не существует, то не должен открываться)
+		ASSERT_FALSE(remoteFile->Open());
+
+		status = connection->CommitTransaction();
+		ASSERT_FALSE(status->HasError());
+	}
+}
+
+
+/// По валидному соединению нельзя получить файл с невалидным именем
+TEST(Connection, CantGetRemoteFileWithInvalidName)
+{
+	auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+	auto remoteFilePtr = connection->GetRemoteFile("");
+	ASSERT_EQ(remoteFilePtr, nullptr);
+}
+
+
+/// Файл не создается, если транзакция оборвалась
+TEST(Connection, СantCreateRemoteFileWithFailedTransaction)
+{
+	std::string createdFileName;
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+		auto remoteFile = connection->CreateRemoteFile();
+		createdFileName = remoteFile->GetFileName();
+		// Обрыв транзакции
+	}
+
+	auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+	auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
+	auto status = connection->BeginTransaction();
+	ASSERT_FALSE(status->HasError());
+	ASSERT_FALSE(remoteFilePtr->Open());
+	status = connection->CommitTransaction();
+	ASSERT_FALSE(status->HasError());
+}
+
+
+/// Файл не создается, если транзакция была отменена
+TEST(Connection, СantCreateRemoteFileWithRollbackTransaction)
+{
+	std::string createdFileName;
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+		auto remoteFile = connection->CreateRemoteFile();
+		createdFileName = remoteFile->GetFileName();
+
+		status = connection->RollbackTransaction();
+		ASSERT_FALSE(status->HasError());
+	}
+
+	auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+	auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
+	auto status = connection->BeginTransaction();
+	ASSERT_FALSE(status->HasError());
+	ASSERT_FALSE(remoteFilePtr->Open());
+	status = connection->CommitTransaction();
+	ASSERT_FALSE(status->HasError());
+}
+
+
+/// Файл создается, если транзакция была зафиксирована
+TEST(Connection, СanCreateRemoteFileWithCommitTransaction)
+{
+	std::string createdFileName;
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+		auto remoteFile = connection->CreateRemoteFile();
+		createdFileName = remoteFile->GetFileName();
+
+		status = connection->CommitTransaction();
+		ASSERT_FALSE(status->HasError());
+	}
+
+	auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+	auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
+	auto status = connection->BeginTransaction();
+	ASSERT_FALSE(status->HasError());
+	ASSERT_TRUE(remoteFilePtr->Open());
+	status = connection->CommitTransaction();
+	ASSERT_FALSE(status->HasError());
+
+	// Удалим файл в конце
+	ASSERT_TRUE(connection->DeleteRemoteFile(createdFileName));
+}
+
+
+/// Файл не удаляется, если транзакция оборвалась
+TEST(Connection, СantDeleteRemoteFileWithFailedTransaction)
+{
+	std::string createdFileName;
+	{
+		// Создадим файл для удаления
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto remoteFilePtr = connection->CreateRemoteFile();
+		createdFileName = remoteFilePtr->GetFileName();
+	}
+
+	{
+		// Попытаемся его удалить в рамках транзакции
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+
+		connection->DeleteRemoteFile(createdFileName);
+		// Обрыв транзакции
+	}
+
+	{
+		// Проверим, что файл не удалился
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
+		ASSERT_EQ(remoteFilePtr->GetFileName(), createdFileName);
+
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+		
+		ASSERT_TRUE(remoteFilePtr->Open());
+		
+		status = connection->CommitTransaction();
+		ASSERT_FALSE(status->HasError());
+	}
+
+	{
+		// Удалим файл
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		ASSERT_TRUE(connection->DeleteRemoteFile(createdFileName));
+	}	
+}
+
+
+/// Файл не удаляется, если транзакция была отменена
+TEST(Connection, СantDeleteRemoteFileWithRollbackTransaction)
+{
+	std::string createdFileName;
+	{
+		// Создадим файл для удаления
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto remoteFilePtr = connection->CreateRemoteFile();
+		createdFileName = remoteFilePtr->GetFileName();
+	}
+
+	{
+		// Попытаемся его удалить в рамках транзакции
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+
+		connection->DeleteRemoteFile(createdFileName);
+		
+		// Отмена транзакции
+		status = connection->RollbackTransaction();
+		ASSERT_FALSE(status->HasError());
+	}
+
+	{
+		// Проверим, что файл не удалился
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
+		ASSERT_EQ(remoteFilePtr->GetFileName(), createdFileName);
+
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+
+		ASSERT_TRUE(remoteFilePtr->Open());
+
+		status = connection->CommitTransaction();
+		ASSERT_FALSE(status->HasError());
+	}
+
+	{
+		// Удалим файл
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		ASSERT_TRUE(connection->DeleteRemoteFile(createdFileName));
+	}
+}
+
+
+/// Файл удаляется, если транзакция была зафиксирована
+TEST(Connection, СanDeleteRemoteFileWithCommitTransaction)
+{
+	std::string createdFileName;
+	{
+		// Создадим файл для удаления
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto remoteFilePtr = connection->CreateRemoteFile();
+		createdFileName = remoteFilePtr->GetFileName();
+	}
+
+	{
+		// Попытаемся его удалить в рамках транзакции
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+
+		connection->DeleteRemoteFile(createdFileName);
+
+		// Фиксация транзакции
+		status = connection->CommitTransaction();
+		ASSERT_FALSE(status->HasError());
+	}
+
+	{
+		// Проверим, что файл удалился
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
+		ASSERT_EQ(remoteFilePtr->GetFileName(), createdFileName);
+
+		auto status = connection->BeginTransaction();
+		ASSERT_FALSE(status->HasError());
+
+		ASSERT_FALSE(remoteFilePtr->Open());
+
+		status = connection->CommitTransaction();
+		ASSERT_FALSE(status->HasError());
+	}
+}
