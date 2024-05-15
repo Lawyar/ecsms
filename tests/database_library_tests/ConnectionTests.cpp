@@ -537,7 +537,7 @@ TEST(Connection, CommandsAreExecutedTransactionally) {
 
 
 /// По валидному соединению можно создать и удалить файл
-TEST(Connection, СanCreateAndDeleteRemoteFileWithValidConnection)
+TEST(Connection, CanCreateAndDeleteRemoteFileWithValidConnection)
 {
 	auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 	auto remoteFile = connection->CreateRemoteFile();
@@ -548,7 +548,7 @@ TEST(Connection, СanCreateAndDeleteRemoteFileWithValidConnection)
 
 
 /// По невалидному соединению нельзя создать файл
-TEST(Connection, СantCreateRemoteFileWithValidConnection)
+TEST(Connection, CantCreateRemoteFileWithValidConnection)
 {
 	auto && connection = GetDatabaseManager().GetConnection("");
 	auto remoteFile = connection->CreateRemoteFile();
@@ -632,7 +632,7 @@ TEST(Connection, CantGetRemoteFileWithInvalidName)
 
 
 /// Файл не создается, если транзакция оборвалась
-TEST(Connection, СantCreateRemoteFileWithFailedTransaction)
+TEST(Connection, CantCreateRemoteFileWithFailedTransaction)
 {
 	std::string createdFileName;
 	{
@@ -655,7 +655,7 @@ TEST(Connection, СantCreateRemoteFileWithFailedTransaction)
 
 
 /// Файл не создается, если транзакция была отменена
-TEST(Connection, СantCreateRemoteFileWithRollbackTransaction)
+TEST(Connection, CantCreateRemoteFileWithRollbackTransaction)
 {
 	std::string createdFileName;
 	{
@@ -680,7 +680,7 @@ TEST(Connection, СantCreateRemoteFileWithRollbackTransaction)
 
 
 /// Файл создается, если транзакция была зафиксирована
-TEST(Connection, СanCreateRemoteFileWithCommitTransaction)
+TEST(Connection, CanCreateRemoteFileWithCommitTransaction)
 {
 	std::string createdFileName;
 	{
@@ -708,7 +708,7 @@ TEST(Connection, СanCreateRemoteFileWithCommitTransaction)
 
 
 /// Файл не удаляется, если транзакция оборвалась
-TEST(Connection, СantDeleteRemoteFileWithFailedTransaction)
+TEST(Connection, CantDeleteRemoteFileWithFailedTransaction)
 {
 	std::string createdFileName;
 	{
@@ -752,7 +752,7 @@ TEST(Connection, СantDeleteRemoteFileWithFailedTransaction)
 
 
 /// Файл не удаляется, если транзакция была отменена
-TEST(Connection, СantDeleteRemoteFileWithRollbackTransaction)
+TEST(Connection, CantDeleteRemoteFileWithRollbackTransaction)
 {
 	std::string createdFileName;
 	{
@@ -799,7 +799,7 @@ TEST(Connection, СantDeleteRemoteFileWithRollbackTransaction)
 
 
 /// Файл удаляется, если транзакция была зафиксирована
-TEST(Connection, СanDeleteRemoteFileWithCommitTransaction)
+TEST(Connection, CanDeleteRemoteFileWithCommitTransaction)
 {
 	std::string createdFileName;
 	{

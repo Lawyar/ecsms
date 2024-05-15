@@ -33,4 +33,8 @@ public:
 	///              Если чтение прошло успешно, то строка будет очищена, иначе останется неизменной.
 	/// \return Валидно ли прочитанное значение
 	virtual bool ReadFromSQL(std::string && value) override;
+
+private:
+	/// Строка валидна для установки в объект
+	static bool isValid(const std::string & str);
 };

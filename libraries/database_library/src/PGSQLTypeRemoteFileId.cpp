@@ -1,6 +1,7 @@
 #include "PGSQLTypeRemoteFileId.h"
 
 #include <Utils/StringUtils.h>
+#include <libpq-fe.h>
 
 //------------------------------------------------------------------------------
 /**
@@ -8,7 +9,7 @@
 */
 //---
 PGSQLTypeRemoteFileId::PGSQLTypeRemoteFileId(const std::string & id)
-	: m_id(id)
+	: m_id(isValid(id) ? std::make_optional(id) : std::nullopt)
 {
 }
 
@@ -54,11 +55,27 @@ const std::string & PGSQLTypeRemoteFileId::GetTypeName() const
 //---
 bool PGSQLTypeRemoteFileId::ReadFromSQL(std::string && value)
 {
-	if (value.empty())
+	m_id = std::nullopt;
+	if (isValid(value))
+		m_id = std::move(value);
+	return m_id.has_value();
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Строка валидна для установки в объект
+*/
+//---
+bool PGSQLTypeRemoteFileId::isValid(const std::string & str)
+{
+	if (str.empty() || !utils::string::HasOnlyDigits(str))
 		return false;
 
-	if (utils::string::HasOnlyDigits(value))
-		m_id = value;
+	auto number = utils::string::StringToNumber(
+		static_cast<long(*)(const std::string&, size_t *, int)>(&std::stol), str);
+	if (!number || *number < std::numeric_limits<Oid>::min() || *number > std::numeric_limits<Oid>::max())
+		return false;
 
-	return m_id.has_value();
+	return true;
 }
