@@ -335,6 +335,42 @@ int PGConnection::LoWrite(int fd, const char * data, size_t len)
 
 //------------------------------------------------------------------------------
 /**
+  Переместиться в большом бинарном объекте
+*/
+//---
+pg_int64 PGConnection::LoLseek64(int fd, pg_int64 offset, int whence)
+{
+	std::lock_guard guard(m_mutex);
+	return lo_lseek64(m_conn, fd, offset, whence);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить текущее положение в большом бинарном объекте
+*/
+//---
+pg_int64 PGConnection::LoTell64(int fd)
+{
+	std::lock_guard guard(m_mutex);
+	return lo_tell64(m_conn, fd);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Усечь (или расширить) большой бинарный объект
+*/
+//---
+pg_int64 PGConnection::LoTruncate64(int fd, pg_int64 len)
+{
+	std::lock_guard guard(m_mutex);
+	return lo_truncate64(m_conn, fd, len);
+}
+
+
+//------------------------------------------------------------------------------
+/**
   Закрыть большой бинарный объект
 */
 //---

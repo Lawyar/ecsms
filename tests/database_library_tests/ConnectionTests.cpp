@@ -587,7 +587,7 @@ TEST(Connection, CanGetExistingRemoteFileWithValidConnection)
 		ASSERT_FALSE(status->HasError());
 
 		// Проверка на доступность
-		ASSERT_TRUE(remoteFile->Open());
+		ASSERT_TRUE(remoteFile->Open(FileOpenMode::Read));
 
 		status = connection->CommitTransaction();
 		ASSERT_FALSE(status->HasError());
@@ -614,7 +614,7 @@ TEST(Connection, CanGetNonExistingRemoteFileWithValidConnection)
 		ASSERT_FALSE(status->HasError());
 
 		// Проверка на недоступность (раз файл не существует, то не должен открываться)
-		ASSERT_FALSE(remoteFile->Open());
+		ASSERT_FALSE(remoteFile->Open(FileOpenMode::Read));
 
 		status = connection->CommitTransaction();
 		ASSERT_FALSE(status->HasError());
@@ -648,7 +648,7 @@ TEST(Connection, CantCreateRemoteFileWithFailedTransaction)
 	auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
 	auto status = connection->BeginTransaction();
 	ASSERT_FALSE(status->HasError());
-	ASSERT_FALSE(remoteFilePtr->Open());
+	ASSERT_FALSE(remoteFilePtr->Open(FileOpenMode::Read));
 	status = connection->CommitTransaction();
 	ASSERT_FALSE(status->HasError());
 }
@@ -673,7 +673,7 @@ TEST(Connection, CantCreateRemoteFileWithRollbackTransaction)
 	auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
 	auto status = connection->BeginTransaction();
 	ASSERT_FALSE(status->HasError());
-	ASSERT_FALSE(remoteFilePtr->Open());
+	ASSERT_FALSE(remoteFilePtr->Open(FileOpenMode::Read));
 	status = connection->CommitTransaction();
 	ASSERT_FALSE(status->HasError());
 }
@@ -698,7 +698,7 @@ TEST(Connection, CanCreateRemoteFileWithCommitTransaction)
 	auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
 	auto status = connection->BeginTransaction();
 	ASSERT_FALSE(status->HasError());
-	ASSERT_TRUE(remoteFilePtr->Open());
+	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 	status = connection->CommitTransaction();
 	ASSERT_FALSE(status->HasError());
 
@@ -737,7 +737,7 @@ TEST(Connection, CantDeleteRemoteFileWithFailedTransaction)
 		auto status = connection->BeginTransaction();
 		ASSERT_FALSE(status->HasError());
 		
-		ASSERT_TRUE(remoteFilePtr->Open());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 		
 		status = connection->CommitTransaction();
 		ASSERT_FALSE(status->HasError());
@@ -784,7 +784,7 @@ TEST(Connection, CantDeleteRemoteFileWithRollbackTransaction)
 		auto status = connection->BeginTransaction();
 		ASSERT_FALSE(status->HasError());
 
-		ASSERT_TRUE(remoteFilePtr->Open());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 
 		status = connection->CommitTransaction();
 		ASSERT_FALSE(status->HasError());
@@ -831,7 +831,7 @@ TEST(Connection, CanDeleteRemoteFileWithCommitTransaction)
 		auto status = connection->BeginTransaction();
 		ASSERT_FALSE(status->HasError());
 
-		ASSERT_FALSE(remoteFilePtr->Open());
+		ASSERT_FALSE(remoteFilePtr->Open(FileOpenMode::Read));
 
 		status = connection->CommitTransaction();
 		ASSERT_FALSE(status->HasError());

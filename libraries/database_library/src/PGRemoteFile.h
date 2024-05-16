@@ -16,6 +16,7 @@ class PGRemoteFile : public IFile
 	std::weak_ptr<PGConnection> m_connection; ///< Соединение
 	Oid m_objId; ///< Идентификатор большого бинарного объекта
 	std::optional<int> m_fd; ///< Дескриптор открытого большого бинарного объекта
+	std::optional<FileOpenMode> m_openMode; ///< Режим открытия файла (если std::nullopt, то файл не открыт)
 
 public:
 	/// Конструктор
@@ -36,11 +37,11 @@ public:
 	/// Получить имя файла (для большого бинарного объекта имя - это идентификатор)
 	virtual std::string GetFileName() const override;
 	/// Открыть файл
-	virtual bool Open(const std::vector<FileOpenMode> & openModes) override;
+	virtual bool Open(FileOpenMode openMode) override;
 	/// Закрыть файл
 	virtual bool Close() override;
 	/// Попытаться прочесть байты
 	virtual std::optional<std::vector<char>> ReadBytes(size_t count) override;
 	/// Попытаться записать байты
-	virtual bool WriteBytes(const std::vector<char> & data) override;
+	virtual std::optional<size_t> WriteBytes(const std::vector<char> & data) override;
 };

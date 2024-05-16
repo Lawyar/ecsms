@@ -117,6 +117,12 @@ public: // Методы для работы с большими бинарными объектами
 	int LoRead(int fd, char * buffer, size_t len);
 	/// Записать данные в большой бинарный объект
 	int LoWrite(int fd, const char * data, size_t len);
+	/// Переместиться в большом бинарном объекте
+	pg_int64 LoLseek64(int fd, pg_int64 offset, int whence);
+	/// Получить текущее положение в большом бинарном объекте
+	pg_int64 LoTell64(int fd);
+	/// Усечь (или расширить) большой бинарный объект
+	pg_int64 LoTruncate64(int fd, pg_int64 len);
 	/// Закрыть большой бинарный объект
 	int LoClose(int fd);
 

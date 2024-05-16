@@ -47,44 +47,8 @@ std::string PGRemoteFile::GetFileName() const
 static std::optional<int> FileOpenModeToFlag(FileOpenMode mode)
 {
 	std::optional<int> flag;
-	switch (mode)
-	{
-	case FileOpenMode::Read:
-		flag = INV_READ;
-		break;
-	case FileOpenMode::Write:
-		flag = INV_WRITE;
-		break;
-	default:
-		// Неизвестный тип
-		assert(false);
-		break;
-	}
+	
 	return flag;
-}
-
-
-//------------------------------------------------------------------------------
-/**
-  Перевести массив FileOpenMode в набор флагов, который принимает libpq
-*/
-//---
-static std::optional<int> FileOpenModesToFlags(const std::vector<FileOpenMode> modes)
-{
-	if (modes.empty())
-		return std::nullopt;
-
-	int flags = 0;
-	for (auto && mode : modes)
-	{
-		std::optional<int> flag = FileOpenModeToFlag(mode);
-		if (!flag)
-			return std::nullopt;
-
-		flags |= *flag;
-	}
-
-	return flags;
 }
 
 
@@ -93,21 +57,55 @@ static std::optional<int> FileOpenModesToFlags(const std::vector<FileOpenMode> m
   Открыть файл
 */
 //---
-bool PGRemoteFile::Open(const std::vector<FileOpenMode> & openModes)
+bool PGRemoteFile::Open(FileOpenMode openMode)
 {
-	std::optional<int> flags = FileOpenModesToFlags(openModes);
-	if (!flags)
+	int flag = 0;
+	switch (openMode)
+	{
+	case FileOpenMode::Read:
+		flag = INV_READ;
+		break;
+	case FileOpenMode::Write:
+		flag = INV_WRITE;
+		break;
+	case FileOpenMode::Append:
+		flag = INV_WRITE;
+		break;
+	default:
+		// Неизвестный тип
+		assert(false);
 		return false;
+	}
 
 	auto connection = m_connection.lock();
 	if (!connection)
 		return false;
 
-	int fd = connection->LoOpen(m_objId, *flags);
+	int fd = connection->LoOpen(m_objId, flag);
 	if (fd == -1)
 		return false;
 
+	bool errorOccured = false; // случилась ошибка
+	if (openMode == FileOpenMode::Write)
+	{
+		// Если файл открывается на запись, очистим его содержимое
+		errorOccured = (connection->LoTruncate64(fd, 0) == -1);
+	}
+	else if (openMode == FileOpenMode::Append)
+	{
+		// Если файл открывается на дозапись, переместим курсор в конец файла
+		errorOccured = (connection->LoLseek64(fd, 0, SEEK_END) == -1);
+	}
+
+	if (errorOccured)
+	{
+		// Если случилась ошибка, закроем файл
+		connection->LoClose(fd);
+		return false;
+	}
+
 	m_fd = fd;
+	m_openMode = openMode;
 	return true;
 }
 
@@ -127,8 +125,12 @@ bool PGRemoteFile::Close()
 	if (!connection)
 		return false;
 
-	int res = connection->LoClose(*m_fd);
-	return res == 0;
+	if (connection->LoClose(*m_fd) != 0)
+		return false;
+
+	m_fd = std::nullopt;
+	m_openMode = std::nullopt;
+	return true;
 }
 
 
@@ -139,13 +141,21 @@ bool PGRemoteFile::Close()
 //---
 std::optional<std::vector<char>> PGRemoteFile::ReadBytes(size_t count)
 {
-	if (!m_fd)
+	if (!m_fd || !m_openMode)
+		// Файл не открыт
+		return std::nullopt;
+
+	if (*m_openMode != FileOpenMode::Read)
+		// Файл не открыт на чтение
 		return std::nullopt;
 
 	auto connection = m_connection.lock();
 	if (!connection)
 		return std::nullopt;
 
+	// todo: Чтение порциями
+	static_assert(false);
+	
 	std::vector<char> result(count);
 	int readBytesCount = connection->LoRead(*m_fd, result.data(), count);
 	if (readBytesCount < 0)
@@ -161,18 +171,39 @@ std::optional<std::vector<char>> PGRemoteFile::ReadBytes(size_t count)
   Записать байты
 */
 //---
-bool PGRemoteFile::WriteBytes(const std::vector<char> & data)
+std::optional<size_t> PGRemoteFile::WriteBytes(const std::vector<char> & data)
 {
-	if (!m_fd)
-		return false;
+	if (!m_fd || !m_openMode)
+		// Файл не открыт
+		return std::nullopt;
+
+	if (*m_openMode != FileOpenMode::Write && *m_openMode != FileOpenMode::Append)
+		// Файл не открыт на запись/дозапись
+		return std::nullopt;
 
 	auto connection = m_connection.lock();
 	if (!connection)
-		return false;
+		return std::nullopt;
 
-	int writtenBytesCount = connection->LoWrite(*m_fd, data.data(), data.size());
-	if (writtenBytesCount < 0)
-		return false;
+	// Количество байт, отправляемых за раз (256 МБ)
+	static constexpr const size_t c_maxPackageSize = 256'000'000ULL;
 
-	return true;
+	// Количество записанных байтов
+	size_t writtenBytesCount = 0;
+	for (size_t currentPos = 0; currentPos < data.size(); currentPos += c_maxPackageSize)
+	{
+		// Размер текущего отправляемого пакета
+		size_t currentPackageSize = currentPos + c_maxPackageSize <= data.size()
+			? c_maxPackageSize : data.size() - currentPos;
+
+		int writtenBytesCountInCurrentPackage = connection->LoWrite(*m_fd, &data[currentPos],
+			currentPackageSize);
+		if (writtenBytesCount < 0)
+			// Произошла ошибка, вернем количество успешно записанных байтов
+			return writtenBytesCount;
+
+		writtenBytesCount += static_cast<size_t>(writtenBytesCountInCurrentPackage);
+	}
+
+	return writtenBytesCount;
 }
