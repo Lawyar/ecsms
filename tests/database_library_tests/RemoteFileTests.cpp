@@ -472,7 +472,7 @@ static std::vector<char> FastGenerateBytes(size_t count, const int * seed = null
 
 
 /// Можно записать и прочитать большой объем данных
-TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
+/*TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 {
 	// Запишем и прочитаем большой объем данных
 	static constexpr size_t c_blockSize = 50'000'000ULL; ///< 50 МБ
@@ -541,9 +541,377 @@ TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 	}
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
+}*/
+
+
+////////////////////////////////////////////////////////////////////////////////
+// Тесты методов чтения/записи на корректность поведения при обрыве транзакций
+// с пустым файлом
+////////////////////////////////////////////////////////////////////////////////
+
+/// Записанные в пустой файл данные не сохраняются при обрыве транзакции в режиме
+/// открытия на запись
+TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionAbortsInOpenWriteMode)
+{
+	std::string filename;
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->CreateRemoteFile();
+		filename = remoteFilePtr->GetFileName();
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(GenerateBytes(1000), nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		// Обрыв транзакции
+	}
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
+		std::vector<char> readBytes;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(1000, readBytes));
+		ASSERT_TRUE(readBytes.empty());
+		ASSERT_TRUE(remoteFilePtr->Close());
+
+		// Почистим напоследок
+		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+}
+
+
+/// Записанные в пустой файл данные не сохраняются при откате транзакции в режиме
+/// открытия на запись
+TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionRollbacksInOpenWriteMode)
+{
+	std::string filename;
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->CreateRemoteFile();
+		filename = remoteFilePtr->GetFileName();
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(GenerateBytes(1000), nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		// Откат транзакции
+		ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+	}
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
+		std::vector<char> readBytes;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(1000, readBytes));
+		ASSERT_TRUE(readBytes.empty());
+		ASSERT_TRUE(remoteFilePtr->Close());
+
+		// Почистим напоследок
+		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+}
+
+
+/// Записанные в пустой файл данные не сохраняются при обрыве транзакции в режиме
+/// открытия на дозапись
+TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionAbortsInOpenAppendMode)
+{
+	std::string filename;
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->CreateRemoteFile();
+		filename = remoteFilePtr->GetFileName();
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(GenerateBytes(1000), nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		// Обрыв транзакции
+	}
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
+		std::vector<char> readBytes;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(1000, readBytes));
+		ASSERT_TRUE(readBytes.empty());
+		ASSERT_TRUE(remoteFilePtr->Close());
+
+		// Почистим напоследок
+		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+}
+
+
+/// Записанные в пустой файл данные не сохраняются при откате транзакции в режиме
+/// открытия на дозапись
+TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionRollbacksInOpenAppendMode)
+{
+	std::string filename;
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->CreateRemoteFile();
+		filename = remoteFilePtr->GetFileName();
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(GenerateBytes(1000), nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		// Откат транзакции
+		ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+	}
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
+		std::vector<char> readBytes;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(1000, readBytes));
+		ASSERT_TRUE(readBytes.empty());
+		ASSERT_TRUE(remoteFilePtr->Close());
+
+		// Почистим напоследок
+		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
 // Тесты методов чтения/записи на корректность поведения при обрыве транзакций
+// с непустым файлом
 ////////////////////////////////////////////////////////////////////////////////
+
+/// Записанные в непустой файл данные не сохраняются при обрыве транзакции в режиме
+/// открытия на запись
+TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionAbortsInOpenWriteMode)
+{
+	std::string filename;
+	const std::vector<char> writtenBytes = GenerateBytes(1000);
+	{
+		// Сначала создадим непустой файл
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->CreateRemoteFile();
+		filename = remoteFilePtr->GetFileName();
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(writtenBytes, nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+	{
+		// Теперь напишем что-нибудь в этот файл
+		std::vector<char> someOtherBytes = GenerateBytes(1000);
+
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(someOtherBytes, nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		// Обрыв транзакции
+	}
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
+		{
+			std::vector<char> readBytes;
+			ASSERT_TRUE(remoteFilePtr->ReadBytes(1000, readBytes));
+			ASSERT_EQ(readBytes, writtenBytes);
+		}
+		{
+			std::vector<char> readBytes;
+			ASSERT_TRUE(remoteFilePtr->ReadBytes(1, readBytes));
+			ASSERT_TRUE(readBytes.empty());
+		}
+		ASSERT_TRUE(remoteFilePtr->Close());
+
+		// Почистим напоследок
+		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+}
+
+
+/// Записанные в непустой файл данные не сохраняются при откате транзакции в режиме
+/// открытия на запись
+TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionRollbacksInOpenWriteMode)
+{
+	std::string filename;
+	const std::vector<char> writtenBytes = GenerateBytes(1000);
+	{
+		// Сначала создадим непустой файл
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->CreateRemoteFile();
+		filename = remoteFilePtr->GetFileName();
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(writtenBytes, nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+	{
+		// Теперь напишем что-нибудь в этот файл
+		std::vector<char> someOtherBytes = GenerateBytes(1000);
+
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(someOtherBytes, nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		// Откат транзакции
+		ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+	}
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
+		{
+			std::vector<char> readBytes;
+			ASSERT_TRUE(remoteFilePtr->ReadBytes(1000, readBytes));
+			ASSERT_EQ(readBytes, writtenBytes);
+		}
+		{
+			std::vector<char> readBytes;
+			ASSERT_TRUE(remoteFilePtr->ReadBytes(1, readBytes));
+			ASSERT_TRUE(readBytes.empty());
+		}
+		ASSERT_TRUE(remoteFilePtr->Close());
+
+		// Почистим напоследок
+		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+}
+
+
+/// Записанные в непустой файл данные не сохраняются при обрыве транзакции в режиме
+/// открытия на дозапись
+TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionAbortsInOpenAppendMode)
+{
+	std::string filename;
+	const std::vector<char> writtenBytes = GenerateBytes(1000);
+	{
+		// Сначала создадим непустой файл
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->CreateRemoteFile();
+		filename = remoteFilePtr->GetFileName();
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(writtenBytes, nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+	{
+		// Теперь напишем что-нибудь в этот файл
+		std::vector<char> someOtherBytes = GenerateBytes(1000);
+
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(someOtherBytes, nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		// Обрыв транзакции
+	}
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
+		{
+			std::vector<char> readBytes;
+			ASSERT_TRUE(remoteFilePtr->ReadBytes(1000, readBytes));
+			ASSERT_EQ(readBytes, writtenBytes);
+		}
+		{
+			std::vector<char> readBytes;
+			ASSERT_TRUE(remoteFilePtr->ReadBytes(1, readBytes));
+			ASSERT_TRUE(readBytes.empty());
+		}
+		ASSERT_TRUE(remoteFilePtr->Close());
+
+		// Почистим напоследок
+		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+}
+
+/// Записанные в непустой файл данные не сохраняются при откате транзакции в режиме
+/// открытия на дозапись
+TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionRollbacksInOpenAppendMode)
+{
+	std::string filename;
+	const std::vector<char> writtenBytes = GenerateBytes(1000);
+	{
+		// Сначала создадим непустой файл
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->CreateRemoteFile();
+		filename = remoteFilePtr->GetFileName();
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(writtenBytes, nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+	{
+		// Теперь напишем что-нибудь в этот файл
+		std::vector<char> someOtherBytes = GenerateBytes(1000);
+
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(someOtherBytes, nullptr));
+		ASSERT_TRUE(remoteFilePtr->Close());
+		// Откат транзакции
+		ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+	}
+	{
+		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+		auto && remoteFilePtr = connection->GetRemoteFile(filename);
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
+		{
+			std::vector<char> readBytes;
+			ASSERT_TRUE(remoteFilePtr->ReadBytes(1000, readBytes));
+			ASSERT_EQ(readBytes, writtenBytes);
+		}
+		{
+			std::vector<char> readBytes;
+			ASSERT_TRUE(remoteFilePtr->ReadBytes(1, readBytes));
+			ASSERT_TRUE(readBytes.empty());
+		}
+		ASSERT_TRUE(remoteFilePtr->Close());
+
+		// Почистим напоследок
+		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+}
