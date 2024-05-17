@@ -19,7 +19,7 @@ public:
 	virtual IConnectionPtr GetConnection(const std::string & connectionInfo) override;
 
 	/// Получить исполнитель EAV-запросов
-	virtual IExecutorEAVPtr GetExecutorEAV(IConnectionPtr && connection) override;
+	virtual IExecutorEAVPtr GetExecutorEAV(const IConnectionPtr &  connection) override;
 
 	/// Получить конвертер SQL-типов
 	virtual ISQLTypeConverterPtr GetSQLTypeConverter() const override;

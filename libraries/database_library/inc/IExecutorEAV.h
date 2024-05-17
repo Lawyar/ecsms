@@ -155,8 +155,6 @@ public: // Методы для получения данных
 	/// Получить значения всех атрибутов сущности.
 	virtual IExecuteResultStatusPtr GetAttributeValues(const EntityName & entityName,
 		EntityId entityId, std::vector<AttrValue> & attrValues) = 0;
-	/// Получить все записи обо всех сущностях
-	virtual IExecuteResultPtr GetEntries(const EntityName & entityName) = 0;
 };
 
 /// Тип указателя на исполнитель EAV-запросов

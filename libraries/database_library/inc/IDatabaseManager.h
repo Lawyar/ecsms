@@ -23,7 +23,7 @@ public:
 	virtual IConnectionPtr GetConnection(const std::string & connectionInfo) = 0;
 
 	/// Получить исполнитель EAV-запросов
-	virtual IExecutorEAVPtr GetExecutorEAV(IConnectionPtr && connection) = 0;
+	virtual IExecutorEAVPtr GetExecutorEAV(const IConnectionPtr & connection) = 0;
 
 	/// Получить конвертер SQL-типов
 	virtual ISQLTypeConverterPtr GetSQLTypeConverter() const = 0;

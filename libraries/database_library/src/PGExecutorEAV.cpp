@@ -15,9 +15,9 @@
   Конструктор
 */
 //---
-PGExecutorEAV::PGExecutorEAV(IConnectionPtr && connection,
+PGExecutorEAV::PGExecutorEAV(const IConnectionPtr & connection,
 	const ISQLTypeConverterPtr & sqlTypeConverter)
-	: m_connection(std::move(connection))
+	: m_connection(connection)
 	, m_sqlTypeConverter(sqlTypeConverter)
 {
 }
@@ -682,12 +682,6 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & ent
 	}
 
 	return InternalExecuteResultStatus::GetSuccessStatus();
-}
-
-
-IExecuteResultPtr PGExecutorEAV::GetEntries(const EntityName & entityName)
-{
-	return IExecuteResultPtr();
 }
 
 

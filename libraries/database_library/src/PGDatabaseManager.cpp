@@ -35,12 +35,12 @@ IConnectionPtr PGDatabaseManager::GetConnection(const std::string & connectionIn
   Получить исполнитель EAV-запросов
 */
 //---
-IExecutorEAVPtr PGDatabaseManager::GetExecutorEAV(IConnectionPtr && connection)
+IExecutorEAVPtr PGDatabaseManager::GetExecutorEAV(const IConnectionPtr &  connection)
 {
 	if (!connection || !connection->IsValid())
 		return nullptr;
 
-	return std::make_shared<PGExecutorEAV>(std::move(connection), GetSQLTypeConverter());
+	return std::make_shared<PGExecutorEAV>(connection, GetSQLTypeConverter());
 }
 
 

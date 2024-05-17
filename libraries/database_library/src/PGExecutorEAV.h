@@ -19,7 +19,7 @@ class PGExecutorEAV : public IExecutorEAV
 
 public:
 	/// Конструктор
-	PGExecutorEAV(IConnectionPtr && connection, const ISQLTypeConverterPtr & sqlTypeConverter);
+	PGExecutorEAV(const IConnectionPtr & connection, const ISQLTypeConverterPtr & sqlTypeConverter);
 
 public:
 	/// Регистрация EAV-сущностей
@@ -125,8 +125,6 @@ public: // Методы для получения данных
 	/// Получить значения всех атрибутов сущности.
 	virtual IExecuteResultStatusPtr GetAttributeValues(const EntityName & entityName,
 		EntityId entityId, std::vector<AttrValue> & attrValues) override;
-	/// Получить все записи обо всех сущностях
-	virtual IExecuteResultPtr GetEntries(const EntityName & entityName) override;
 
 private:
 	/// Получить команду "получить значение по идентификатору сущности и названию атрибута"
