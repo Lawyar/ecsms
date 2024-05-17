@@ -372,19 +372,44 @@ TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWith
 }
 
 
+//------------------------------------------------------------------------------
+/**
+  Сгенерировать быстро массив байтов
+*/
+//---
+static std::vector<char> FastGenerateBytes(size_t count, const int * seed = nullptr)
+{
+	static int next = 0;
+	if (seed)
+		next = *seed;
+
+	next = next * 1103515245 + 12345;
+
+	// Дополним до границы int
+	std::vector<char> arr(count % sizeof(int) == 0 ? count : count + sizeof(int) - count % sizeof(int));
+	for (size_t i = 0; i < count / 4; ++i)
+	{
+		reinterpret_cast<int*>(arr.data())[i] = (i + 1) * next;
+	}
+	arr.resize(count);
+
+	return arr;
+}
+
+
 /// Можно записать и прочитать большой объем данных
 TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 {
 	// Запишем и прочитаем большой объем данных
-	static constexpr size_t c_blockSize = 200'000'000ULL; ///< 200 МБ
+	static constexpr size_t c_blockSize = 50'000'000ULL; ///< 50 МБ
 	static constexpr size_t c_blocksCount = 4; ///< 4 блока
 
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 
 	// Обновим семя рандома
-	time_t currentTime = time(nullptr);
-	srand(currentTime);
+	const int seed = 0;
+	FastGenerateBytes(0, &seed);
 
 	clock_t generateClocks = 0; ///< Время, потраченное на генерацию случайных чисел
 	clock_t writeClocks = 0; ///< Время, потраченное на запись
@@ -395,7 +420,7 @@ TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 	for (size_t blockIndex = 0; blockIndex < c_blocksCount; ++blockIndex)
 	{
 		start = clock();
-		auto bytes = GenerateBytes(c_blockSize);
+		auto bytes = FastGenerateBytes(c_blockSize);
 		end = clock();
 		generateClocks += end - start;
 
@@ -407,13 +432,13 @@ TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 	ASSERT_TRUE(remoteFilePtr->Close());
 
 	// Прочитаем байты
-	srand(currentTime); // зададим то же семя рандома, чтобы генерировать такие же массивы
+	FastGenerateBytes(0, &seed); // зададим то же семя рандома, чтобы генерировать такие же массивы
 
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 	for (size_t blockIndex = 0; blockIndex < c_blocksCount; ++blockIndex)
 	{
 		start = clock();
-		auto bytes = GenerateBytes(c_blockSize);
+		auto bytes = FastGenerateBytes(c_blockSize);
 		end = clock();
 		generateClocks += end - start;
 

@@ -153,16 +153,30 @@ std::optional<std::vector<char>> PGRemoteFile::ReadBytes(size_t count)
 	if (!connection)
 		return std::nullopt;
 
-	// todo: Чтение порциями
-	static_assert(false);
-	
-	std::vector<char> result(count);
-	int readBytesCount = connection->LoRead(*m_fd, result.data(), count);
-	if (readBytesCount < 0)
-		return std::nullopt;
+	// Количество байт, читаемых за раз (16 МБ)
+	static constexpr const size_t c_maxPackageSize = 16'000'000ULL;
 
-	result.resize(static_cast<size_t>(readBytesCount));
-	return result;
+	std::vector<char> data(count);
+
+	// Количество записанных байтов
+	size_t readBytesCount = 0;
+	for (size_t currentPos = 0; currentPos < data.size(); currentPos += c_maxPackageSize)
+	{
+		// Размер текущего читаемого пакета
+		size_t currentPackageSize = c_maxPackageSize <= data.size() - currentPos
+			? c_maxPackageSize : data.size() - currentPos;
+
+		int readBytesCountInCurrentPackage = connection->LoRead(*m_fd, &data[currentPos],
+			currentPackageSize);
+		if (readBytesCountInCurrentPackage < 0)
+			// Произошла ошибка, вернем количество успешно прочитанных байтов
+			break;
+
+		readBytesCount += static_cast<size_t>(readBytesCountInCurrentPackage);
+	}
+
+	data.resize(static_cast<size_t>(readBytesCount));
+	return data;
 }
 
 
@@ -185,15 +199,15 @@ std::optional<size_t> PGRemoteFile::WriteBytes(const std::vector<char> & data)
 	if (!connection)
 		return std::nullopt;
 
-	// Количество байт, отправляемых за раз (256 МБ)
-	static constexpr const size_t c_maxPackageSize = 256'000'000ULL;
+	// Количество байт, отправляемых за раз (16 МБ)
+	static constexpr const size_t c_maxPackageSize = 16'000'000ULL;
 
 	// Количество записанных байтов
 	size_t writtenBytesCount = 0;
 	for (size_t currentPos = 0; currentPos < data.size(); currentPos += c_maxPackageSize)
 	{
 		// Размер текущего отправляемого пакета
-		size_t currentPackageSize = currentPos + c_maxPackageSize <= data.size()
+		size_t currentPackageSize = c_maxPackageSize <= data.size() - currentPos
 			? c_maxPackageSize : data.size() - currentPos;
 
 		int writtenBytesCountInCurrentPackage = connection->LoWrite(*m_fd, &data[currentPos],
