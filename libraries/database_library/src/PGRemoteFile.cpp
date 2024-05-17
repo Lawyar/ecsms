@@ -78,7 +78,7 @@ bool PGRemoteFile::Open(FileOpenMode openMode)
 	}
 
 	auto connection = m_connection.lock();
-	if (!connection)
+	if (!connection || !connection->IsValid())
 		return false;
 
 	int fd = connection->LoOpen(m_objId, flag);
@@ -122,7 +122,7 @@ bool PGRemoteFile::Close()
 		return false;
 
 	auto connection = m_connection.lock();
-	if (!connection)
+	if (!connection || !connection->IsValid())
 		return false;
 
 	if (connection->LoClose(*m_fd) != 0)
@@ -139,25 +139,26 @@ bool PGRemoteFile::Close()
   Прочитать байты
 */
 //---
-std::optional<std::vector<char>> PGRemoteFile::ReadBytes(size_t count)
+bool PGRemoteFile::ReadBytes(size_t count, std::vector<char> & buffer)
 {
 	if (!m_fd || !m_openMode)
 		// Файл не открыт
-		return std::nullopt;
+		return false;
 
 	if (*m_openMode != FileOpenMode::Read)
 		// Файл не открыт на чтение
-		return std::nullopt;
+		return false;
 
 	auto connection = m_connection.lock();
 	if (!connection)
-		return std::nullopt;
+		return false;
 
 	// Количество байт, читаемых за раз (16 МБ)
 	static constexpr const size_t c_maxPackageSize = 16'000'000ULL;
 
-	std::vector<char> data(count);
+	bool result = true;
 
+	std::vector<char> data(count);
 	// Количество записанных байтов
 	size_t readBytesCount = 0;
 	for (size_t currentPos = 0; currentPos < data.size(); currentPos += c_maxPackageSize)
@@ -169,14 +170,19 @@ std::optional<std::vector<char>> PGRemoteFile::ReadBytes(size_t count)
 		int readBytesCountInCurrentPackage = connection->LoRead(*m_fd, &data[currentPos],
 			currentPackageSize);
 		if (readBytesCountInCurrentPackage < 0)
-			// Произошла ошибка, вернем количество успешно прочитанных байтов
+		{
+			// Произошла ошибка
+			result = false;
 			break;
+		}
 
 		readBytesCount += static_cast<size_t>(readBytesCountInCurrentPackage);
 	}
 
 	data.resize(static_cast<size_t>(readBytesCount));
-	return data;
+	buffer.insert(buffer.end(), std::make_move_iterator(data.begin()), std::make_move_iterator(data.end()));
+	
+	return result;
 }
 
 
@@ -185,22 +191,27 @@ std::optional<std::vector<char>> PGRemoteFile::ReadBytes(size_t count)
   Записать байты
 */
 //---
-std::optional<size_t> PGRemoteFile::WriteBytes(const std::vector<char> & data)
+bool PGRemoteFile::WriteBytes(const std::vector<char> & data, size_t * numberOfBytesWritten)
 {
+	if (numberOfBytesWritten)
+		*numberOfBytesWritten = 0;
+
 	if (!m_fd || !m_openMode)
 		// Файл не открыт
-		return std::nullopt;
+		return false;
 
 	if (*m_openMode != FileOpenMode::Write && *m_openMode != FileOpenMode::Append)
 		// Файл не открыт на запись/дозапись
-		return std::nullopt;
+		return false;
 
 	auto connection = m_connection.lock();
-	if (!connection)
-		return std::nullopt;
+	if (!connection || !connection->IsValid())
+		return false;
 
 	// Количество байт, отправляемых за раз (16 МБ)
 	static constexpr const size_t c_maxPackageSize = 16'000'000ULL;
+
+	bool result = true;
 
 	// Количество записанных байтов
 	size_t writtenBytesCount = 0;
@@ -213,11 +224,17 @@ std::optional<size_t> PGRemoteFile::WriteBytes(const std::vector<char> & data)
 		int writtenBytesCountInCurrentPackage = connection->LoWrite(*m_fd, &data[currentPos],
 			currentPackageSize);
 		if (writtenBytesCount < 0)
-			// Произошла ошибка, вернем количество успешно записанных байтов
-			return writtenBytesCount;
+		{
+			// Произошла ошибка
+			result = false;
+			break;
+		}
 
 		writtenBytesCount += static_cast<size_t>(writtenBytesCountInCurrentPackage);
 	}
 
-	return writtenBytesCount;
+	if (numberOfBytesWritten)
+		*numberOfBytesWritten = writtenBytesCount;
+
+	return result;
 }

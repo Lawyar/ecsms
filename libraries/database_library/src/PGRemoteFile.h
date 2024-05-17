@@ -37,11 +37,24 @@ public:
 	/// Получить имя файла (для большого бинарного объекта имя - это идентификатор)
 	virtual std::string GetFileName() const override;
 	/// Открыть файл
+	/// \param openMode Режим открытия
+	/// \return Статус выполнения операции
 	virtual bool Open(FileOpenMode openMode) override;
 	/// Закрыть файл
+	/// Файл, оставшийся открытым в конце транзакции, будет закрыт автоматически
+	/// \return Статус выполнения операции
 	virtual bool Close() override;
 	/// Попытаться прочесть байты
-	virtual std::optional<std::vector<char>> ReadBytes(size_t count) override;
+	/// \param count Количество байт, которое требуется попытаться прочесть.
+	/// \param buffer Буфер, в который требуется прочитать байты.
+	///   Результат будет дописан в конец этого буфера.
+	///   Если в буфер было записано менее, чем count байтов, это может свидельствовать о том,
+	///   что файл закончился, или о том, что произошла ошибка.
+	/// \return Статус выполнения операции.
+	virtual bool ReadBytes(size_t count, std::vector<char> & buffer) override;
 	/// Попытаться записать байты
-	virtual std::optional<size_t> WriteBytes(const std::vector<char> & data) override;
+	/// \param data Массив байтов, который требуется записать.
+	/// \param numberOfBytesWritten Количество успешно записанных байтов.
+	/// \return Статус выполнения операции.
+	virtual bool WriteBytes(const std::vector<char> & data, size_t * numberOfBytesWritten) override;
 };

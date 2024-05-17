@@ -72,7 +72,9 @@ TEST_F(TestWithValidRemoteFile, CanWriteWhenFileOpenedForWriting)
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 	
 	std::vector<char> bytes = GenerateBytes(1000);
-	ASSERT_EQ(remoteFilePtr->WriteBytes(bytes), 1000);
+	size_t result = 0;
+	ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes, &result));
+	ASSERT_EQ(result, 1000);
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
@@ -85,7 +87,9 @@ TEST_F(TestWithValidRemoteFile, CanWriteWhenFileOpenedForAppending)
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
 
 	std::vector<char> bytes = GenerateBytes(1000);
-	ASSERT_EQ(remoteFilePtr->WriteBytes(bytes), 1000);
+	size_t result = 0;
+	ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes, &result));
+	ASSERT_EQ(result, 1000);
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
@@ -98,7 +102,9 @@ TEST_F(TestWithValidRemoteFile, CantWriteWhenFileOpenedForReading)
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 
 	std::vector<char> bytes = GenerateBytes(1000);
-	ASSERT_FALSE(remoteFilePtr->WriteBytes(bytes));
+	size_t result = 0;
+	ASSERT_FALSE(remoteFilePtr->WriteBytes(bytes, &result));
+	ASSERT_EQ(result, 0);
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
@@ -109,7 +115,9 @@ TEST_F(TestWithValidRemoteFile, CanReadWhenFileOpenedForReading)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
-	ASSERT_TRUE(remoteFilePtr->ReadBytes(0));
+	std::vector<char> buffer;
+	ASSERT_TRUE(remoteFilePtr->ReadBytes(0, buffer));
+	ASSERT_TRUE(buffer.empty());
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
@@ -120,7 +128,9 @@ TEST_F(TestWithValidRemoteFile, CantReadWhenFileOpenedForWriting)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
-	ASSERT_FALSE(remoteFilePtr->ReadBytes(0));
+	std::vector<char> buffer;
+	ASSERT_FALSE(remoteFilePtr->ReadBytes(0, buffer));
+	ASSERT_TRUE(buffer.empty());
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
@@ -131,7 +141,9 @@ TEST_F(TestWithValidRemoteFile, CantReadWhenFileOpenedForAppending)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
-	ASSERT_FALSE(remoteFilePtr->ReadBytes(0));
+	std::vector<char> buffer;
+	ASSERT_FALSE(remoteFilePtr->ReadBytes(0, buffer));
+	ASSERT_TRUE(buffer.empty());
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
@@ -147,7 +159,9 @@ TEST_F(TestWithValidRemoteFile, WriteModeClearsFileCreatedByTheSameTransaction)
 		// Сначала что-то запишем (чтобы было что прочищать)
 		auto bytes1 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
-		ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes1));
+		size_t numberOfBytesWritten = 0;
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes1, &numberOfBytesWritten));
+		ASSERT_EQ(numberOfBytesWritten, size);
 		ASSERT_TRUE(remoteFilePtr->Close());
 	}
 
@@ -160,7 +174,9 @@ TEST_F(TestWithValidRemoteFile, WriteModeClearsFileCreatedByTheSameTransaction)
 	{
 		// Проверим, что файл прочистился
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
-		ASSERT_TRUE(remoteFilePtr->ReadBytes(size)->empty());
+		std::vector<char> buffer;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, buffer));
+		ASSERT_TRUE(buffer.empty());
 		ASSERT_TRUE(remoteFilePtr->Close());
 	}
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
@@ -177,7 +193,9 @@ TEST_F(TestWithValidRemoteFile, WriteModeClearsFileCreatedInPreviousTransaction)
 		ASSERT_FALSE(connection->BeginTransaction()->HasError());
 		auto bytes1 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
-		ASSERT_EQ(remoteFilePtr->WriteBytes(bytes1), size);
+		size_t numberOfBytesWritten = 0;
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes1, &numberOfBytesWritten));
+		ASSERT_EQ(numberOfBytesWritten, size);
 		ASSERT_TRUE(remoteFilePtr->Close());
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
@@ -195,7 +213,9 @@ TEST_F(TestWithValidRemoteFile, WriteModeClearsFileCreatedInPreviousTransaction)
 		ASSERT_FALSE(connection->BeginTransaction()->HasError());
 		// Проверим, что файл прочистился
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
-		ASSERT_TRUE(remoteFilePtr->ReadBytes(size)->empty());
+		std::vector<char> buffer;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, buffer));
+		ASSERT_TRUE(buffer.empty());
 		ASSERT_TRUE(remoteFilePtr->Close());
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
@@ -214,7 +234,9 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedByTheSameTransaction
 		// Сначала что-то запишем
 		bytes1 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
-		ASSERT_EQ(remoteFilePtr->WriteBytes(bytes1), size);
+		size_t numberOfBytesWritten = 0;
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes1, &numberOfBytesWritten));
+		ASSERT_EQ(numberOfBytesWritten, size);
 		ASSERT_TRUE(remoteFilePtr->Close());
 	}
 
@@ -222,15 +244,22 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedByTheSameTransaction
 		// Откроем файл на дозапись
 		bytes2 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
-		ASSERT_EQ(remoteFilePtr->WriteBytes(bytes2), size);
+		size_t numberOfBytesWritten = 0;
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes2, &numberOfBytesWritten));
+		ASSERT_EQ(numberOfBytesWritten, size);
 		ASSERT_TRUE(remoteFilePtr->Close());
 	}
 
 	{
 		// Проверим, что файл дополнился
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
-		ASSERT_EQ(remoteFilePtr->ReadBytes(size), bytes1);
-		ASSERT_EQ(remoteFilePtr->ReadBytes(size), bytes2);
+		std::vector<char> buffer;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, buffer));
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, buffer));
+		std::vector<char> combinedBytes;
+		combinedBytes.insert(combinedBytes.end(), bytes1.begin(), bytes1.end());
+		combinedBytes.insert(combinedBytes.end(), bytes2.begin(), bytes2.end());
+		ASSERT_EQ(buffer, combinedBytes);
 		ASSERT_TRUE(remoteFilePtr->Close());
 	}
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
@@ -249,7 +278,9 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedInPreviousTransactio
 		// Сначала что-то запишем
 		bytes1 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
-		ASSERT_EQ(remoteFilePtr->WriteBytes(bytes1), size);
+		size_t numberOfBytesWritten = 0;
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes1, &numberOfBytesWritten));
+		ASSERT_EQ(numberOfBytesWritten, size);
 		ASSERT_TRUE(remoteFilePtr->Close());
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
@@ -259,7 +290,9 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedInPreviousTransactio
 		// Откроем файл на дозапись
 		bytes2 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
-		ASSERT_EQ(remoteFilePtr->WriteBytes(bytes2), size);
+		size_t numberOfBytesWritten = 0;
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes2, &numberOfBytesWritten));
+		ASSERT_EQ(numberOfBytesWritten, size);
 		ASSERT_TRUE(remoteFilePtr->Close());
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
@@ -268,8 +301,13 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedInPreviousTransactio
 		ASSERT_FALSE(connection->BeginTransaction()->HasError());
 		// Проверим, что файл дополнился
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
-		ASSERT_EQ(remoteFilePtr->ReadBytes(size), bytes1);
-		ASSERT_EQ(remoteFilePtr->ReadBytes(size), bytes2);
+		std::vector<char> buffer;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, buffer));
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, buffer));
+		std::vector<char> combinedBytes;
+		combinedBytes.insert(combinedBytes.end(), bytes1.begin(), bytes1.end());
+		combinedBytes.insert(combinedBytes.end(), bytes2.begin(), bytes2.end());
+		ASSERT_EQ(buffer, combinedBytes);
 		ASSERT_TRUE(remoteFilePtr->Close());
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
@@ -291,7 +329,9 @@ TEST_F(TestWithValidRemoteFile, CanReadAfterWriting)
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 
 	auto bytes = GenerateBytes(size);
-	ASSERT_EQ(remoteFilePtr->WriteBytes(bytes), size);
+	size_t numberOfBytesWritten = 0;
+	ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes, &numberOfBytesWritten));
+	ASSERT_EQ(numberOfBytesWritten, size);
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 
@@ -299,10 +339,17 @@ TEST_F(TestWithValidRemoteFile, CanReadAfterWriting)
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	ASSERT_TRUE(remoteFilePtr->Open({ FileOpenMode::Read }));
 
-	auto readBytes = remoteFilePtr->ReadBytes(size);
-	ASSERT_EQ(bytes, readBytes);
-	// Проверим, что файл кончился
-	ASSERT_TRUE(remoteFilePtr->ReadBytes(1)->empty());
+	{
+		std::vector<char> buffer;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, buffer));
+		ASSERT_EQ(bytes, buffer);
+	}
+	{
+		std::vector<char> buffer;
+		// Проверим, что файл кончился
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(1, buffer));
+		ASSERT_TRUE(buffer.empty());
+	}
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
@@ -319,22 +366,36 @@ TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWith
 
 	// Запишем байты
 	auto bytes1 = GenerateBytes(size);
-	ASSERT_EQ(remoteFilePtr->WriteBytes(bytes1), size);
+	size_t numberOfBytesWritten = 0;
+	ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes1, &numberOfBytesWritten));
+	ASSERT_EQ(numberOfBytesWritten, size);
 
 	// Запишем ещё байты
 	auto bytes2 = GenerateBytes(size);
-	ASSERT_EQ(remoteFilePtr->WriteBytes(bytes2), size);
+	numberOfBytesWritten = 1;
+	ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes2, &numberOfBytesWritten));
+	ASSERT_EQ(numberOfBytesWritten, size);
 
 	ASSERT_TRUE(remoteFilePtr->Close());
 
 	// Прочитаем байты
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
-	auto readBytes = remoteFilePtr->ReadBytes(size);
-	ASSERT_EQ(bytes1, readBytes);
-	readBytes = remoteFilePtr->ReadBytes(size);
-	ASSERT_EQ(bytes2, readBytes);
-	// Проверим, что файл кончился
-	ASSERT_TRUE(remoteFilePtr->ReadBytes(1)->empty());
+	{
+		std::vector<char> readBytes;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, readBytes));
+		ASSERT_EQ(bytes1, readBytes);
+	}
+	{
+		std::vector<char> readBytes;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, readBytes));
+		ASSERT_EQ(bytes2, readBytes);
+	}
+	{
+		std::vector<char> readBytes;
+		// Проверим, что файл кончился
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(1, readBytes));
+		ASSERT_TRUE(readBytes.empty());
+	}
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
@@ -351,22 +412,35 @@ TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWith
 
 	// Запишем байты
 	auto bytes1 = GenerateBytes(size);
-	ASSERT_EQ(remoteFilePtr->WriteBytes(bytes1), size);
+	size_t numberOfBytesWritten = 0;
+	ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes1, &numberOfBytesWritten));
+	ASSERT_EQ(numberOfBytesWritten, size);
 
 	// Запишем ещё байты
 	auto bytes2 = GenerateBytes(size);
-	ASSERT_EQ(remoteFilePtr->WriteBytes(bytes2), size);
+	ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes2, &numberOfBytesWritten));
+	ASSERT_EQ(numberOfBytesWritten, size);
 
 	ASSERT_TRUE(remoteFilePtr->Close());
 
 	// Прочитаем байты
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
-	auto readBytes = remoteFilePtr->ReadBytes(size);
-	ASSERT_EQ(bytes1, readBytes);
-	readBytes = remoteFilePtr->ReadBytes(size);
-	ASSERT_EQ(bytes2, readBytes);
-	// Проверим, что файл кончился
-	ASSERT_TRUE(remoteFilePtr->ReadBytes(1)->empty());
+	{
+		std::vector<char> readBytes;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, readBytes));
+		ASSERT_EQ(bytes1, readBytes);
+	}
+	{
+		std::vector<char> readBytes;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, readBytes));
+		ASSERT_EQ(bytes2, readBytes);
+	}
+	{
+		std::vector<char> readBytes;
+		// Проверим, что файл кончился
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(1, readBytes));
+		ASSERT_TRUE(readBytes.empty());
+	}
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
@@ -425,7 +499,9 @@ TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 		generateClocks += end - start;
 
 		start = clock();
-		ASSERT_EQ(remoteFilePtr->WriteBytes(bytes), c_blockSize);
+		size_t numberOfBytesWritten = 0;
+		ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes, &numberOfBytesWritten));
+		ASSERT_EQ(numberOfBytesWritten, c_blockSize);
 		end = clock();
 		writeClocks += end - start;
 	}
@@ -443,7 +519,8 @@ TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 		generateClocks += end - start;
 
 		start = clock();
-		auto readBytes = remoteFilePtr->ReadBytes(c_blockSize);
+		std::vector<char> readBytes;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(c_blockSize, readBytes));
 		end = clock();
 		readClocks += end - start;
 
@@ -457,7 +534,11 @@ TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 		<< (float)readClocks / CLOCKS_PER_SEC << " seconds" << std::endl;
 
 	// Проверим, что файл кончился
-	ASSERT_TRUE(remoteFilePtr->ReadBytes(1)->empty());
+	{
+		std::vector<char> readBytes;
+		ASSERT_TRUE(remoteFilePtr->ReadBytes(1, readBytes));
+		ASSERT_TRUE(readBytes.empty());
+	}
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
