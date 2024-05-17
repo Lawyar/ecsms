@@ -28,6 +28,8 @@ public:
 	/// \param createTables Требуется ли пытаться создать таблицы по зарегистрированным сущностям
 	virtual IExecuteResultStatusPtr RegisterEntities(const EAVRegisterEntries & entries,
 		bool createTables) override;
+	/// Получить зарегистрированные сущности
+	virtual const EAVRegisterEntries & GetRegisteredEntities() const override;
 
 	/// Получить объект, определяющий правила именования таблиц
 	virtual const IExecutorEAVNamingRules & GetNamingRules() const override;

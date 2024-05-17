@@ -7,6 +7,7 @@ add_executable(database_library_tests
   SQLTypeByteArrayTests.cpp
   SQLTypeRemoteFileIdTests.cpp
   RemoteFileTests.cpp
+  ExecutorEAVNamingRulesTests.cpp
   ExecutorEAVTests.cpp
 
   TestSettings.h

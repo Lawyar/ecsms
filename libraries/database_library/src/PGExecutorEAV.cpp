@@ -70,6 +70,17 @@ IExecuteResultStatusPtr PGExecutorEAV::RegisterEntities(const EAVRegisterEntries
 
 //------------------------------------------------------------------------------
 /**
+  Получить зарегистрированные сущности
+*/
+//---
+const IExecutorEAV::EAVRegisterEntries & PGExecutorEAV::GetRegisteredEntities() const
+{
+	return m_registerEntries;
+}
+
+
+//------------------------------------------------------------------------------
+/**
   Получить объект, определяющий правила именования таблиц
 */
 //---
