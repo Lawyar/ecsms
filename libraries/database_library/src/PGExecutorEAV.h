@@ -26,7 +26,7 @@ public:
 public:
 	/// Регистрация EAV-сущностей
 	/// \param createTables Требуется ли пытаться создать таблицы по зарегистрированным сущностям
-	virtual IExecuteResultStatusPtr RegisterEntities(const EAVRegisterEntries & entries,
+	virtual IExecuteResultStatusPtr SetRegisteredEntities(const EAVRegisterEntries & entries,
 		bool createTables) override;
 	/// Получить зарегистрированные сущности
 	virtual const EAVRegisterEntries & GetRegisteredEntities() const override;

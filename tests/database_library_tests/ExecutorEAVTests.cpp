@@ -45,11 +45,11 @@ protected:
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Тесты RegisterEntities
+// Тесты SetRegisteredEntities
 ////////////////////////////////////////////////////////////////////////////////
 
 
-/// RegisterEntities создает таблицы для всех валидных типов данных
+/// SetRegisteredEntities создает таблицы для всех валидных типов данных
 TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesCreatesTablesWithAllValidTypes)
 {
 	std::vector<SQLDataType> allTypes;
@@ -95,7 +95,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesCreatesTablesWithAllVali
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	for (auto && map : maps)
 	{
-		ASSERT_FALSE(executorEAV->RegisterEntities(map, true)->HasError());
+		ASSERT_FALSE(executorEAV->SetRegisteredEntities(map, true)->HasError());
 		ASSERT_EQ(executorEAV->GetRegisteredEntities(), map);
 
 		for (auto &&[entityName, attributeTypes] : map)
@@ -144,7 +144,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesCreatesTablesWithAllVali
 }
 
 
-/// RegisterEntities не создает таблицы для всех валидных типов данных, если
+/// SetRegisteredEntities не создает таблицы для всех валидных типов данных, если
 /// его вызвать с флагом createTable false
 TEST_F(ExecutorEAVWithEmptyEnvironment,
 	RegisterEntitiesDoesNotCreateTablesWithAllValidTypesIfCallsWithCreateTableFlagEqualFalse)
@@ -193,7 +193,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	for (auto && map : maps)
 	{
-		ASSERT_FALSE(executorEAV->RegisterEntities(map, false)->HasError());
+		ASSERT_FALSE(executorEAV->SetRegisteredEntities(map, false)->HasError());
 		ASSERT_EQ(executorEAV->GetRegisteredEntities(), map);
 
 		for (auto &&[entityName, attributeTypes] : map)
@@ -221,7 +221,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 }
 
 
-/// RegisterEntities не создает таблицы, если с сущностями ассоциируются
+/// SetRegisteredEntities не создает таблицы, если с сущностями ассоциируются
 /// невалидные типы атрибутов
 TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesDoesNotCreateTablesWithInvalidTypes)
 {
@@ -236,7 +236,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesDoesNotCreateTablesWithI
 
 	for (auto && map : maps)
 	{
-		auto status = executorEAV->RegisterEntities(map, true);
+		auto status = executorEAV->SetRegisteredEntities(map, true);
 		ASSERT_TRUE(status->HasError());
 		ASSERT_EQ(status->GetStatus(), ResultStatus::FatalError);
 		ASSERT_TRUE(executorEAV->GetRegisteredEntities().empty());
@@ -272,7 +272,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesDoesNotCreateTablesWithI
 }
 
 
-/// RegisterEntities не создает таблицы, если с сущностями ассоциируются
+/// SetRegisteredEntities не создает таблицы, если с сущностями ассоциируются
 /// невалидные типы атрибутов, при флаге createTable = false
 TEST_F(ExecutorEAVWithEmptyEnvironment,
 	RegisterEntitiesDoesNotCreateTablesWithInvalidTypesWithCreateTableFlagEqualFalse)
@@ -288,7 +288,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 
 	for (auto && map : maps)
 	{
-		auto status = executorEAV->RegisterEntities(map, false);
+		auto status = executorEAV->SetRegisteredEntities(map, false);
 		ASSERT_TRUE(status->HasError());
 		ASSERT_EQ(status->GetStatus(), ResultStatus::FatalError);
 		ASSERT_TRUE(executorEAV->GetRegisteredEntities().empty());
@@ -324,14 +324,14 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 }
 
 
-/// RegisterEntities не пересоздает уже существующие таблицы
+/// SetRegisteredEntities не пересоздает уже существующие таблицы
 TEST_F(ExecutorEAVWithEmptyEnvironment, test1)
 {
 
 }
 
 
-/// RegisterEntities позволяет добавить новые таблицы и не удаляет старые
+/// SetRegisteredEntities позволяет добавить новые таблицы и не удаляет старые
 TEST_F(ExecutorEAVWithEmptyEnvironment, test2)
 {
 

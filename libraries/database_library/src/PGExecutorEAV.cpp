@@ -29,7 +29,7 @@ PGExecutorEAV::PGExecutorEAV(const IConnectionPtr & connection,
   \param createTables Требуется ли пытаться создать таблицы по зарегистрированным сущностям
 */
 //---
-IExecuteResultStatusPtr PGExecutorEAV::RegisterEntities(const EAVRegisterEntries & entries,
+IExecuteResultStatusPtr PGExecutorEAV::SetRegisteredEntities(const EAVRegisterEntries & entries,
 	bool createTables)
 {
 	for (auto &&[entityName, _] : entries)
@@ -562,7 +562,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & ent
 	{
 		return InternalExecuteResultStatus::GetInternalError(utils::string::Format(
 			"IExecutorEAV::GetAttributeValues: Attribute types not found. "
-			"The entity \"{}\" may not have been registered using the method \"RegisterEntities\".",
+			"The entity \"{}\" may not have been registered using the method \"SetRegisteredEntities\".",
 			entityName
 		), ResultStatus::EmptyQuery);
 	}

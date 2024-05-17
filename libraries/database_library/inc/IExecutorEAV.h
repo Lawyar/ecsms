@@ -19,7 +19,7 @@ class IExecutorEAVNamingRules;
 
   Правила именования таблиц для базы данных определяются интерфейсом IExecutorEAVNamingRules.
 
-  Метод RegisterEntities может создать таблицы по указанным правилам, если передать в него
+  Метод SetRegisteredEntities может создать таблицы по указанным правилам, если передать в него
   флаг createTables = true.
   Остальные методы не создают таблицы, а пользуются существующими, созданными этим методом.
   При отсутствии таких таблиц команды будут выдавать ошибку.
@@ -56,7 +56,7 @@ public:
 public:
 	/// Регистрация EAV-сущностей
 	/// \param createTables Требуется ли пытаться создать таблицы по зарегистрированным сущностям
-	virtual IExecuteResultStatusPtr RegisterEntities(const EAVRegisterEntries & entries,
+	virtual IExecuteResultStatusPtr SetRegisteredEntities(const EAVRegisterEntries & entries,
 		bool createTables) = 0;
 	/// Получить зарегистрированные сущности
 	virtual const EAVRegisterEntries & GetRegisteredEntities() const = 0;
