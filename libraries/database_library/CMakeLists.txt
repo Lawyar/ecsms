@@ -28,6 +28,8 @@ add_library(database_library
   src/PGSQLTypeRemoteFileId.h
   src/PGRemoteFile.cpp
   src/PGRemoteFile.h
+  src/PGExecutorEAVNamingRules.cpp
+  src/PGExecutorEAVNamingRules.h
 
   inc/IConnection.h
   inc/IDatabaseManager.h
@@ -35,6 +37,7 @@ add_library(database_library
   inc/IExecuteResultStatus.h
   inc/IExecutorEAV.h
   inc/IFile.h
+  inc/IExecutorEAVNamingRules.h
 
   inc/DataType/ISQLTypeRemoteFileId.h
   inc/DataType/ISQLType.h

@@ -70,107 +70,12 @@ IExecuteResultStatusPtr PGExecutorEAV::RegisterEntities(const EAVRegisterEntries
 
 //------------------------------------------------------------------------------
 /**
-  Получить название таблицы сущностей
+  Получить объект, определяющий правила именования таблиц
 */
 //---
-std::string PGExecutorEAV::GetEntityTableName(const std::string & entityName) const
+const IExecutorEAVNamingRules & PGExecutorEAV::GetNamingRules() const
 {
-	return utils::string::ToLower(entityName);
-}
-
-
-//------------------------------------------------------------------------------
-/**
-  Получить название таблицы аттрибутов
-*/
-//---
-std::string PGExecutorEAV::GetAttributeTableName(const std::string & entityName,
-	const std::string & attributeType) const
-{
-	return utils::string::ToLower(entityName) + "_attribute_" + utils::string::ToLower(attributeType);
-}
-
-
-//------------------------------------------------------------------------------
-/**
-  Получить название таблицы значений
-*/
-//---
-std::string PGExecutorEAV::GetValueTableName(const std::string & entityName,
-	const std::string & attributeType) const
-{
-	return utils::string::ToLower(entityName) + "_value_" + utils::string::ToLower(attributeType);
-}
-
-
-//------------------------------------------------------------------------------
-/**
-  Получить полное название поля идентификатора таблицы сущностей
-*/
-//---
-std::string PGExecutorEAV::GetEntityTable_Full_IdField(const std::string & entityName) const
-{
-	return GetEntityTableName(entityName) + "." + EntityTable::c_idField;
-}
-
-
-//------------------------------------------------------------------------------
-/**
-  Получить полное название поля идентификатора таблицы атрибутов
-*/
-//---
-std::string PGExecutorEAV::GetAttributeTable_Full_IdField(const std::string & entityName,
-	const std::string & attributeType) const
-{
-	return GetAttributeTableName(entityName, attributeType) + "." + AttributeTable::c_idField;
-}
-
-
-//------------------------------------------------------------------------------
-/**
-  Получить полное название поля навания таблицы атрибутов
-*/
-//---
-std::string PGExecutorEAV::GetAttributeTable_Full_NameField(const std::string & entityName,
-	const std::string & attributeType) const
-{
-	return GetAttributeTableName(entityName, attributeType) + "." + AttributeTable::c_nameField;
-}
-
-
-//------------------------------------------------------------------------------
-/**
-  Получить полное название поля идентификатора сущности таблицы значений
-*/
-//---
-std::string PGExecutorEAV::GetValueTable_Full_EntityIdField(const std::string & entityName,
-	const std::string & attributeType) const
-{
-	return GetValueTableName(entityName, attributeType) + "." + ValueTable::c_entityIdField;
-}
-
-
-//------------------------------------------------------------------------------
-/**
-  Получить полное название поля идентификатора атрибута таблицы значений
-*/
-//---
-std::string PGExecutorEAV::GetValueTable_Full_AttributeIdField(const std::string & entityName,
-	const std::string & attributeType) const
-{
-	return GetValueTableName(entityName, attributeType) + "." + ValueTable::c_attributeIdField;
-}
-
-
-//------------------------------------------------------------------------------
-/**
-  Получить полное название поля значения таблицы значений
-*/
-//---
-std::string PGExecutorEAV::GetValueTable_Full_ValueField(const std::string & entityName,
-	const std::string & attributeType) const
-{
-	return GetValueTableName(entityName, attributeType) + "." + ValueTable::c_valueField;
+	return m_rules;
 }
 
 
@@ -187,7 +92,9 @@ std::string PGExecutorEAV::createEntityTableCommand(const std::string & entityNa
 		"{} INTEGER NOT NULL GENERATED ALWAYS AS IDENTITY, "
 		"PRIMARY KEY({})"
 		");\n",
-		GetEntityTableName(entityName), EntityTable::c_idField, EntityTable::c_idField);
+		m_rules.GetEntityTableName(entityName),
+		m_rules.GetEntityTable_Short_IdField(entityName),
+		m_rules.GetEntityTable_Short_IdField(entityName));
 }
 
 
@@ -207,11 +114,11 @@ std::string PGExecutorEAV::createAttributeTableCommand(const std::string & entit
 		"PRIMARY KEY({}), "
 		"UNIQUE ({})"
 		");\n",
-		GetAttributeTableName(entityName, attributeType),
-		AttributeTable::c_idField,
-		AttributeTable::c_nameField,
-		AttributeTable::c_idField,
-		AttributeTable::c_nameField
+		m_rules.GetAttributeTableName(entityName, attributeType),
+		m_rules.GetAttributeTable_Short_IdField(entityName, attributeType),
+		m_rules.GetAttributeTable_Short_NameField(entityName, attributeType),
+		m_rules.GetAttributeTable_Short_IdField(entityName, attributeType),
+		m_rules.GetAttributeTable_Short_NameField(entityName, attributeType)
 	);
 }
 
@@ -233,21 +140,21 @@ std::string PGExecutorEAV::createValueTableCommand(const std::string & entityNam
 		"{} {} NOT NULL, "
 		"PRIMARY KEY({}, {})"
 		");\n",
-		GetValueTableName(entityName, attributeType),
+		m_rules.GetValueTableName(entityName, attributeType),
 
-		ValueTable::c_entityIdField,
-		GetEntityTableName(entityName),
-		EntityTable::c_idField,
+		m_rules.GetValueTable_Short_EntityIdField(entityName, attributeType),
+		m_rules.GetEntityTableName(entityName),
+		m_rules.GetEntityTable_Short_IdField(entityName),
 
-		ValueTable::c_attributeIdField,
-		GetAttributeTableName(entityName, attributeType),
-		AttributeTable::c_idField,
+		m_rules.GetValueTable_Short_AttributeIdField(entityName, attributeType),
+		m_rules.GetAttributeTableName(entityName, attributeType),
+		m_rules.GetAttributeTable_Short_IdField(entityName, attributeType),
 
-		ValueTable::c_valueField,
+		m_rules.GetValueTable_Short_ValueField(entityName, attributeType),
 		utils::string::ToUpper(attributeType),
 
-		ValueTable::c_entityIdField,
-		ValueTable::c_attributeIdField
+		m_rules.GetValueTable_Short_EntityIdField(entityName, attributeType),
+		m_rules.GetValueTable_Short_AttributeIdField(entityName, attributeType)
 	);
 }
 
@@ -267,7 +174,7 @@ IExecuteResultStatusPtr PGExecutorEAV::CreateNewEntity(const EntityName & entity
 	if (!executeQuery(query, result, resultStatus))
 		return resultStatus;
 
-	size_t idFieldIndex = result->GetColIndex(EntityTable::c_idField);
+	size_t idFieldIndex = result->GetColIndex(m_rules.GetEntityTable_Short_IdField(entityName));
 	IExecuteResult::CellType newId = result->GetValue(0, idFieldIndex);
 	if (IExecuteResultStatusPtr readStatus;
 		!readIntoSQLVariable<ISQLTypeInteger>(newId.ExtractString(), result->GetColType(idFieldIndex),
@@ -337,8 +244,8 @@ IExecuteResultStatusPtr PGExecutorEAV::FindEntitiesByAttrValues(const EntityName
 std::string PGExecutorEAV::insertNewEntityReturningIdCommand(const std::string & entityName) const
 {
 	return utils::string::Format("INSERT INTO {} VALUES(DEFAULT) RETURNING {};\n",
-		GetEntityTableName(entityName),
-		EntityTable::c_idField);
+		m_rules.GetEntityTableName(entityName),
+		m_rules.GetEntityTable_Short_IdField(entityName));
 }
 
 
@@ -359,16 +266,17 @@ std::optional<std::string> PGExecutorEAV::getEntityIdByAttrValuePartCommand(cons
 	if (!attrValueStrOpt || !attrNameStrOpt)
 		return std::nullopt;
 
+	auto && attributeType = attrValue.value->GetTypeName();
 	return utils::string::Format(
 		"SELECT {} FROM {} WHERE {} = {} AND {} IN (SELECT {} FROM {} WHERE {} = {})\n",
-		ValueTable::c_entityIdField,
-		GetValueTableName(entityName, attrValue.value->GetTypeName()),
-		ValueTable::c_valueField,
+		m_rules.GetValueTable_Short_EntityIdField(entityName, attributeType),
+		m_rules.GetValueTableName(entityName, attributeType),
+		m_rules.GetValueTable_Short_ValueField(entityName, attributeType),
 		*attrValueStrOpt,
-		ValueTable::c_attributeIdField,
-		AttributeTable::c_idField,
-		GetAttributeTableName(entityName, attrValue.value->GetTypeName()),
-		AttributeTable::c_nameField,
+		m_rules.GetValueTable_Short_AttributeIdField(entityName, attributeType),
+		m_rules.GetAttributeTable_Short_IdField(entityName, attributeType),
+		m_rules.GetAttributeTableName(entityName, attributeType),
+		m_rules.GetAttributeTable_Short_NameField(entityName, attributeType),
 		*attrNameStrOpt);
 }
 
@@ -466,9 +374,9 @@ std::string PGExecutorEAV::insertAttributeOnConflictDoNothingCommand(const Entit
 	const std::string & attributeType, const std::string & sqlAttrName) const
 {
 	return utils::string::Format("INSERT INTO {} VALUES(DEFAULT, {}) ON CONFLICT ({}) DO NOTHING;\n",
-		GetAttributeTableName(entityName, attributeType),
+		m_rules.GetAttributeTableName(entityName, attributeType),
 		sqlAttrName,
-		AttributeTable::c_nameField);
+		m_rules.GetAttributeTable_Short_NameField(entityName, attributeType));
 }
 
 
@@ -489,7 +397,7 @@ std::optional<std::string> PGExecutorEAV::insertValuePartCommand(const EntityNam
 
 	return utils::string::Format(
 		" INSERT INTO {} VALUES({}, {}, {}) ",
-		GetValueTableName(entityName, attributeType),
+		m_rules.GetValueTableName(entityName, attributeType),
 		entityId,
 		selectAttributeIdByNameInnerCommand(entityName, attributeType, sqlAttrName),
 		*valueStrOpt
@@ -523,12 +431,14 @@ std::optional<std::string> PGExecutorEAV::insertValueOnConflictDoUpdateCommand(c
 	auto && partCommandOpt = insertValuePartCommand(entityName, entityId, sqlAttrName, value);
 	if (!partCommandOpt)
 		return std::nullopt;
+
+	auto && attributeType = value->GetTypeName();
 	return utils::string::Format("{}\nON CONFLICT ({}, {}) DO UPDATE SET {} = EXCLUDED.{};\n",
 		*partCommandOpt,
-		ValueTable::c_entityIdField,
-		ValueTable::c_attributeIdField,
-		ValueTable::c_valueField,
-		ValueTable::c_valueField);
+		m_rules.GetValueTable_Short_EntityIdField(entityName, attributeType),
+		m_rules.GetValueTable_Short_AttributeIdField(entityName, attributeType),
+		m_rules.GetValueTable_Short_ValueField(entityName, attributeType),
+		m_rules.GetValueTable_Short_ValueField(entityName, attributeType));
 }
 
 
@@ -550,12 +460,12 @@ std::optional<std::string> PGExecutorEAV::updateValueCommand(const EntityName & 
 	return utils::string::Format(
 		"UPDATE {} SET {} = {}\n"
 		"WHERE ({}, {}) = ({}, {});\n",
-		GetValueTableName(entityName, attributeType),
-		ValueTable::c_valueField,
+		m_rules.GetValueTableName(entityName, attributeType),
+		m_rules.GetValueTable_Short_ValueField(entityName, attributeType),
 		*valueStrOpt,
 
-		ValueTable::c_entityIdField,
-		ValueTable::c_attributeIdField,
+		m_rules.GetValueTable_Short_EntityIdField(entityName, attributeType),
+		m_rules.GetValueTable_Short_AttributeIdField(entityName, attributeType),
 		entityId,
 		selectAttributeIdByNameInnerCommand(entityName, attributeType, sqlAttrName)
 	);
@@ -571,9 +481,9 @@ std::string PGExecutorEAV::selectAttributeIdByNameInnerCommand(const EntityName 
 {
 	return utils::string::Format(
 		" (SELECT {} FROM {} WHERE {} = {}) ",
-		AttributeTable::c_idField,
-		GetAttributeTableName(entityName, attributeType),
-		AttributeTable::c_nameField,
+		m_rules.GetAttributeTable_Short_IdField(entityName, attributeType),
+		m_rules.GetAttributeTableName(entityName, attributeType),
+		m_rules.GetAttributeTable_Short_NameField(entityName, attributeType),
 		sqlAttrName
 	);
 }
@@ -695,11 +605,11 @@ std::string PGExecutorEAV::selectValueByEntityIdAndAttributeNameCommand(const En
 {
 	return utils::string::Format(
 		"SELECT {} FROM {} WHERE {} = {} AND {} = {};\n",
-		ValueTable::c_valueField,
-		GetValueTableName(entityName, attributeType),
-		ValueTable::c_entityIdField,
+		m_rules.GetValueTable_Short_ValueField(entityName, attributeType),
+		m_rules.GetValueTableName(entityName, attributeType),
+		m_rules.GetValueTable_Short_EntityIdField(entityName, attributeType),
 		entityId,
-		ValueTable::c_attributeIdField,
+		m_rules.GetValueTable_Short_AttributeIdField(entityName, attributeType),
 		selectAttributeIdByNameInnerCommand(entityName, attributeType, sqlAttrName)
 	);
 }
@@ -717,16 +627,16 @@ std::string PGExecutorEAV::selectAttrValuesCommand(const EntityName & entityName
 		"SELECT {}, {} FROM {}\n"
 		"JOIN {}\n"
 		"ON {} = {} AND {} = {};\n",
-		GetAttributeTable_Full_NameField(entityName, attributeType),
-		GetValueTable_Full_ValueField(entityName, attributeType),
-		GetValueTableName(entityName, attributeType),
+		m_rules.GetAttributeTable_Full_NameField(entityName, attributeType),
+		m_rules.GetValueTable_Full_ValueField(entityName, attributeType),
+		m_rules.GetValueTableName(entityName, attributeType),
 
-		GetAttributeTableName(entityName, attributeType),
+		m_rules.GetAttributeTableName(entityName, attributeType),
 
-		GetValueTable_Full_EntityIdField(entityName, attributeType),
+		m_rules.GetValueTable_Full_EntityIdField(entityName, attributeType),
 		entityId,
-		GetValueTable_Full_AttributeIdField(entityName, attributeType),
-		GetAttributeTable_Full_IdField(entityName, attributeType)
+		m_rules.GetValueTable_Full_AttributeIdField(entityName, attributeType),
+		m_rules.GetAttributeTable_Full_IdField(entityName, attributeType)
 	);
 }
 

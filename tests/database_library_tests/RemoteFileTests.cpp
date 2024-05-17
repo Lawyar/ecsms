@@ -860,6 +860,7 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionAbortsInOpenA
 	}
 }
 
+
 /// Записанные в непустой файл данные не сохраняются при откате транзакции в режиме
 /// открытия на дозапись
 TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionRollbacksInOpenAppendMode)

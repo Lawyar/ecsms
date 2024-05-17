@@ -5,34 +5,19 @@
 #include <DataType/ISQLType.h>
 #include <DataType/ISQLTypeText.h>
 
-#include <cstdint>
 #include <memory>
 #include <vector>
 #include <map>
+
+class IExecutorEAVNamingRules;
 
 //------------------------------------------------------------------------------
 /**
   Интерфейс исполнителя запросов EAV.
   Он предоставляет базовые запросы, которые могут оказаться полезными при работе
   с базой данных, представленной схемой EAV.
-  Для одного конкретного типа сущности <EntityName> в базе данных присутствуют
-  следующие таблицы:
-  1) <EntityName> - таблица сущностей - содержит:
-	 "id" - идентификатор сущности, является первичным ключом.
-  2) <EntityName>_attribute_<AttributeType> - несколько таблиц атрибутов - по одной таблице
-	 для каждого типа данных, который хотим хранить. Каждая таблица содержит поля:
-	 "id" - идентификатор атрибута - является первичным ключом.
-	 "name" - название атрибута - на него наложено ограничение UNIQUE (не может быть разных атрибутов с одинаковыми названиями);
-  3) <EntityName>_value_<AttributeType> - таблица значений атрибутов сущностей - содержит поля:
-	 "entity_id" - идентификатор сущности, с которой ассоциировано значение в этой строке - является внешним ключом.
-	 "attribute_id" - идентификатор атрибута, с которым ассоциировано значение в этой строке - является внешним ключом.
-	 Пара (entity_id, attribute_id) является первичным ключом.
-	 "value" - значение атрибута для данной сущности. Это поле имеет тип <AttributeType>.
-  Пример такой базы данных - имеем два типа сущностей: User и Product.
-  У User есть три атрибута двух типов - имя (text), адрес (text) и дата рождения (timestamp).
-  У Product есть два атрибуты двух типов - название (text) и цена (numeric).
-  Тогда в базе данных будут таблицы: user, user_attribute_text, user_attribute_timestamp, user_value_text, user_value_timestamp,
-  product, product_attribute_text, product_attribute_numeric, product_value_text, product_value_numeric.
+
+  Правила именования таблиц для базы данных определяются интерфейсом IExecutorEAVNamingRules.
 
   Метод RegisterEntities может создать таблицы по указанным правилам, если передать в него
   флаг createTables = true.
@@ -59,28 +44,6 @@ public:
 		ValueType value; ///< Значение атрибута
 	};
 
-public:
-	/// Названия полей в таблице сущностей
-	struct EntityTable
-	{
-		static constexpr char * c_idField = "id"; ///< Название поля для идентификатора сущности в таблице сущностей
-	};
-
-	/// Названия полей в таблице атрибутов
-	struct AttributeTable
-	{
-		static constexpr char * c_idField = "id"; ///< Название поля для идентификатора атрибута в таблице атрибутов
-		static constexpr char * c_nameField = "name"; ///< Название поля для названия атрибута в таблице атрибутов
-	};
-
-	/// Название полей в таблице значений
-	struct ValueTable
-	{
-		static constexpr char * c_entityIdField = "entity_id"; ///< Название поля для идентификатора сущности в таблице значений
-		static constexpr char * c_attributeIdField = "attribute_id"; ///< Название поля для идентификатора атрибута в таблице значений
-		static constexpr char * c_valueField = "value"; ///< Название поля для значения в таблице значений
-	};
-
 	/// Запись в реестре EAV
 	using EAVRegisterEntries = std::map<
 		EntityName, // Название сущности
@@ -96,34 +59,8 @@ public:
 	virtual IExecuteResultStatusPtr RegisterEntities(const EAVRegisterEntries & entries,
 		bool createTables) = 0;
 
-	/// Получить название таблицы сущностей
-	virtual std::string GetEntityTableName(const std::string & entityName) const = 0;
-	/// Получить название таблицы атрибутов
-	virtual std::string GetAttributeTableName(const std::string & entityName,
-		const std::string & attributeType) const = 0;
-	/// Получить название таблицы значений
-	virtual std::string GetValueTableName(const std::string & entityName,
-		const std::string & attributeType) const = 0;
-
-	/// Получить полное название поля идентификатора таблицы сущностей
-	virtual std::string GetEntityTable_Full_IdField(const std::string & entityName) const = 0;
-
-	/// Получить полное название поля идентификатора таблицы атрибутов
-	virtual std::string GetAttributeTable_Full_IdField(const std::string & entityName,
-		const std::string & attributeType) const = 0;
-	/// Получить полное название поля названия таблицы атрибутов
-	virtual std::string GetAttributeTable_Full_NameField(const std::string & entityName,
-		const std::string & attributeType) const = 0;
-
-	/// Получить полное название поля идентификатора сущности таблицы значений
-	virtual std::string GetValueTable_Full_EntityIdField(const std::string & entityName,
-		const std::string & attributeType) const = 0;
-	/// Получить полное название поля идентификатора атрибута таблицы значений
-	virtual std::string GetValueTable_Full_AttributeIdField(const std::string & entityName,
-		const std::string & attributeType) const = 0;
-	/// Получить полное название поля значения атрибута таблицы значений
-	virtual std::string GetValueTable_Full_ValueField(const std::string & entityName,
-		const std::string & attributeType) const = 0;
+	/// Получить объект, определяющий правила именования таблиц
+	virtual const IExecutorEAVNamingRules & GetNamingRules() const = 0;
 
 public: // Методы для создания новых сущностей и поиска уже существующих сущностей
 	/// Создать новую сущность указанного типа

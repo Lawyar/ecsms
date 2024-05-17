@@ -3,6 +3,7 @@
 #include <IExecutorEAV.h>
 #include <IConnection.h>
 #include <DataType/ISQLTypeConverter.h>
+#include <PGExecutorEAVNamingRules.h>
 
 //------------------------------------------------------------------------------
 /**
@@ -16,6 +17,7 @@ class PGExecutorEAV : public IExecutorEAV
 	IConnectionPtr m_connection;             ///< Соединение с БД
 	ISQLTypeConverterPtr m_sqlTypeConverter; ///< Конвертер в SQL-типы
 	EAVRegisterEntries m_registerEntries;    ///< Зарегистрированные сущности с типами атрибутов
+	const PGExecutorEAVNamingRules m_rules;  ///< Правила именования таблиц
 
 public:
 	/// Конструктор
@@ -27,34 +29,8 @@ public:
 	virtual IExecuteResultStatusPtr RegisterEntities(const EAVRegisterEntries & entries,
 		bool createTables) override;
 
-	/// Получить название таблицы сущностей
-	virtual std::string GetEntityTableName(const std::string & entityName) const override;
-	/// Получить название таблицы атрибутов
-	virtual std::string GetAttributeTableName(const std::string & entityName,
-		const std::string & attributeType) const override;
-	/// Получить название таблицы значений
-	virtual std::string GetValueTableName(const std::string & entityName,
-		const std::string & attributeType) const override;
-
-	/// Получить полное название поля идентификатора таблицы сущностей
-	virtual std::string GetEntityTable_Full_IdField(const std::string & entityName) const override;
-
-	/// Получить полное название поля идентификатора таблицы атрибутов
-	virtual std::string GetAttributeTable_Full_IdField(const std::string & entityName,
-		const std::string & attributeType) const override;
-	/// Получить полное название поля названия таблицы атрибутов
-	virtual std::string GetAttributeTable_Full_NameField(const std::string & entityName,
-		const std::string & attributeType) const override;
-
-	/// Получить полное название поля идентификатора сущности таблицы значений
-	virtual std::string GetValueTable_Full_EntityIdField(const std::string & entityName,
-		const std::string & attributeType) const override;
-	/// Получить полное название поля идентификатора атрибута таблицы значений
-	virtual std::string GetValueTable_Full_AttributeIdField(const std::string & entityName,
-		const std::string & attributeType) const override;
-	/// Получить полное название поля значения атрибута таблицы значений
-	virtual std::string GetValueTable_Full_ValueField(const std::string & entityName,
-		const std::string & attributeType) const override;
+	/// Получить объект, определяющий правила именования таблиц
+	virtual const IExecutorEAVNamingRules & GetNamingRules() const override;
 
 private:
 	/// Получить команду создания таблицы сущностей
