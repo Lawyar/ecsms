@@ -32,17 +32,18 @@ PGExecutorEAV::PGExecutorEAV(const IConnectionPtr & connection,
 IExecuteResultStatusPtr PGExecutorEAV::SetRegisteredEntities(const EAVRegisterEntries & entries,
 	bool createTables)
 {
-	for (auto &&[entityName, _] : entries)
+	for (auto &&[entityName, attributeTypes] : entries)
+	{
 		if (IsSQLKeyword(entityName))
 			return InternalExecuteResultStatus::GetInternalError(
-				utils::string::Format("The entity name ({}) matches the SQL keyword", entityName));
-
-	if (!createTables)
-	{
-		m_registerEntries = entries;
-		return InternalExecuteResultStatus::GetSuccessStatus(ResultStatus::OkWithoutData);
+				utils::string::Format(
+					"IExecutorEAV::SetRegisteredEntities: "
+					"The entity name ({}) matches the SQL keyword",
+					entityName));
 	}
 
+	// В любом случае соберем запрос
+	// Если на этом этапе произойдет ошибка, то не надо переустанавливать контейнер
 	std::string query;
 	for (auto &&[entityName, attributeTypes] : entries)
 	{
@@ -56,6 +57,12 @@ IExecuteResultStatusPtr PGExecutorEAV::SetRegisteredEntities(const EAVRegisterEn
 			query += createAttributeTableCommand(entityName, attributeTypeStr);
 			query += createValueTableCommand(entityName, attributeTypeStr);
 		}
+	}
+
+	if (!createTables)
+	{
+		m_registerEntries = entries;
+		return InternalExecuteResultStatus::GetSuccessStatus(ResultStatus::OkWithoutData);
 	}
 
 	IExecuteResultPtr result;

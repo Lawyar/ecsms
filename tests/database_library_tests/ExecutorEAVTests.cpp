@@ -49,8 +49,9 @@ protected:
 ////////////////////////////////////////////////////////////////////////////////
 
 
-/// SetRegisteredEntities создает таблицы для всех валидных типов данных
-TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesCreatesTablesWithAllValidTypes)
+/// SetRegisteredEntities создает таблицы для всех валидных типов данных,
+/// если передать флаг createTable = true
+TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesCreatesTablesWithAllValidTypesWithCreateTableFlagEqualTrue)
 {
 	std::vector<SQLDataType> allTypes;
 	for (int i = 0; i <= static_cast<int>(SQLDataType::LastValidType); ++i)
@@ -222,8 +223,8 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 
 
 /// SetRegisteredEntities не создает таблицы, если с сущностями ассоциируются
-/// невалидные типы атрибутов
-TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesDoesNotCreateTablesWithInvalidTypes)
+/// невалидные типы атрибутов, даже если передать флаг createTable = true
+TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesDoesNotCreateTablesWithInvalidTypesWithCreateTableFlagEqualTrue)
 {
 	std::vector<IExecutorEAV::EAVRegisterEntries> maps{ {
 		{"SomeEntity1", {SQLDataType::Unknown}},
