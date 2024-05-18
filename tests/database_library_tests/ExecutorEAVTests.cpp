@@ -1882,3 +1882,143 @@ TEST_F(ExecutorEAVForCheckTransactions, UpdateDoesNotEndTransaction)
 	// Удалим созданные таблицы
 	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// Тесты FindEntitiesByAttrValues
+/// данные методы не открывают и не закрывают транзакции
+////////////////////////////////////////////////////////////////////////////////
+
+/// Класс для проверок с заполненным окружением
+class ExecutorEAVWithFilledEnvironment : public ExecutorEAVWithEmptyEnvironment
+{
+protected:
+	IExecutorEAV::EAVRegisterEntries entries;
+	std::vector<std::string> createdFileNames;
+
+private:
+	/// ASSERT_ нельзя вызывать в функциях, которые не возвращают void
+	void MyAssert(bool value)
+	{
+		ASSERT_TRUE(value);
+	}
+
+	/// Создает файл с данными и возвращает его идентификатор
+	std::string CreateFileWithData(const std::vector<char> & data)
+	{
+		auto remoteFilePtr = connection->CreateRemoteFile();
+		auto && filename = remoteFilePtr->GetFileName();
+		createdFileNames.push_back(filename);
+
+		bool res = remoteFilePtr->Open(FileOpenMode::Write);
+		res = res && remoteFilePtr->WriteBytes(data);
+		res = res && remoteFilePtr->Close();
+
+		MyAssert(res);
+
+		return filename;
+	}
+
+protected:
+	// Действия в начале теста
+	virtual void SetUp() override
+	{
+		ExecutorEAVWithEmptyEnvironment::SetUp();
+
+		ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+		entries = IExecutorEAV::EAVRegisterEntries({
+			{"users", {SQLDataType::Text}},
+			{"products", {SQLDataType::Integer, SQLDataType::Text}},
+			{"blobs", {SQLDataType::Text, SQLDataType::RemoteFileId}},
+			{"images", {SQLDataType::Text, SQLDataType::ByteArray}}
+		});
+		ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries, true)->HasError());
+		ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries);
+
+		// Создадим сущностей
+		for (int i = 1; i <= 3; ++i)
+		{
+			int temp = -1;
+			ASSERT_FALSE(executorEAV->CreateNewEntity("users", temp)->HasError());
+			ASSERT_EQ(temp, i);
+
+			temp = -1;
+			ASSERT_FALSE(executorEAV->CreateNewEntity("products", temp)->HasError());
+			ASSERT_EQ(temp, i);
+
+			temp = -1;
+			ASSERT_FALSE(executorEAV->CreateNewEntity("blobs", temp)->HasError());
+			ASSERT_EQ(temp, i);
+
+			temp = -1;
+			ASSERT_FALSE(executorEAV->CreateNewEntity("images", temp)->HasError());
+			ASSERT_EQ(temp, i);
+		}
+
+		const auto nameAttr = converter->GetSQLTypeText("Name");
+		ASSERT_FALSE(executorEAV->Insert("users", 1, nameAttr, converter->GetSQLTypeText("Alex"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("users", 2, nameAttr, converter->GetSQLTypeText("Joseph"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("users", 3, nameAttr, converter->GetSQLTypeText("Ivan"))->HasError());
+
+		const auto priceAttr = converter->GetSQLTypeText("price");
+		const auto descAttr = converter->GetSQLTypeText("description");
+		ASSERT_FALSE(executorEAV->Insert("products", 1, priceAttr, converter->GetSQLTypeInteger(1000))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("products", 2, priceAttr, converter->GetSQLTypeInteger(50))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("products", 3, priceAttr, converter->GetSQLTypeInteger(777))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("products", 1, nameAttr, converter->GetSQLTypeText("House"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("products", 2, nameAttr, converter->GetSQLTypeText("Icecream"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("products", 3, nameAttr, converter->GetSQLTypeText("Bread"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("products", 1, descAttr, converter->GetSQLTypeText("Amazing house"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("products", 2, descAttr, converter->GetSQLTypeText("Tasty and cold"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("products", 3, descAttr, converter->GetSQLTypeText("Bread. Just a bread"))->HasError());
+
+		const auto typeAttr = converter->GetSQLTypeText("type");
+		const auto idAttr = converter->GetSQLTypeText("id");
+		ASSERT_FALSE(executorEAV->Insert("blobs", 1, typeAttr, converter->GetSQLTypeText("zip"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("blobs", 2, typeAttr, converter->GetSQLTypeText("zip"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("blobs", 3, typeAttr, converter->GetSQLTypeText("tar"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("blobs", 1, idAttr, converter->GetSQLTypeRemoteFileId(CreateFileWithData({1, 2, 3, 4, 5})))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("blobs", 2, idAttr, converter->GetSQLTypeRemoteFileId(CreateFileWithData({ 3, 2, 1})))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("blobs", 3, idAttr, converter->GetSQLTypeRemoteFileId(CreateFileWithData({ })))->HasError());
+
+		const auto dataAttr = converter->GetSQLTypeText("data");
+		ASSERT_FALSE(executorEAV->Insert("images", 1, nameAttr, converter->GetSQLTypeText("Sun"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("images", 2, nameAttr, converter->GetSQLTypeText("Tree"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("images", 3, nameAttr, converter->GetSQLTypeText("Tree"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("images", 1, dataAttr, converter->GetSQLTypeByteArray({1, 1, 1}))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("images", 2, dataAttr, converter->GetSQLTypeByteArray({ 2, 2, 3, 2 }))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("images", 3, dataAttr, converter->GetSQLTypeByteArray({ 2, 2, 3, 2 }))->HasError());
+
+		ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	}
+
+	// Действия в конце теста
+	virtual void TearDown() override
+	{
+		for (auto && createdFileName : createdFileNames)
+			ASSERT_TRUE(connection->DeleteRemoteFile(createdFileName));
+		ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
+
+		ExecutorEAVWithEmptyEnvironment::TearDown();
+	}
+};
+
+
+/// FindEntitiesByAttrValues ищет существующие записи
+TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesFindsExistingEntries)
+{
+}
+
+
+/// FindEntitiesByAttrValues не находит не существующие записи
+TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindNonExistingEntries)
+{
+}
+
+
+/// FindEntitiesByAttrValues возвращает ошибку при невалидных аргументах
+TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindWithInvalidArgs)
+{
+}
+
