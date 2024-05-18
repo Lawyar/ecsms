@@ -127,4 +127,7 @@ private: // Общие вспомогательные методы
 	IExecuteResultStatusPtr getSQLAttrName(const AttrName & attrName, std::string & sqlAttrName) const;
 	/// Получить название типа SQL
 	IExecuteResultStatusPtr getSQLTypeName(SQLDataType sqlDataType, std::string & sqlTypeName) const;
+
+	/// Проверка значения на допустимость
+	bool valueTypeIsValid(const ValueType & value);
 };

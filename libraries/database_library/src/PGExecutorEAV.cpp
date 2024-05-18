@@ -307,6 +307,10 @@ std::optional<std::string> PGExecutorEAV::getEntityIdByAttrValuePartCommand(cons
 IExecuteResultStatusPtr PGExecutorEAV::Insert(const EntityName & entityName,
 	EntityId entityId, const AttrName & _attrName, const ValueType & value)
 {
+	if (!valueTypeIsValid(value))
+		return InternalExecuteResultStatus::GetInternalError(
+			"IExecutorEAV::Insert: Invalid value", ResultStatus::EmptyQuery);
+
 	std::string sqlAttrName;
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
 		return status;
@@ -335,6 +339,10 @@ IExecuteResultStatusPtr PGExecutorEAV::Insert(const EntityName & entityName,
 IExecuteResultStatusPtr PGExecutorEAV::Update(const EntityName & entityName,
 	EntityId entityId, const AttrName & _attrName, const ValueType & value)
 {
+	if (!valueTypeIsValid(value))
+		return InternalExecuteResultStatus::GetInternalError(
+			"IExecutorEAV::Insert: Invalid value", ResultStatus::EmptyQuery);
+
 	std::string sqlAttrName;
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
 		return status;
@@ -362,6 +370,10 @@ IExecuteResultStatusPtr PGExecutorEAV::Update(const EntityName & entityName,
 IExecuteResultStatusPtr PGExecutorEAV::InsertOrUpdate(const EntityName & entityName,
 	EntityId entityId, const AttrName & _attrName, const ValueType & value)
 {
+	if (!valueTypeIsValid(value))
+		return InternalExecuteResultStatus::GetInternalError(
+			"IExecutorEAV::Insert: Invalid value", ResultStatus::EmptyQuery);
+
 	std::string sqlAttrName;
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
 		return status;
@@ -446,6 +458,9 @@ std::optional<std::string> PGExecutorEAV::insertValueCommand(const EntityName & 
 std::optional<std::string> PGExecutorEAV::insertValueOnConflictDoUpdateCommand(const EntityName & entityName,
 	EntityId entityId, const std::string & sqlAttrName, const ValueType & value) const
 {
+	if (!value)
+		return std::nullopt;
+
 	auto && partCommandOpt = insertValuePartCommand(entityName, entityId, sqlAttrName, value);
 	if (!partCommandOpt)
 		return std::nullopt;
@@ -529,9 +544,9 @@ std::string PGExecutorEAV::selectAttributeIdByNameInnerCommand(const EntityName 
 IExecuteResultStatusPtr PGExecutorEAV::GetValue(const EntityName & entityName, EntityId entityId,
 	const AttrName & _attrName, ValueType value)
 {
-	if (!value)
+	if (!valueTypeIsValid(value))
 		return InternalExecuteResultStatus::GetInternalError(
-			"IExecutorEAV::GetValue: Empty value passed", ResultStatus::EmptyQuery);
+			"IExecutorEAV::Insert: Invalid value", ResultStatus::EmptyQuery);
 
 	std::string sqlAttrName;
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
@@ -878,4 +893,18 @@ IExecuteResultStatusPtr PGExecutorEAV::getSQLTypeName(SQLDataType sqlDataType,
 			"PGExecutorEAV::getSQLTypeName: SQL typename is empty");
 	}
 	return nullptr;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  ѕроверка значени€ на допустимость
+*/
+//---
+bool PGExecutorEAV::valueTypeIsValid(const ValueType & value)
+{
+	// ≈сли тип значени€ помен€етс€, то эту проверку надо будет помен€ть
+	static_assert(std::is_same_v<ValueType, ISQLTypePtr>);
+
+	return value != nullptr;
 }
