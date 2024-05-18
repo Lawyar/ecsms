@@ -14,6 +14,80 @@
 #include <IDatabaseManager.h>
 #include <IExecutorEAVNamingRules.h>
 
+
+//------------------------------------------------------------------------------
+/**
+  Существует ли таблица
+*/
+//---
+static bool IsTableExist(const std::string & tableName, IConnection & connection)
+{
+	auto result = connection.Execute(utils::string::Format(
+			"SELECT * FROM {};",
+			tableName));
+	return !result->GetCurrentExecuteStatus()->HasError();
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Вспомогательная функция для реализации AllTablesExist/AllTablesDoNotExist
+*/
+//---
+static bool allTablesExistImpl(const std::vector<IExecutorEAV::EAVRegisterEntries> & maps,
+	IConnection & connection, const IExecutorEAVNamingRules & rules,
+	const ISQLTypeConverter & converter, bool exist)
+{
+	bool result = true;
+	for (auto && map : maps)
+	{
+		for (auto &&[entityName, attributeTypes] : map)
+		{
+			result &= (exist == IsTableExist(rules.GetEntityTableName(entityName), connection));
+			for (auto && type : attributeTypes)
+			{
+				auto && sqlVar = converter.GetSQLVariable(type);
+				if (!sqlVar)
+					continue;
+				auto && attributeType = sqlVar->GetTypeName();
+				result &= (exist == IsTableExist(rules.GetAttributeTableName(entityName,
+					attributeType), connection));
+				result &= (exist == IsTableExist(rules.GetValueTableName(entityName,
+					attributeType), connection));
+			}
+		}
+	}
+
+	return result;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Все таблицы в векторе мап существуют
+*/
+//---
+static bool AllTablesExist(const std::vector<IExecutorEAV::EAVRegisterEntries> & maps,
+	IConnection & connection, const IExecutorEAVNamingRules & rules,
+	const ISQLTypeConverter & converter)
+{
+	return allTablesExistImpl(maps, connection, rules, converter, true);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Все таблицы в векторе мап не существуют
+*/
+//---
+static bool AllTablesDoNotExist(const std::vector<IExecutorEAV::EAVRegisterEntries> & maps,
+	IConnection & connection, const IExecutorEAVNamingRules & rules,
+	const ISQLTypeConverter & converter)
+{
+	return allTablesExistImpl(maps, connection, rules, converter, false);
+}
+
+
 // Тест для проверок ExecutorEAV без создания таблиц
 class ExecutorEAVWithEmptyEnvironment : public ::testing::Test
 {
@@ -45,7 +119,7 @@ protected:
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Тесты SetRegisteredEntities
+// Тесты SetRegisteredEntities/GetRegisteredEntities
 ////////////////////////////////////////////////////////////////////////////////
 
 
@@ -67,30 +141,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesCreatesTablesWithAllVali
 	}};
 
 	// Проверим, что таблицы сейчас отсутствуют
-	for (auto && map : maps)
-	{
-		for (auto &&[entityName, attributeTypes] : map)
-		{
-			for (auto && type : attributeTypes)
-			{
-				auto && attributeType = converter->GetSQLVariable(type)->GetTypeName();
-				auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					GetRules().GetEntityTableName(entityName)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-
-				result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					GetRules().GetAttributeTableName(entityName, attributeType)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-
-				result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					executorEAV->GetNamingRules().GetValueTableName(entityName, attributeType)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-			}
-		}
-	}
+	ASSERT_TRUE(AllTablesDoNotExist(maps, *connection, GetRules(), *converter));
 
 	// Выполним запрос в рамках отмененной транзакции, чтобы не сохранять эти таблицы
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -164,30 +215,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 	} };
 
 	// Проверим, что таблицы сейчас отсутствуют
-	for (auto && map : maps)
-	{
-		for (auto &&[entityName, attributeTypes] : map)
-		{
-			for (auto && type : attributeTypes)
-			{
-				auto && attributeType = converter->GetSQLVariable(type)->GetTypeName();
-				auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					GetRules().GetEntityTableName(entityName)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-
-				result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					GetRules().GetAttributeTableName(entityName, attributeType)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-
-				result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					executorEAV->GetNamingRules().GetValueTableName(entityName, attributeType)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-			}
-		}
-	}
+	ASSERT_TRUE(AllTablesDoNotExist(maps, *connection, GetRules(), *converter));
 
 	// Выполним запрос в рамках отмененной транзакции, чтобы не сохранять эти таблицы,
 	// если они вдруг создадутся
@@ -196,28 +224,9 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 	{
 		ASSERT_FALSE(executorEAV->SetRegisteredEntities(map, false)->HasError());
 		ASSERT_EQ(executorEAV->GetRegisteredEntities(), map);
-
-		for (auto &&[entityName, attributeTypes] : map)
-		{
-			// Проверим, что таблицы не появились
-			for (auto && type : attributeTypes)
-			{
-				auto && attributeType = converter->GetSQLVariable(type)->GetTypeName();
-				auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					executorEAV->GetNamingRules().GetEntityTableName(entityName)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-
-				result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					executorEAV->GetNamingRules().GetAttributeTableName(entityName, attributeType)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-
-				result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					executorEAV->GetNamingRules().GetValueTableName(entityName, attributeType)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-			}
-		}
 	}
 
+	ASSERT_TRUE(AllTablesDoNotExist(maps, *connection, GetRules(), *converter));
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 }
 
@@ -242,31 +251,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesDoesNotCreateTablesWithI
 		ASSERT_EQ(status->GetStatus(), ResultStatus::FatalError);
 		ASSERT_TRUE(executorEAV->GetRegisteredEntities().empty());
 
-		for (auto &&[entityName, attributeTypes] : map)
-		{
-			for (auto && type : attributeTypes)
-			{
-				auto sqlVariable = converter->GetSQLVariable(type);
-				if (!sqlVariable)
-					continue;
-
-				auto && attributeType = sqlVariable->GetTypeName();
-				auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					GetRules().GetEntityTableName(entityName)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-
-				result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					GetRules().GetAttributeTableName(entityName, attributeType)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-
-				result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					executorEAV->GetNamingRules().GetValueTableName(entityName, attributeType)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-			}
-		}
+		ASSERT_TRUE(AllTablesDoNotExist({ map }, *connection, GetRules(), *converter));
 	}
 
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
@@ -294,31 +279,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 		ASSERT_EQ(status->GetStatus(), ResultStatus::FatalError);
 		ASSERT_TRUE(executorEAV->GetRegisteredEntities().empty());
 
-		for (auto &&[entityName, attributeTypes] : map)
-		{
-			for (auto && type : attributeTypes)
-			{
-				auto sqlVariable = converter->GetSQLVariable(type);
-				if (!sqlVariable)
-					continue;
-
-				auto && attributeType = sqlVariable->GetTypeName();
-				auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					GetRules().GetEntityTableName(entityName)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-
-				result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					GetRules().GetAttributeTableName(entityName, attributeType)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-
-				result = connection->Execute(utils::string::Format("SELECT * FROM {};",
-					executorEAV->GetNamingRules().GetValueTableName(entityName, attributeType)));
-				ASSERT_TRUE(result->GetCurrentExecuteStatus()->HasError());
-				ASSERT_EQ(result->GetCurrentExecuteStatus()->GetStatus(), ResultStatus::FatalError);
-			}
-		}
+		ASSERT_TRUE(AllTablesDoNotExist({ map }, *connection, GetRules(), *converter));
 	}
 
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
@@ -326,14 +287,204 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 
 
 /// SetRegisteredEntities не пересоздает уже существующие таблицы
-TEST_F(ExecutorEAVWithEmptyEnvironment, test1)
+/// при флаге createTable = true
+TEST_F(ExecutorEAVWithEmptyEnvironment,
+	SetRegisteredEntitiesDoesNotRecreateExistingTablesWithFlagCreateTableEqualTrue)
 {
+	const IExecutorEAV::EAVRegisterEntries entries({ {"SomeEntity", {SQLDataType::Integer}} });
+	std::vector<std::string> tableNames;
+	for (auto &&[entityName, attributeTypes] : entries)
+	{
+		tableNames.push_back(GetRules().GetEntityTableName(entityName));
+		for (auto && attributeType : attributeTypes)
+		{
+			auto && attributeTypeName = converter->GetSQLVariable(attributeType)->GetTypeName();
+			tableNames.push_back(GetRules().GetAttributeTableName(entityName,
+				attributeTypeName));
+			tableNames.push_back(GetRules().GetValueTableName(entityName,
+				attributeTypeName));
+		}
+	}
 
+	for (auto && tableName : tableNames)
+	{
+		{
+			// Удалим существующие таблицы, если они есть
+			auto result = connection->Execute(utils::string::Format(
+				"DROP TABLE IF EXISTS {};",
+				tableName));
+			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		}
+
+		{
+			// Создадим такие таблицы
+			auto result = connection->Execute(utils::string::Format(
+				"CREATE TABLE {} (field TEXT PRIMARY KEY);",
+				tableName));
+			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		}
+
+		{
+			// Наполним их содержимым
+			auto result = connection->Execute(utils::string::Format(
+				"INSERT INTO {} VALUES('hello');",
+				tableName));
+			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		}
+	}
+
+	{
+		// Вызовем команду executorEAV
+		auto status = executorEAV->SetRegisteredEntities(entries, true);
+		ASSERT_FALSE(status->HasError());
+		ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries);
+	}
+
+	for (auto && tableName : tableNames)
+	{
+		{
+			// Проверим, что executorEAV не пересоздал таблицы
+			auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
+				tableName));
+			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+			ASSERT_EQ(result->GetRowCount(), 1);
+			ASSERT_EQ(result->GetColCount(), 1);
+		}
+
+		{
+			// Удалим таблицы
+			auto result = connection->Execute(utils::string::Format(
+				"DROP TABLE {};",
+				tableName));
+			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		}
+	}
+}
+
+
+/// SetRegisteredEntities не пересоздает уже существующие таблицы
+/// при флаге createTable = false
+TEST_F(ExecutorEAVWithEmptyEnvironment,
+	SetRegisteredEntitiesDoesNotRecreateExistingTablesWithFlagCreateTableEqualFalse)
+{
+	const IExecutorEAV::EAVRegisterEntries entries({ {"SomeEntity", {SQLDataType::Integer}} });
+	std::vector<std::string> tableNames;
+	for (auto &&[entityName, attributeTypes] : entries)
+	{
+		tableNames.push_back(GetRules().GetEntityTableName(entityName));
+		for (auto && attributeType : attributeTypes)
+		{
+			auto && attributeTypeName = converter->GetSQLVariable(attributeType)->GetTypeName();
+			tableNames.push_back(GetRules().GetAttributeTableName(entityName,
+				attributeTypeName));
+			tableNames.push_back(GetRules().GetValueTableName(entityName,
+				attributeTypeName));
+		}
+	}
+
+	for (auto && tableName : tableNames)
+	{
+		{
+			// Удалим существующие таблицы, если они есть
+			auto result = connection->Execute(utils::string::Format(
+				"DROP TABLE IF EXISTS {};",
+				tableName));
+			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		}
+
+		{
+			// Создадим такие таблицы
+			auto result = connection->Execute(utils::string::Format(
+				"CREATE TABLE {} (field TEXT PRIMARY KEY);",
+				tableName));
+			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		}
+
+		{
+			// Наполним их содержимым
+			auto result = connection->Execute(utils::string::Format(
+				"INSERT INTO {} VALUES('hello');",
+				tableName));
+			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		}
+	}
+
+	{
+		// Вызовем команду executorEAV
+		auto status = executorEAV->SetRegisteredEntities(entries, false);
+		ASSERT_FALSE(status->HasError());
+		ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries);
+	}
+
+	for (auto && tableName : tableNames)
+	{
+		{
+			// Проверим, что executorEAV не пересоздал таблицы
+			auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
+				tableName));
+			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+			ASSERT_EQ(result->GetRowCount(), 1);
+			ASSERT_EQ(result->GetColCount(), 1);
+		}
+
+		{
+			// Удалим таблицы
+			auto result = connection->Execute(utils::string::Format(
+				"DROP TABLE {};",
+				tableName));
+			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		}
+	}
 }
 
 
 /// SetRegisteredEntities позволяет добавить новые таблицы и не удаляет старые
-TEST_F(ExecutorEAVWithEmptyEnvironment, test2)
+/// при флаге createTable = true
+TEST_F(ExecutorEAVWithEmptyEnvironment,
+	SetRegisteredEntitiesAllowsToAddNewTablesAndDoesNotRemoveOldTablesWithCreateTableFlagEqualTrue)
 {
+	const IExecutorEAV::EAVRegisterEntries entries1({ {"SomeEntity1", {SQLDataType::Integer}} });
+	const IExecutorEAV::EAVRegisterEntries entries2({ {"SomeEntity2", {SQLDataType::Integer}} });
+	ASSERT_TRUE(AllTablesDoNotExist({ entries1, entries2 }, *connection, GetRules(), *converter));
 
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries1, true)->HasError());
+	ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries1);
+	ASSERT_TRUE(AllTablesExist({ entries1 }, *connection, GetRules(), *converter));
+
+	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries2, true)->HasError());
+	ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries2);
+	ASSERT_TRUE(AllTablesExist({ entries1, entries2 }, *connection, GetRules(), *converter));
+
+	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+}
+
+
+/// SetRegisteredEntities не закрывает транзакцию
+/// при флаге createTable = true
+TEST_F(ExecutorEAVWithEmptyEnvironment,
+	SetRegisteredEntitiesDoesNotEndTransactionWithCreateTableFlagEqualTrue)
+{
+	const IExecutorEAV::EAVRegisterEntries entries1({ {"SomeEntity1", {SQLDataType::Integer}} });
+	ASSERT_TRUE(AllTablesDoNotExist({ entries1 }, *connection, GetRules(), *converter));
+
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries1, true)->HasError());
+	ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries1);
+	ASSERT_TRUE(AllTablesExist({ entries1 }, *connection, GetRules(), *converter));
+
+	// Сбросим транзакцию, закрыв соединение
+	executorEAV.reset();
+	ASSERT_EQ(connection.use_count(), 1);
+	connection.reset();
+
+	// Получим новое соединение
+	connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+	executorEAV = GetDatabaseManager().GetExecutorEAV(connection);
+
+	// Если SetRegisteredEntities фиксирует транзакцию, то изменения сохранятся.
+	// Проверим, что они не сохранились
+	ASSERT_TRUE(AllTablesDoNotExist({ entries1 }, *connection, GetRules(), *converter));
 }

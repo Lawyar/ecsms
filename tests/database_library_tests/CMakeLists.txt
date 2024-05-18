@@ -12,5 +12,5 @@ add_executable(database_library_tests
 
   TestSettings.h
 )
-target_link_libraries(database_library_tests PRIVATE database_library gtest_main)
 
+target_link_libraries(database_library_tests PRIVATE database_library gtest_main)

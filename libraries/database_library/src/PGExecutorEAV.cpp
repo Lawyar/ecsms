@@ -850,7 +850,6 @@ IExecuteResultStatusPtr PGExecutorEAV::getSQLTypeName(SQLDataType sqlDataType,
 	auto sqlVar = m_sqlTypeConverter->GetSQLVariable(sqlDataType);
 	if (!sqlVar)
 	{
-		assert(false); // ¬сегда должна возвращатьс€ непуста€ переменна€
 		return InternalExecuteResultStatus::GetInternalError(
 			"PGExecutorEAV::getSQLTypeName: Unknown SQL data type\n" +
 			std::string(ErrorMessages::ISQLTypeConverter_GetSQLVariable)
