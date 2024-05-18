@@ -13,6 +13,7 @@
 #include <Utils/StringUtils.h>
 #include <IDatabaseManager.h>
 #include <IExecutorEAVNamingRules.h>
+#include <algorithm>
 
 
 //------------------------------------------------------------------------------
@@ -651,4 +652,349 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityDoesNotBeginTransaction)
 	}
 
 	ASSERT_TRUE(DropAllTables({ entries1 }, *connection, GetRules(), *converter));
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// “есты Insert/Update/InsertOrUpdate, тестирующие доступность всех валидных типов
+////////////////////////////////////////////////////////////////////////////////
+
+// “ест дл€ проверок с предварительным созданием таблиц дл€ всех валидных типов
+class ExecutorEAVWithPreparedEnvironment : public ExecutorEAVWithEmptyEnvironment
+{
+protected:
+	std::vector<std::string> createdFileNames; ///< —озданные файлы
+	IExecutorEAV::EAVRegisterEntries registeredEntries; ///< «арегистрированные сущности
+	std::map<SQLDataType, ISQLTypePtr> values; ///< ¬алидные SQL-переменные
+	std::map<SQLDataType, ISQLTypePtr> values2; ///< ¬торой набор валидных переменных
+	std::map<SQLDataType, std::string> expectedValuesFromSQL; ///< ќжидаемое текстовое представление SQL-переменных, которое хотим получить от сервера
+	std::map<SQLDataType, std::string> expectedValues2FromSQL; ///< ¬торой набор ожидаемых значений
+
+	std::map<SQLDataType, ISQLTypeTextPtr> attributeNames; ///< Ќазвани€ атрибутов
+
+protected:
+	// ƒействи€ в начале теста
+	virtual void SetUp() override
+	{
+		ExecutorEAVWithEmptyEnvironment::SetUp();
+
+		std::vector<SQLDataType> allValidTypes;
+		for (int i = 0; i <= static_cast<int>(SQLDataType::LastValidType); ++i)
+			allValidTypes.push_back(static_cast<SQLDataType>(i));
+
+		values[SQLDataType::Integer] = converter->GetSQLTypeInteger(5);
+		expectedValuesFromSQL[SQLDataType::Integer] = "5";
+		values2[SQLDataType::Integer] = converter->GetSQLTypeInteger(7);
+		expectedValues2FromSQL[SQLDataType::Integer] = "7";
+		attributeNames[SQLDataType::Integer] = converter->GetSQLTypeText("SomeIntegerAttr");
+
+		values[SQLDataType::Text] = converter->GetSQLTypeText("hello");
+		expectedValuesFromSQL[SQLDataType::Text] = "hello";
+		values2[SQLDataType::Text] = converter->GetSQLTypeText("bye");
+		expectedValues2FromSQL[SQLDataType::Text] = "bye";
+		attributeNames[SQLDataType::Text] = converter->GetSQLTypeText("SomeTextAttr");
+
+		values[SQLDataType::ByteArray] = converter->GetSQLTypeByteArray({ 1, 2, 3, 4, 5 });
+		expectedValuesFromSQL[SQLDataType::ByteArray] = "\\x0102030405";
+		values2[SQLDataType::ByteArray] = converter->GetSQLTypeByteArray({ 0, 1, 0, 1, 0 });
+		expectedValues2FromSQL[SQLDataType::ByteArray] = "\\x0001000100";
+		attributeNames[SQLDataType::ByteArray] = converter->GetSQLTypeText("SomeByteArrayAttr");
+
+		{
+			auto && remoteFilePtr = connection->CreateRemoteFile();
+			values[SQLDataType::RemoteFileId] =
+				converter->GetSQLTypeRemoteFileId(remoteFilePtr->GetFileName());
+			expectedValuesFromSQL[SQLDataType::RemoteFileId] = remoteFilePtr->GetFileName();
+			createdFileNames.push_back(remoteFilePtr->GetFileName());
+
+			remoteFilePtr = connection->CreateRemoteFile();
+			values2[SQLDataType::RemoteFileId] =
+				converter->GetSQLTypeRemoteFileId(remoteFilePtr->GetFileName());
+			expectedValues2FromSQL[SQLDataType::RemoteFileId] = remoteFilePtr->GetFileName();
+			createdFileNames.push_back(remoteFilePtr->GetFileName());
+
+			attributeNames[SQLDataType::RemoteFileId] = converter->GetSQLTypeText("SomeRemoteFileIdAttr");
+		}
+
+		// Ќужно создать переменные всех типов
+		ASSERT_EQ(values.size(), static_cast<int>(SQLDataType::LastValidType) + 1);
+		ASSERT_EQ(values2.size(), static_cast<int>(SQLDataType::LastValidType) + 1);
+		ASSERT_EQ(expectedValuesFromSQL.size(), static_cast<int>(SQLDataType::LastValidType) + 1);
+		ASSERT_EQ(expectedValues2FromSQL.size(), static_cast<int>(SQLDataType::LastValidType) + 1);
+		ASSERT_EQ(attributeNames.size(), static_cast<int>(SQLDataType::LastValidType) + 1);
+
+		const std::string entityName1 = "SomeEntity1", entityName2 = "SomeEntity2";
+		registeredEntries = IExecutorEAV::EAVRegisterEntries({
+			{entityName1, allValidTypes},
+			{entityName2, allValidTypes} });
+		ASSERT_TRUE(AllTablesDoNotExist({ registeredEntries }, *connection, GetRules(), *converter));
+
+		ASSERT_FALSE(executorEAV->SetRegisteredEntities(registeredEntries, true)->HasError());
+	}
+
+	// ƒействи€ в конце теста
+	virtual void TearDown() override
+	{
+		// ќтменим на вс€кий случай транзакцию, если сейчас есть активна€
+		ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+
+		for (auto && createdFileName : createdFileNames)
+			ASSERT_TRUE(connection->DeleteRemoteFile(createdFileName));
+
+		ASSERT_TRUE(DropAllTables({ registeredEntries }, *connection, GetRules(), *converter));
+
+		ExecutorEAVWithEmptyEnvironment::TearDown();
+	}
+};
+
+/// Insert вставл€ет значени€ всех доступных типов
+TEST_F(ExecutorEAVWithPreparedEnvironment, InsertInsertsValue)
+{
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	for (auto &&[entityName, attributeTypes] : registeredEntries)
+	{
+		int result = -1;
+		ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
+		ASSERT_EQ(result, 1);
+
+		for (auto && attributeType : attributeTypes)
+		{
+			ASSERT_FALSE(executorEAV->Insert(entityName, result, attributeNames[attributeType],
+				values[attributeType])->HasError());
+		}
+	}
+
+	for (auto && [entityName, attributeTypes] : registeredEntries)
+	{
+		for (auto && attributeType : attributeTypes)
+		{
+			auto && attributeTypeName = converter->GetSQLVariable(attributeType)->GetTypeName();
+
+			auto attributeTableName = GetRules().GetAttributeTableName(entityName, attributeTypeName);
+			auto valueTableName = GetRules().GetValueTableName(entityName, attributeTypeName);
+
+			{
+				auto result = connection->Execute(utils::string::Format(
+					"SELECT * FROM {};", attributeTableName));
+				ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+				ASSERT_EQ(result->GetRowCount(), 1);
+				ASSERT_EQ(result->GetColCount(), 2);
+				auto attrId = GetRules().GetAttributeTable_Short_IdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrId), 0);
+				auto attrName = GetRules().GetAttributeTable_Short_NameField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrName), 1);
+
+				ASSERT_EQ(result->GetValue(0, 0).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 1).ExtractString(), attributeNames[attributeType]->GetValue());
+			}
+			{
+				auto result = connection->Execute(utils::string::Format(
+					"SELECT * FROM {};", valueTableName));
+				ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+
+				ASSERT_EQ(result->GetRowCount(), 1);
+				ASSERT_EQ(result->GetColCount(), 3);
+				auto entityId = GetRules().GetValueTable_Short_EntityIdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(entityId), 0);
+				auto attrId = GetRules().GetValueTable_Short_AttributeIdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrId), 1);
+				auto valueField = GetRules().GetValueTable_Short_ValueField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(valueField), 2);
+
+				ASSERT_EQ(result->GetValue(0, 0).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 1).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 2).ExtractString(), expectedValuesFromSQL[attributeType]);
+			}
+		}
+	}
+
+	ASSERT_FALSE(connection->CommitTransaction()->HasError());
+}
+
+
+/// Update обновл€ет значени€ всех доступных типов
+TEST_F(ExecutorEAVWithPreparedEnvironment, UpdateUpdatesValue)
+{
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	for (auto &&[entityName, attributeTypes] : registeredEntries)
+	{
+		int result = -1;
+		ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
+		ASSERT_EQ(result, 1);
+
+		for (auto && attributeType : attributeTypes)
+		{
+			ASSERT_FALSE(executorEAV->Insert(entityName, result, attributeNames[attributeType],
+				values[attributeType])->HasError());
+			ASSERT_FALSE(executorEAV->Update(entityName, result, attributeNames[attributeType],
+				values2[attributeType])->HasError());
+		}
+	}
+
+	for (auto &&[entityName, attributeTypes] : registeredEntries)
+	{
+		for (auto && attributeType : attributeTypes)
+		{
+			auto && attributeTypeName = converter->GetSQLVariable(attributeType)->GetTypeName();
+
+			auto attributeTableName = GetRules().GetAttributeTableName(entityName, attributeTypeName);
+			auto valueTableName = GetRules().GetValueTableName(entityName, attributeTypeName);
+
+			{
+				auto result = connection->Execute(utils::string::Format(
+					"SELECT * FROM {};", attributeTableName));
+				ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+				ASSERT_EQ(result->GetRowCount(), 1);
+				ASSERT_EQ(result->GetColCount(), 2);
+				auto attrId = GetRules().GetAttributeTable_Short_IdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrId), 0);
+				auto attrName = GetRules().GetAttributeTable_Short_NameField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrName), 1);
+
+				ASSERT_EQ(result->GetValue(0, 0).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 1).ExtractString(), attributeNames[attributeType]->GetValue());
+			}
+			{
+				auto result = connection->Execute(utils::string::Format(
+					"SELECT * FROM {};", valueTableName));
+				ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+
+				ASSERT_EQ(result->GetRowCount(), 1);
+				ASSERT_EQ(result->GetColCount(), 3);
+				auto entityId = GetRules().GetValueTable_Short_EntityIdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(entityId), 0);
+				auto attrId = GetRules().GetValueTable_Short_AttributeIdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrId), 1);
+				auto valueField = GetRules().GetValueTable_Short_ValueField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(valueField), 2);
+
+				ASSERT_EQ(result->GetValue(0, 0).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 1).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 2).ExtractString(), expectedValues2FromSQL[attributeType]);
+			}
+		}
+	}
+
+	ASSERT_FALSE(connection->CommitTransaction()->HasError());
+}
+
+
+/// InsertOrUpdate вставл€ет или обновл€ет значени€ всех доступных типов
+TEST_F(ExecutorEAVWithPreparedEnvironment, InsertOrUpdateInsertsOrUpdatesValue)
+{
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	for (auto &&[entityName, attributeTypes] : registeredEntries)
+	{
+		int result = -1;
+		ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
+		ASSERT_EQ(result, 1);
+
+		for (auto && attributeType : attributeTypes)
+		{
+			ASSERT_FALSE(executorEAV->InsertOrUpdate(entityName, result, attributeNames[attributeType],
+				values[attributeType])->HasError());
+		}
+	}
+
+	for (auto &&[entityName, attributeTypes] : registeredEntries)
+	{
+		for (auto && attributeType : attributeTypes)
+		{
+			auto && attributeTypeName = converter->GetSQLVariable(attributeType)->GetTypeName();
+
+			auto attributeTableName = GetRules().GetAttributeTableName(entityName, attributeTypeName);
+			auto valueTableName = GetRules().GetValueTableName(entityName, attributeTypeName);
+
+			{
+				auto result = connection->Execute(utils::string::Format(
+					"SELECT * FROM {};", attributeTableName));
+				ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+				ASSERT_EQ(result->GetRowCount(), 1);
+				ASSERT_EQ(result->GetColCount(), 2);
+				auto attrId = GetRules().GetAttributeTable_Short_IdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrId), 0);
+				auto attrName = GetRules().GetAttributeTable_Short_NameField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrName), 1);
+
+				ASSERT_EQ(result->GetValue(0, 0).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 1).ExtractString(), attributeNames[attributeType]->GetValue());
+			}
+			{
+				auto result = connection->Execute(utils::string::Format(
+					"SELECT * FROM {};", valueTableName));
+				ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+
+				ASSERT_EQ(result->GetRowCount(), 1);
+				ASSERT_EQ(result->GetColCount(), 3);
+				auto entityId = GetRules().GetValueTable_Short_EntityIdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(entityId), 0);
+				auto attrId = GetRules().GetValueTable_Short_AttributeIdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrId), 1);
+				auto valueField = GetRules().GetValueTable_Short_ValueField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(valueField), 2);
+
+				ASSERT_EQ(result->GetValue(0, 0).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 1).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 2).ExtractString(), expectedValuesFromSQL[attributeType]);
+			}
+		}
+	}
+
+	for (auto &&[entityName, attributeTypes] : registeredEntries)
+	{
+		for (auto && attributeType : attributeTypes)
+		{
+			ASSERT_FALSE(executorEAV->InsertOrUpdate(entityName, 1, attributeNames[attributeType],
+				values2[attributeType])->HasError());
+		}
+	}
+
+	for (auto &&[entityName, attributeTypes] : registeredEntries)
+	{
+		for (auto && attributeType : attributeTypes)
+		{
+			auto && attributeTypeName = converter->GetSQLVariable(attributeType)->GetTypeName();
+
+			auto attributeTableName = GetRules().GetAttributeTableName(entityName, attributeTypeName);
+			auto valueTableName = GetRules().GetValueTableName(entityName, attributeTypeName);
+
+			{
+				auto result = connection->Execute(utils::string::Format(
+					"SELECT * FROM {};", attributeTableName));
+				ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+				ASSERT_EQ(result->GetRowCount(), 1);
+				ASSERT_EQ(result->GetColCount(), 2);
+				auto attrId = GetRules().GetAttributeTable_Short_IdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrId), 0);
+				auto attrName = GetRules().GetAttributeTable_Short_NameField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrName), 1);
+
+				ASSERT_EQ(result->GetValue(0, 0).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 1).ExtractString(), attributeNames[attributeType]->GetValue());
+			}
+			{
+				auto result = connection->Execute(utils::string::Format(
+					"SELECT * FROM {};", valueTableName));
+				ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+
+				ASSERT_EQ(result->GetRowCount(), 1);
+				ASSERT_EQ(result->GetColCount(), 3);
+				auto entityId = GetRules().GetValueTable_Short_EntityIdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(entityId), 0);
+				auto attrId = GetRules().GetValueTable_Short_AttributeIdField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(attrId), 1);
+				auto valueField = GetRules().GetValueTable_Short_ValueField(entityName, attributeTypeName);
+				ASSERT_EQ(result->GetColIndex(valueField), 2);
+
+				ASSERT_EQ(result->GetValue(0, 0).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 1).ExtractString(), "1");
+				ASSERT_EQ(result->GetValue(0, 2).ExtractString(), expectedValues2FromSQL[attributeType]);
+			}
+		}
+	}
+
+	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
