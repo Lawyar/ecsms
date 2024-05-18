@@ -20,6 +20,8 @@ namespace utils::string
 	bool HasOnlyDigits(const std::string & str);
 	///  Замена всех подстрок
 	void ReplaceAll(std::string & str, const std::string & before, const std::string & after);
+	/// Посчитать количество вхождений подстроки в строку
+	size_t GetSubstringsCount(const std::string & str, const std::string & substr);
 
 	/// Перевести в строку
 	template <class T>
@@ -54,6 +56,12 @@ namespace utils::string
 	template<typename ... Args>
 	std::string Format(const std::string & _format, Args ... args)
 	{
+		if (sizeof...(args) != GetSubstringsCount(_format, "{}"))
+		{
+			assert(false);
+			return "";
+		}
+
 		auto format = _format;
 		ReplaceAll(format, "%", "%%"); // передаем в функцию snprintf, значит нужно экранировать проценты
 		ReplaceAll(format, "{}", "%s");

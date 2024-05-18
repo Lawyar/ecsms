@@ -69,3 +69,23 @@ void utils::string::ReplaceAll(std::string & str, const std::string & before, co
 		str.replace(findPos, before.size(), after);
 	}
 }
+
+
+//------------------------------------------------------------------------------
+/**
+	Посчитать количество вхождений подстроки в строку
+	\param str Строка
+	\param substr Подстрока
+*/
+//---
+size_t utils::string::GetSubstringsCount(const std::string & str, const std::string & substr)
+{
+	size_t count = 0;
+	for (size_t pos = str.find(substr, 0);
+		pos != std::string::npos;
+		pos = str.find(substr, pos + substr.size())) {
+		++count;
+	}
+	return count;
+}
+
