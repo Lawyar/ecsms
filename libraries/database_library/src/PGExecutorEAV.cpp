@@ -477,12 +477,20 @@ std::optional<std::string> PGExecutorEAV::updateValueCommand(const EntityName & 
 
 	return utils::string::Format(
 		// Бросим ошибку, если в таблице сущностей нет обновляемого идентификатора
-		"DO $$DECLARE BEGIN IF NOT EXISTS (SELECT * FROM {} WHERE {} = {}) THEN RAISE EXCEPTION 'There is no entity with such id'; END IF; END; $$;\n"
+		"DO $$DECLARE BEGIN IF NOT EXISTS (SELECT * FROM {} WHERE {} = {}) THEN RAISE EXCEPTION 'There is no entity with such id ({})'; END IF; END; $$;\n"
+		// Бросим ошибку, если в таблице атрибутов нет обновляемого атрибута
+		"DO $$DECLARE BEGIN IF NOT EXISTS (SELECT * FROM {} WHERE {} = {}) THEN RAISE EXCEPTION 'There is no attribute with such name (%)', {}; END IF; END; $$;\n"
 		"UPDATE {} SET {} = {}\n"
 		"WHERE ({}, {}) = ({}, {});\n",
 		m_rules.GetEntityTableName(entityName),
 		m_rules.GetEntityTable_Short_IdField(entityName),
 		entityId,
+		entityId,
+
+		m_rules.GetAttributeTableName(entityName, attributeType),
+		m_rules.GetAttributeTable_Short_NameField(entityName, attributeType),
+		sqlAttrName,
+		sqlAttrName,
 
 		m_rules.GetValueTableName(entityName, attributeType),
 		m_rules.GetValueTable_Short_ValueField(entityName, attributeType),

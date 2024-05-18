@@ -1321,3 +1321,39 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdateWithInvalidEn
 
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 }
+
+
+////////////////////////////////////////////////////////////////////////////////
+/// Дополнительные тесты Update
+////////////////////////////////////////////////////////////////////////////////
+
+/// Update не обновляет таблицы при невалидном названии обновляемого атрибута
+TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithInvalidAttributeName)
+{
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	const std::string entityName = "SomeEntity1";
+
+	const SQLDataType attributeType = SQLDataType::Integer;
+	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)
+		->GetTypeName();
+
+	ASSERT_FALSE(executorEAV->SetRegisteredEntities({ {entityName, {attributeType}} }, true)
+		->HasError());
+
+	int result = -1;
+	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
+	ASSERT_EQ(result, 1);
+
+	std::string attributeName = "SomeIntegerAttr";
+	// Добавим запись, чтобы было, что обновлять
+	ASSERT_FALSE(executorEAV->Insert(entityName, result,
+		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
+		->HasError());
+
+	ASSERT_TRUE(executorEAV->Update(entityName, result,
+		converter->GetSQLTypeText(std::string(attributeName + "Invalid")),
+		converter->GetSQLTypeInteger(6))->HasError());
+
+	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+}
