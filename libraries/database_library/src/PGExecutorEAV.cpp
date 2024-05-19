@@ -470,11 +470,19 @@ IExecuteResultStatusPtr PGExecutorEAV::Insert(const EntityName & entityName,
 
 	std::string query;
 	query += insertAttributeOnConflictDoNothingCommand(entityName, value->GetTypeName(), sqlAttrName);
-	if (auto insertCommand = insertValueCommand(entityName, entityId, sqlAttrName, value))
-		query += *insertCommand;
+	if (!value->IsEmpty())
+	{
+		if (auto insertCommand = insertValueCommand(entityName, entityId, sqlAttrName, value))
+			query += *insertCommand;
+		else
+			return InternalExecuteResultStatus::GetInternalError(
+				"IExecutorEAV::Insert: Empty value was passed", ResultStatus::EmptyQuery);
+	}
 	else
-		return InternalExecuteResultStatus::GetInternalError(
-			"IExecutorEAV::Insert: Empty value was passed", ResultStatus::EmptyQuery);
+	{
+		// Если значение пустое, то ничего не вставляем в таблицу значений
+		// (только добавляем атрибут (если это возможно, конечно))
+	}
 
 	IExecuteResultPtr result;
 	IExecuteResultStatusPtr resultStatus;
