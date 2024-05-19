@@ -24,11 +24,11 @@ TEST(SQLTypeRemoteFileId, GetValue) {
 	auto && var4 = converter->GetSQLTypeRemoteFileId("hello");
 	auto && var5 = converter->GetSQLTypeRemoteFileId("12345 hello");
 
-	ASSERT_EQ(var1->GetId(), std::nullopt);
-	ASSERT_EQ(var2->GetId(), "0");
-	ASSERT_EQ(var3->GetId(), "12345");
-	ASSERT_EQ(var4->GetId(), std::nullopt);
-	ASSERT_EQ(var5->GetId(), std::nullopt);
+	ASSERT_EQ(var1->GetValue(), std::nullopt);
+	ASSERT_EQ(var2->GetValue(), "0");
+	ASSERT_EQ(var3->GetValue(), "12345");
+	ASSERT_EQ(var4->GetValue(), std::nullopt);
+	ASSERT_EQ(var5->GetValue(), std::nullopt);
 }
 
 
@@ -106,7 +106,7 @@ TEST(SQLTypeRemoteFileId, ReadFromSQL) {
 			auto sqlStringCopy = std::string(sqlString);
 			bool result = sqlVar->ReadFromSQL(std::move(sqlStringCopy));
 			ASSERT_EQ(result, expectedReadResult);
-			ASSERT_EQ(sqlVar->GetId(), expectedGetValueResult);
+			ASSERT_EQ(sqlVar->GetValue(), expectedGetValueResult);
 			if (result)
 				// Если результат успешный, то строка должна была переместиться. То есть стать пустой.
 				ASSERT_TRUE(sqlStringCopy.empty());

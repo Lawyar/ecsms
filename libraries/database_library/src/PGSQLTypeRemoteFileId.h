@@ -19,7 +19,7 @@ public:
 
 public: // ISQLTypeRemoteFileId
 	/// Получить идентификатор
-	virtual const std::optional<std::string> & GetId() const override;
+	virtual const std::optional<std::string> & GetValue() const override;
 
 public: // ISQLType
 	/// Сконвертировать в строку

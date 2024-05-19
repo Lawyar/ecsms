@@ -2443,6 +2443,6 @@ TEST_F(ExecutorEAVWithFilledEnvironment, GetValueGetsForExistingEntities)
 		ISQLTypeRemoteFileIdPtr remoteFileIdValue = converter->GetSQLTypeRemoteFileId();
 		EXPECT_FALSE(executorEAV->GetValue("blobs", 2, converter->GetSQLTypeText("Id"),
 			remoteFileIdValue)->HasError());
-		EXPECT_EQ(remoteFileIdValue->GetId(), createdFileNames[1]);
+		EXPECT_EQ(remoteFileIdValue->GetValue(), createdFileNames[1]);
 	}
 }

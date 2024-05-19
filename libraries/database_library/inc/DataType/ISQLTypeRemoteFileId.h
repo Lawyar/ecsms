@@ -19,7 +19,7 @@ public:
 
 public:
 	/// Получить идентификатор удаленного файла
-	virtual const std::optional<std::string> & GetId() const = 0;
+	virtual const std::optional<std::string> & GetValue() const = 0;
 };
 
 

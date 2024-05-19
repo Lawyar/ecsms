@@ -19,7 +19,7 @@ PGSQLTypeRemoteFileId::PGSQLTypeRemoteFileId(const std::string & id)
   Получить идентификатор
 */
 //---
-const std::optional<std::string>& PGSQLTypeRemoteFileId::GetId() const
+const std::optional<std::string>& PGSQLTypeRemoteFileId::GetValue() const
 {
 	return m_id;
 }
@@ -32,7 +32,7 @@ const std::optional<std::string>& PGSQLTypeRemoteFileId::GetId() const
 //---
 std::optional<std::string> PGSQLTypeRemoteFileId::ToSQLString() const
 {
-	return GetId();
+	return GetValue();
 }
 
 
