@@ -2164,6 +2164,13 @@ TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesFindsExistingEn
 			result)->HasError());
 	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 1 }));
 
+	//    5. С пустым значением атрибута
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+		{converter->GetSQLTypeText("Name"), converter->GetSQLTypeText()} }),
+		result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 4 }));
+
 	// II. Поиск нескольких записей с одинаковым значением одного атрибута
 	result = { 7, 4, 5, 3 };
 	EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
@@ -2386,13 +2393,7 @@ TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindWith
 	// III. Невалидное значение атрибута.
 
 	//    1. Пустое значение атрибута
-	result = { 7, 4, 5, 3 };
-	status = executorEAV->FindEntitiesByAttrValues("users", std::vector<IExecutorEAV::AttrValue>({
-		{converter->GetSQLTypeText("Name"), converter->GetSQLTypeText()} }),
-		result);
-	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
-	EXPECT_TRUE(status->HasError());
-	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
+	//       Это не ошибка.
 
 	//    2. Нулевое значение атрибута
 	result = { 7, 4, 5, 3 };

@@ -85,20 +85,24 @@ public: // Методы для создания новых сущностей и поиска уже существующих сущност
 	virtual IExecuteResultStatusPtr CreateNewEntity(const EntityName & entityName, EntityId & result) = 0;
 	/// Получить все идентификаторы сущности данного вида
 	/// \param entityName Название сущности
-	/// \param[out] result Массив идентификаторов сущности. Массив прочищается перед записью результата.
+	/// \param[out] result Массив идентификаторов сущности.
+	///                    В случае успеха массив прочищается перед записью результата.
 	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr GetEntityIds(const EntityName & entityName,
 		std::vector<EntityId> & result) = 0;
 	/// Получить все наименования атрибутов указанного типа, которые использует данная сущность
 	/// \param entityName Название сущности
 	/// \param sqlDataType Тип атрибута
-	/// \param result[out] Массив наименований атрибутов.  Массив прочищается перед записью результата.
+	/// \param result[out] Массив наименований атрибутов.
+	///                    В случае успеха массив прочищается перед записью результата.
 	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr GetAttributeNames(const EntityName & entityName,
 		SQLDataType sqlDataType, std::vector<AttrName> & result) = 0;
 	/// Найти сущности, у которых есть все из указанных пар атрибут-значение
 	/// \param entityName Название сущности
-	/// \param attrValues Массив пар атрибут-значение
+	/// \param attrValues Массив пар атрибут-значение.
+	///                   В качестве значения может быть передана пустая переменная.
+	///                   Тогда произведен поиск таких атрибутов сущности, у которых значение не задано.
 	/// \param[out] result Массив идентификаторов сущности, у которых есть все из указанных пар атрибут-значение
 	///                     Массив прочищается перед записью результата.
 	/// \return Статус выполнения операции
@@ -110,7 +114,9 @@ public: // Методы для вставки/обновления данных
 	/// \param entityName Название сущности
 	/// \param entityId Идентфикатор сущности
 	/// \param attrName Наименование атрибута
-	/// \param value Значение атрибута
+	/// \param value Значение атрибута. Если значение атрибута пустое,
+	///              то значение не будет вставлено в таблицу значений.
+	///              (Смысл EAV в том, что мы не храним null)
 	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr Insert(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, const ValueType & value) = 0;
@@ -118,7 +124,9 @@ public: // Методы для вставки/обновления данных
 	/// \param entityName Название сущности
 	/// \param entityId Идентфикатор сущности
 	/// \param attrName Наименование атрибута
-	/// \param value Значение атрибута
+	/// \param value Значение атрибута. Если значение атрибута пустое, то значение для атрибута сущности
+	///              будет удалено из таблицы значений.
+	///              (Смысл EAV в том, что мы не храним null)
 	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr Update(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, const ValueType & value) = 0;
@@ -126,7 +134,10 @@ public: // Методы для вставки/обновления данных
 	/// \param entityName Название сущности
 	/// \param entityId Идентфикатор сущности
 	/// \param attrName Наименование атрибута
-	/// \param value Значение атрибута
+	/// \param value Значение атрибута. Если значение атрибута пустое,
+	///              то значение не будет вставлено в таблицу значений (если его не было),
+	///              или будет удалено из таблицы значений (если оно было).
+	///              (Смысл EAV в том, что мы не храним null)
 	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr InsertOrUpdate(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, const ValueType & value) = 0;
@@ -151,6 +162,8 @@ public: // Методы для получения данных
 	/// \param entityName Название сущности
 	/// \param entityId Идентификатор сущности
 	/// \param[out] attrValues Массив пар атрибут-значение, ассоциированных с данной сущностью.
+	///                        Метод возвращает также те пары атрибут-значение, в которых значение не задано:
+	///                        тогда значение будет представлено пустой SQL-переменной.
 	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr GetAttributeValues(const EntityName & entityName,
 		EntityId entityId, std::vector<AttrValue> & attrValues) = 0;

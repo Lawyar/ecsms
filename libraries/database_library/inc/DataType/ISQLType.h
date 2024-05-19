@@ -24,6 +24,9 @@ public:
 	/// Получить название SQL-типа
 	virtual const std::string & GetTypeName() const = 0;
 
+	/// Переменная является пустой
+	bool IsEmpty() const { return !ToSQLString().has_value(); }
+
 public:
 	/// Получить тип данных
 	virtual SQLDataType GetType() const = 0;

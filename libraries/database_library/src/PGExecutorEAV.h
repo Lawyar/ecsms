@@ -67,8 +67,8 @@ private:
 	/// Получить команду "получить названия атрибутов указанного типа, которые использует данная сущность"
 	std::string getAttributeNamesCommand(const std::string & entityName,
 		const std::string & attributeType) const;
-	/// Получить часть команды "получить идентификаторы сущности по названию атрибута и его значению"
-	std::optional<std::string> getEntityIdByAttrValuePartCommand(const EntityName & entityName,
+	/// Получить внутреннюю команду "получить идентификаторы сущности по названию атрибута и его значению"
+	std::optional<std::string> getEntityIdByAttrValueInnerCommand(const EntityName & entityName,
 		const AttrValue & attrValue) const;
 
 public: // Методы для вставки/обновления данных

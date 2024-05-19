@@ -316,7 +316,7 @@ IExecuteResultStatusPtr PGExecutorEAV::FindEntitiesByAttrValues(const EntityName
 	{
 		if (!query.empty())
 			query += "  INTERSECT\n";
-		if (auto currentPartCommand = getEntityIdByAttrValuePartCommand(entityName, attrValue))
+		if (auto currentPartCommand = getEntityIdByAttrValueInnerCommand(entityName, attrValue))
 			query += *currentPartCommand;
 		else
 			return InternalExecuteResultStatus::GetInternalError(
@@ -398,33 +398,57 @@ std::string PGExecutorEAV::getAttributeNamesCommand(const std::string & entityNa
 
 //------------------------------------------------------------------------------
 /**
-  Получить часть команды "получить идентификаторы сущности по названию атрибута
+  Получить внутреннюю команды "получить идентификаторы сущности по названию атрибута
   и его значению"
 */
 //---
-std::optional<std::string> PGExecutorEAV::getEntityIdByAttrValuePartCommand(const EntityName & entityName,
+std::optional<std::string> PGExecutorEAV::getEntityIdByAttrValueInnerCommand(const EntityName & entityName,
 	const AttrValue & attrValue) const
 {
 	if (!attrValue.value || !attrValue.attrName)
 		return std::nullopt;
 
-	auto attrValueStrOpt = attrValue.value->ToSQLString();
 	auto attrNameStrOpt = attrValue.attrName->ToSQLString();
-	if (!attrValueStrOpt || !attrNameStrOpt)
+	if (!attrNameStrOpt)
 		return std::nullopt;
-
+	
+	auto attrValueStrOpt = attrValue.value->ToSQLString();
 	auto && attributeType = attrValue.value->GetTypeName();
-	return utils::string::Format(
-		"SELECT {} FROM {} WHERE {} = {} AND {} IN (SELECT {} FROM {} WHERE {} = {})\n",
-		GetNamingRules().GetValueTable_Short_EntityIdField(entityName, attributeType),
-		GetNamingRules().GetValueTableName(entityName, attributeType),
-		GetNamingRules().GetValueTable_Short_ValueField(entityName, attributeType),
-		*attrValueStrOpt,
-		GetNamingRules().GetValueTable_Short_AttributeIdField(entityName, attributeType),
-		GetNamingRules().GetAttributeTable_Short_IdField(entityName, attributeType),
-		GetNamingRules().GetAttributeTableName(entityName, attributeType),
-		GetNamingRules().GetAttributeTable_Short_NameField(entityName, attributeType),
-		*attrNameStrOpt);
+
+	if (attrValueStrOpt.has_value())
+	{
+		return utils::string::Format(
+			"(SELECT {} FROM {} WHERE {} = {} AND {} IN (SELECT {} FROM {} WHERE {} = {}))\n",
+			GetNamingRules().GetValueTable_Short_EntityIdField(entityName, attributeType),
+			GetNamingRules().GetValueTableName(entityName, attributeType),
+			GetNamingRules().GetValueTable_Short_ValueField(entityName, attributeType),
+			*attrValueStrOpt,
+			GetNamingRules().GetValueTable_Short_AttributeIdField(entityName, attributeType),
+			GetNamingRules().GetAttributeTable_Short_IdField(entityName, attributeType),
+			GetNamingRules().GetAttributeTableName(entityName, attributeType),
+			GetNamingRules().GetAttributeTable_Short_NameField(entityName, attributeType),
+			*attrNameStrOpt
+		);
+	}
+	else if (attrValue.value->IsEmpty())
+	{
+		// Если значение пустое, то найдем все идентификаторы сущностей, у которых данных
+		// данный атрибут не задан. Для этого возьмем все идентификаторы и исключим из них те,
+		// у которых значение по атрибуту задано (т.е. присутствует запись в таблице значений).
+		return utils::string::Format(
+			"(SELECT * FROM {} EXCEPT SELECT {} FROM {} WHERE {} IN (SELECT {} FROM {} WHERE {} = {}))\n",
+			GetNamingRules().GetEntityTableName(entityName),
+			GetNamingRules().GetValueTable_Short_EntityIdField(entityName, attributeType),
+			GetNamingRules().GetValueTableName(entityName, attributeType),
+			GetNamingRules().GetValueTable_Short_AttributeIdField(entityName, attributeType),
+			GetNamingRules().GetAttributeTable_Short_IdField(entityName, attributeType),
+			GetNamingRules().GetAttributeTableName(entityName, attributeType),
+			GetNamingRules().GetAttributeTable_Short_NameField(entityName, attributeType),
+			*attrNameStrOpt
+		);
+	}
+	
+	return std::nullopt;
 }
 
 
