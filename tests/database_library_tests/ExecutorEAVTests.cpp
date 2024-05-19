@@ -1885,7 +1885,8 @@ TEST_F(ExecutorEAVForCheckTransactions, UpdateDoesNotEndTransaction)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Тесты для GetEntityIds/GetAttributeNames/FindEntitiesByAttrValues/GetValue
+/// Тесты для GetEntityIds, GetAttributeNames, FindEntitiesByAttrValues,
+/// GetValue, GetAttributeValues
 ////////////////////////////////////////////////////////////////////////////////
 
 /// Класс для проверок с заполненным окружением
@@ -2049,6 +2050,81 @@ TEST_F(ExecutorEAVWithFilledEnvironment, GetEntityIdsDoesNotWorkForNonExistingEn
 	result = { 7, 4, 5, 3 };
 	EXPECT_TRUE(executorEAV->GetEntityIds("birds", result)->HasError());
 	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
+}
+
+
+/// GetAttributeNames работает с существующими сущностями и атрибутами
+TEST_F(ExecutorEAVWithFilledEnvironment,
+	GetAttributeNamesWorksForExistingEntityAndExistingAttributes)
+{
+	std::vector<ISQLTypeTextPtr> result;
+
+	// допишем nullptr, чтобы проверить, что вектор прочищается
+	result.push_back(nullptr);
+	EXPECT_FALSE(executorEAV->GetAttributeNames("users", SQLDataType::Text, result)->HasError());
+	EXPECT_EQ(result.size(), 1);
+	EXPECT_EQ(result[0]->GetValue(), "Name");
+
+	result.clear();
+	EXPECT_FALSE(executorEAV->GetAttributeNames("products", SQLDataType::Text, result)->HasError());
+	EXPECT_EQ(result.size(), 2);
+	EXPECT_EQ(result[0]->GetValue(), "Name");
+	EXPECT_EQ(result[1]->GetValue(), "Description");
+	EXPECT_FALSE(executorEAV->GetAttributeNames("products", SQLDataType::Integer, result)->HasError());
+	EXPECT_EQ(result.size(), 1);
+	EXPECT_EQ(result[0]->GetValue(), "Price");
+
+	EXPECT_FALSE(executorEAV->GetAttributeNames("blobs", SQLDataType::Text, result)->HasError());
+	EXPECT_EQ(result.size(), 1);
+	EXPECT_EQ(result[0]->GetValue(), "Type");
+	EXPECT_FALSE(executorEAV->GetAttributeNames("blobs", SQLDataType::RemoteFileId, result)->HasError());
+	EXPECT_EQ(result.size(), 1);
+	EXPECT_EQ(result[0]->GetValue(), "Id");
+
+	EXPECT_FALSE(executorEAV->GetAttributeNames("images", SQLDataType::Text, result)->HasError());
+	EXPECT_EQ(result.size(), 1);
+	EXPECT_EQ(result[0]->GetValue(), "Name");
+	EXPECT_FALSE(executorEAV->GetAttributeNames("images", SQLDataType::ByteArray, result)->HasError());
+	EXPECT_EQ(result.size(), 1);
+	EXPECT_EQ(result[0]->GetValue(), "Data");
+}
+
+
+/// GetAttributeNames не работает с существующими сущностями и несуществующими атрибутами
+TEST_F(ExecutorEAVWithFilledEnvironment,
+	GetAttributeNamesDoesNotWorkForExistingEntityAndNonExistingAttributes)
+{
+	std::vector<ISQLTypeTextPtr> result;
+
+	// допишем nullptr, чтобы проверить, что вектор не прочищается
+	result.push_back(nullptr);
+	result.push_back(nullptr);
+	result.push_back(nullptr);
+	// У users нет атрибута SQLDataType::ByteArray
+	EXPECT_TRUE(executorEAV->GetAttributeNames("users", SQLDataType::ByteArray, result)->HasError());
+	EXPECT_EQ(result.size(), 3);
+	EXPECT_EQ(result[0], nullptr);
+	EXPECT_EQ(result[1], nullptr);
+	EXPECT_EQ(result[2], nullptr);
+}
+
+
+/// GetAttributeNames не работает с несуществующими сущностями
+TEST_F(ExecutorEAVWithFilledEnvironment,
+	GetAttributeNamesDoesNotWorkForNonExistingEntity)
+{
+	std::vector<ISQLTypeTextPtr> result;
+
+	// допишем nullptr, чтобы проверить, что вектор не прочищается
+	result.push_back(nullptr);
+	result.push_back(nullptr);
+	result.push_back(nullptr);
+	// Не существует сущности "birds"
+	EXPECT_TRUE(executorEAV->GetAttributeNames("birds", SQLDataType::Integer, result)->HasError());
+	EXPECT_EQ(result.size(), 3);
+	EXPECT_EQ(result[0], nullptr);
+	EXPECT_EQ(result[1], nullptr);
+	EXPECT_EQ(result[2], nullptr);
 }
 
 
@@ -2242,14 +2318,97 @@ TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesFindsExistingEn
 }
 
 
-/// FindEntitiesByAttrValues не находит не существующие записи
-TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindNonExistingEntries)
-{
-}
-
-
 /// FindEntitiesByAttrValues возвращает ошибку при невалидных аргументах
 TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindWithInvalidArgs)
 {
-}
+	std::vector<IExecutorEAV::EntityId> result;
 
+	// Подготовка. Сначала проверим, что поиск вообще работает.
+
+	// будем заполнять вектор мусором, чтобы дополнительно проверять, что метод его не чистит
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("users", std::vector<IExecutorEAV::AttrValue>({
+			{converter->GetSQLTypeText("Name"), converter->GetSQLTypeText("Ivan")} }),
+			result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 1 }));
+
+	// I. Невалидное название сущности.
+
+	//    1. Несуществующее название сущности
+	result = { 7, 4, 5, 3 };
+	auto status = executorEAV->FindEntitiesByAttrValues("birds", std::vector<IExecutorEAV::AttrValue>({
+		{converter->GetSQLTypeText("Name"), converter->GetSQLTypeText("Ivan")} }),
+		result);
+	EXPECT_EQ(status->GetStatus(), ResultStatus::FatalError);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
+
+	//    2. Пустое название сущности
+	result = { 7, 4, 5, 3 };
+	status = executorEAV->FindEntitiesByAttrValues("", std::vector<IExecutorEAV::AttrValue>({
+		{converter->GetSQLTypeText("Name"), converter->GetSQLTypeText("Ivan")} }),
+		result);
+	EXPECT_EQ(status->GetStatus(), ResultStatus::FatalError);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
+
+	// II. Невалидное название атрибута.
+
+	//    1. Несуществующее название атрибута
+	//       Думаю, несуществующее название атрибута - не повод возвращать ошибку.
+	//       Хотя это и возможно реализовать.
+	result = { 7, 4, 5, 3 };
+	status = executorEAV->FindEntitiesByAttrValues("users", std::vector<IExecutorEAV::AttrValue>({
+		{converter->GetSQLTypeText("Address"), converter->GetSQLTypeText("Ivan")} }),
+		result);
+	EXPECT_EQ(status->GetStatus(), ResultStatus::OkWithData);
+	EXPECT_FALSE(status->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({}));
+
+	//    2. Пустое название атрибута
+	result = { 7, 4, 5, 3 };
+	status = executorEAV->FindEntitiesByAttrValues("users", std::vector<IExecutorEAV::AttrValue>({
+		{converter->GetSQLTypeText(), converter->GetSQLTypeText("Ivan")} }),
+		result);
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
+
+	//    3. Нулевое название атрибута
+	result = { 7, 4, 5, 3 };
+	status = executorEAV->FindEntitiesByAttrValues("users", std::vector<IExecutorEAV::AttrValue>({
+		{ nullptr, converter->GetSQLTypeText("Ivan")} }),
+		result);
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
+
+	// III. Невалидное значение атрибута.
+
+	//    1. Пустое значение атрибута
+	result = { 7, 4, 5, 3 };
+	status = executorEAV->FindEntitiesByAttrValues("users", std::vector<IExecutorEAV::AttrValue>({
+		{converter->GetSQLTypeText("Name"), converter->GetSQLTypeText()} }),
+		result);
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
+
+	//    2. Нулевое значение атрибута
+	result = { 7, 4, 5, 3 };
+	status = executorEAV->FindEntitiesByAttrValues("users", std::vector<IExecutorEAV::AttrValue>({
+		{converter->GetSQLTypeText("Name"), nullptr} }),
+		result);
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
+
+	//    3. Значение атрибута принадлежит несуществующиму типу данных
+	result = { 7, 4, 5, 3 };
+	status = executorEAV->FindEntitiesByAttrValues("users", std::vector<IExecutorEAV::AttrValue>({
+		{converter->GetSQLTypeText("Name"), converter->GetSQLTypeInteger(5)} }),
+		result);
+	EXPECT_EQ(status->GetStatus(), ResultStatus::FatalError);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
+}

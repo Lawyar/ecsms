@@ -255,7 +255,15 @@ IExecuteResultStatusPtr PGExecutorEAV::GetEntityIds(const EntityName & entityNam
 IExecuteResultStatusPtr PGExecutorEAV::GetAttributeNames(const EntityName & entityName,
 	SQLDataType sqlDataType, std::vector<AttrName> & attrNames)
 {
-	std::string query = getEntityIdsCommand(entityName);
+	std::string attributeType;
+	if (auto sqlVar = m_sqlTypeConverter->GetSQLVariable(sqlDataType))
+		attributeType = sqlVar->GetTypeName();
+
+	if (attributeType.empty())
+		return InternalExecuteResultStatus::GetInternalError(
+			"IExecutorEAV::GetAttributeNames: Invalid attribute type", ResultStatus::EmptyQuery);
+
+	std::string query = getAttributeNamesCommand(entityName, attributeType);
 	IExecuteResultPtr result;
 	IExecuteResultStatusPtr resultStatus;
 	if (!executeQuery(query, result, resultStatus))
@@ -285,7 +293,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeNames(const EntityName & enti
 
 	// Теперь уже точно нет ошибок, можно сохранять результат
 	attrNames.clear();
-	attrNames.insert(tempAttrNames.end(), tempAttrNames.begin(), tempAttrNames.end());
+	attrNames.insert(attrNames.end(), tempAttrNames.begin(), tempAttrNames.end());
 
 	return resultStatus;
 }
