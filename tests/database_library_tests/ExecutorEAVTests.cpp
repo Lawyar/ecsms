@@ -2414,7 +2414,7 @@ TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindWith
 }
 
 
-/// GetValue дает значение для существующих сущностей
+/// GetValue дает значение для существующих сущностей c существующими атрибутами
 TEST_F(ExecutorEAVWithFilledEnvironment, GetValueGetsForExistingEntities)
 {
 	{
@@ -2444,5 +2444,87 @@ TEST_F(ExecutorEAVWithFilledEnvironment, GetValueGetsForExistingEntities)
 		EXPECT_FALSE(executorEAV->GetValue("blobs", 2, converter->GetSQLTypeText("Id"),
 			remoteFileIdValue)->HasError());
 		EXPECT_EQ(remoteFileIdValue->GetValue(), createdFileNames[1]);
+	}
+}
+
+
+
+/// GetValue дает пустое значение для существующей сущности, если у него нет
+/// переданного атрибута, который тем не менее присутствует среди атрибутов сущности
+TEST_F(ExecutorEAVWithFilledEnvironment, GetValueGetsEmptyVarForExistingEntityAndMissingAttribute)
+{
+	ISQLTypeTextPtr textValue = converter->GetSQLTypeText();
+	// Существует сущность "images" с идентификатором 4, однако у неё нет
+	// значения по атрибуту "Name".
+	auto status = executorEAV->GetValue("images", 4, converter->GetSQLTypeText("Name"),
+		textValue);
+	EXPECT_FALSE(status->HasError());
+	EXPECT_EQ(status->GetStatus(), ResultStatus::OkWithData);
+	EXPECT_EQ(textValue->GetValue(), std::nullopt);
+}
+
+
+/// GetValue возвращает ошибку, если ему передать несуществующий атрибут
+TEST_F(ExecutorEAVWithFilledEnvironment, GetValuesDoesNotGetWithNonExistingAttribute)
+{
+	ISQLTypeTextPtr textValue = converter->GetSQLTypeText();
+	// У "users" нет атрибута "Address"
+	auto status = executorEAV->GetValue("users", 1, converter->GetSQLTypeText("Address"),
+		textValue);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(status->GetStatus(), ResultStatus::FatalError);
+	EXPECT_EQ(textValue->GetValue(), std::nullopt);
+}
+
+
+/// GetValue возвращает ошибку, если ему передать несуществующий идентификатор
+TEST_F(ExecutorEAVWithFilledEnvironment, GetValuesDoesNotGetWithNonExistingEntityId)
+{
+	ISQLTypeTextPtr textValue = converter->GetSQLTypeText();
+	// Нет сущности "users" с идентификатором 2
+	auto status = executorEAV->GetValue("users", 2, converter->GetSQLTypeText("Name"), textValue);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(status->GetStatus(), ResultStatus::FatalError);
+	EXPECT_EQ(textValue->GetValue(), std::nullopt);
+}
+
+
+/// GetValue возвращает ошибку, если ему передать невалидное название атрибута
+TEST_F(ExecutorEAVWithFilledEnvironment, GetValuesDoesNotGetWithInvalidAttrName)
+{
+	{
+		ISQLTypeTextPtr textValue = converter->GetSQLTypeText();
+		auto status = executorEAV->GetValue("users", 1, converter->GetSQLTypeText(), textValue);
+		EXPECT_TRUE(status->HasError());
+		EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+		EXPECT_EQ(textValue->GetValue(), std::nullopt);
+	}
+	{
+		ISQLTypeTextPtr textValue = converter->GetSQLTypeText();
+		auto status = executorEAV->GetValue("users", 1, nullptr, textValue);
+		EXPECT_TRUE(status->HasError());
+		EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+		EXPECT_EQ(textValue->GetValue(), std::nullopt);
+	}
+}
+
+
+/// GetValue возвращает ошибку, если ему передать невалидную переменную для записи значения
+TEST_F(ExecutorEAVWithFilledEnvironment, GetValuesDoesNotGetWithInvalidValueVar)
+{
+	{
+		auto status = executorEAV->GetValue("users", 1, converter->GetSQLTypeText("Name"),
+			nullptr);
+		EXPECT_TRUE(status->HasError());
+		EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+	}
+	{
+		ISQLTypeTextPtr textValue = converter->GetSQLTypeText("Invalid");
+		// Неправильно - переменная должна быть пустая
+		auto status = executorEAV->GetValue("users", 1, converter->GetSQLTypeText("Name"),
+			textValue);
+		EXPECT_TRUE(status->HasError());
+		EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+		EXPECT_EQ(textValue->GetValue(), "Invalid");
 	}
 }

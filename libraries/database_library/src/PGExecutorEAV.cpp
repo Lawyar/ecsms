@@ -675,7 +675,11 @@ IExecuteResultStatusPtr PGExecutorEAV::GetValue(const EntityName & entityName, E
 {
 	if (!valueTypeIsValid(value))
 		return InternalExecuteResultStatus::GetInternalError(
-			"IExecutorEAV::Insert: Invalid value", ResultStatus::EmptyQuery);
+			"IExecutorEAV::Insert: Value is null", ResultStatus::EmptyQuery);
+
+	if (value->ToSQLString().has_value())
+		return InternalExecuteResultStatus::GetInternalError(
+			"IExecutorEAV::Insert: Value is not empty", ResultStatus::EmptyQuery);
 
 	std::string sqlAttrName;
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
@@ -691,20 +695,26 @@ IExecuteResultStatusPtr PGExecutorEAV::GetValue(const EntityName & entityName, E
 
 	auto && rowCount = result->GetRowCount();
 	auto && colCount = result->GetColCount();
-	if (rowCount != 1 || colCount != 1)
+	if (rowCount > 1 || colCount != 1)
 		return InternalExecuteResultStatus::GetInternalError(
 			utils::string::Format(
 				"IExecutorEAV::GetValue: Unexpected result. "
-				"Returned table size ({}, {}), but expected (1, 1).",
+				"Returned table size ({}, {}), but expected (1, 1) or (0, 1).",
 				rowCount, colCount));
 
 	auto && cell = result->GetValue(0, 0);
-	if (!cell.HasString())
-		return InternalExecuteResultStatus::GetInternalError(
-			"IExecutorEAV::GetValue: Unexpected result. Value is empty.");
-
-	if (!value->ReadFromSQL(cell.ExtractString()))
-		return InternalExecuteResultStatus::GetInternalError(ErrorMessages::ISQLType_ReadFromSQL);
+	if (cell.HasString())
+	{
+		if (!value->ReadFromSQL(cell.ExtractString()))
+			return InternalExecuteResultStatus::GetInternalError(ErrorMessages::ISQLType_ReadFromSQL);
+	}
+	else
+	{
+		// Если ячейка не содержит, это нормально.
+		// Значит, у данной атрибута данной сущности не записано значение.
+		// Считаем, что оно равно null и возвращаем пустую переменную
+		// (ту же самую, что и приняли)
+	}
 
 	return resultStatus;
 }
@@ -780,7 +790,23 @@ std::string PGExecutorEAV::selectValueByEntityIdAndAttributeNameCommand(const En
 	EntityId entityId, const std::string & attributeType, const std::string & sqlAttrName) const
 {
 	return utils::string::Format(
+		// Бросим ошибку, если в таблице сущностей нет сущности с данным идентификатором
+		"DO $$DECLARE BEGIN IF NOT EXISTS (SELECT * FROM {} WHERE {} = {}) THEN RAISE EXCEPTION 'There is no entity with such id (id={};entity={})'; END IF; END; $$;\n"
+		// Бросим ошибку, если в таблице атрибутов нет данного атрибута
+		"DO $$DECLARE BEGIN IF NOT EXISTS (SELECT * FROM {} WHERE {} = {}) THEN RAISE EXCEPTION 'There is no attribute with such name (name=%;entity={})', {}; END IF; END; $$;\n"
 		"SELECT {} FROM {} WHERE {} = {} AND {} = {};\n",
+		GetNamingRules().GetEntityTableName(entityName),
+		GetNamingRules().GetEntityTable_Short_IdField(entityName),
+		entityId,
+		entityId,
+		entityName,
+		
+		GetNamingRules().GetAttributeTableName(entityName, attributeType),
+		GetNamingRules().GetAttributeTable_Short_NameField(entityName, attributeType),
+		sqlAttrName,
+		entityName,
+		sqlAttrName,
+
 		GetNamingRules().GetValueTable_Short_ValueField(entityName, attributeType),
 		GetNamingRules().GetValueTableName(entityName, attributeType),
 		GetNamingRules().GetValueTable_Short_EntityIdField(entityName, attributeType),
