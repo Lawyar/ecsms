@@ -17,7 +17,6 @@
 #include <cstdlib>
 #include <ctime>
 
-
 // Тест для проверок с валидным файлом
 class TestWithValidRemoteFile : public ::testing::Test
 {
@@ -48,11 +47,7 @@ protected:
 static const int _InitializeSeed = (srand(time(nullptr)), 0); ///< Инициализация семени рандома
 
 
-//------------------------------------------------------------------------------
-/**
-  Сгенерировать массив байтов
-*/
-//---
+///  Сгенерировать массив байтов
 static std::vector<char> GenerateBytes(size_t size)
 {
 	std::vector<char> arr(size);
@@ -446,11 +441,7 @@ TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWith
 }
 
 
-//------------------------------------------------------------------------------
-/**
-  Сгенерировать быстро массив байтов
-*/
-//---
+///  Сгенерировать быстро массив байтов
 static std::vector<char> FastGenerateBytes(size_t count, const int * seed = nullptr)
 {
 	static int next = 0;
@@ -472,7 +463,7 @@ static std::vector<char> FastGenerateBytes(size_t count, const int * seed = null
 
 
 /// Можно записать и прочитать большой объем данных
-/*TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
+TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 {
 	// Запишем и прочитаем большой объем данных
 	static constexpr size_t c_blockSize = 50'000'000ULL; ///< 50 МБ
@@ -541,7 +532,7 @@ static std::vector<char> FastGenerateBytes(size_t count, const int * seed = null
 	}
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
-}*/
+}
 
 
 ////////////////////////////////////////////////////////////////////////////////

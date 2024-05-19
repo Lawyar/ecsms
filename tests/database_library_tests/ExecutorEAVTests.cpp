@@ -2412,3 +2412,37 @@ TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindWith
 	EXPECT_TRUE(status->HasError());
 	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
 }
+
+
+/// GetValue дает значение для существующих сущностей
+TEST_F(ExecutorEAVWithFilledEnvironment, GetValueGetsForExistingEntities)
+{
+	{
+		// 1. Можем получить текст
+		ISQLTypeTextPtr textValue = converter->GetSQLTypeText();
+		EXPECT_FALSE(executorEAV->GetValue("users", 1, converter->GetSQLTypeText("Name"), textValue)
+			->HasError());
+		EXPECT_EQ(textValue->GetValue(), "Ivan");
+	}
+	{
+		// 2. Можем получить число
+		ISQLTypeIntegerPtr intValue = converter->GetSQLTypeInteger();
+		EXPECT_FALSE(executorEAV->GetValue("products", 2, converter->GetSQLTypeText("Price"),
+			intValue)->HasError());
+		EXPECT_EQ(intValue->GetValue(), 50);
+	}
+	{
+		// 3. Можем получить массив байт
+		ISQLTypeByteArrayPtr byteArrayValue = converter->GetSQLTypeByteArray();
+		EXPECT_FALSE(executorEAV->GetValue("images", 3, converter->GetSQLTypeText("Data"),
+			byteArrayValue)->HasError());
+		EXPECT_EQ(byteArrayValue->GetValue(), std::vector<char>({ 2, 2, 3, 2 }));
+	}
+	{
+		// 4. Можем получить идентификатор файла
+		ISQLTypeRemoteFileIdPtr remoteFileIdValue = converter->GetSQLTypeRemoteFileId();
+		EXPECT_FALSE(executorEAV->GetValue("blobs", 2, converter->GetSQLTypeText("Id"),
+			remoteFileIdValue)->HasError());
+		EXPECT_EQ(remoteFileIdValue->GetId(), createdFileNames[1]);
+	}
+}
