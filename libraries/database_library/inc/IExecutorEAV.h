@@ -63,44 +63,90 @@ public:
 
 public:
 	/// Регистрация EAV-сущностей для дальнешей работы с классом
+	/// \param entries Контейнер с соответствиями "название сущности" - "типы атрибутов, которые она использует"
 	/// \param createTables Требуется ли пытаться создать таблицы по зарегистрированным сущностям
+	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr SetRegisteredEntities(const EAVRegisterEntries & entries,
 		bool createTables) = 0;
 	/// Получить зарегистрированные сущности
+	/// \return Контейнер с соответствиями "название сущности" - "типы атрибутов, которые она использует"
 	virtual const EAVRegisterEntries & GetRegisteredEntities() const = 0;
 
 public:
 	/// Получить объект, определяющий правила именования таблиц
+	/// \return Объект, определяющий правила именования таблиц
 	virtual const IExecutorEAVNamingRules & GetNamingRules() const = 0;
 
 public: // Методы для создания новых сущностей и поиска уже существующих сущностей
-	/// Создать новую сущность указанного типа
+	/// Создать новую сущность данного вида
+	/// \param entityName Название сущности
+	/// \param[out] result Идентификатор новой сущности
+	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr CreateNewEntity(const EntityName & entityName, EntityId & result) = 0;
+	/// Получить все идентификаторы сущности данного вида
+	/// \param entityName Название сущности
+	/// \param[out] result Массив идентификаторов сущности
+	/// \return Статус выполнения операции
+	virtual IExecuteResultStatusPtr GetEntityIds(const EntityName & entityName,
+		std::vector<EntityId> & result) = 0;
+	/// Получить все наименования атрибутов указанного типа, которые использует данная сущность
+	/// \param entityName Название сущности
+	/// \param sqlDataType Тип атрибута
+	/// \param result[out] Массив наименований атрибутов
+	/// \return Статус выполнения операции
+	virtual IExecuteResultStatusPtr GetAttributeNames(const EntityName & entityName,
+		SQLDataType sqlDataType, std::vector<AttrName> & result) = 0;
 	/// Найти сущности, у которых есть все из указанных пар атрибут-значение
+	/// \param entityName Название сущности
+	/// \param attrValues Массив пар атрибут-значение
+	/// \param[out] result Массив идентификаторов сущности, у которых есть все из указанных пар атрибут-значение
+	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr FindEntitiesByAttrValues(const EntityName & entityName,
 		const std::vector<AttrValue> & attrValues, std::vector<EntityId> & result) = 0;
 
 public: // Методы для вставки/обновления данных
 	/// Вставить значение для атрибута сущности
+	/// \param entityName Название сущности
+	/// \param entityId Идентфикатор сущности
+	/// \param attrName Наименование атрибута
+	/// \param value Значение атрибута
+	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr Insert(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, const ValueType & value) = 0;
 	/// Обновить значение для атрибута сущности
+	/// \param entityName Название сущности
+	/// \param entityId Идентфикатор сущности
+	/// \param attrName Наименование атрибута
+	/// \param value Значение атрибута
+	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr Update(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, const ValueType & value) = 0;
 	/// Обновить значение для атрибута сущности или вставить, если такого значения ещё не было
+	/// \param entityName Название сущности
+	/// \param entityId Идентфикатор сущности
+	/// \param attrName Наименование атрибута
+	/// \param value Значение атрибута
+	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr InsertOrUpdate(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, const ValueType & value) = 0;
 
 public: // Методы для получения данных
 	/// Получить значение атрибута сущности.
-	/// Переменная value - должна быть пустой (сконструированной конструктором по умолчанию)
-	/// переменной соответствующего типа.
-	/// Например, если мы хотим получить значение текстового аттрибута, то нужно передать
-	/// ненулевой указатель ISQLTypeTextPtr.
-	/// Результат метода запишется в value.
+	/// \param entityName Название сущности
+	/// \param entityId Идентфикатор сущности
+	/// \param attrName Наименование атрибута
+	/// \param[in,out] value Ненулевая переменная, по типу которой будет определен тип атрибута,
+	///                      и в которую запишется результат.
+	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr GetValue(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, ValueType value) = 0;
 	/// Получить значения всех атрибутов сущности.
+	/// Для определения типов атрибутов метод использует GetRegisteredEntities.
+	/// Таким образом, метод не вернет информацию о незарегистрированных атрибутах, если они есть.
+	/// \param entityName Название сущности
+	/// \param entityId Идентификатор сущности
+	/// \param[out] attrValues Массив пар атрибут-значение, ассоциированных с данной сущностью.
+	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr GetAttributeValues(const EntityName & entityName,
 		EntityId entityId, std::vector<AttrValue> & attrValues) = 0;
 };

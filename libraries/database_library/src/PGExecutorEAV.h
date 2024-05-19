@@ -24,13 +24,13 @@ public:
 	PGExecutorEAV(const IConnectionPtr & connection, const ISQLTypeConverterPtr & sqlTypeConverter);
 
 public:
-	/// Регистрация EAV-сущностей
-	/// \param createTables Требуется ли пытаться создать таблицы по зарегистрированным сущностям
+	/// Регистрация EAV-сущностей для дальнешей работы с классом
 	virtual IExecuteResultStatusPtr SetRegisteredEntities(const EAVRegisterEntries & entries,
 		bool createTables) override;
 	/// Получить зарегистрированные сущности
 	virtual const EAVRegisterEntries & GetRegisteredEntities() const override;
 
+public:
 	/// Получить объект, определяющий правила именования таблиц
 	virtual const IExecutorEAVNamingRules & GetNamingRules() const override;
 
@@ -47,15 +47,26 @@ private:
 		const std::string & attributeType) const;
 
 public: // Методы для создания новых сущностей и поиска уже существующих сущностей
-	/// Создать новую сущность указанного типа
-	virtual IExecuteResultStatusPtr CreateNewEntity(const EntityName & entityName, EntityId & entityId) override;
+	/// Создать новую сущность данного вида
+	virtual IExecuteResultStatusPtr CreateNewEntity(const EntityName & entityName, EntityId & result) override;
+	/// Получить все идентификаторы сущности данного вида
+	virtual IExecuteResultStatusPtr GetEntityIds(const EntityName & entityName,
+		std::vector<EntityId> & result) override;
+	/// Получить все наименования атрибутов указанного типа, которые использует данная сущность
+	virtual IExecuteResultStatusPtr GetAttributeNames(const EntityName & entityName,
+		SQLDataType sqlDataType, std::vector<AttrName> & result) override;
 	/// Найти сущности, у которых есть все из указанных пар атрибут-значение
 	virtual IExecuteResultStatusPtr FindEntitiesByAttrValues(const EntityName & entityName,
-		const std::vector<AttrValue> & attrValues, std::vector<EntityId> & entityIds) override;
+		const std::vector<AttrValue> & attrValues, std::vector<EntityId> & result) override;
 
 private:
 	/// Получить команду "добавить сущность в таблицу сущностей и вернуть вставленный идентификатор"
 	std::string insertNewEntityReturningIdCommand(const std::string & entityName) const;
+	/// Получить команду "получить идентификаторы сущности"
+	std::string getEntityIdsCommand(const std::string & entityName) const;
+	/// Получить команду "получить названия атрибутов указанного типа, которые использует данная сущность"
+	std::string getAttributeNamesCommand(const std::string & entityName,
+		const std::string & attributeType) const;
 	/// Получить часть команды "получить идентификаторы сущности по названию атрибута и его значению"
 	std::optional<std::string> getEntityIdByAttrValuePartCommand(const EntityName & entityName,
 		const AttrValue & attrValue) const;
@@ -93,11 +104,6 @@ private:
 
 public: // Методы для получения данных
 	/// Получить значение атрибута сущности.
-	/// Переменная value - должна быть пустой (сконструированной конструктором по умолчанию)
-	/// переменной соответствующего типа.
-	/// Например, если мы хотим получить значение текстового аттрибута, то нужно передать
-	/// ненулевой указатель ISQLTypeTextPtr.
-	/// Результат метода запишется в value.
 	virtual IExecuteResultStatusPtr GetValue(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, ValueType value) override;
 	/// Получить значения всех атрибутов сущности.

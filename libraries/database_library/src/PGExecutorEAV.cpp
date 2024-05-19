@@ -205,6 +205,94 @@ IExecuteResultStatusPtr PGExecutorEAV::CreateNewEntity(const EntityName & entity
 
 //------------------------------------------------------------------------------
 /**
+  Получить все идентификаторы сущности данного вида
+*/
+//---
+IExecuteResultStatusPtr PGExecutorEAV::GetEntityIds(const EntityName & entityName,
+	std::vector<EntityId> & entityIds)
+{
+	std::string query = getEntityIdsCommand(entityName);
+	IExecuteResultPtr result;
+	IExecuteResultStatusPtr resultStatus;
+	if (!executeQuery(query, result, resultStatus))
+		return resultStatus;
+
+	auto colType = result->GetColType(0);
+	if (result->GetColCount() != 1 || colType != SQLDataType::Integer)
+	{
+		// Запрос был сформирован таким образом, что в результате должен быть один столбец
+		// типа INTEGER
+		assert(false);
+
+		return InternalExecuteResultStatus::GetInternalError(
+			"IExecutorEAV::GetEntityIds: Unexpected result");
+	}
+
+	std::vector<EntityId> tempEntityIds;
+	for (size_t rowIndex = 0, rowCount = result->GetRowCount(); rowIndex < rowCount; ++rowIndex)
+	{
+		auto cell = result->GetValue(rowIndex, 0);
+		EntityId entityId;
+		if (IExecuteResultStatusPtr readStatus;
+			!readIntoSQLVariable<ISQLTypeInteger>(cell.ExtractString(), colType, entityId, readStatus))
+			return readStatus;
+		tempEntityIds.push_back(entityId);
+	}
+
+	// Теперь уже точно нет ошибок, можно сохранять результат
+	entityIds.clear();
+	entityIds.insert(entityIds.end(), tempEntityIds.begin(), tempEntityIds.end());
+	
+	return resultStatus;
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить все наименования атрибутов указанного типа, которые использует данная сущность
+*/
+//---
+IExecuteResultStatusPtr PGExecutorEAV::GetAttributeNames(const EntityName & entityName,
+	SQLDataType sqlDataType, std::vector<AttrName> & attrNames)
+{
+	std::string query = getEntityIdsCommand(entityName);
+	IExecuteResultPtr result;
+	IExecuteResultStatusPtr resultStatus;
+	if (!executeQuery(query, result, resultStatus))
+		return resultStatus;
+
+	auto colType = result->GetColType(0);
+	if (result->GetColCount() != 1 || colType != SQLDataType::Text)
+	{
+		// Запрос был сформирован таким образом, что в результате должен быть один столбец
+		// типа TEXT
+		assert(false);
+
+		return InternalExecuteResultStatus::GetInternalError(
+			"IExecutorEAV::GetAttributeNames: Unexpected result");
+	}
+
+	std::vector<AttrName> tempAttrNames;
+	for (size_t rowIndex = 0, rowCount = result->GetRowCount(); rowIndex < rowCount; ++rowIndex)
+	{
+		auto cell = result->GetValue(rowIndex, 0);
+		std::string attrNameStr;
+		if (IExecuteResultStatusPtr readStatus;
+			!readIntoSQLVariable<ISQLTypeText>(cell.ExtractString(), colType, attrNameStr, readStatus))
+			return readStatus;
+		tempAttrNames.push_back(m_sqlTypeConverter->GetSQLTypeText(std::move(attrNameStr)));
+	}
+
+	// Теперь уже точно нет ошибок, можно сохранять результат
+	attrNames.clear();
+	attrNames.insert(tempAttrNames.end(), tempAttrNames.begin(), tempAttrNames.end());
+
+	return resultStatus;
+}
+
+
+//------------------------------------------------------------------------------
+/**
   Найти сущности, у которых есть все из указанных пар атрибут-значение
 */
 //---
@@ -264,6 +352,34 @@ std::string PGExecutorEAV::insertNewEntityReturningIdCommand(const std::string &
 	return utils::string::Format("INSERT INTO {} VALUES(DEFAULT) RETURNING {};\n",
 		GetNamingRules().GetEntityTableName(entityName),
 		GetNamingRules().GetEntityTable_Short_IdField(entityName));
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить команду "получить идентификаторы сущности".
+*/
+//---
+std::string PGExecutorEAV::getEntityIdsCommand(const std::string & entityName) const
+{
+	return utils::string::Format("SELECT {} FROM {};\n",
+		GetNamingRules().GetEntityTable_Short_IdField(entityName),
+		GetNamingRules().GetEntityTableName(entityName));
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить команду "получить названия атрибутов указанного типа, которые
+  использует данная сущность"
+*/
+//---
+std::string PGExecutorEAV::getAttributeNamesCommand(const std::string & entityName,
+	const std::string & attributeType) const
+{
+	return utils::string::Format("SELECT {} FROM {};",
+		GetNamingRules().GetAttributeTable_Short_NameField(entityName, attributeType),
+		GetNamingRules().GetAttributeTableName(entityName, attributeType));
 }
 
 
@@ -590,7 +706,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & ent
 	std::vector<AttrValue> & attrValues)
 {
 	std::vector<SQLDataType> attributeTypes;
-	if (auto iter = m_registerEntries.find(entityName); iter != m_registerEntries.end())
+	if (auto iter = GetRegisteredEntities().find(entityName); iter != GetRegisteredEntities().end())
 	{
 		attributeTypes = iter->second;
 	}
@@ -604,7 +720,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & ent
 	}
 	/*
 	todo: С помощью такого запроса можно собрать данные по всем атрибутам одним запросом.
-	Но пока поддержка массивом не реализована, буду делать через несколько запросов.
+	Но пока поддержка массивов не реализована, буду делать через несколько запросов.
 
 	WITH
 
