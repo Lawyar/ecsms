@@ -323,6 +323,7 @@ IExecuteResultStatusPtr PGExecutorEAV::FindEntitiesByAttrValues(const EntityName
 
 	// Запрос формировался таким образом, что в ответе должен получиться один столбец
 	assert(result->GetColCount() == 1);
+	std::vector<EntityId> tempEntityIds;
 	for (size_t j = 0, colCount = result->GetColCount(); j < colCount; ++j)
 	{
 		SQLDataType colType = result->GetColType(j);
@@ -333,9 +334,13 @@ IExecuteResultStatusPtr PGExecutorEAV::FindEntitiesByAttrValues(const EntityName
 			if (IExecuteResultStatusPtr readStatus;
 				!readIntoSQLVariable<ISQLTypeInteger>(cellValue.ExtractString(), colType, entityId, readStatus))
 				return readStatus;
-			entityIds.push_back(entityId);
+			tempEntityIds.push_back(entityId);
 		}
 	}
+
+	// Теперь уже точно нет ошибок, можно сохранять результат
+	entityIds.clear();
+	entityIds.insert(entityIds.end(), tempEntityIds.begin(), tempEntityIds.end());
 
 	return resultStatus;
 }

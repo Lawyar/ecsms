@@ -85,14 +85,14 @@ public: // Методы для создания новых сущностей и поиска уже существующих сущност
 	virtual IExecuteResultStatusPtr CreateNewEntity(const EntityName & entityName, EntityId & result) = 0;
 	/// Получить все идентификаторы сущности данного вида
 	/// \param entityName Название сущности
-	/// \param[out] result Массив идентификаторов сущности
+	/// \param[out] result Массив идентификаторов сущности. Массив прочищается перед записью результата.
 	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr GetEntityIds(const EntityName & entityName,
 		std::vector<EntityId> & result) = 0;
 	/// Получить все наименования атрибутов указанного типа, которые использует данная сущность
 	/// \param entityName Название сущности
 	/// \param sqlDataType Тип атрибута
-	/// \param result[out] Массив наименований атрибутов
+	/// \param result[out] Массив наименований атрибутов.  Массив прочищается перед записью результата.
 	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr GetAttributeNames(const EntityName & entityName,
 		SQLDataType sqlDataType, std::vector<AttrName> & result) = 0;
@@ -100,6 +100,7 @@ public: // Методы для создания новых сущностей и поиска уже существующих сущност
 	/// \param entityName Название сущности
 	/// \param attrValues Массив пар атрибут-значение
 	/// \param[out] result Массив идентификаторов сущности, у которых есть все из указанных пар атрибут-значение
+	///                     Массив прочищается перед записью результата.
 	/// \return Статус выполнения операции
 	virtual IExecuteResultStatusPtr FindEntitiesByAttrValues(const EntityName & entityName,
 		const std::vector<AttrValue> & attrValues, std::vector<EntityId> & result) = 0;

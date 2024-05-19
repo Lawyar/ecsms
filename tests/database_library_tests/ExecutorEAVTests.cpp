@@ -1,7 +1,7 @@
-////////////////////////////////////////////////////////////////////////////////
+п»ї////////////////////////////////////////////////////////////////////////////////
 //
 /**
-  Тесты для ExecutorEAV
+  РўРµСЃС‚С‹ РґР»СЏ ExecutorEAV
 */
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -18,7 +18,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Существует ли таблица
+  РЎСѓС‰РµСЃС‚РІСѓРµС‚ Р»Рё С‚Р°Р±Р»РёС†Р°
 */
 //---
 static bool IsTableExist(const std::string & tableName, IConnection & connection)
@@ -32,7 +32,7 @@ static bool IsTableExist(const std::string & tableName, IConnection & connection
 
 //------------------------------------------------------------------------------
 /**
-  Вспомогательная функция для реализации AllTablesExist/AllTablesDoNotExist
+  Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅР°СЏ С„СѓРЅРєС†РёСЏ РґР»СЏ СЂРµР°Р»РёР·Р°С†РёРё AllTablesExist/AllTablesDoNotExist
 */
 //---
 static bool allTablesExistImpl(const std::vector<IExecutorEAV::EAVRegisterEntries> & maps,
@@ -65,7 +65,7 @@ static bool allTablesExistImpl(const std::vector<IExecutorEAV::EAVRegisterEntrie
 
 //------------------------------------------------------------------------------
 /**
-  Все таблицы в векторе мап существуют
+  Р’СЃРµ С‚Р°Р±Р»РёС†С‹ РІ РІРµРєС‚РѕСЂРµ РјР°Рї СЃСѓС‰РµСЃС‚РІСѓСЋС‚
 */
 //---
 static bool AllTablesExist(const std::vector<IExecutorEAV::EAVRegisterEntries> & maps,
@@ -78,7 +78,7 @@ static bool AllTablesExist(const std::vector<IExecutorEAV::EAVRegisterEntries> &
 
 //------------------------------------------------------------------------------
 /**
-  Все таблицы в векторе мап не существуют
+  Р’СЃРµ С‚Р°Р±Р»РёС†С‹ РІ РІРµРєС‚РѕСЂРµ РјР°Рї РЅРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‚
 */
 //---
 static bool AllTablesDoNotExist(const std::vector<IExecutorEAV::EAVRegisterEntries> & maps,
@@ -91,7 +91,7 @@ static bool AllTablesDoNotExist(const std::vector<IExecutorEAV::EAVRegisterEntri
 
 //------------------------------------------------------------------------------
 /**
-  Удалить таблицу
+  РЈРґР°Р»РёС‚СЊ С‚Р°Р±Р»РёС†Сѓ
 */
 //---
 static bool DropTable(const std::string & tableName, IConnection & connection)
@@ -103,7 +103,7 @@ static bool DropTable(const std::string & tableName, IConnection & connection)
 
 //------------------------------------------------------------------------------
 /**
-  Удалить все таблицы, которые есть в мапе
+  РЈРґР°Р»РёС‚СЊ РІСЃРµ С‚Р°Р±Р»РёС†С‹, РєРѕС‚РѕСЂС‹Рµ РµСЃС‚СЊ РІ РјР°РїРµ
 */
 //---
 static bool DropAllTables(const std::vector<IExecutorEAV::EAVRegisterEntries> & maps,
@@ -134,7 +134,7 @@ static bool DropAllTables(const std::vector<IExecutorEAV::EAVRegisterEntries> & 
 }
 
 
-// Тест для проверок ExecutorEAV без создания таблиц
+// РўРµСЃС‚ РґР»СЏ РїСЂРѕРІРµСЂРѕРє ExecutorEAV Р±РµР· СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†
 class ExecutorEAVWithEmptyEnvironment : public ::testing::Test
 {
 protected:
@@ -143,7 +143,7 @@ protected:
 	ISQLTypeConverterPtr converter;
 
 protected:
-	// Действия в начале теста
+	// Р”РµР№СЃС‚РІРёСЏ РІ РЅР°С‡Р°Р»Рµ С‚РµСЃС‚Р°
 	virtual void SetUp() override
 	{
 		connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -156,7 +156,7 @@ protected:
 		ASSERT_NE(converter, nullptr);
 	}
 
-	// Получить правила именования
+	// РџРѕР»СѓС‡РёС‚СЊ РїСЂР°РІРёР»Р° РёРјРµРЅРѕРІР°РЅРёСЏ
 	const IExecutorEAVNamingRules & GetRules() const
 	{
 		return executorEAV->GetNamingRules();
@@ -165,12 +165,12 @@ protected:
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Тесты SetRegisteredEntities/GetRegisteredEntities
+// РўРµСЃС‚С‹ SetRegisteredEntities/GetRegisteredEntities
 ////////////////////////////////////////////////////////////////////////////////
 
 
-/// SetRegisteredEntities создает таблицы для всех валидных типов данных,
-/// если передать флаг createTable = true
+/// SetRegisteredEntities СЃРѕР·РґР°РµС‚ С‚Р°Р±Р»РёС†С‹ РґР»СЏ РІСЃРµС… РІР°Р»РёРґРЅС‹С… С‚РёРїРѕРІ РґР°РЅРЅС‹С…,
+/// РµСЃР»Рё РїРµСЂРµРґР°С‚СЊ С„Р»Р°Рі createTable = true
 TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesCreatesTablesWithAllValidTypesWithCreateTableFlagEqualTrue)
 {
 	std::vector<SQLDataType> allTypes;
@@ -186,10 +186,10 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesCreatesTablesWithAllVali
 		{"SomeEntity3", {SQLDataType::Integer, SQLDataType::ByteArray}},
 	}};
 
-	// Проверим, что таблицы сейчас отсутствуют
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†С‹ СЃРµР№С‡Р°СЃ РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚
 	ASSERT_TRUE(AllTablesDoNotExist(maps, *connection, GetRules(), *converter));
 
-	// Выполним запрос в рамках отмененной транзакции, чтобы не сохранять эти таблицы
+	// Р’С‹РїРѕР»РЅРёРј Р·Р°РїСЂРѕСЃ РІ СЂР°РјРєР°С… РѕС‚РјРµРЅРµРЅРЅРѕР№ С‚СЂР°РЅР·Р°РєС†РёРё, С‡С‚РѕР±С‹ РЅРµ СЃРѕС…СЂР°РЅСЏС‚СЊ СЌС‚Рё С‚Р°Р±Р»РёС†С‹
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	for (auto && map : maps)
 	{
@@ -198,7 +198,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesCreatesTablesWithAllVali
 
 		for (auto &&[entityName, attributeTypes] : map)
 		{
-			// Проверим, что таблицы появились
+			// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†С‹ РїРѕСЏРІРёР»РёСЃСЊ
 			for (auto && type : attributeTypes)
 			{
 				auto && attributeType = converter->GetSQLVariable(type)->GetTypeName();
@@ -242,8 +242,8 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesCreatesTablesWithAllVali
 }
 
 
-/// SetRegisteredEntities не создает таблицы для всех валидных типов данных, если
-/// его вызвать с флагом createTable false
+/// SetRegisteredEntities РЅРµ СЃРѕР·РґР°РµС‚ С‚Р°Р±Р»РёС†С‹ РґР»СЏ РІСЃРµС… РІР°Р»РёРґРЅС‹С… С‚РёРїРѕРІ РґР°РЅРЅС‹С…, РµСЃР»Рё
+/// РµРіРѕ РІС‹Р·РІР°С‚СЊ СЃ С„Р»Р°РіРѕРј createTable false
 TEST_F(ExecutorEAVWithEmptyEnvironment,
 	RegisterEntitiesDoesNotCreateTablesWithAllValidTypesIfCallsWithCreateTableFlagEqualFalse)
 {
@@ -260,11 +260,11 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 		{"SomeEntity3", {SQLDataType::Integer, SQLDataType::ByteArray}},
 	} };
 
-	// Проверим, что таблицы сейчас отсутствуют
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†С‹ СЃРµР№С‡Р°СЃ РѕС‚СЃСѓС‚СЃС‚РІСѓСЋС‚
 	ASSERT_TRUE(AllTablesDoNotExist(maps, *connection, GetRules(), *converter));
 
-	// Выполним запрос в рамках отмененной транзакции, чтобы не сохранять эти таблицы,
-	// если они вдруг создадутся
+	// Р’С‹РїРѕР»РЅРёРј Р·Р°РїСЂРѕСЃ РІ СЂР°РјРєР°С… РѕС‚РјРµРЅРµРЅРЅРѕР№ С‚СЂР°РЅР·Р°РєС†РёРё, С‡С‚РѕР±С‹ РЅРµ СЃРѕС…СЂР°РЅСЏС‚СЊ СЌС‚Рё С‚Р°Р±Р»РёС†С‹,
+	// РµСЃР»Рё РѕРЅРё РІРґСЂСѓРі СЃРѕР·РґР°РґСѓС‚СЃСЏ
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	for (auto && map : maps)
 	{
@@ -277,8 +277,8 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 }
 
 
-/// SetRegisteredEntities не создает таблицы, если с сущностями ассоциируются
-/// невалидные типы атрибутов, даже если передать флаг createTable = true
+/// SetRegisteredEntities РЅРµ СЃРѕР·РґР°РµС‚ С‚Р°Р±Р»РёС†С‹, РµСЃР»Рё СЃ СЃСѓС‰РЅРѕСЃС‚СЏРјРё Р°СЃСЃРѕС†РёРёСЂСѓСЋС‚СЃСЏ
+/// РЅРµРІР°Р»РёРґРЅС‹Рµ С‚РёРїС‹ Р°С‚СЂРёР±СѓС‚РѕРІ, РґР°Р¶Рµ РµСЃР»Рё РїРµСЂРµРґР°С‚СЊ С„Р»Р°Рі createTable = true
 TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesDoesNotCreateTablesWithInvalidTypesWithCreateTableFlagEqualTrue)
 {
 	std::vector<IExecutorEAV::EAVRegisterEntries> maps{ {
@@ -304,8 +304,8 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, RegisterEntitiesDoesNotCreateTablesWithI
 }
 
 
-/// SetRegisteredEntities не создает таблицы, если с сущностями ассоциируются
-/// невалидные типы атрибутов, при флаге createTable = false
+/// SetRegisteredEntities РЅРµ СЃРѕР·РґР°РµС‚ С‚Р°Р±Р»РёС†С‹, РµСЃР»Рё СЃ СЃСѓС‰РЅРѕСЃС‚СЏРјРё Р°СЃСЃРѕС†РёРёСЂСѓСЋС‚СЃСЏ
+/// РЅРµРІР°Р»РёРґРЅС‹Рµ С‚РёРїС‹ Р°С‚СЂРёР±СѓС‚РѕРІ, РїСЂРё С„Р»Р°РіРµ createTable = false
 TEST_F(ExecutorEAVWithEmptyEnvironment,
 	RegisterEntitiesDoesNotCreateTablesWithInvalidTypesWithCreateTableFlagEqualFalse)
 {
@@ -332,8 +332,8 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 }
 
 
-/// SetRegisteredEntities не пересоздает уже существующие таблицы
-/// при флаге createTable = true
+/// SetRegisteredEntities РЅРµ РїРµСЂРµСЃРѕР·РґР°РµС‚ СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ С‚Р°Р±Р»РёС†С‹
+/// РїСЂРё С„Р»Р°РіРµ createTable = true
 TEST_F(ExecutorEAVWithEmptyEnvironment,
 	SetRegisteredEntitiesDoesNotRecreateExistingTablesWithFlagCreateTableEqualTrue)
 {
@@ -355,7 +355,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 	for (auto && tableName : tableNames)
 	{
 		{
-			// Удалим существующие таблицы, если они есть
+			// РЈРґР°Р»РёРј СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ С‚Р°Р±Р»РёС†С‹, РµСЃР»Рё РѕРЅРё РµСЃС‚СЊ
 			auto result = connection->Execute(utils::string::Format(
 				"DROP TABLE IF EXISTS {};",
 				tableName));
@@ -363,7 +363,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 		}
 
 		{
-			// Создадим такие таблицы
+			// РЎРѕР·РґР°РґРёРј С‚Р°РєРёРµ С‚Р°Р±Р»РёС†С‹
 			auto result = connection->Execute(utils::string::Format(
 				"CREATE TABLE {} (field TEXT PRIMARY KEY);",
 				tableName));
@@ -371,7 +371,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 		}
 
 		{
-			// Наполним их содержимым
+			// РќР°РїРѕР»РЅРёРј РёС… СЃРѕРґРµСЂР¶РёРјС‹Рј
 			auto result = connection->Execute(utils::string::Format(
 				"INSERT INTO {} VALUES('hello');",
 				tableName));
@@ -380,7 +380,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 	}
 
 	{
-		// Вызовем команду executorEAV
+		// Р’С‹Р·РѕРІРµРј РєРѕРјР°РЅРґСѓ executorEAV
 		auto status = executorEAV->SetRegisteredEntities(entries, true);
 		ASSERT_FALSE(status->HasError());
 		ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries);
@@ -389,7 +389,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 	for (auto && tableName : tableNames)
 	{
 		{
-			// Проверим, что executorEAV не пересоздал таблицы
+			// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ executorEAV РЅРµ РїРµСЂРµСЃРѕР·РґР°Р» С‚Р°Р±Р»РёС†С‹
 			auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
 				tableName));
 			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
@@ -398,7 +398,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 		}
 
 		{
-			// Удалим таблицы
+			// РЈРґР°Р»РёРј С‚Р°Р±Р»РёС†С‹
 			auto result = connection->Execute(utils::string::Format(
 				"DROP TABLE {};",
 				tableName));
@@ -408,8 +408,8 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 }
 
 
-/// SetRegisteredEntities не пересоздает уже существующие таблицы
-/// при флаге createTable = false
+/// SetRegisteredEntities РЅРµ РїРµСЂРµСЃРѕР·РґР°РµС‚ СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ С‚Р°Р±Р»РёС†С‹
+/// РїСЂРё С„Р»Р°РіРµ createTable = false
 TEST_F(ExecutorEAVWithEmptyEnvironment,
 	SetRegisteredEntitiesDoesNotRecreateExistingTablesWithFlagCreateTableEqualFalse)
 {
@@ -431,7 +431,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 	for (auto && tableName : tableNames)
 	{
 		{
-			// Удалим существующие таблицы, если они есть
+			// РЈРґР°Р»РёРј СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ С‚Р°Р±Р»РёС†С‹, РµСЃР»Рё РѕРЅРё РµСЃС‚СЊ
 			auto result = connection->Execute(utils::string::Format(
 				"DROP TABLE IF EXISTS {};",
 				tableName));
@@ -439,7 +439,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 		}
 
 		{
-			// Создадим такие таблицы
+			// РЎРѕР·РґР°РґРёРј С‚Р°РєРёРµ С‚Р°Р±Р»РёС†С‹
 			auto result = connection->Execute(utils::string::Format(
 				"CREATE TABLE {} (field TEXT PRIMARY KEY);",
 				tableName));
@@ -447,7 +447,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 		}
 
 		{
-			// Наполним их содержимым
+			// РќР°РїРѕР»РЅРёРј РёС… СЃРѕРґРµСЂР¶РёРјС‹Рј
 			auto result = connection->Execute(utils::string::Format(
 				"INSERT INTO {} VALUES('hello');",
 				tableName));
@@ -456,7 +456,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 	}
 
 	{
-		// Вызовем команду executorEAV
+		// Р’С‹Р·РѕРІРµРј РєРѕРјР°РЅРґСѓ executorEAV
 		auto status = executorEAV->SetRegisteredEntities(entries, false);
 		ASSERT_FALSE(status->HasError());
 		ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries);
@@ -465,7 +465,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 	for (auto && tableName : tableNames)
 	{
 		{
-			// Проверим, что executorEAV не пересоздал таблицы
+			// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ executorEAV РЅРµ РїРµСЂРµСЃРѕР·РґР°Р» С‚Р°Р±Р»РёС†С‹
 			auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
 				tableName));
 			ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
@@ -474,7 +474,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 		}
 
 		{
-			// Удалим таблицы
+			// РЈРґР°Р»РёРј С‚Р°Р±Р»РёС†С‹
 			auto result = connection->Execute(utils::string::Format(
 				"DROP TABLE {};",
 				tableName));
@@ -484,8 +484,8 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 }
 
 
-/// SetRegisteredEntities позволяет добавить новые таблицы и не удаляет старые
-/// при флаге createTable = true
+/// SetRegisteredEntities РїРѕР·РІРѕР»СЏРµС‚ РґРѕР±Р°РІРёС‚СЊ РЅРѕРІС‹Рµ С‚Р°Р±Р»РёС†С‹ Рё РЅРµ СѓРґР°Р»СЏРµС‚ СЃС‚Р°СЂС‹Рµ
+/// РїСЂРё С„Р»Р°РіРµ createTable = true
 TEST_F(ExecutorEAVWithEmptyEnvironment,
 	SetRegisteredEntitiesAllowsToAddNewTablesAndDoesNotRemoveOldTablesWithCreateTableFlagEqualTrue)
 {
@@ -507,8 +507,8 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 }
 
 
-/// SetRegisteredEntities не закрывает транзакцию
-/// при флаге createTable = true
+/// SetRegisteredEntities РЅРµ Р·Р°РєСЂС‹РІР°РµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ
+/// РїСЂРё С„Р»Р°РіРµ createTable = true
 TEST_F(ExecutorEAVWithEmptyEnvironment,
 	SetRegisteredEntitiesDoesNotEndTransactionWithCreateTableFlagEqualTrue)
 {
@@ -521,22 +521,22 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 	ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries1);
 	ASSERT_TRUE(AllTablesExist({ entries1 }, *connection, GetRules(), *converter));
 
-	// Откатим транзакцию
+	// РћС‚РєР°С‚РёРј С‚СЂР°РЅР·Р°РєС†РёСЋ
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 
-	// Если SetRegisteredEntities фиксирует транзакцию, то изменения сохранятся
-	// (а предыдущий вызов проигнорируется)
-	// Проверим, что измнения они не сохранились
+	// Р•СЃР»Рё SetRegisteredEntities С„РёРєСЃРёСЂСѓРµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ, С‚Рѕ РёР·РјРµРЅРµРЅРёСЏ СЃРѕС…СЂР°РЅСЏС‚СЃСЏ
+	// (Р° РїСЂРµРґС‹РґСѓС‰РёР№ РІС‹Р·РѕРІ РїСЂРѕРёРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ)
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ РёР·РјРЅРµРЅРёСЏ РѕРЅРё РЅРµ СЃРѕС…СЂР°РЅРёР»РёСЃСЊ
 	ASSERT_TRUE(AllTablesDoNotExist({ entries1 }, *connection, GetRules(), *converter));
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Тесты CreateNewEntity
+// РўРµСЃС‚С‹ CreateNewEntity
 ////////////////////////////////////////////////////////////////////////////////
 
 
-/// CreateNewEntity создает новую сущность
+/// CreateNewEntity СЃРѕР·РґР°РµС‚ РЅРѕРІСѓСЋ СЃСѓС‰РЅРѕСЃС‚СЊ
 TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityCreatesNewEntity)
 {
 	const std::string entityName1 = "SomeEntity1", entityName2 = "SomeEntity2";
@@ -548,29 +548,29 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityCreatesNewEntity)
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries, true)->HasError());
 
-	// Создадим первую сущность первого типа
+	// РЎРѕР·РґР°РґРёРј РїРµСЂРІСѓСЋ СЃСѓС‰РЅРѕСЃС‚СЊ РїРµСЂРІРѕРіРѕ С‚РёРїР°
 	int result = -1;
 	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName1, result)->HasError());
 	ASSERT_EQ(result, 1);
-	// Создадим вторую сущность первого типа
+	// РЎРѕР·РґР°РґРёРј РІС‚РѕСЂСѓСЋ СЃСѓС‰РЅРѕСЃС‚СЊ РїРµСЂРІРѕРіРѕ С‚РёРїР°
 	result = -1;
 	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName1, result)->HasError());
 	ASSERT_EQ(result, 2);
-	// Создадим первую сущность второго типа
+	// РЎРѕР·РґР°РґРёРј РїРµСЂРІСѓСЋ СЃСѓС‰РЅРѕСЃС‚СЊ РІС‚РѕСЂРѕРіРѕ С‚РёРїР°
 	result = -1;
 	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName2, result)->HasError());
 	ASSERT_EQ(result, 1);
-	// Создадим вторую сущность второго типа
+	// РЎРѕР·РґР°РґРёРј РІС‚РѕСЂСѓСЋ СЃСѓС‰РЅРѕСЃС‚СЊ РІС‚РѕСЂРѕРіРѕ С‚РёРїР°
 	result = -1;
 	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName2, result)->HasError());
 	ASSERT_EQ(result, 2);
-	// Создадим третью сущность второго типа
+	// РЎРѕР·РґР°РґРёРј С‚СЂРµС‚СЊСЋ СЃСѓС‰РЅРѕСЃС‚СЊ РІС‚РѕСЂРѕРіРѕ С‚РёРїР°
 	result = -1;
 	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName2, result)->HasError());
 	ASSERT_EQ(result, 3);
 
 	{
-		// Проверим, что создано всего две сущности первого типа
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ СЃРѕР·РґР°РЅРѕ РІСЃРµРіРѕ РґРІРµ СЃСѓС‰РЅРѕСЃС‚Рё РїРµСЂРІРѕРіРѕ С‚РёРїР°
 		auto result = connection->Execute(utils::string::Format(
 			"SELECT * FROM {};",
 			GetRules().GetEntityTableName(entityName1)));
@@ -582,7 +582,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityCreatesNewEntity)
 	}
 
 	{
-		// Проверим, что создано всего три сущности второго типа
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ СЃРѕР·РґР°РЅРѕ РІСЃРµРіРѕ С‚СЂРё СЃСѓС‰РЅРѕСЃС‚Рё РІС‚РѕСЂРѕРіРѕ С‚РёРїР°
 		auto result = connection->Execute(utils::string::Format(
 			"SELECT * FROM {};",
 			GetRules().GetEntityTableName(entityName2)));
@@ -598,7 +598,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityCreatesNewEntity)
 }
 
 
-/// CreateNewEntity не фиксирует транзакцию
+/// CreateNewEntity РЅРµ С„РёРєСЃРёСЂСѓРµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ
 TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityDoesNotEndTransaction)
 {
 	const std::string entityName = "SomeEntity1";
@@ -609,19 +609,19 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityDoesNotEndTransaction)
 	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries1, true)->HasError());
 
 	int result = -1;
-	// Создадим сущность
+	// РЎРѕР·РґР°РґРёРј СЃСѓС‰РЅРѕСЃС‚СЊ
 	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
 	ASSERT_EQ(result, 1);
 
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 
-	// Если CreateNewEntity фиксирует транзакцию, то таблицы создадутся и новая сущность добавится
-	// Проверим, что это не так
+	// Р•СЃР»Рё CreateNewEntity С„РёРєСЃРёСЂСѓРµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ, С‚Рѕ С‚Р°Р±Р»РёС†С‹ СЃРѕР·РґР°РґСѓС‚СЃСЏ Рё РЅРѕРІР°СЏ СЃСѓС‰РЅРѕСЃС‚СЊ РґРѕР±Р°РІРёС‚СЃСЏ
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ СЌС‚Рѕ РЅРµ С‚Р°Рє
 	ASSERT_TRUE(AllTablesDoNotExist({ entries1 }, *connection, GetRules(), *converter));
 }
 
 
-/// CreateNewEntity не открывает транзакцию
+/// CreateNewEntity РЅРµ РѕС‚РєСЂС‹РІР°РµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ
 TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityDoesNotBeginTransaction)
 {
 	const std::string entityName = "SomeEntity1";
@@ -633,12 +633,12 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityDoesNotBeginTransaction)
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 
 	int result = -1;
-	// Создадим сущность
+	// РЎРѕР·РґР°РґРёРј СЃСѓС‰РЅРѕСЃС‚СЊ
 	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
 	ASSERT_EQ(result, 1);
 
-	// Попробуем откатить транзакцию.
-	// Если это получится, значит CreateNewEntity открывает транзакцию
+	// РџРѕРїСЂРѕР±СѓРµРј РѕС‚РєР°С‚РёС‚СЊ С‚СЂР°РЅР·Р°РєС†РёСЋ.
+	// Р•СЃР»Рё СЌС‚Рѕ РїРѕР»СѓС‡РёС‚СЃСЏ, Р·РЅР°С‡РёС‚ CreateNewEntity РѕС‚РєСЂС‹РІР°РµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 
 	{
@@ -646,7 +646,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityDoesNotBeginTransaction)
 			"SELECT * FROM {};",
 			GetRules().GetEntityTableName(entityName)));
 		ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
-		// Если количество строк равно нулю, значит транзакция откатилась
+		// Р•СЃР»Рё РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂРѕРє СЂР°РІРЅРѕ РЅСѓР»СЋ, Р·РЅР°С‡РёС‚ С‚СЂР°РЅР·Р°РєС†РёСЏ РѕС‚РєР°С‚РёР»Р°СЃСЊ
 		ASSERT_EQ(result->GetRowCount(), 1);
 		ASSERT_EQ(result->GetColCount(), 1);
 	}
@@ -656,24 +656,24 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityDoesNotBeginTransaction)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Тесты Insert/Update/InsertOrUpdate, тестирующие доступность всех валидных типов
+// РўРµСЃС‚С‹ Insert/Update/InsertOrUpdate, С‚РµСЃС‚РёСЂСѓСЋС‰РёРµ РґРѕСЃС‚СѓРїРЅРѕСЃС‚СЊ РІСЃРµС… РІР°Р»РёРґРЅС‹С… С‚РёРїРѕРІ
 ////////////////////////////////////////////////////////////////////////////////
 
-// Тест для проверок с предварительным созданием таблиц для всех валидных типов
+// РўРµСЃС‚ РґР»СЏ РїСЂРѕРІРµСЂРѕРє СЃ РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅС‹Рј СЃРѕР·РґР°РЅРёРµРј С‚Р°Р±Р»РёС† РґР»СЏ РІСЃРµС… РІР°Р»РёРґРЅС‹С… С‚РёРїРѕРІ
 class ExecutorEAVWithPreparedEnvironment : public ExecutorEAVWithEmptyEnvironment
 {
 protected:
-	std::vector<std::string> createdFileNames; ///< Созданные файлы
-	IExecutorEAV::EAVRegisterEntries registeredEntries; ///< Зарегистрированные сущности
-	std::map<SQLDataType, ISQLTypePtr> values; ///< Валидные SQL-переменные
-	std::map<SQLDataType, ISQLTypePtr> values2; ///< Второй набор валидных переменных
-	std::map<SQLDataType, std::string> expectedValuesFromSQL; ///< Ожидаемое текстовое представление SQL-переменных, которое хотим получить от сервера
-	std::map<SQLDataType, std::string> expectedValues2FromSQL; ///< Второй набор ожидаемых значений
+	std::vector<std::string> createdFileNames; ///< РЎРѕР·РґР°РЅРЅС‹Рµ С„Р°Р№Р»С‹
+	IExecutorEAV::EAVRegisterEntries registeredEntries; ///< Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Рµ СЃСѓС‰РЅРѕСЃС‚Рё
+	std::map<SQLDataType, ISQLTypePtr> values; ///< Р’Р°Р»РёРґРЅС‹Рµ SQL-РїРµСЂРµРјРµРЅРЅС‹Рµ
+	std::map<SQLDataType, ISQLTypePtr> values2; ///< Р’С‚РѕСЂРѕР№ РЅР°Р±РѕСЂ РІР°Р»РёРґРЅС‹С… РїРµСЂРµРјРµРЅРЅС‹С…
+	std::map<SQLDataType, std::string> expectedValuesFromSQL; ///< РћР¶РёРґР°РµРјРѕРµ С‚РµРєСЃС‚РѕРІРѕРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ SQL-РїРµСЂРµРјРµРЅРЅС‹С…, РєРѕС‚РѕСЂРѕРµ С…РѕС‚РёРј РїРѕР»СѓС‡РёС‚СЊ РѕС‚ СЃРµСЂРІРµСЂР°
+	std::map<SQLDataType, std::string> expectedValues2FromSQL; ///< Р’С‚РѕСЂРѕР№ РЅР°Р±РѕСЂ РѕР¶РёРґР°РµРјС‹С… Р·РЅР°С‡РµРЅРёР№
 
-	std::map<SQLDataType, ISQLTypeTextPtr> attributeNames; ///< Названия атрибутов
+	std::map<SQLDataType, ISQLTypeTextPtr> attributeNames; ///< РќР°Р·РІР°РЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ
 
 protected:
-	// Действия в начале теста
+	// Р”РµР№СЃС‚РІРёСЏ РІ РЅР°С‡Р°Р»Рµ С‚РµСЃС‚Р°
 	virtual void SetUp() override
 	{
 		ExecutorEAVWithEmptyEnvironment::SetUp();
@@ -716,7 +716,7 @@ protected:
 			attributeNames[SQLDataType::RemoteFileId] = converter->GetSQLTypeText("SomeRemoteFileIdAttr");
 		}
 
-		// Нужно создать переменные всех типов
+		// РќСѓР¶РЅРѕ СЃРѕР·РґР°С‚СЊ РїРµСЂРµРјРµРЅРЅС‹Рµ РІСЃРµС… С‚РёРїРѕРІ
 		ASSERT_EQ(values.size(), static_cast<int>(SQLDataType::LastValidType) + 1);
 		ASSERT_EQ(values2.size(), static_cast<int>(SQLDataType::LastValidType) + 1);
 		ASSERT_EQ(expectedValuesFromSQL.size(), static_cast<int>(SQLDataType::LastValidType) + 1);
@@ -732,10 +732,10 @@ protected:
 		ASSERT_FALSE(executorEAV->SetRegisteredEntities(registeredEntries, true)->HasError());
 	}
 
-	// Действия в конце теста
+	// Р”РµР№СЃС‚РІРёСЏ РІ РєРѕРЅС†Рµ С‚РµСЃС‚Р°
 	virtual void TearDown() override
 	{
-		// Отменим на всякий случай транзакцию, если сейчас есть активная
+		// РћС‚РјРµРЅРёРј РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ С‚СЂР°РЅР·Р°РєС†РёСЋ, РµСЃР»Рё СЃРµР№С‡Р°СЃ РµСЃС‚СЊ Р°РєС‚РёРІРЅР°СЏ
 		ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 
 		for (auto && createdFileName : createdFileNames)
@@ -747,7 +747,7 @@ protected:
 	}
 };
 
-/// Insert вставляет значения всех доступных типов
+/// Insert РІСЃС‚Р°РІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёСЏ РІСЃРµС… РґРѕСЃС‚СѓРїРЅС‹С… С‚РёРїРѕРІ
 TEST_F(ExecutorEAVWithPreparedEnvironment, InsertInsertsValue)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -813,7 +813,7 @@ TEST_F(ExecutorEAVWithPreparedEnvironment, InsertInsertsValue)
 }
 
 
-/// Update обновляет значения всех доступных типов
+/// Update РѕР±РЅРѕРІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёСЏ РІСЃРµС… РґРѕСЃС‚СѓРїРЅС‹С… С‚РёРїРѕРІ
 TEST_F(ExecutorEAVWithPreparedEnvironment, UpdateUpdatesValue)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -881,7 +881,7 @@ TEST_F(ExecutorEAVWithPreparedEnvironment, UpdateUpdatesValue)
 }
 
 
-/// InsertOrUpdate вставляет или обновляет значения всех доступных типов
+/// InsertOrUpdate РІСЃС‚Р°РІР»СЏРµС‚ РёР»Рё РѕР±РЅРѕРІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёСЏ РІСЃРµС… РґРѕСЃС‚СѓРїРЅС‹С… С‚РёРїРѕРІ
 TEST_F(ExecutorEAVWithPreparedEnvironment, InsertOrUpdateInsertsOrUpdatesValue)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1001,11 +1001,11 @@ TEST_F(ExecutorEAVWithPreparedEnvironment, InsertOrUpdateInsertsOrUpdatesValue)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Тесты Insert/Update/InsertOrUpdate, которые проверяют, что
-/// команды возвращают ошибку, если их выполнить для невалидного вида сущности
+/// РўРµСЃС‚С‹ Insert/Update/InsertOrUpdate, РєРѕС‚РѕСЂС‹Рµ РїСЂРѕРІРµСЂСЏСЋС‚, С‡С‚Рѕ
+/// РєРѕРјР°РЅРґС‹ РІРѕР·РІСЂР°С‰Р°СЋС‚ РѕС€РёР±РєСѓ, РµСЃР»Рё РёС… РІС‹РїРѕР»РЅРёС‚СЊ РґР»СЏ РЅРµРІР°Р»РёРґРЅРѕРіРѕ РІРёРґР° СЃСѓС‰РЅРѕСЃС‚Рё
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Insert не вставляет значение при невалидном виде сущности
+/// Insert РЅРµ РІСЃС‚Р°РІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёРµ РїСЂРё РЅРµРІР°Р»РёРґРЅРѕРј РІРёРґРµ СЃСѓС‰РЅРѕСЃС‚Рё
 TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertsWithInvalidEntityName)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1029,7 +1029,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertsWithInvalidEntityNam
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
 
-	// Проверим, что таблицы не создались
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†С‹ РЅРµ СЃРѕР·РґР°Р»РёСЃСЊ
 	ASSERT_FALSE(IsTableExist(
 		GetRules().GetEntityTableName(nonExistingEntityName),
 		*connection
@@ -1047,7 +1047,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertsWithInvalidEntityNam
 }
 
 
-/// InsertOrUpdate не вставляет значение при невалидном виде сущности
+/// InsertOrUpdate РЅРµ РІСЃС‚Р°РІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёРµ РїСЂРё РЅРµРІР°Р»РёРґРЅРѕРј РІРёРґРµ СЃСѓС‰РЅРѕСЃС‚Рё
 TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertsWithInvalidEntityName)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1071,7 +1071,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertsWithInvalidE
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
 
-	// Проверим, что таблицы не создались
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†С‹ РЅРµ СЃРѕР·РґР°Р»РёСЃСЊ
 	ASSERT_FALSE(IsTableExist(
 		GetRules().GetEntityTableName(nonExistingEntityName),
 		*connection
@@ -1089,7 +1089,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertsWithInvalidE
 }
 
 
-/// Update не обновляет значение при невалидном виде сущности
+/// Update РЅРµ РѕР±РЅРѕРІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёРµ РїСЂРё РЅРµРІР°Р»РёРґРЅРѕРј РІРёРґРµ СЃСѓС‰РЅРѕСЃС‚Рё
 TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdatesWithInvalidEntityName)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1116,7 +1116,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdatesWithInvalidEntityNam
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(6))
 		->HasError());
 
-	// Проверим, что таблицы не создались
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†С‹ РЅРµ СЃРѕР·РґР°Р»РёСЃСЊ
 	ASSERT_FALSE(IsTableExist(
 		GetRules().GetEntityTableName(nonExistingEntityName),
 		*connection
@@ -1134,7 +1134,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdatesWithInvalidEntityNam
 }
 
 
-/// InsertOrUpdate не обновляет значение при невалидном виде сущности
+/// InsertOrUpdate РЅРµ РѕР±РЅРѕРІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёРµ РїСЂРё РЅРµРІР°Р»РёРґРЅРѕРј РІРёРґРµ СЃСѓС‰РЅРѕСЃС‚Рё
 TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdatesWithInvalidEntityName)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1161,7 +1161,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdatesWithInvalidE
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(6))
 		->HasError());
 
-	// Проверим, что таблицы не создались
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†С‹ РЅРµ СЃРѕР·РґР°Р»РёСЃСЊ
 	ASSERT_FALSE(IsTableExist(
 		GetRules().GetEntityTableName(nonExistingEntityName),
 		*connection
@@ -1180,12 +1180,12 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdatesWithInvalidE
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Тесты Insert/Update/InsertOrUpdate, которые проверяют, что
-/// команды возвращают ошибку, если их выполнить для невалидного идентификатора
-/// сущности
+/// РўРµСЃС‚С‹ Insert/Update/InsertOrUpdate, РєРѕС‚РѕСЂС‹Рµ РїСЂРѕРІРµСЂСЏСЋС‚, С‡С‚Рѕ
+/// РєРѕРјР°РЅРґС‹ РІРѕР·РІСЂР°С‰Р°СЋС‚ РѕС€РёР±РєСѓ, РµСЃР»Рё РёС… РІС‹РїРѕР»РЅРёС‚СЊ РґР»СЏ РЅРµРІР°Р»РёРґРЅРѕРіРѕ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР°
+/// СЃСѓС‰РЅРѕСЃС‚Рё
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Insert не вставляет значение при невалидном идентификаторе сущности
+/// Insert РЅРµ РІСЃС‚Р°РІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёРµ РїСЂРё РЅРµРІР°Р»РёРґРЅРѕРј РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРµ СЃСѓС‰РЅРѕСЃС‚Рё
 TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertsWithInvalidEntityId)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1208,7 +1208,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertsWithInvalidEntityId)
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
 
-	// Проверим, что таблицы не создались
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†С‹ РЅРµ СЃРѕР·РґР°Р»РёСЃСЊ
 	ASSERT_FALSE(IsTableExist(
 		GetRules().GetAttributeTableName(entityName, attributeTypeName),
 		*connection
@@ -1222,7 +1222,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertsWithInvalidEntityId)
 }
 
 
-/// InsertOrUpdate не вставляет значение при невалидном идентификаторе сущности
+/// InsertOrUpdate РЅРµ РІСЃС‚Р°РІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёРµ РїСЂРё РЅРµРІР°Р»РёРґРЅРѕРј РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРµ СЃСѓС‰РЅРѕСЃС‚Рё
 TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertsWithInvalidEntityId)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1245,7 +1245,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertsWithInvalidE
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
 
-	// Проверим, что таблицы не создались
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†С‹ РЅРµ СЃРѕР·РґР°Р»РёСЃСЊ
 	ASSERT_FALSE(IsTableExist(
 		GetRules().GetAttributeTableName(entityName, attributeTypeName),
 		*connection
@@ -1259,7 +1259,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertsWithInvalidE
 }
 
 
-/// Update не обновляет значение при невалидном идентификаторе сущности
+/// Update РЅРµ РѕР±РЅРѕРІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёРµ РїСЂРё РЅРµРІР°Р»РёРґРЅРѕРј РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРµ СЃСѓС‰РЅРѕСЃС‚Рё
 TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithInvalidEntityId)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1278,7 +1278,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithInvalidEntityId)
 	ASSERT_EQ(result, 1);
 
 	std::string attributeName = "SomeIntegerAttr";
-	// Добавим запись, чтобы было, что обновлять
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ, С‡С‚РѕР±С‹ Р±С‹Р»Рѕ, С‡С‚Рѕ РѕР±РЅРѕРІР»СЏС‚СЊ
 	ASSERT_FALSE(executorEAV->Insert(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
@@ -1291,7 +1291,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithInvalidEntityId)
 }
 
 
-/// InsertOrUpdate не обновляет значение при невалидном идентификаторе сущности
+/// InsertOrUpdate РЅРµ РѕР±РЅРѕРІР»СЏРµС‚ Р·РЅР°С‡РµРЅРёРµ РїСЂРё РЅРµРІР°Р»РёРґРЅРѕРј РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРµ СЃСѓС‰РЅРѕСЃС‚Рё
 TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdateWithInvalidEntityId)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1310,7 +1310,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdateWithInvalidEn
 	ASSERT_EQ(result, 1);
 
 	std::string attributeName = "SomeIntegerAttr";
-	// Добавим запись, чтобы было, что обновлять
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ, С‡С‚РѕР±С‹ Р±С‹Р»Рѕ, С‡С‚Рѕ РѕР±РЅРѕРІР»СЏС‚СЊ
 	ASSERT_FALSE(executorEAV->Insert(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
@@ -1324,10 +1324,10 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdateWithInvalidEn
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Дополнительные тесты Update
+/// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ С‚РµСЃС‚С‹ Update
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Update не обновляет таблицы при несуществующем названии обновляемого атрибута
+/// Update РЅРµ РѕР±РЅРѕРІР»СЏРµС‚ С‚Р°Р±Р»РёС†С‹ РїСЂРё РЅРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РµРј РЅР°Р·РІР°РЅРёРё РѕР±РЅРѕРІР»СЏРµРјРѕРіРѕ Р°С‚СЂРёР±СѓС‚Р°
 TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithNonExistingAttributeName)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1346,7 +1346,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithNonExistingAttrib
 	ASSERT_EQ(result, 1);
 
 	std::string attributeName = "SomeIntegerAttr";
-	// Добавим запись, чтобы было, что обновлять
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ, С‡С‚РѕР±С‹ Р±С‹Р»Рѕ, С‡С‚Рѕ РѕР±РЅРѕРІР»СЏС‚СЊ
 	ASSERT_FALSE(executorEAV->Insert(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
@@ -1360,12 +1360,12 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithNonExistingAttrib
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Тесты Insert/Update/InsertOrUpdate, которые проверяют, что
-/// команды возвращают ошибку, если передать нулевую или пустую переменную,
-/// отвечающую за представление названия атрибута
+/// РўРµСЃС‚С‹ Insert/Update/InsertOrUpdate, РєРѕС‚РѕСЂС‹Рµ РїСЂРѕРІРµСЂСЏСЋС‚, С‡С‚Рѕ
+/// РєРѕРјР°РЅРґС‹ РІРѕР·РІСЂР°С‰Р°СЋС‚ РѕС€РёР±РєСѓ, РµСЃР»Рё РїРµСЂРµРґР°С‚СЊ РЅСѓР»РµРІСѓСЋ РёР»Рё РїСѓСЃС‚СѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ,
+/// РѕС‚РІРµС‡Р°СЋС‰СѓСЋ Р·Р° РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РЅР°Р·РІР°РЅРёСЏ Р°С‚СЂРёР±СѓС‚Р°
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Insert возвращает ошибку, если попытаться вставить значение по невалидному названию атрибута
+/// Insert РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС€РёР±РєСѓ, РµСЃР»Рё РїРѕРїС‹С‚Р°С‚СЊСЃСЏ РІСЃС‚Р°РІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РїРѕ РЅРµРІР°Р»РёРґРЅРѕРјСѓ РЅР°Р·РІР°РЅРёСЋ Р°С‚СЂРёР±СѓС‚Р°
 TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertsWithInvalidAttributeName)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1391,7 +1391,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertsWithInvalidAttribute
 }
 
 
-/// InsertOrUpdate возвращает ошибку, если попытаться вставить значение по невалидному названию атрибута
+/// InsertOrUpdate РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС€РёР±РєСѓ, РµСЃР»Рё РїРѕРїС‹С‚Р°С‚СЊСЃСЏ РІСЃС‚Р°РІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РїРѕ РЅРµРІР°Р»РёРґРЅРѕРјСѓ РЅР°Р·РІР°РЅРёСЋ Р°С‚СЂРёР±СѓС‚Р°
 TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertsWithInvalidAttributeName)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1417,7 +1417,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertsWithInvalidA
 }
 
 
-/// Update возвращает ошибку, если попытаться обновить значение по невалидному названию атрибута
+/// Update РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС€РёР±РєСѓ, РµСЃР»Рё РїРѕРїС‹С‚Р°С‚СЊСЃСЏ РѕР±РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РїРѕ РЅРµРІР°Р»РёРґРЅРѕРјСѓ РЅР°Р·РІР°РЅРёСЋ Р°С‚СЂРёР±СѓС‚Р°
 TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithInvalidAttributeName)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1436,7 +1436,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithInvalidAttributeN
 	ASSERT_EQ(result, 1);
 
 	std::string attributeName = "SomeIntegerAttr";
-	// Добавим запись, чтобы было, что обновлять
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ, С‡С‚РѕР±С‹ Р±С‹Р»Рѕ, С‡С‚Рѕ РѕР±РЅРѕРІР»СЏС‚СЊ
 	ASSERT_FALSE(executorEAV->Insert(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
@@ -1449,12 +1449,12 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithInvalidAttributeN
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Тесты Insert/Update/InsertOrUpdate, которые проверяют, что
-/// команды возвращают ошибку, если передать нулевую или пустую переменную,
-/// отвечающую за представление вставляемого/обновляемого значения
+/// РўРµСЃС‚С‹ Insert/Update/InsertOrUpdate, РєРѕС‚РѕСЂС‹Рµ РїСЂРѕРІРµСЂСЏСЋС‚, С‡С‚Рѕ
+/// РєРѕРјР°РЅРґС‹ РІРѕР·РІСЂР°С‰Р°СЋС‚ РѕС€РёР±РєСѓ, РµСЃР»Рё РїРµСЂРµРґР°С‚СЊ РЅСѓР»РµРІСѓСЋ РёР»Рё РїСѓСЃС‚СѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ,
+/// РѕС‚РІРµС‡Р°СЋС‰СѓСЋ Р·Р° РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РІСЃС‚Р°РІР»СЏРµРјРѕРіРѕ/РѕР±РЅРѕРІР»СЏРµРјРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Insert возвращает ошибку, если попытаться вставить невалидное значение
+/// Insert РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС€РёР±РєСѓ, РµСЃР»Рё РїРѕРїС‹С‚Р°С‚СЊСЃСЏ РІСЃС‚Р°РІРёС‚СЊ РЅРµРІР°Р»РёРґРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertWithInvalidValue)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1484,7 +1484,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertWithInvalidValue)
 }
 
 
-/// Update возвращает ошибку, если попытаться обновить значение невалидным значением
+/// Update РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС€РёР±РєСѓ, РµСЃР»Рё РїРѕРїС‹С‚Р°С‚СЊСЃСЏ РѕР±РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РЅРµРІР°Р»РёРґРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј
 TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithInvalidValue)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1503,7 +1503,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithInvalidValue)
 	ASSERT_EQ(result, 1);
 
 	std::string attributeName = "SomeIntegerAttr";
-	// Добавим запись, чтобы было, что обновлять
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ, С‡С‚РѕР±С‹ Р±С‹Р»Рѕ, С‡С‚Рѕ РѕР±РЅРѕРІР»СЏС‚СЊ
 	ASSERT_FALSE(executorEAV->Insert(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
@@ -1519,7 +1519,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithInvalidValue)
 }
 
 
-/// InsertOrUpdate возвращает ошибку, если попытаться вставить невалидное значение
+/// InsertOrUpdate РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС€РёР±РєСѓ, РµСЃР»Рё РїРѕРїС‹С‚Р°С‚СЊСЃСЏ РІСЃС‚Р°РІРёС‚СЊ РЅРµРІР°Р»РёРґРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
 TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertWithInvalidValue)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1549,7 +1549,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertWithInvalidVa
 }
 
 
-/// InsertOrUpdate возвращает ошибку, если попытаться обновить значение невалидным значением
+/// InsertOrUpdate РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС€РёР±РєСѓ, РµСЃР»Рё РїРѕРїС‹С‚Р°С‚СЊСЃСЏ РѕР±РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РЅРµРІР°Р»РёРґРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј
 TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdateWithInvalidValue)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -1568,7 +1568,7 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdateWithInvalidVa
 	ASSERT_EQ(result, 1);
 
 	std::string attributeName = "SomeIntegerAttr";
-	// Добавим запись, чтобы было, что обновлять
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ, С‡С‚РѕР±С‹ Р±С‹Р»Рѕ, С‡С‚Рѕ РѕР±РЅРѕРІР»СЏС‚СЊ
 	ASSERT_FALSE(executorEAV->Insert(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
@@ -1585,15 +1585,15 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdateWithInvalidVa
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Тесты Insert/Update/InsertOrUpdate, которые проверяют, что
-/// данные методы не открывают и не закрывают транзакции
+/// РўРµСЃС‚С‹ Insert/Update/InsertOrUpdate, РєРѕС‚РѕСЂС‹Рµ РїСЂРѕРІРµСЂСЏСЋС‚, С‡С‚Рѕ
+/// РґР°РЅРЅС‹Рµ РјРµС‚РѕРґС‹ РЅРµ РѕС‚РєСЂС‹РІР°СЋС‚ Рё РЅРµ Р·Р°РєСЂС‹РІР°СЋС‚ С‚СЂР°РЅР·Р°РєС†РёРё
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Класс для проверок данной группы тестов
+/// РљР»Р°СЃСЃ РґР»СЏ РїСЂРѕРІРµСЂРѕРє РґР°РЅРЅРѕР№ РіСЂСѓРїРїС‹ С‚РµСЃС‚РѕРІ
 class ExecutorEAVForCheckTransactions : public ExecutorEAVWithEmptyEnvironment
 {
 protected:
-	/// Создать простую таблицу
+	/// РЎРѕР·РґР°С‚СЊ РїСЂРѕСЃС‚СѓСЋ С‚Р°Р±Р»РёС†Сѓ
 	void CreateSimpleTable(const std::string & tablename)
 	{
 		ASSERT_FALSE(
@@ -1604,7 +1604,7 @@ protected:
 	}
 };
 
-/// Insert не открывает транзакцию
+/// Insert РЅРµ РѕС‚РєСЂС‹РІР°РµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ
 TEST_F(ExecutorEAVForCheckTransactions, InsertDoesNotBeginTransaction)
 {
 	const std::string entityName = "SomeEntity1";
@@ -1623,30 +1623,30 @@ TEST_F(ExecutorEAVForCheckTransactions, InsertDoesNotBeginTransaction)
 
 	std::string attributeName = "SomeIntegerAttr";
 
-	// Зафиксируем активную транзакцию, если она вдруг есть
+	// Р—Р°С„РёРєСЃРёСЂСѓРµРј Р°РєС‚РёРІРЅСѓСЋ С‚СЂР°РЅР·Р°РєС†РёСЋ, РµСЃР»Рё РѕРЅР° РІРґСЂСѓРі РµСЃС‚СЊ
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 
-	// Добавим запись
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ
 	ASSERT_FALSE(executorEAV->Insert(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
 
 	const std::string newTableName = "SimpleTable";
-	// Создадим пустую таблицу
+	// РЎРѕР·РґР°РґРёРј РїСѓСЃС‚СѓСЋ С‚Р°Р±Р»РёС†Сѓ
 	CreateSimpleTable(newTableName);
-	// Откатим транзакцию
+	// РћС‚РєР°С‚РёРј С‚СЂР°РЅР·Р°РєС†РёСЋ
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 
-	// Если Insert открывает транзакцию, тогда таблица SimpleTable не создастся
+	// Р•СЃР»Рё Insert РѕС‚РєСЂС‹РІР°РµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ, С‚РѕРіРґР° С‚Р°Р±Р»РёС†Р° SimpleTable РЅРµ СЃРѕР·РґР°СЃС‚СЃСЏ
 	ASSERT_TRUE(IsTableExist(newTableName, *connection));
 
-	// Удалим созданные таблицы
+	// РЈРґР°Р»РёРј СЃРѕР·РґР°РЅРЅС‹Рµ С‚Р°Р±Р»РёС†С‹
 	ASSERT_TRUE(DropTable(newTableName, *connection));
 	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
 }
 
 
-/// InsertOrUpdate не открывает транзакцию
+/// InsertOrUpdate РЅРµ РѕС‚РєСЂС‹РІР°РµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ
 TEST_F(ExecutorEAVForCheckTransactions, InsertOrUpdateDoesNotBeginTransaction)
 {
 	const std::string entityName = "SomeEntity1";
@@ -1665,30 +1665,30 @@ TEST_F(ExecutorEAVForCheckTransactions, InsertOrUpdateDoesNotBeginTransaction)
 
 	std::string attributeName = "SomeIntegerAttr";
 
-	// Зафиксируем активную транзакцию, если она вдруг есть
+	// Р—Р°С„РёРєСЃРёСЂСѓРµРј Р°РєС‚РёРІРЅСѓСЋ С‚СЂР°РЅР·Р°РєС†РёСЋ, РµСЃР»Рё РѕРЅР° РІРґСЂСѓРі РµСЃС‚СЊ
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 
-	// Добавим запись
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ
 	ASSERT_FALSE(executorEAV->InsertOrUpdate(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
 
 	const std::string newTableName = "SimpleTable";
-	// Создадим пустую таблицу
+	// РЎРѕР·РґР°РґРёРј РїСѓСЃС‚СѓСЋ С‚Р°Р±Р»РёС†Сѓ
 	CreateSimpleTable(newTableName);
-	// Откатим транзакцию
+	// РћС‚РєР°С‚РёРј С‚СЂР°РЅР·Р°РєС†РёСЋ
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 
-	// Если InsertOrUpdate открывает транзакцию, тогда таблица SimpleTable не создастся
+	// Р•СЃР»Рё InsertOrUpdate РѕС‚РєСЂС‹РІР°РµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ, С‚РѕРіРґР° С‚Р°Р±Р»РёС†Р° SimpleTable РЅРµ СЃРѕР·РґР°СЃС‚СЃСЏ
 	ASSERT_TRUE(IsTableExist(newTableName, *connection));
 
-	// Удалим созданные таблицы
+	// РЈРґР°Р»РёРј СЃРѕР·РґР°РЅРЅС‹Рµ С‚Р°Р±Р»РёС†С‹
 	ASSERT_TRUE(DropTable(newTableName, *connection));
 	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
 }
 
 
-/// Update не открывает транзакцию
+/// Update РЅРµ РѕС‚РєСЂС‹РІР°РµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ
 TEST_F(ExecutorEAVForCheckTransactions, UpdateDoesNotBeginTransaction)
 {
 	const std::string entityName = "SomeEntity1";
@@ -1707,35 +1707,35 @@ TEST_F(ExecutorEAVForCheckTransactions, UpdateDoesNotBeginTransaction)
 
 	std::string attributeName = "SomeIntegerAttr";
 
-	// Добавим запись, чтобы было, что обновлять
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ, С‡С‚РѕР±С‹ Р±С‹Р»Рѕ, С‡С‚Рѕ РѕР±РЅРѕРІР»СЏС‚СЊ
 	ASSERT_FALSE(executorEAV->Insert(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
 
-	// Зафиксируем активную транзакцию, если она вдруг есть
+	// Р—Р°С„РёРєСЃРёСЂСѓРµРј Р°РєС‚РёРІРЅСѓСЋ С‚СЂР°РЅР·Р°РєС†РёСЋ, РµСЃР»Рё РѕРЅР° РІРґСЂСѓРі РµСЃС‚СЊ
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 
-	// Обновим запись
+	// РћР±РЅРѕРІРёРј Р·Р°РїРёСЃСЊ
 	ASSERT_FALSE(executorEAV->Update(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(7))
 		->HasError());
 
 	const std::string newTableName = "SimpleTable";
-	// Создадим пустую таблицу
+	// РЎРѕР·РґР°РґРёРј РїСѓСЃС‚СѓСЋ С‚Р°Р±Р»РёС†Сѓ
 	CreateSimpleTable(newTableName);
-	// Откатим транзакцию
+	// РћС‚РєР°С‚РёРј С‚СЂР°РЅР·Р°РєС†РёСЋ
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 
-	// Если Update открывает транзакцию, тогда таблица SimpleTable не создастся
+	// Р•СЃР»Рё Update РѕС‚РєСЂС‹РІР°РµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ, С‚РѕРіРґР° С‚Р°Р±Р»РёС†Р° SimpleTable РЅРµ СЃРѕР·РґР°СЃС‚СЃСЏ
 	ASSERT_TRUE(IsTableExist(newTableName, *connection));
 
-	// Удалим созданные таблицы
+	// РЈРґР°Р»РёРј СЃРѕР·РґР°РЅРЅС‹Рµ С‚Р°Р±Р»РёС†С‹
 	ASSERT_TRUE(DropTable(newTableName, *connection));
 	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
 }
 
 
-/// Insert не фиксирует транзакцию
+/// Insert РЅРµ С„РёРєСЃРёСЂСѓРµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ
 TEST_F(ExecutorEAVForCheckTransactions, InsertDoesNotEndTransaction)
 {
 	const std::string entityName = "SomeEntity1";
@@ -1754,36 +1754,36 @@ TEST_F(ExecutorEAVForCheckTransactions, InsertDoesNotEndTransaction)
 
 	std::string attributeName = "SomeIntegerAttr";
 
-	// Зафиксируем активную транзакцию, если она вдруг есть
+	// Р—Р°С„РёРєСЃРёСЂСѓРµРј Р°РєС‚РёРІРЅСѓСЋ С‚СЂР°РЅР·Р°РєС†РёСЋ, РµСЃР»Рё РѕРЅР° РІРґСЂСѓРі РµСЃС‚СЊ
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 
-	// Начнем новую транзакцию
+	// РќР°С‡РЅРµРј РЅРѕРІСѓСЋ С‚СЂР°РЅР·Р°РєС†РёСЋ
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 
-	// Создадим пустую таблицу
+	// РЎРѕР·РґР°РґРёРј РїСѓСЃС‚СѓСЋ С‚Р°Р±Р»РёС†Сѓ
 	const std::string newTableName = "SimpleTable";
 	CreateSimpleTable(newTableName);
 
-	// Добавим запись
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ
 	ASSERT_FALSE(executorEAV->Insert(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
 
-	// Проверим, что таблица ещё существует (что метод не производит откат транзакции)
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†Р° РµС‰С‘ СЃСѓС‰РµСЃС‚РІСѓРµС‚ (С‡С‚Рѕ РјРµС‚РѕРґ РЅРµ РїСЂРѕРёР·РІРѕРґРёС‚ РѕС‚РєР°С‚ С‚СЂР°РЅР·Р°РєС†РёРё)
 	ASSERT_TRUE(IsTableExist(newTableName, *connection));
 
-	// Откатим транзакцию
+	// РћС‚РєР°С‚РёРј С‚СЂР°РЅР·Р°РєС†РёСЋ
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 
-	// Проверим, что таблица теперь не существует (что метод не производит фиксацию транзакции)
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†Р° С‚РµРїРµСЂСЊ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ (С‡С‚Рѕ РјРµС‚РѕРґ РЅРµ РїСЂРѕРёР·РІРѕРґРёС‚ С„РёРєСЃР°С†РёСЋ С‚СЂР°РЅР·Р°РєС†РёРё)
 	ASSERT_FALSE(IsTableExist(newTableName, *connection));
 
-	// Удалим созданные таблицы
+	// РЈРґР°Р»РёРј СЃРѕР·РґР°РЅРЅС‹Рµ С‚Р°Р±Р»РёС†С‹
 	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
 }
 
 
-/// InsertOrUpdate не фиксирует транзакцию
+/// InsertOrUpdate РЅРµ С„РёРєСЃРёСЂСѓРµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ
 TEST_F(ExecutorEAVForCheckTransactions, InsertOrUpdateDoesNotEndTransaction)
 {
 	const std::string entityName = "SomeEntity1";
@@ -1802,36 +1802,36 @@ TEST_F(ExecutorEAVForCheckTransactions, InsertOrUpdateDoesNotEndTransaction)
 
 	std::string attributeName = "SomeIntegerAttr";
 
-	// Зафиксируем активную транзакцию, если она вдруг есть
+	// Р—Р°С„РёРєСЃРёСЂСѓРµРј Р°РєС‚РёРІРЅСѓСЋ С‚СЂР°РЅР·Р°РєС†РёСЋ, РµСЃР»Рё РѕРЅР° РІРґСЂСѓРі РµСЃС‚СЊ
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 
-	// Начнем новую транзакцию
+	// РќР°С‡РЅРµРј РЅРѕРІСѓСЋ С‚СЂР°РЅР·Р°РєС†РёСЋ
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 
-	// Создадим пустую таблицу
+	// РЎРѕР·РґР°РґРёРј РїСѓСЃС‚СѓСЋ С‚Р°Р±Р»РёС†Сѓ
 	const std::string newTableName = "SimpleTable";
 	CreateSimpleTable(newTableName);
 
-	// Добавим запись
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ
 	ASSERT_FALSE(executorEAV->InsertOrUpdate(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
 
-	// Проверим, что таблица ещё существует (что метод не производит откат транзакции)
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†Р° РµС‰С‘ СЃСѓС‰РµСЃС‚РІСѓРµС‚ (С‡С‚Рѕ РјРµС‚РѕРґ РЅРµ РїСЂРѕРёР·РІРѕРґРёС‚ РѕС‚РєР°С‚ С‚СЂР°РЅР·Р°РєС†РёРё)
 	ASSERT_TRUE(IsTableExist(newTableName, *connection));
 
-	// Откатим транзакцию
+	// РћС‚РєР°С‚РёРј С‚СЂР°РЅР·Р°РєС†РёСЋ
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 
-	// Проверим, что таблица теперь не существует (что метод не производит фиксацию транзакции)
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†Р° С‚РµРїРµСЂСЊ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ (С‡С‚Рѕ РјРµС‚РѕРґ РЅРµ РїСЂРѕРёР·РІРѕРґРёС‚ С„РёРєСЃР°С†РёСЋ С‚СЂР°РЅР·Р°РєС†РёРё)
 	ASSERT_FALSE(IsTableExist(newTableName, *connection));
 
-	// Удалим созданные таблицы
+	// РЈРґР°Р»РёРј СЃРѕР·РґР°РЅРЅС‹Рµ С‚Р°Р±Р»РёС†С‹
 	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
 }
 
 
-/// Update не фиксирует транзакцию
+/// Update РЅРµ С„РёРєСЃРёСЂСѓРµС‚ С‚СЂР°РЅР·Р°РєС†РёСЋ
 TEST_F(ExecutorEAVForCheckTransactions, UpdateDoesNotEndTransaction)
 {
 	const std::string entityName = "SomeEntity1";
@@ -1850,46 +1850,45 @@ TEST_F(ExecutorEAVForCheckTransactions, UpdateDoesNotEndTransaction)
 
 	std::string attributeName = "SomeIntegerAttr";
 
-	// Зафиксируем активную транзакцию, если она вдруг есть
+	// Р—Р°С„РёРєСЃРёСЂСѓРµРј Р°РєС‚РёРІРЅСѓСЋ С‚СЂР°РЅР·Р°РєС†РёСЋ, РµСЃР»Рё РѕРЅР° РІРґСЂСѓРі РµСЃС‚СЊ
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 
-	// Добавим запись, чтобы было, что обновлять
+	// Р”РѕР±Р°РІРёРј Р·Р°РїРёСЃСЊ, С‡С‚РѕР±С‹ Р±С‹Р»Рѕ, С‡С‚Рѕ РѕР±РЅРѕРІР»СЏС‚СЊ
 	ASSERT_FALSE(executorEAV->Insert(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
 		->HasError());
 
-	// Начнем новую транзакцию
+	// РќР°С‡РЅРµРј РЅРѕРІСѓСЋ С‚СЂР°РЅР·Р°РєС†РёСЋ
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 
-	// Обновим запись
+	// РћР±РЅРѕРІРёРј Р·Р°РїРёСЃСЊ
 	ASSERT_FALSE(executorEAV->Update(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(7))
 		->HasError());
 
-	// Создадим пустую таблицу
+	// РЎРѕР·РґР°РґРёРј РїСѓСЃС‚СѓСЋ С‚Р°Р±Р»РёС†Сѓ
 	const std::string newTableName = "SimpleTable";
 	CreateSimpleTable(newTableName);
 
-	// Проверим, что таблица ещё существует (что метод не производит откат транзакции)
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†Р° РµС‰С‘ СЃСѓС‰РµСЃС‚РІСѓРµС‚ (С‡С‚Рѕ РјРµС‚РѕРґ РЅРµ РїСЂРѕРёР·РІРѕРґРёС‚ РѕС‚РєР°С‚ С‚СЂР°РЅР·Р°РєС†РёРё)
 	ASSERT_TRUE(IsTableExist(newTableName, *connection));
 
-	// Откатим транзакцию
+	// РћС‚РєР°С‚РёРј С‚СЂР°РЅР·Р°РєС†РёСЋ
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 
-	// Проверим, что таблица теперь не существует (что метод не производит фиксацию транзакции)
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С‚Р°Р±Р»РёС†Р° С‚РµРїРµСЂСЊ РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚ (С‡С‚Рѕ РјРµС‚РѕРґ РЅРµ РїСЂРѕРёР·РІРѕРґРёС‚ С„РёРєСЃР°С†РёСЋ С‚СЂР°РЅР·Р°РєС†РёРё)
 	ASSERT_FALSE(IsTableExist(newTableName, *connection));
 
-	// Удалим созданные таблицы
+	// РЈРґР°Р»РёРј СЃРѕР·РґР°РЅРЅС‹Рµ С‚Р°Р±Р»РёС†С‹
 	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Тесты FindEntitiesByAttrValues
-/// данные методы не открывают и не закрывают транзакции
+/// РўРµСЃС‚С‹ РґР»СЏ GetEntityIds/GetAttributeNames/FindEntitiesByAttrValues/GetValue
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Класс для проверок с заполненным окружением
+/// РљР»Р°СЃСЃ РґР»СЏ РїСЂРѕРІРµСЂРѕРє СЃ Р·Р°РїРѕР»РЅРµРЅРЅС‹Рј РѕРєСЂСѓР¶РµРЅРёРµРј
 class ExecutorEAVWithFilledEnvironment : public ExecutorEAVWithEmptyEnvironment
 {
 protected:
@@ -1897,13 +1896,13 @@ protected:
 	std::vector<std::string> createdFileNames;
 
 private:
-	/// ASSERT_ нельзя вызывать в функциях, которые не возвращают void
+	/// ASSERT_ РЅРµР»СЊР·СЏ РІС‹Р·С‹РІР°С‚СЊ РІ С„СѓРЅРєС†РёСЏС…, РєРѕС‚РѕСЂС‹Рµ РЅРµ РІРѕР·РІСЂР°С‰Р°СЋС‚ void
 	void MyAssert(bool value)
 	{
 		ASSERT_TRUE(value);
 	}
 
-	/// Создает файл с данными и возвращает его идентификатор
+	/// РЎРѕР·РґР°РµС‚ С„Р°Р№Р» СЃ РґР°РЅРЅС‹РјРё Рё РІРѕР·РІСЂР°С‰Р°РµС‚ РµРіРѕ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
 	std::string CreateFileWithData(const std::vector<char> & data)
 	{
 		auto remoteFilePtr = connection->CreateRemoteFile();
@@ -1920,7 +1919,7 @@ private:
 	}
 
 protected:
-	// Действия в начале теста
+	// Р”РµР№СЃС‚РІРёСЏ РІ РЅР°С‡Р°Р»Рµ С‚РµСЃС‚Р°
 	virtual void SetUp() override
 	{
 		ExecutorEAVWithEmptyEnvironment::SetUp();
@@ -1931,50 +1930,58 @@ protected:
 			{"users", {SQLDataType::Text}},
 			{"products", {SQLDataType::Integer, SQLDataType::Text}},
 			{"blobs", {SQLDataType::Text, SQLDataType::RemoteFileId}},
-			{"images", {SQLDataType::Text, SQLDataType::ByteArray}}
+			{"images", {SQLDataType::Text, SQLDataType::ByteArray}},
+			{"todo", {SQLDataType::Text}}
 		});
 		ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries, true)->HasError());
 		ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries);
 
-		// Создадим сущностей
-		for (int i = 1; i <= 3; ++i)
+		// РЎРѕР·РґР°РґРёРј СЃСѓС‰РЅРѕСЃС‚Рё
+		// РћРґРёРЅ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ
+		for (int i = 1; i <= 1; ++i)
 		{
 			int temp = -1;
 			ASSERT_FALSE(executorEAV->CreateNewEntity("users", temp)->HasError());
-			ASSERT_EQ(temp, i);
-
-			temp = -1;
+			ASSERT_EQ(temp, 1);
+		}
+		// РўСЂРё РїСЂРѕРґСѓРєС‚Р°
+		for (int i = 1; i <= 3; ++i)
+		{
+			int temp = -1;
 			ASSERT_FALSE(executorEAV->CreateNewEntity("products", temp)->HasError());
 			ASSERT_EQ(temp, i);
-
-			temp = -1;
+		}
+		// РўСЂРё Р±РѕР»СЊС€РёС… Р±РёРЅР°СЂРЅС‹С… РѕР±СЉРµРєС‚Р°
+		for (int i = 1; i <= 3; ++i)
+		{
+			int temp = -1;
 			ASSERT_FALSE(executorEAV->CreateNewEntity("blobs", temp)->HasError());
 			ASSERT_EQ(temp, i);
-
-			temp = -1;
+		}
+		// Р§РµС‚С‹СЂРµ РєР°СЂС‚РёРЅРєРё
+		for (int i = 1; i <= 4; ++i)
+		{
+			int temp = -1;
 			ASSERT_FALSE(executorEAV->CreateNewEntity("images", temp)->HasError());
 			ASSERT_EQ(temp, i);
 		}
+		// РќРѕР»СЊ СЌР»РµРјРµРЅС‚РѕРІ РІ todo
 
 		const auto nameAttr = converter->GetSQLTypeText("Name");
-		ASSERT_FALSE(executorEAV->Insert("users", 1, nameAttr, converter->GetSQLTypeText("Alex"))->HasError());
-		ASSERT_FALSE(executorEAV->Insert("users", 2, nameAttr, converter->GetSQLTypeText("Joseph"))->HasError());
-		ASSERT_FALSE(executorEAV->Insert("users", 3, nameAttr, converter->GetSQLTypeText("Ivan"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("users", 1, nameAttr, converter->GetSQLTypeText("Ivan"))->HasError());
 
-		const auto priceAttr = converter->GetSQLTypeText("price");
-		const auto descAttr = converter->GetSQLTypeText("description");
+		const auto priceAttr = converter->GetSQLTypeText("Price");
+		const auto descAttr = converter->GetSQLTypeText("Description");
 		ASSERT_FALSE(executorEAV->Insert("products", 1, priceAttr, converter->GetSQLTypeInteger(1000))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("products", 2, priceAttr, converter->GetSQLTypeInteger(50))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("products", 3, priceAttr, converter->GetSQLTypeInteger(777))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("products", 1, nameAttr, converter->GetSQLTypeText("House"))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("products", 2, nameAttr, converter->GetSQLTypeText("Icecream"))->HasError());
-		ASSERT_FALSE(executorEAV->Insert("products", 3, nameAttr, converter->GetSQLTypeText("Bread"))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("products", 1, descAttr, converter->GetSQLTypeText("Amazing house"))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("products", 2, descAttr, converter->GetSQLTypeText("Tasty and cold"))->HasError());
-		ASSERT_FALSE(executorEAV->Insert("products", 3, descAttr, converter->GetSQLTypeText("Bread. Just a bread"))->HasError());
 
-		const auto typeAttr = converter->GetSQLTypeText("type");
-		const auto idAttr = converter->GetSQLTypeText("id");
+		const auto typeAttr = converter->GetSQLTypeText("Type");
+		const auto idAttr = converter->GetSQLTypeText("Id");
 		ASSERT_FALSE(executorEAV->Insert("blobs", 1, typeAttr, converter->GetSQLTypeText("zip"))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("blobs", 2, typeAttr, converter->GetSQLTypeText("zip"))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("blobs", 3, typeAttr, converter->GetSQLTypeText("tar"))->HasError());
@@ -1982,10 +1989,10 @@ protected:
 		ASSERT_FALSE(executorEAV->Insert("blobs", 2, idAttr, converter->GetSQLTypeRemoteFileId(CreateFileWithData({ 3, 2, 1})))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("blobs", 3, idAttr, converter->GetSQLTypeRemoteFileId(CreateFileWithData({ })))->HasError());
 
-		const auto dataAttr = converter->GetSQLTypeText("data");
+		const auto dataAttr = converter->GetSQLTypeText("Data");
 		ASSERT_FALSE(executorEAV->Insert("images", 1, nameAttr, converter->GetSQLTypeText("Sun"))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("images", 2, nameAttr, converter->GetSQLTypeText("Tree"))->HasError());
-		ASSERT_FALSE(executorEAV->Insert("images", 3, nameAttr, converter->GetSQLTypeText("Tree"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("images", 3, nameAttr, converter->GetSQLTypeText("OtherTree"))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("images", 1, dataAttr, converter->GetSQLTypeByteArray({1, 1, 1}))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("images", 2, dataAttr, converter->GetSQLTypeByteArray({ 2, 2, 3, 2 }))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("images", 3, dataAttr, converter->GetSQLTypeByteArray({ 2, 2, 3, 2 }))->HasError());
@@ -1993,7 +2000,7 @@ protected:
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
 
-	// Действия в конце теста
+	// Р”РµР№СЃС‚РІРёСЏ РІ РєРѕРЅС†Рµ С‚РµСЃС‚Р°
 	virtual void TearDown() override
 	{
 		for (auto && createdFileName : createdFileNames)
@@ -2005,19 +2012,243 @@ protected:
 };
 
 
-/// FindEntitiesByAttrValues ищет существующие записи
-TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesFindsExistingEntries)
+/// GetEntityIds СЂР°Р±РѕС‚Р°РµС‚ РґР»СЏ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС… СЃСѓС‰РЅРѕСЃС‚РµР№
+TEST_F(ExecutorEAVWithFilledEnvironment, GetEntityIdsWorksForExistingEntity)
 {
+	std::vector<IExecutorEAV::EntityId> result;
+
+	// Р±СѓРґРµРј Р·Р°РїРѕР»РЅСЏС‚СЊ РІРµРєС‚РѕСЂ РјСѓСЃРѕСЂРѕРј, С‡С‚РѕР±С‹ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РїСЂРѕРІРµСЂСЏС‚СЊ, С‡С‚Рѕ РјРµС‚РѕРґ РµРіРѕ С‡РёСЃС‚РёС‚
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->GetEntityIds("users", result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 1 }));
+
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->GetEntityIds("products", result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 1, 2, 3 }));
+
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->GetEntityIds("blobs", result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 1, 2, 3 }));
+
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->GetEntityIds("images", result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 1, 2, 3, 4 }));
+
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->GetEntityIds("todo", result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({}));
 }
 
 
-/// FindEntitiesByAttrValues не находит не существующие записи
+/// GetEntityIds РЅРµ СЂР°Р±РѕС‚Р°РµС‚ РґР»СЏ РЅРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС… СЃСѓС‰РЅРѕСЃС‚РµР№
+TEST_F(ExecutorEAVWithFilledEnvironment, GetEntityIdsDoesNotWorkForNonExistingEntity)
+{
+	std::vector<IExecutorEAV::EntityId> result;
+
+	// Р±СѓРґРµРј Р·Р°РїРѕР»РЅСЏС‚СЊ РІРµРєС‚РѕСЂ РјСѓСЃРѕСЂРѕРј, С‡С‚РѕР±С‹ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РїСЂРѕРІРµСЂСЏС‚СЊ, С‡С‚Рѕ РјРµС‚РѕРґ РµРіРѕ РЅРµ С‡РёСЃС‚РёС‚
+	result = { 7, 4, 5, 3 };
+	EXPECT_TRUE(executorEAV->GetEntityIds("birds", result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
+}
+
+
+/// FindEntitiesByAttrValues РёС‰РµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ Р·Р°РїРёСЃРё РїРѕ РѕРґРЅРѕР№ РїР°СЂРµ Р°С‚СЂРёР±СѓС‚-Р·РЅР°С‡РµРЅРёРµ
+TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesFindsExistingEntriesByAttrValue)
+{
+	std::vector<IExecutorEAV::EntityId> result;
+
+	// I. РџРѕРёСЃРє РѕРґРёРЅРѕС‡РЅС‹С… Р·Р°РїРёСЃРµР№
+	//    1. РЎ Р°С‚СЂРёР±СѓС‚РѕРј Text
+
+	// Р±СѓРґРµРј Р·Р°РїРѕР»РЅСЏС‚СЊ РІРµРєС‚РѕСЂ РјСѓСЃРѕСЂРѕРј, С‡С‚РѕР±С‹ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РїСЂРѕРІРµСЂСЏС‚СЊ, С‡С‚Рѕ РјРµС‚РѕРґ РµРіРѕ РЅРµ С‡РёСЃС‚РёС‚
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("users", std::vector<IExecutorEAV::AttrValue>({
+			{converter->GetSQLTypeText("Name"), converter->GetSQLTypeText("Ivan")} }),
+			result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 1 }));
+
+	//    2. РЎ Р°С‚СЂРёР±СѓС‚РѕРј Integer
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("products", std::vector<IExecutorEAV::AttrValue>({
+			{converter->GetSQLTypeText("Price"), converter->GetSQLTypeInteger(777)} }),
+			result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 3 }));
+
+	//    3. РЎ Р°С‚СЂРёР±СѓС‚РѕРј RemoteFileId
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("blobs", std::vector<IExecutorEAV::AttrValue>({
+			{converter->GetSQLTypeText("Id"), converter->GetSQLTypeRemoteFileId(createdFileNames.at(1))} }),
+			result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 2 }));
+
+	//    4. РЎ Р°С‚СЂРёР±СѓС‚РѕРј ByteArray
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+			{converter->GetSQLTypeText("Data"), converter->GetSQLTypeByteArray({1, 1, 1})} }),
+			result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 1 }));
+
+	// II. РџРѕРёСЃРє РЅРµСЃРєРѕР»СЊРєРёС… Р·Р°РїРёСЃРµР№ СЃ РѕРґРёРЅР°РєРѕРІС‹Рј Р·РЅР°С‡РµРЅРёРµРј РѕРґРЅРѕРіРѕ Р°С‚СЂРёР±СѓС‚Р°
+	result = { 7, 4, 5, 3 };
+	EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+			{converter->GetSQLTypeText("Data"), converter->GetSQLTypeByteArray({ 2, 2, 3, 2 })} }),
+			result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 2, 3 }));
+
+	EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("blobs", std::vector<IExecutorEAV::AttrValue>({
+			{converter->GetSQLTypeText("Type"), converter->GetSQLTypeText("zip")} }),
+			result)->HasError());
+	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 1, 2 }));
+}
+
+
+/// FindEntitiesByAttrValues РёС‰РµС‚ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ Р·Р°РїРёСЃРё РїРѕ РЅРµСЃРєРѕР»СЊРєРёС… РїР°СЂР°Рј Р°С‚СЂРёР±СѓС‚-Р·РЅР°С‡РµРЅРёРµ
+TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesFindsExistingEntriesByAttrValues)
+{
+	// РўРµСЃС‚РёСЂСѓРµРј С‚РѕР»СЊРєРѕ РґРІРµ РїР°СЂС‹ Р°С‚СЂРёР±СѓС‚-Р·РЅР°С‡РµРЅРёРµ
+	// РџРµСЂРІР°СЏ РїР°СЂР° Р°С‚СЂРёР±СѓС‚-Р·РЅР°С‡РµРЅРёРµ СЃРѕРґРµСЂР¶РёС‚СЃСЏ РІ РјРЅРѕР¶РµСЃС‚РІРµ СЃСѓС‰РЅРѕСЃС‚РµР№ A.
+	// Р’С‚РѕСЂР°СЏ РїР°СЂР° Р°С‚СЂРёР±СѓС‚-Р·РЅР°С‡РµРЅРёРµ СЃРѕРґРµСЂР¶РёС‚СЃСЏ РІ РјРЅРѕР¶РµСЃС‚РІРµ СЃСѓС‰РЅРѕСЃС‚РµР№ B.
+	// Р”Р»СЏ РґРІСѓС… РїР°СЂ Р°С‚СЂРёР±СѓС‚-Р·РЅР°С‡РµРЅРёРµ РјРµС‚РѕРґ РІРѕР·РІСЂР°С‰Р°РµС‚ A в€© B.
+
+	std::vector<IExecutorEAV::EntityId> result;
+
+	{
+		// 1. A = в€…, B = в€….
+
+		auto nameAttr = converter->GetSQLTypeText("Name");
+		auto nameValue = converter->GetSQLTypeText("Cat");
+		auto dataAttr = converter->GetSQLTypeText("Data");
+		auto dataValue = converter->GetSQLTypeByteArray({ 0, 0, 0 });
+
+		// Р±СѓРґРµРј Р·Р°РїРѕР»РЅСЏС‚СЊ РІРµРєС‚РѕСЂ РјСѓСЃРѕСЂРѕРј, С‡С‚РѕР±С‹ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РїСЂРѕРІРµСЂСЏС‚СЊ, С‡С‚Рѕ РјРµС‚РѕРґ РµРіРѕ РЅРµ С‡РёСЃС‚РёС‚
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{nameAttr, nameValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° A = в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({}));
+
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{dataAttr, dataValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° B = в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({}));
+
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{nameAttr, nameValue},
+				{dataAttr, dataValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° A в€© B = в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({}));
+	}
+
+	{
+		// 2. A = в€…, B в‰  в€…
+
+		auto nameAttr = converter->GetSQLTypeText("Name");
+		auto nameValue = converter->GetSQLTypeText("Cat");
+		auto dataAttr = converter->GetSQLTypeText("Data");
+		auto dataValue = converter->GetSQLTypeByteArray({ 2, 2, 3, 2 });
+
+		// Р±СѓРґРµРј Р·Р°РїРѕР»РЅСЏС‚СЊ РІРµРєС‚РѕСЂ РјСѓСЃРѕСЂРѕРј, С‡С‚РѕР±С‹ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РїСЂРѕРІРµСЂСЏС‚СЊ, С‡С‚Рѕ РјРµС‚РѕРґ РµРіРѕ РЅРµ С‡РёСЃС‚РёС‚
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{nameAttr, nameValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° A = в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({}));
+
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{dataAttr, dataValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° B в‰  в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({2, 3}));
+
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{nameAttr, nameValue},
+				{dataAttr, dataValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° A в€© B = в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({}));
+	}
+
+	{
+		// 3. A в‰  в€…, B в‰  в€…, A в€© B = в€…
+
+		auto nameAttr = converter->GetSQLTypeText("Name");
+		auto nameValue = converter->GetSQLTypeText("Sun");
+		auto dataAttr = converter->GetSQLTypeText("Data");
+		auto dataValue = converter->GetSQLTypeByteArray({ 2, 2, 3, 2 });
+
+		// Р±СѓРґРµРј Р·Р°РїРѕР»РЅСЏС‚СЊ РІРµРєС‚РѕСЂ РјСѓСЃРѕСЂРѕРј, С‡С‚РѕР±С‹ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РїСЂРѕРІРµСЂСЏС‚СЊ, С‡С‚Рѕ РјРµС‚РѕРґ РµРіРѕ РЅРµ С‡РёСЃС‚РёС‚
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{nameAttr, nameValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° A в‰  в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 1 }));
+
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{dataAttr, dataValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° B в‰  в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 2, 3 }));
+
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{nameAttr, nameValue},
+				{dataAttr, dataValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° A в€© B = в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({}));
+	}
+
+	{
+		// 4. A в‰  в€…, B в‰  в€…, A в€© B в‰  в€…
+
+		auto nameAttr = converter->GetSQLTypeText("Name");
+		auto nameValue = converter->GetSQLTypeText("Tree");
+		auto dataAttr = converter->GetSQLTypeText("Data");
+		auto dataValue = converter->GetSQLTypeByteArray({ 2, 2, 3, 2 });
+
+		// Р±СѓРґРµРј Р·Р°РїРѕР»РЅСЏС‚СЊ РІРµРєС‚РѕСЂ РјСѓСЃРѕСЂРѕРј, С‡С‚РѕР±С‹ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕ РїСЂРѕРІРµСЂСЏС‚СЊ, С‡С‚Рѕ РјРµС‚РѕРґ РµРіРѕ РЅРµ С‡РёСЃС‚РёС‚
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{nameAttr, nameValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° A в‰  в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 2 }));
+
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{dataAttr, dataValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° B в‰  в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 2, 3 }));
+
+		result = { 7, 4, 5, 3 };
+		EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues("images", std::vector<IExecutorEAV::AttrValue>({
+				{nameAttr, nameValue},
+				{dataAttr, dataValue} }),
+				result)->HasError());
+		// РџСЂРѕРІРµСЂРєР° A в€© B в‰  в€…
+		EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 2 }));
+	}
+}
+
+
+/// FindEntitiesByAttrValues РЅРµ РЅР°С…РѕРґРёС‚ РЅРµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёРµ Р·Р°РїРёСЃРё
 TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindNonExistingEntries)
 {
 }
 
 
-/// FindEntitiesByAttrValues возвращает ошибку при невалидных аргументах
+/// FindEntitiesByAttrValues РІРѕР·РІСЂР°С‰Р°РµС‚ РѕС€РёР±РєСѓ РїСЂРё РЅРµРІР°Р»РёРґРЅС‹С… Р°СЂРіСѓРјРµРЅС‚Р°С…
 TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindWithInvalidArgs)
 {
 }
