@@ -468,17 +468,26 @@ IExecuteResultStatusPtr PGExecutorEAV::Insert(const EntityName & entityName,
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
 		return status;
 
+	auto && attributeType = value->GetTypeName();
+	auto && sqlValueOpt = value->ToSQLString();
+
 	std::string query;
-	query += insertAttributeOnConflictDoNothingCommand(entityName, value->GetTypeName(), sqlAttrName);
-	if (auto insertCommand = insertValueCommand(entityName, entityId, sqlAttrName, value))
-		query += *insertCommand;
-	else
+	if (value->IsEmpty())
+	{
 		// ѕустое значение считаем ошибкой, потому что не имеет смысла вставл€ть пустое значение
 		// —мысл EAV в том, что мы не храним пустые значени€ (null), если они есть.
 		// ј если мы их не храним, то и нечего вставл€ть.
 		// “акже не будем вставл€ть и атрибут в таблицу атрибутов.
 		return InternalExecuteResultStatus::GetInternalError(
 			"IExecutorEAV::Insert: Empty value was passed", ResultStatus::EmptyQuery);
+	}
+	else if (sqlValueOpt)
+	{
+		query += insertAttributeOnConflictDoNothingCommand(entityName, attributeType,
+			sqlAttrName);
+		query += insertValueCommand(entityName, entityId, sqlAttrName, attributeType,
+			*sqlValueOpt);
+	}
 
 	IExecuteResultPtr result;
 	IExecuteResultStatusPtr resultStatus;
@@ -505,30 +514,23 @@ IExecuteResultStatusPtr PGExecutorEAV::Update(const EntityName & entityName,
 		return status;
 
 	auto && attributeType = value->GetTypeName();
+	auto && sqlValueOpt = value->ToSQLString();
+
 	std::string query;
 	if (value->IsEmpty())
 	{
 		query += throwErrorIfThereIsNoEntityWithSuchIdCommand(entityName, entityId);
 		query += throwErrorIfThereIsNoAttributeWithSuchNameCommand(entityName,
 			attributeType, sqlAttrName);
-		query += removeValueCommand(entityName, entityId, value->GetTypeName(), sqlAttrName);
+		query += removeValueCommand(entityName, entityId, attributeType, sqlAttrName);
 	}
-	else
+	else if (sqlValueOpt)
 	{
-		if (auto updateCommand = updateValueCommand(entityName, entityId, sqlAttrName, value))
-		{
-			query += throwErrorIfThereIsNoEntityWithSuchIdCommand(entityName, entityId);
-			query += throwErrorIfThereIsNoAttributeWithSuchNameCommand(entityName,
-				attributeType, sqlAttrName);
-			query += *updateCommand;
-		}
-		else
-		{
-			// —юда не должны никак попадать
-			assert(false);
-			return InternalExecuteResultStatus::GetInternalError(
-				"IExecutorEAV::Update: Unexpected error", ResultStatus::EmptyQuery);
-		}
+		query += throwErrorIfThereIsNoEntityWithSuchIdCommand(entityName, entityId);
+		query += throwErrorIfThereIsNoAttributeWithSuchNameCommand(entityName,
+			attributeType, sqlAttrName);
+		query += updateValueCommand(entityName, entityId, sqlAttrName, attributeType,
+			*sqlValueOpt);
 	}
 
 	IExecuteResultPtr result;
@@ -555,11 +557,17 @@ IExecuteResultStatusPtr PGExecutorEAV::InsertOrUpdate(const EntityName & entityN
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
 		return status;
 
+	auto && attributeType = value->GetTypeName();
+	auto && sqlValueOpt = value->ToSQLString();
+	
 	std::string query;
-	query += insertAttributeOnConflictDoNothingCommand(entityName, value->GetTypeName(), sqlAttrName);
-	if (auto insertOrUpdateCommand = insertValueOnConflictDoUpdateCommand(entityName, entityId,
-		sqlAttrName, value))
-		query += *insertOrUpdateCommand;
+	if (sqlValueOpt)
+	{
+		query += insertAttributeOnConflictDoNothingCommand(entityName, value->GetTypeName(),
+			sqlAttrName);
+		query += insertValueOnConflictDoUpdateCommand(entityName, entityId, sqlAttrName,
+			attributeType, *sqlValueOpt);
+	}
 	else
 		return InternalExecuteResultStatus::GetInternalError(
 			"IExecutorEAV::InsertOrUpdate: Empty value was passed", ResultStatus::EmptyQuery);
@@ -592,22 +600,16 @@ std::string PGExecutorEAV::insertAttributeOnConflictDoNothingCommand(const Entit
   ѕолучить часть команды "вставить значение в таблицу значений".
 */
 //---
-std::optional<std::string> PGExecutorEAV::insertValuePartCommand(const EntityName & entityName, EntityId entityId,
-	const std::string & sqlAttrName, const ValueType & value) const
+std::string PGExecutorEAV::insertValuePartCommand(const EntityName & entityName, EntityId entityId,
+	const std::string & sqlAttrName, const std::string & attributeType,
+	const std::string & sqlValue) const
 {
-	if (!value || value->IsEmpty())
-		return std::nullopt;
-	auto && attributeType = value->GetTypeName();
-	auto && valueStrOpt = value->ToSQLString();
-	if (sqlAttrName.empty() || attributeType.empty() || !valueStrOpt || valueStrOpt->empty())
-		return std::nullopt;
-
 	return utils::string::Format(
 		" INSERT INTO {} VALUES({}, {}, {}) ",
 		GetNamingRules().GetValueTableName(entityName, attributeType),
 		entityId,
 		selectAttributeIdByNameInnerCommand(entityName, attributeType, sqlAttrName),
-		*valueStrOpt
+		sqlValue
 	);
 }
 
@@ -617,13 +619,13 @@ std::optional<std::string> PGExecutorEAV::insertValuePartCommand(const EntityNam
   ѕолучить команду "вставить значение в таблицу значений".
 */
 //---
-std::optional<std::string> PGExecutorEAV::insertValueCommand(const EntityName & entityName,
-	EntityId entityId, const std::string & sqlAttrName, const ValueType & value) const
+std::string PGExecutorEAV::insertValueCommand(const EntityName & entityName,
+	EntityId entityId, const std::string & sqlAttrName, const std::string & attributeType,
+	const std::string & sqlValue) const
 {
-	auto && partCommandOpt = insertValuePartCommand(entityName, entityId, sqlAttrName, value);
-	if (!partCommandOpt)
-		return std::nullopt;
-	return *partCommandOpt + ";\n";
+	auto && partCommand = insertValuePartCommand(entityName, entityId, sqlAttrName,
+		attributeType, sqlValue);
+	return partCommand + ";\n";
 }
 
 
@@ -632,19 +634,14 @@ std::optional<std::string> PGExecutorEAV::insertValueCommand(const EntityName & 
   ѕолучить команду "вставить значение в таблицу значений, при конфликте сделать обновление"
 */
 //---
-std::optional<std::string> PGExecutorEAV::insertValueOnConflictDoUpdateCommand(const EntityName & entityName,
-	EntityId entityId, const std::string & sqlAttrName, const ValueType & value) const
+std::string PGExecutorEAV::insertValueOnConflictDoUpdateCommand(const EntityName & entityName,
+	EntityId entityId, const std::string & sqlAttrName, const std::string & attributeType,
+	const std::string & sqlValue) const
 {
-	if (!value)
-		return std::nullopt;
-
-	auto && partCommandOpt = insertValuePartCommand(entityName, entityId, sqlAttrName, value);
-	if (!partCommandOpt)
-		return std::nullopt;
-
-	auto && attributeType = value->GetTypeName();
+	auto && partCommand = insertValuePartCommand(entityName, entityId, sqlAttrName,
+		attributeType, sqlValue);
 	return utils::string::Format("{}\nON CONFLICT ({}, {}) DO UPDATE SET {} = EXCLUDED.{};\n",
-		*partCommandOpt,
+		partCommand,
 		GetNamingRules().GetValueTable_Short_EntityIdField(entityName, attributeType),
 		GetNamingRules().GetValueTable_Short_AttributeIdField(entityName, attributeType),
 		GetNamingRules().GetValueTable_Short_ValueField(entityName, attributeType),
@@ -657,22 +654,16 @@ std::optional<std::string> PGExecutorEAV::insertValueOnConflictDoUpdateCommand(c
   ѕолучить команду "обновить значение в таблице значений".
 */
 //---
-std::optional<std::string> PGExecutorEAV::updateValueCommand(const EntityName & entityName,
-	EntityId entityId, const std::string & sqlAttrName, const ValueType & value) const
+std::string PGExecutorEAV::updateValueCommand(const EntityName & entityName,
+	EntityId entityId, const std::string & sqlAttrName, const std::string & attributeType,
+	const std::string & sqlValue) const
 {
-	if (!value)
-		return std::nullopt;
-	auto && attributeType = value->GetTypeName();
-	auto && valueStrOpt = value->ToSQLString();
-	if (sqlAttrName.empty() || attributeType.empty() || !valueStrOpt || valueStrOpt->empty())
-		return std::nullopt;
-
 	return utils::string::Format(
 		"UPDATE {} SET {} = {}\n"
 		"WHERE ({}, {}) = ({}, {});\n",
 		GetNamingRules().GetValueTableName(entityName, attributeType),
 		GetNamingRules().GetValueTable_Short_ValueField(entityName, attributeType),
-		*valueStrOpt,
+		sqlValue,
 
 		GetNamingRules().GetValueTable_Short_EntityIdField(entityName, attributeType),
 		GetNamingRules().GetValueTable_Short_AttributeIdField(entityName, attributeType),

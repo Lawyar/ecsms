@@ -87,17 +87,21 @@ private:
 	std::string insertAttributeOnConflictDoNothingCommand(const EntityName & entityName, const std::string & attributeType,
 		const std::string & sqlAttrName) const;
 	/// ѕолучить часть команды "вставить значение в таблицу значений"
-	std::optional<std::string> insertValuePartCommand(const EntityName & entityName, EntityId entityId,
-		const std::string & sqlAttrName, const ValueType & value) const;
+	std::string insertValuePartCommand(const EntityName & entityName, EntityId entityId,
+		const std::string & sqlAttrName, const std::string & attributeType,
+		const std::string & sqlValue) const;
 	/// ѕолучить команду "вставить значение в таблицу значений"
-	std::optional<std::string> insertValueCommand(const EntityName & entityName, EntityId entityId,
-		const std::string & sqlAttrName, const ValueType & value) const;
+	std::string insertValueCommand(const EntityName & entityName, EntityId entityId,
+		const std::string & sqlAttrName, const std::string & attributeType,
+		const std::string & sqlValue) const;
 	/// ѕолучить команду "вставить значение в таблицу значений, при конфликте сделать обновление"
-	std::optional<std::string> insertValueOnConflictDoUpdateCommand(const EntityName & entityName,
-		EntityId entityId, const std::string & sqlAttrName, const ValueType & value) const;
+	std::string insertValueOnConflictDoUpdateCommand(const EntityName & entityName,
+		EntityId entityId, const std::string & sqlAttrName, const std::string & attributeType,
+		const std::string & sqlValue) const;
 	/// ѕолучить команду "обновить значение в таблице значений"
-	std::optional<std::string> updateValueCommand(const EntityName & entityName, EntityId entityId,
-		const std::string & sqlAttrName, const ValueType & value) const;
+	std::string updateValueCommand(const EntityName & entityName, EntityId entityId,
+		const std::string & sqlAttrName, const std::string & attributeType,
+		const std::string & sqlValue) const;
 	/// ѕолучить команду "удалить значение в таблице значений"
 	std::string removeValueCommand(const EntityName & entityName, EntityId entityId,
 		const std::string & attributeType, const std::string & sqlAttrName) const;
