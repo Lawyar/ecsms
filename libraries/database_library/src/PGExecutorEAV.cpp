@@ -470,19 +470,15 @@ IExecuteResultStatusPtr PGExecutorEAV::Insert(const EntityName & entityName,
 
 	std::string query;
 	query += insertAttributeOnConflictDoNothingCommand(entityName, value->GetTypeName(), sqlAttrName);
-	if (!value->IsEmpty())
-	{
-		if (auto insertCommand = insertValueCommand(entityName, entityId, sqlAttrName, value))
-			query += *insertCommand;
-		else
-			return InternalExecuteResultStatus::GetInternalError(
-				"IExecutorEAV::Insert: Empty value was passed", ResultStatus::EmptyQuery);
-	}
+	if (auto insertCommand = insertValueCommand(entityName, entityId, sqlAttrName, value))
+		query += *insertCommand;
 	else
-	{
-		// Если значение пустое, то ничего не вставляем в таблицу значений
-		// (только добавляем атрибут (если это возможно, конечно))
-	}
+		// Пустое значение считаем ошибкой, потому что не имеет смысла вставлять пустое значение
+		// Смысл EAV в том, что мы не храним пустые значения (null), если они есть.
+		// А если мы их не храним, то и нечего вставлять.
+		// Также не будем вставлять и атрибут в таблицу атрибутов.
+		return InternalExecuteResultStatus::GetInternalError(
+			"IExecutorEAV::Insert: Empty value was passed", ResultStatus::EmptyQuery);
 
 	IExecuteResultPtr result;
 	IExecuteResultStatusPtr resultStatus;
@@ -508,12 +504,32 @@ IExecuteResultStatusPtr PGExecutorEAV::Update(const EntityName & entityName,
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
 		return status;
 
+	auto && attributeType = value->GetTypeName();
 	std::string query;
-	if (auto updateCommand = updateValueCommand(entityName, entityId, sqlAttrName, value))
-		query += *updateCommand;
+	if (value->IsEmpty())
+	{
+		query += throwErrorIfThereIsNoEntityWithSuchIdCommand(entityName, entityId);
+		query += throwErrorIfThereIsNoAttributeWithSuchNameCommand(entityName,
+			attributeType, sqlAttrName);
+		query += removeValueCommand(entityName, entityId, value->GetTypeName(), sqlAttrName);
+	}
 	else
-		return InternalExecuteResultStatus::GetInternalError(
-			"IExecutorEAV::Update: Empty value was passed", ResultStatus::EmptyQuery);
+	{
+		if (auto updateCommand = updateValueCommand(entityName, entityId, sqlAttrName, value))
+		{
+			query += throwErrorIfThereIsNoEntityWithSuchIdCommand(entityName, entityId);
+			query += throwErrorIfThereIsNoAttributeWithSuchNameCommand(entityName,
+				attributeType, sqlAttrName);
+			query += *updateCommand;
+		}
+		else
+		{
+			// Сюда не должны никак попадать
+			assert(false);
+			return InternalExecuteResultStatus::GetInternalError(
+				"IExecutorEAV::Update: Unexpected error", ResultStatus::EmptyQuery);
+		}
+	}
 
 	IExecuteResultPtr result;
 	IExecuteResultStatusPtr resultStatus;
@@ -579,7 +595,7 @@ std::string PGExecutorEAV::insertAttributeOnConflictDoNothingCommand(const Entit
 std::optional<std::string> PGExecutorEAV::insertValuePartCommand(const EntityName & entityName, EntityId entityId,
 	const std::string & sqlAttrName, const ValueType & value) const
 {
-	if (!value)
+	if (!value || value->IsEmpty())
 		return std::nullopt;
 	auto && attributeType = value->GetTypeName();
 	auto && valueStrOpt = value->ToSQLString();
@@ -652,22 +668,8 @@ std::optional<std::string> PGExecutorEAV::updateValueCommand(const EntityName & 
 		return std::nullopt;
 
 	return utils::string::Format(
-		// Бросим ошибку, если в таблице сущностей нет обновляемого идентификатора
-		"DO $$DECLARE BEGIN IF NOT EXISTS (SELECT * FROM {} WHERE {} = {}) THEN RAISE EXCEPTION 'There is no entity with such id ({})'; END IF; END; $$;\n"
-		// Бросим ошибку, если в таблице атрибутов нет обновляемого атрибута
-		"DO $$DECLARE BEGIN IF NOT EXISTS (SELECT * FROM {} WHERE {} = {}) THEN RAISE EXCEPTION 'There is no attribute with such name (%)', {}; END IF; END; $$;\n"
 		"UPDATE {} SET {} = {}\n"
 		"WHERE ({}, {}) = ({}, {});\n",
-		GetNamingRules().GetEntityTableName(entityName),
-		GetNamingRules().GetEntityTable_Short_IdField(entityName),
-		entityId,
-		entityId,
-
-		GetNamingRules().GetAttributeTableName(entityName, attributeType),
-		GetNamingRules().GetAttributeTable_Short_NameField(entityName, attributeType),
-		sqlAttrName,
-		sqlAttrName,
-
 		GetNamingRules().GetValueTableName(entityName, attributeType),
 		GetNamingRules().GetValueTable_Short_ValueField(entityName, attributeType),
 		*valueStrOpt,
@@ -676,6 +678,68 @@ std::optional<std::string> PGExecutorEAV::updateValueCommand(const EntityName & 
 		GetNamingRules().GetValueTable_Short_AttributeIdField(entityName, attributeType),
 		entityId,
 		selectAttributeIdByNameInnerCommand(entityName, attributeType, sqlAttrName)
+	);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить команду "удалить значение в таблице значений".
+*/
+//---
+std::string PGExecutorEAV::removeValueCommand(const EntityName & entityName, EntityId entityId,
+	const std::string & attributeType, const std::string & sqlAttrName) const
+{
+	return utils::string::Format(
+		"DELETE FROM {}\n"
+		"WHERE ({}, {}) = ({}, {});\n",
+		GetNamingRules().GetValueTableName(entityName, attributeType),
+
+		GetNamingRules().GetValueTable_Short_EntityIdField(entityName, attributeType),
+		GetNamingRules().GetValueTable_Short_AttributeIdField(entityName, attributeType),
+		entityId,
+		selectAttributeIdByNameInnerCommand(entityName, attributeType, sqlAttrName)
+	);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить команду "Бросить ошибку, если в таблице сущностей нет сущности с
+  данным идентификатором"
+*/
+//---
+std::string PGExecutorEAV::throwErrorIfThereIsNoEntityWithSuchIdCommand(const EntityName & entityName,
+	EntityId entityId) const
+{
+	return utils::string::Format(
+		"DO $$DECLARE BEGIN IF NOT EXISTS (SELECT * FROM {} WHERE {} = {}) \n"
+		"THEN RAISE EXCEPTION 'There is no entity with such id ({})'; END IF; END; $$;\n",
+		GetNamingRules().GetEntityTableName(entityName),
+		GetNamingRules().GetEntityTable_Short_IdField(entityName),
+		entityId,
+
+		entityId
+	);
+}
+
+
+//------------------------------------------------------------------------------
+/**
+  Получить команду "Бросить ошибку, если в таблице атрибутов нет атрибута с
+  данным именем"
+*/
+//---
+std::string PGExecutorEAV::throwErrorIfThereIsNoAttributeWithSuchNameCommand(const EntityName & entityName, const std::string & attributeType, const std::string & sqlAttrName) const
+{
+	return utils::string::Format(
+		"DO $$DECLARE BEGIN IF NOT EXISTS (SELECT * FROM {} WHERE {} = {}) \n"
+		"THEN RAISE EXCEPTION 'There is no attribute with such name (%)', {}; END IF; END; $$;\n",
+		GetNamingRules().GetAttributeTableName(entityName, attributeType),
+		GetNamingRules().GetAttributeTable_Short_NameField(entityName, attributeType),
+		sqlAttrName,
+
+		sqlAttrName
 	);
 }
 

@@ -98,6 +98,16 @@ private:
 	/// Получить команду "обновить значение в таблице значений"
 	std::optional<std::string> updateValueCommand(const EntityName & entityName, EntityId entityId,
 		const std::string & sqlAttrName, const ValueType & value) const;
+	/// Получить команду "удалить значение в таблице значений"
+	std::string removeValueCommand(const EntityName & entityName, EntityId entityId,
+		const std::string & attributeType, const std::string & sqlAttrName) const;
+	/// Получить команду "Бросить ошибку, если в таблице сущностей нет сущности с данным идентификатором"
+	std::string throwErrorIfThereIsNoEntityWithSuchIdCommand(const EntityName & entityName,
+		EntityId entityId) const;
+	/// Получить команду "Бросить ошибку, если в таблице атрибутов нет атрибута с данным именем"
+	std::string throwErrorIfThereIsNoAttributeWithSuchNameCommand(const EntityName & entityName,
+		const std::string & attributeType, const std::string & sqlAttrName) const;
+
 	/// Получить внутреннюю команду "получить идентификатор атрибута по его названию"
 	std::string selectAttributeIdByNameInnerCommand(const EntityName & entityName,
 		const std::string & attributeType, const std::string & sqlAttrName) const;
