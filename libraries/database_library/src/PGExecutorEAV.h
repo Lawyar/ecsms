@@ -122,7 +122,7 @@ public: // Методы для получения данных
 		const AttrName & attrName, ValueType value) override;
 	/// Получить значения всех атрибутов сущности.
 	virtual IExecuteResultStatusPtr GetAttributeValues(const EntityName & entityName,
-		EntityId entityId, std::vector<AttrValue> & attrValues) override;
+		EntityId entityId, std::map<SQLDataType, std::vector<AttrValue>> & attrValuesByType) override;
 
 private:
 	/// Получить команду "получить значение по идентификатору сущности и названию атрибута"

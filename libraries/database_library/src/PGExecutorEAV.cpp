@@ -240,8 +240,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetEntityIds(const EntityName & entityNam
 	}
 
 	// Теперь уже точно нет ошибок, можно сохранять результат
-	entityIds.clear();
-	entityIds.insert(entityIds.end(), tempEntityIds.begin(), tempEntityIds.end());
+	entityIds = std::move(tempEntityIds);
 	
 	return resultStatus;
 }
@@ -292,8 +291,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeNames(const EntityName & enti
 	}
 
 	// Теперь уже точно нет ошибок, можно сохранять результат
-	attrNames.clear();
-	attrNames.insert(attrNames.end(), tempAttrNames.begin(), tempAttrNames.end());
+	attrNames = std::move(tempAttrNames);
 
 	return resultStatus;
 }
@@ -347,8 +345,7 @@ IExecuteResultStatusPtr PGExecutorEAV::FindEntitiesByAttrValues(const EntityName
 	}
 
 	// Теперь уже точно нет ошибок, можно сохранять результат
-	entityIds.clear();
-	entityIds.insert(entityIds.end(), tempEntityIds.begin(), tempEntityIds.end());
+	entityIds = std::move(tempEntityIds);
 
 	return resultStatus;
 }
@@ -816,8 +813,8 @@ IExecuteResultStatusPtr PGExecutorEAV::GetValue(const EntityName & entityName, E
   Получить значения всех атрибутов сущности.
 */
 //---
-IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & entityName, EntityId entityId,
-	std::vector<AttrValue> & attrValues)
+IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & entityName,
+	EntityId entityId, std::map<SQLDataType, std::vector<AttrValue>> & attrValuesByType)
 {
 	std::vector<SQLDataType> attributeTypes;
 	if (auto iter = GetRegisteredEntities().find(entityName); iter != GetRegisteredEntities().end())
@@ -850,6 +847,8 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & ent
 
 	SELECT * FROM users_attribute_value_text CROSS JOIN users_attribute_value_integer;
 	*/
+
+	std::map<SQLDataType, std::vector<AttrValue>> tempAttrValuesByType;
 	for (auto && attributeType : attributeTypes)
 	{
 		std::string attributeTypeStr;
@@ -863,10 +862,13 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & ent
 		if (!executeQuery(query, result, status))
 			return status;
 
-		if (auto status = getAttributeValuesImpl(result, attrValues);
+		if (auto status = getAttributeValuesImpl(result, tempAttrValuesByType[attributeType]);
 			status && status->HasError())
 			return status;
 	}
+
+	// Тут уже ошибок точно нет. Перепишем результат
+	attrValuesByType = std::move(tempAttrValuesByType);
 
 	return InternalExecuteResultStatus::GetSuccessStatus();
 }
@@ -918,7 +920,7 @@ std::string PGExecutorEAV::selectAttrValuesCommand(const EntityName & entityName
 {
 	return utils::string::Format(
 		"SELECT {}, {} FROM {}\n"
-		"JOIN {}\n"
+		"RIGHT OUTER JOIN {}\n"
 		"ON {} = {} AND {} = {};\n",
 		GetNamingRules().GetAttributeTable_Full_NameField(entityName, attributeType),
 		GetNamingRules().GetValueTable_Full_ValueField(entityName, attributeType),
@@ -966,10 +968,9 @@ IExecuteResultStatusPtr PGExecutorEAV::getAttributeValuesImpl(const IExecuteResu
 
 	for (size_t i = 0; i < rowCount; ++i)
 	{
-		assert(false); // переделать на typedef/using две строчки ниже:
-		auto attrNameSqlVar = std::dynamic_pointer_cast<ISQLTypeText> (
+		auto attrNameSqlVar = std::dynamic_pointer_cast<AttrName::element_type> (
 			m_sqlTypeConverter->GetSQLVariable(attributeNameDataType));
-		auto valueSqlVar = std::dynamic_pointer_cast<ISQLType>(
+		auto valueSqlVar = std::dynamic_pointer_cast<ValueType::element_type>(
 			m_sqlTypeConverter->GetSQLVariable(attributeValueDataType));
 		if (!attrNameSqlVar || !valueSqlVar)
 			return InternalExecuteResultStatus::GetInternalError(
@@ -978,19 +979,34 @@ IExecuteResultStatusPtr PGExecutorEAV::getAttributeValuesImpl(const IExecuteResu
 
 		auto cellName = result->GetValue(i, 0);
 		auto cellValue = result->GetValue(i, 1);
-		if (!cellName.HasString() || !cellValue.HasString())
+		if (!cellName.HasString())
 		{
-			// Ячейки должны содержать строки, потому что они не могут содержать NULL
-			// (таблицы создаются с условием NOT NULL)
+			// Название должно содержать строку, потому что они не могут содержать NULL
 			// И не могут содержать массивы байт, потому что мы их не запрашивали
 			assert(false);
 			return InternalExecuteResultStatus::GetInternalError(
 				"PGExecutorEAV::getAttributeValuesImpl: The result cells are empty");
 		}
-		if (!attrNameSqlVar->ReadFromSQL(cellName.ExtractString()) ||
-			!valueSqlVar->ReadFromSQL(cellValue.ExtractString()))
+		if (!attrNameSqlVar->ReadFromSQL(cellName.ExtractString()))
 			return InternalExecuteResultStatus::GetInternalError(ErrorMessages::ISQLType_ReadFromSQL);
 		
+		if (cellValue.HasString())
+		{
+			if (!valueSqlVar->ReadFromSQL(cellValue.ExtractString()))
+				return InternalExecuteResultStatus::GetInternalError(
+					ErrorMessages::ISQLType_ReadFromSQL);
+		}
+		else if (cellValue.HasNull())
+		{
+			// Окей, значит у данного атрибута нет значения. Оставим пустую переменную
+		}
+		else
+		{
+			// Таких случаев пока нет
+			assert(false);
+		}
+
+
 		attrValues.push_back(AttrValue{ attrNameSqlVar, valueSqlVar });
 	}
 

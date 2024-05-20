@@ -2229,7 +2229,8 @@ protected:
 			{"products", {SQLDataType::Integer, SQLDataType::Text}},
 			{"blobs", {SQLDataType::Text, SQLDataType::RemoteFileId}},
 			{"images", {SQLDataType::Text, SQLDataType::ByteArray}},
-			{"todo", {SQLDataType::Text}}
+			{"todo", {SQLDataType::Text}},
+			{"SparseEntity", {SQLDataType::Integer, SQLDataType::Text, SQLDataType::ByteArray}}
 		});
 		ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries, true)->HasError());
 		ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries);
@@ -2256,11 +2257,14 @@ protected:
 			ASSERT_FALSE(executorEAV->CreateNewEntity("blobs", temp)->HasError());
 			ASSERT_EQ(temp, i);
 		}
-		// Четыре картинки
+		// Четыре картинки и разреженных сущности
 		for (int i = 1; i <= 4; ++i)
 		{
 			int temp = -1;
 			ASSERT_FALSE(executorEAV->CreateNewEntity("images", temp)->HasError());
+			ASSERT_EQ(temp, i);
+			temp = -1;
+			ASSERT_FALSE(executorEAV->CreateNewEntity("SparseEntity", temp)->HasError());
 			ASSERT_EQ(temp, i);
 		}
 		// Ноль элементов в todo
@@ -2294,6 +2298,24 @@ protected:
 		ASSERT_FALSE(executorEAV->Insert("images", 1, dataAttr, converter->GetSQLTypeByteArray({1, 1, 1}))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("images", 2, dataAttr, converter->GetSQLTypeByteArray({ 2, 2, 3, 2 }))->HasError());
 		ASSERT_FALSE(executorEAV->Insert("images", 3, dataAttr, converter->GetSQLTypeByteArray({ 2, 2, 3, 2 }))->HasError());
+
+		const auto intAttr1 = converter->GetSQLTypeText("IntAttr1");
+		const auto textAttr1 = converter->GetSQLTypeText("TextAttr1");
+		const auto textAttr2 = converter->GetSQLTypeText("TextAttr2");
+		const auto byteaAttr1 = converter->GetSQLTypeText("ByteaAttr1");
+		const auto byteaAttr2 = converter->GetSQLTypeText("ByteaAttr2");
+		const auto byteaAttr3 = converter->GetSQLTypeText("ByteaAttr3");
+		ASSERT_FALSE(executorEAV->Insert("SparseEntity", 1, intAttr1, converter->GetSQLTypeInteger(1))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("SparseEntity", 1, textAttr1, converter->GetSQLTypeText("2"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("SparseEntity", 1, byteaAttr1, converter->GetSQLTypeByteArray({3}))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("SparseEntity", 2, textAttr1, converter->GetSQLTypeText("first"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("SparseEntity", 2, textAttr2, converter->GetSQLTypeText("second"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("SparseEntity", 3, intAttr1, converter->GetSQLTypeInteger(777))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("SparseEntity", 3, textAttr1, converter->GetSQLTypeText("hello"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("SparseEntity", 3, textAttr2, converter->GetSQLTypeText("bye"))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("SparseEntity", 3, byteaAttr1, converter->GetSQLTypeByteArray({1, 2, 3}))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("SparseEntity", 3, byteaAttr2, converter->GetSQLTypeByteArray({ 4, 5, 6 }))->HasError());
+		ASSERT_FALSE(executorEAV->Insert("SparseEntity", 3, byteaAttr3, converter->GetSQLTypeByteArray({ 7, 8, 9 }))->HasError());
 
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
@@ -2825,4 +2847,60 @@ TEST_F(ExecutorEAVWithFilledEnvironment, GetValuesDoesNotGetWithInvalidValueVar)
 		EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
 		EXPECT_EQ(textValue->GetValue(), "Invalid");
 	}
+}
+
+
+/// GetAttributeValues работает с валидными аргументами
+TEST_F(ExecutorEAVWithFilledEnvironment, GetAttributeValuesWorksWithValidArgs)
+{
+	auto check = [](const std::map<SQLDataType, std::vector<IExecutorEAV::AttrValue>> & 
+		attrValuesByType, const std::optional<int> & int1,
+		const std::optional<std::string> & text1, const std::optional<std::string> & text2,
+		const std::optional<std::vector<char>> & bytea1,
+		const std::optional<std::vector<char>> & bytea2, 
+		const std::optional<std::vector<char>> & bytea3)
+	{
+		EXPECT_EQ(attrValuesByType.size(), 3); // 3 типа атрибутов
+		EXPECT_EQ(attrValuesByType.at(SQLDataType::Integer).size(), 1);
+		EXPECT_EQ(attrValuesByType.at(SQLDataType::Text).size(), 2);
+		EXPECT_EQ(attrValuesByType.at(SQLDataType::ByteArray).size(), 3);
+		EXPECT_EQ(attrValuesByType.at(SQLDataType::Integer).at(0).attrName->GetValue(), "IntAttr1");
+		EXPECT_EQ(attrValuesByType.at(SQLDataType::Text).at(0).attrName->GetValue(), "TextAttr1");
+		EXPECT_EQ(attrValuesByType.at(SQLDataType::Text).at(1).attrName->GetValue(), "TextAttr2");
+		EXPECT_EQ(attrValuesByType.at(SQLDataType::ByteArray).at(0).attrName->GetValue(), "ByteaAttr1");
+		EXPECT_EQ(attrValuesByType.at(SQLDataType::ByteArray).at(1).attrName->GetValue(), "ByteaAttr2");
+		EXPECT_EQ(attrValuesByType.at(SQLDataType::ByteArray).at(2).attrName->GetValue(), "ByteaAttr3");
+		
+		EXPECT_EQ(std::dynamic_pointer_cast<ISQLTypeInteger>(attrValuesByType.at
+		(SQLDataType::Integer).at(0).value)->GetValue(), int1);
+		EXPECT_EQ(std::dynamic_pointer_cast<ISQLTypeText>(attrValuesByType.at
+		(SQLDataType::Text).at(0).value)->GetValue(), text1);
+		EXPECT_EQ(std::dynamic_pointer_cast<ISQLTypeText>(attrValuesByType.at
+		(SQLDataType::Text).at(1).value)->GetValue(), text2);
+		EXPECT_EQ(std::dynamic_pointer_cast<ISQLTypeByteArray>(attrValuesByType.at
+		(SQLDataType::ByteArray).at(0).value)->GetValue(), bytea1);
+		EXPECT_EQ(std::dynamic_pointer_cast<ISQLTypeByteArray>(attrValuesByType.at
+		(SQLDataType::ByteArray).at(1).value)->GetValue(), bytea2);
+		EXPECT_EQ(std::dynamic_pointer_cast<ISQLTypeByteArray>(attrValuesByType.at
+		(SQLDataType::ByteArray).at(2).value)->GetValue(), bytea3);
+	};
+
+	std::map<SQLDataType, std::vector<IExecutorEAV::AttrValue>> attrValuesByType;
+	// вставим значение, чтобы проверить, что оно прочистится
+	attrValuesByType[SQLDataType::RemoteFileId] = { { nullptr, nullptr } };
+	EXPECT_FALSE(executorEAV->GetAttributeValues("SparseEntity", 1, attrValuesByType)->HasError());
+	check(attrValuesByType, 1, "2", std::nullopt, std::vector<char>{ 3 }, std::nullopt,
+		std::nullopt);
+	
+	EXPECT_FALSE(executorEAV->GetAttributeValues("SparseEntity", 2, attrValuesByType)->HasError());
+	check(attrValuesByType, std::nullopt, "first", "second", std::nullopt, std::nullopt,
+		std::nullopt);
+
+	EXPECT_FALSE(executorEAV->GetAttributeValues("SparseEntity", 3, attrValuesByType)->HasError());
+	check(attrValuesByType, 777, "hello", "bye", std::vector<char>{ 1, 2, 3 },
+		std::vector<char>{ 4, 5, 6 }, std::vector<char>{ 7, 8, 9 });
+
+	EXPECT_FALSE(executorEAV->GetAttributeValues("SparseEntity", 4, attrValuesByType)->HasError());
+	check(attrValuesByType, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
+		std::nullopt, std::nullopt);
 }
