@@ -2904,3 +2904,34 @@ TEST_F(ExecutorEAVWithFilledEnvironment, GetAttributeValuesWorksWithValidArgs)
 	check(attrValuesByType, std::nullopt, std::nullopt, std::nullopt, std::nullopt,
 		std::nullopt, std::nullopt);
 }
+
+
+/// GetAttributeValues не работает с невалидным индексом сущности
+TEST_F(ExecutorEAVWithFilledEnvironment, GetAttributeValuesDoesNotWorkWithInvalidEntityId)
+{
+	std::map<SQLDataType, std::vector<IExecutorEAV::AttrValue>> attrValuesByType;
+	// Вставим мусор и проверим, что он не почистится
+	attrValuesByType[SQLDataType::RemoteFileId] = { {nullptr, nullptr} };
+	auto status = executorEAV->GetAttributeValues("SparseEntity", 5, attrValuesByType);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(status->GetStatus(), ResultStatus::FatalError);
+	EXPECT_EQ(attrValuesByType.size(), 1);
+	EXPECT_EQ(attrValuesByType.at(SQLDataType::RemoteFileId).size(), 1);
+	EXPECT_EQ(attrValuesByType.at(SQLDataType::RemoteFileId).at(0).attrName, nullptr);
+	EXPECT_EQ(attrValuesByType.at(SQLDataType::RemoteFileId).at(0).value, nullptr);
+}
+
+/// GetAttributeValues не работает с незарегистрированной сущностью
+TEST_F(ExecutorEAVWithFilledEnvironment, GetAttributeValuesDoesNotWorkWithUnregisteredEntity)
+{
+	std::map<SQLDataType, std::vector<IExecutorEAV::AttrValue>> attrValuesByType;
+	// Вставим мусор и проверим, что он не почистится
+	attrValuesByType[SQLDataType::RemoteFileId] = { {nullptr, nullptr} };
+	auto status = executorEAV->GetAttributeValues("Invalid", 1, attrValuesByType);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+	EXPECT_EQ(attrValuesByType.size(), 1);
+	EXPECT_EQ(attrValuesByType.at(SQLDataType::RemoteFileId).size(), 1);
+	EXPECT_EQ(attrValuesByType.at(SQLDataType::RemoteFileId).at(0).attrName, nullptr);
+	EXPECT_EQ(attrValuesByType.at(SQLDataType::RemoteFileId).at(0).value, nullptr);
+}

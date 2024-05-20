@@ -848,6 +848,15 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & ent
 	SELECT * FROM users_attribute_value_text CROSS JOIN users_attribute_value_integer;
 	*/
 
+	{
+		// Если нет такого идентификатора, надо вернуть ошибку
+		std::string prepareQuery = throwErrorIfThereIsNoEntityWithSuchIdCommand(entityName, entityId);
+		IExecuteResultPtr result;
+		IExecuteResultStatusPtr status;
+		if (!executeQuery(prepareQuery, result, status))
+			return status;
+	}
+
 	std::map<SQLDataType, std::vector<AttrValue>> tempAttrValuesByType;
 	for (auto && attributeType : attributeTypes)
 	{
