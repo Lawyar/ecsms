@@ -1546,9 +1546,10 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertWithInvalidVa
 	ASSERT_TRUE(executorEAV->InsertOrUpdate(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)),
 		nullptr)->HasError());
-	ASSERT_TRUE(executorEAV->InsertOrUpdate(entityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)),
-		converter->GetSQLTypeInteger())->HasError());
+	// Пустое значение - не ошибка
+	//ASSERT_TRUE(executorEAV->InsertOrUpdate(entityName, result,
+	//	converter->GetSQLTypeText(std::string(attributeName)),
+	//	converter->GetSQLTypeInteger())->HasError());
 
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 }
@@ -1581,9 +1582,10 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdateWithInvalidVa
 	ASSERT_TRUE(executorEAV->InsertOrUpdate(entityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)),
 		nullptr)->HasError());
-	ASSERT_TRUE(executorEAV->InsertOrUpdate(entityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)),
-		converter->GetSQLTypeInteger())->HasError());
+	// Пустое значение - не ошибка
+	//ASSERT_TRUE(executorEAV->InsertOrUpdate(entityName, result,
+	//	converter->GetSQLTypeText(std::string(attributeName)),
+	//	converter->GetSQLTypeInteger())->HasError());
 
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 }
@@ -1733,6 +1735,148 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateUpdatesWithEmptyValue)
 
 	check();
 	
+	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+}
+
+
+/// InsertOrUpdate позволяет вставлять пустое значение
+TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateInsertsEmptyValue)
+{
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	const std::string entityName = "SomeEntity1";
+
+	const SQLDataType attributeType = SQLDataType::Integer;
+	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)
+		->GetTypeName();
+
+	ASSERT_FALSE(executorEAV->SetRegisteredEntities({ {entityName, {attributeType}} }, true)
+		->HasError());
+
+	int result = -1;
+	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
+	ASSERT_EQ(result, 1);
+
+	ASSERT_FALSE(executorEAV->InsertOrUpdate(entityName, result, converter->GetSQLTypeText("NewAttribute"),
+		converter->GetSQLTypeInteger())->HasError());
+
+	{
+		// Проверим, что атрибут появился в таблице атрибутов
+		auto execResult = connection->Execute(utils::string::Format(
+			"SELECT * FROM {};\n",
+			GetRules().GetAttributeTableName(entityName, attributeTypeName)
+		));
+
+		ASSERT_FALSE(execResult->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(execResult->GetRowCount(), 1);
+		ASSERT_EQ(execResult->GetColCount(), 2);
+		ASSERT_EQ(execResult->GetValue(0, 1).ExtractString(), "NewAttribute");
+	}
+
+	{
+		// И проверим, таблица значений пустая
+		auto execResult = connection->Execute(utils::string::Format(
+			"SELECT * FROM {};\n",
+			GetRules().GetValueTableName(entityName, attributeTypeName)
+		));
+
+		ASSERT_FALSE(execResult->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(execResult->GetRowCount(), 0);
+		ASSERT_EQ(execResult->GetColCount(), 3);
+	}
+
+	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+}
+
+
+/// InsertOrUpdate позволяет обновить пустым значением
+TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateUpdatesWithEmptyValue)
+{
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	const std::string entityName = "SomeEntity1";
+
+	const SQLDataType attributeType = SQLDataType::Integer;
+	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)
+		->GetTypeName();
+
+	ASSERT_FALSE(executorEAV->SetRegisteredEntities({ {entityName, {attributeType}} }, true)
+		->HasError());
+
+	int result = -1;
+	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
+	ASSERT_EQ(result, 1);
+
+	// Сначала вставим значение, чтобы было, что обновлять
+	ASSERT_FALSE(executorEAV->Insert(entityName, result, converter->GetSQLTypeText("NewAttribute"),
+		converter->GetSQLTypeInteger(5))->HasError());
+
+	{
+		// На всякий случай проверим, что атрибут появился в таблице атрибутов
+		auto execResult = connection->Execute(utils::string::Format(
+			"SELECT * FROM {};\n",
+			GetRules().GetAttributeTableName(entityName, attributeTypeName)
+		));
+
+		ASSERT_FALSE(execResult->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(execResult->GetRowCount(), 1);
+		ASSERT_EQ(execResult->GetColCount(), 2);
+		ASSERT_EQ(execResult->GetValue(0, 1).ExtractString(), "NewAttribute");
+	}
+
+	{
+		// И проверим, что значение появилось в таблице значений
+		auto execResult = connection->Execute(utils::string::Format(
+			"SELECT * FROM {};\n",
+			GetRules().GetValueTableName(entityName, attributeTypeName)
+		));
+
+		ASSERT_FALSE(execResult->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(execResult->GetRowCount(), 1);
+		ASSERT_EQ(execResult->GetColCount(), 3);
+		ASSERT_EQ(execResult->GetValue(0, 2).ExtractString(), "5");
+	}
+
+	// Теперь обновим пустым значением
+	ASSERT_FALSE(executorEAV->InsertOrUpdate(entityName, result, converter->GetSQLTypeText("NewAttribute"),
+		converter->GetSQLTypeInteger())->HasError());
+
+	auto check = [&]()
+	{
+		{
+			// Проверим, что атрибут остался в таблице атрибутов
+			auto execResult = connection->Execute(utils::string::Format(
+				"SELECT * FROM {};\n",
+				GetRules().GetAttributeTableName(entityName, attributeTypeName)
+			));
+
+			ASSERT_FALSE(execResult->GetCurrentExecuteStatus()->HasError());
+			ASSERT_EQ(execResult->GetRowCount(), 1);
+			ASSERT_EQ(execResult->GetColCount(), 2);
+			ASSERT_EQ(execResult->GetValue(0, 1).ExtractString(), "NewAttribute");
+		}
+
+		{
+			// Проверим, что таблица значений стала пустая
+			auto execResult = connection->Execute(utils::string::Format(
+				"SELECT * FROM {};\n",
+				GetRules().GetValueTableName(entityName, attributeTypeName)
+			));
+
+			ASSERT_FALSE(execResult->GetCurrentExecuteStatus()->HasError());
+			ASSERT_EQ(execResult->GetRowCount(), 0);
+			ASSERT_EQ(execResult->GetColCount(), 3);
+		}
+	};
+
+	check();
+
+	// Попробуем ещё раз обновить пустым значением - не должны получить ошибку
+	ASSERT_FALSE(executorEAV->InsertOrUpdate(entityName, result, converter->GetSQLTypeText("NewAttribute"),
+		converter->GetSQLTypeInteger())->HasError());
+
+	check();
+
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 }
 

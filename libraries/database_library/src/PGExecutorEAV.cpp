@@ -561,16 +561,20 @@ IExecuteResultStatusPtr PGExecutorEAV::InsertOrUpdate(const EntityName & entityN
 	auto && sqlValueOpt = value->ToSQLString();
 	
 	std::string query;
-	if (sqlValueOpt)
+	if (value->IsEmpty())
 	{
-		query += insertAttributeOnConflictDoNothingCommand(entityName, value->GetTypeName(),
+		query += throwErrorIfThereIsNoEntityWithSuchIdCommand(entityName, entityId);
+		query += insertAttributeOnConflictDoNothingCommand(entityName, attributeType,
+			sqlAttrName);
+		query += removeValueCommand(entityName, entityId, attributeType, sqlAttrName);
+	}
+	else if (sqlValueOpt)
+	{
+		query += insertAttributeOnConflictDoNothingCommand(entityName, attributeType,
 			sqlAttrName);
 		query += insertValueOnConflictDoUpdateCommand(entityName, entityId, sqlAttrName,
 			attributeType, *sqlValueOpt);
 	}
-	else
-		return InternalExecuteResultStatus::GetInternalError(
-			"IExecutorEAV::InsertOrUpdate: Empty value was passed", ResultStatus::EmptyQuery);
 
 	IExecuteResultPtr result;
 	IExecuteResultStatusPtr resultStatus;
