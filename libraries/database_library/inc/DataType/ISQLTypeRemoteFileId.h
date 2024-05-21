@@ -4,24 +4,24 @@
 
 //------------------------------------------------------------------------------
 /**
-  Интерфейс SQL-переменной, представляющий идентификатор удаленного файла на сервере
+  РРЅС‚РµСЂС„РµР№СЃ SQL-РїРµСЂРµРјРµРЅРЅРѕР№, РїСЂРµРґСЃС‚Р°РІР»СЏСЋС‰РёР№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СѓРґР°Р»РµРЅРЅРѕРіРѕ С„Р°Р№Р»Р° РЅР° СЃРµСЂРІРµСЂРµ
 */
 //---
 class ISQLTypeRemoteFileId : public ISQLType
 {
 public:
-	/// Деструктор
+	/// Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
 	virtual ~ISQLTypeRemoteFileId() override = default;
 
 public:
-	/// Получить тип данных
+	/// РџРѕР»СѓС‡РёС‚СЊ С‚РёРї РґР°РЅРЅС‹С…
 	virtual SQLDataType GetType() const override final { return SQLDataType::RemoteFileId; }
 
 public:
-	/// Получить идентификатор удаленного файла
+	/// РџРѕР»СѓС‡РёС‚СЊ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ СѓРґР°Р»РµРЅРЅРѕРіРѕ С„Р°Р№Р»Р°
 	virtual const std::optional<std::string> & GetValue() const = 0;
 };
 
 
-/// Указатель на ISQLTypeRemoteFileId
+/// РЈРєР°Р·Р°С‚РµР»СЊ РЅР° ISQLTypeRemoteFileId
 using ISQLTypeRemoteFileIdPtr = std::shared_ptr<ISQLTypeRemoteFileId>;

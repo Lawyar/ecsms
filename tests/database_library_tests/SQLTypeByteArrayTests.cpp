@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 /**
-  Тесты для ISQLType
+  РўРµСЃС‚С‹ РґР»СЏ ISQLType
 */
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -13,16 +13,16 @@
 
 #include <IDatabaseManager.h>
 
-/// Тесты ISQLTypeByteArray::GetValue и ISQLTypeByteArray::SetValue
+/// РўРµСЃС‚С‹ ISQLTypeByteArray::GetValue Рё ISQLTypeByteArray::SetValue
 TEST(SQLTypeByteArray, GetSetValue) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	std::vector<std::tuple<
-		ISQLTypeByteArrayPtr, // SQL-переменная
-		std::optional<std::vector<char>>, // Её ожидаемое значение
-		std::vector<char>, // Аргумент для SetValue
-		std::optional<std::vector<char>> // Ожидаемое значение после SetValue
+		ISQLTypeByteArrayPtr, // SQL-РїРµСЂРµРјРµРЅРЅР°СЏ
+		std::optional<std::vector<char>>, // Р•С‘ РѕР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ
+		std::vector<char>, // РђСЂРіСѓРјРµРЅС‚ РґР»СЏ SetValue
+		std::optional<std::vector<char>> // РћР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕСЃР»Рµ SetValue
 	>> testData = {
-			// Конструктор с валидными данными и SetValue с валидными данными
+			// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё Рё SetValue СЃ РІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё
 			{converter->GetSQLTypeByteArray(),						std::nullopt,						std::vector<char>{1, 2, 3},		std::vector<char>{1, 2, 3}},
 			{converter->GetSQLTypeByteArray(),						std::nullopt,						std::vector<char>{},			std::vector<char>{}},
 			{converter->GetSQLTypeByteArray({}),					std::vector<char>{},				std::vector<char>{},			std::vector<char>{}},
@@ -38,8 +38,8 @@ TEST(SQLTypeByteArray, GetSetValue) {
 		std::vector<char> setValueArgCopy = setValueArg;
 		sqlVar->SetValue(std::move(setValueArgCopy));
 		ASSERT_EQ(sqlVar->GetValue(), expectedValueAfterSetValue);
-		// Проверка, что при успехе SetValue значение передаваемого аргумента очистилось,
-		// а при неуспехе - не изменилось
+		// РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ РїСЂРё СѓСЃРїРµС…Рµ SetValue Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРґР°РІР°РµРјРѕРіРѕ Р°СЂРіСѓРјРµРЅС‚Р° РѕС‡РёСЃС‚РёР»РѕСЃСЊ,
+		// Р° РїСЂРё РЅРµСѓСЃРїРµС…Рµ - РЅРµ РёР·РјРµРЅРёР»РѕСЃСЊ
 		if (sqlVar->GetValue().has_value())
 			ASSERT_TRUE(setValueArgCopy.empty());
 		else
@@ -48,7 +48,7 @@ TEST(SQLTypeByteArray, GetSetValue) {
 }
 
 
-/// Тесты ISQLTypeByteArray::GetType
+/// РўРµСЃС‚С‹ ISQLTypeByteArray::GetType
 TEST(SQLTypeByteArray, GetType) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	for (auto && sqlVar : { converter->GetSQLTypeByteArray(), converter->GetSQLTypeByteArray({}),
@@ -59,7 +59,7 @@ TEST(SQLTypeByteArray, GetType) {
 }
 
 
-/// Тесты ISQLTypeByteArray::GetTypeName
+/// РўРµСЃС‚С‹ ISQLTypeByteArray::GetTypeName
 TEST(SQLTypeByteArray, GetTypeName) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	for (auto && sqlVar : { converter->GetSQLTypeByteArray(), converter->GetSQLTypeByteArray({}),
@@ -70,7 +70,7 @@ TEST(SQLTypeByteArray, GetTypeName) {
 }
 
 
-/// Функция перевода символа в строку
+/// Р¤СѓРЅРєС†РёСЏ РїРµСЂРµРІРѕРґР° СЃРёРјРІРѕР»Р° РІ СЃС‚СЂРѕРєСѓ
 static std::string CharToHex(char c)
 {
 	char buffer[128] = "";
@@ -98,12 +98,12 @@ static std::string CharToHex(char c)
 }
 
 
-/// Тесты ISQLTypeByteArray::ToSQLString
+/// РўРµСЃС‚С‹ ISQLTypeByteArray::ToSQLString
 TEST(SQLTypeByteArray, ToSQLString) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	std::vector<std::tuple<
-		ISQLTypeByteArrayPtr, // SQL-переменная
-		std::optional<std::string> // Ожидаемое значение вызова ToSQLString
+		ISQLTypeByteArrayPtr, // SQL-РїРµСЂРµРјРµРЅРЅР°СЏ
+		std::optional<std::string> // РћР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ РІС‹Р·РѕРІР° ToSQLString
 		>> testData = {
 		{converter->GetSQLTypeByteArray(),				std::nullopt},
 		{converter->GetSQLTypeByteArray({}),			"'\\x'::BYTEA"},
@@ -124,23 +124,23 @@ TEST(SQLTypeByteArray, ToSQLString) {
 }
 
 
-/// Тесты ISQLTypeByteArray::ReadFromSQL
+/// РўРµСЃС‚С‹ ISQLTypeByteArray::ReadFromSQL
 TEST(SQLTypeByteArray, ReadFromSQL) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 
 	std::vector<std::tuple<
-		ISQLTypeByteArrayPtr, // SQL-переменная
-		std::string, // Аргумент для ReadFromSQL
-		bool, // Ожидаемое значение ReadFromSQL
-		std::optional<std::vector<char>> // Ожидаемое значение после ReadFromSQL
+		ISQLTypeByteArrayPtr, // SQL-РїРµСЂРµРјРµРЅРЅР°СЏ
+		std::string, // РђСЂРіСѓРјРµРЅС‚ РґР»СЏ ReadFromSQL
+		bool, // РћР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ ReadFromSQL
+		std::optional<std::vector<char>> // РћР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕСЃР»Рµ ReadFromSQL
 		>> testData = {
-		// Конструктор с валидными данными и ReadFromSQL с валидными данными
+		// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё Рё ReadFromSQL СЃ РІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё
 		{converter->GetSQLTypeByteArray(),				"\\xAB",					true,	std::vector<char>{-85}},
 		{converter->GetSQLTypeByteArray({}),			"\\xab",					true,	std::vector<char>{-85}},
 		{converter->GetSQLTypeByteArray({1, 2, 3}),		"\\x0123456789ABCDEF00",	true,	std::vector<char>{1, 35, 69, 103, -119, -85, -51, -17, 0}},
 		{converter->GetSQLTypeByteArray({0, -1, -2}),	"\\x0123456789abcdef",		true,	std::vector<char>{1, 35, 69, 103, -119, -85, -51, -17}},
 
-		// Конструктор с валидными данными и ReadFromSQL с невалидными данными
+		// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё Рё ReadFromSQL СЃ РЅРµРІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё
 		{converter->GetSQLTypeByteArray(),				"10",				false,	std::nullopt},
 		{converter->GetSQLTypeByteArray({}),			"\\x10\\x",			false,	std::nullopt},
 		{converter->GetSQLTypeByteArray({1, 2, 3}),		"\\x10 ",			false,	std::nullopt},
@@ -155,10 +155,10 @@ TEST(SQLTypeByteArray, ReadFromSQL) {
 		ASSERT_EQ(result, expectedReadFromSQLResult);
 		ASSERT_EQ(sqlVar->GetValue(), expectedValueAfterReadFromSQL);
 		if (result)
-			// Если результат успешный, то строка должна была переместиться. То есть стать пустой.
+			// Р•СЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ СѓСЃРїРµС€РЅС‹Р№, С‚Рѕ СЃС‚СЂРѕРєР° РґРѕР»Р¶РЅР° Р±С‹Р»Р° РїРµСЂРµРјРµСЃС‚РёС‚СЊСЃСЏ. РўРѕ РµСЃС‚СЊ СЃС‚Р°С‚СЊ РїСѓСЃС‚РѕР№.
 			ASSERT_TRUE(readFromSQLArgCopy.empty());
 		else
-			// Если результат неуспешный, то строка не должна была перемещаться.
+			// Р•СЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ РЅРµСѓСЃРїРµС€РЅС‹Р№, С‚Рѕ СЃС‚СЂРѕРєР° РЅРµ РґРѕР»Р¶РЅР° Р±С‹Р»Р° РїРµСЂРµРјРµС‰Р°С‚СЊСЃСЏ.
 			ASSERT_EQ(readFromSQLArg, readFromSQLArgCopy);
 	}
 }

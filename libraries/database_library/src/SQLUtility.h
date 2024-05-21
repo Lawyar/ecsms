@@ -2,5 +2,5 @@
 
 #include <string>
 
-/// Это ключевое слово из SQL
+/// Р­С‚Рѕ РєР»СЋС‡РµРІРѕРµ СЃР»РѕРІРѕ РёР· SQL
 bool IsSQLKeyword(const std::string & str);

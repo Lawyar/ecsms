@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 /**
-  Тесты для IDatabaseManager
+  РўРµСЃС‚С‹ РґР»СЏ IDatabaseManager
 */
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -12,7 +12,7 @@
 
 #include <IDatabaseManager.h>
 
-/// Можем получить (валидное) соединение к базе данных, передав валидный URL
+/// РњРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ (РІР°Р»РёРґРЅРѕРµ) СЃРѕРµРґРёРЅРµРЅРёРµ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С…, РїРµСЂРµРґР°РІ РІР°Р»РёРґРЅС‹Р№ URL
 TEST(DatabaseManager, CanGetConnectionWithValidURL) {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
@@ -20,7 +20,7 @@ TEST(DatabaseManager, CanGetConnectionWithValidURL) {
 }
 
 
-/// Можем получить (невалидное) соединение к базе данных, передав невалидный URL
+/// РњРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ (РЅРµРІР°Р»РёРґРЅРѕРµ) СЃРѕРµРґРёРЅРµРЅРёРµ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С…, РїРµСЂРµРґР°РІ РЅРµРІР°Р»РёРґРЅС‹Р№ URL
 TEST(DatabaseManager, CanGetConnectionWithInvalidURL) {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection("");
@@ -28,7 +28,7 @@ TEST(DatabaseManager, CanGetConnectionWithInvalidURL) {
 }
 
 
-/// Можем получить исполнитель EAV-запросов, передав валидное соединение
+/// РњРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ РёСЃРїРѕР»РЅРёС‚РµР»СЊ EAV-Р·Р°РїСЂРѕСЃРѕРІ, РїРµСЂРµРґР°РІ РІР°Р»РёРґРЅРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ
 TEST(DatabaseManager, CanGetExecutorEAVWithValidConnection) {
 	auto && databaseManager = GetDatabaseManager();
 	auto && connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
@@ -37,7 +37,7 @@ TEST(DatabaseManager, CanGetExecutorEAVWithValidConnection) {
 }
 
 
-/// Не можем получить исполнитель EAV-запросов, передав невалидное соединение
+/// РќРµ РјРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ РёСЃРїРѕР»РЅРёС‚РµР»СЊ EAV-Р·Р°РїСЂРѕСЃРѕРІ, РїРµСЂРµРґР°РІ РЅРµРІР°Р»РёРґРЅРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ
 TEST(DatabaseManager, CantGetExecutorEAVWithInvalidConnection) {
 	auto && databaseManager = GetDatabaseManager();
 	auto && connection = databaseManager.GetConnection("");
@@ -48,7 +48,7 @@ TEST(DatabaseManager, CantGetExecutorEAVWithInvalidConnection) {
 }
 
 
-/// Можем получить конвертер SQL-типов
+/// РњРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ РєРѕРЅРІРµСЂС‚РµСЂ SQL-С‚РёРїРѕРІ
 TEST(DatabaseManager, CanGetSQLTypeConverter) {
 	auto && databaseManager = GetDatabaseManager();
 	auto && sqlTypeConverter = databaseManager.GetSQLTypeConverter();

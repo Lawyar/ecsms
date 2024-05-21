@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 /**
-  Тесты для ISQLType
+  РўРµСЃС‚С‹ РґР»СЏ ISQLType
 */
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -10,7 +10,7 @@
 
 #include <IDatabaseManager.h>
 
-/// Тесты ISQLTypeInteger::GetValue и ISQLTypeInteger::SetValue
+/// РўРµСЃС‚С‹ ISQLTypeInteger::GetValue Рё ISQLTypeInteger::SetValue
 TEST(SQLTypeInteger, GetSetValue) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	auto && int1 = converter->GetSQLTypeInteger();
@@ -30,7 +30,7 @@ TEST(SQLTypeInteger, GetSetValue) {
 }
 
 
-/// Тесты ISQLTypeInteger::GetType
+/// РўРµСЃС‚С‹ ISQLTypeInteger::GetType
 TEST(SQLTypeInteger, GetType) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	auto && int1 = converter->GetSQLTypeInteger();
@@ -43,7 +43,7 @@ TEST(SQLTypeInteger, GetType) {
 }
 
 
-/// Тесты ISQLTypeInteger::GetTypeName
+/// РўРµСЃС‚С‹ ISQLTypeInteger::GetTypeName
 TEST(SQLTypeInteger, GetTypeName) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	auto && int1 = converter->GetSQLTypeInteger();
@@ -56,7 +56,7 @@ TEST(SQLTypeInteger, GetTypeName) {
 }
 
 
-/// Тесты ISQLTypeInteger::ToSQLString
+/// РўРµСЃС‚С‹ ISQLTypeInteger::ToSQLString
 TEST(SQLTypeInteger, ToSQLString) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	auto && int1 = converter->GetSQLTypeInteger();
@@ -69,14 +69,14 @@ TEST(SQLTypeInteger, ToSQLString) {
 }
 
 
-/// Тесты ISQLTypeInteger::ReadFromSQL
+/// РўРµСЃС‚С‹ ISQLTypeInteger::ReadFromSQL
 TEST(SQLTypeInteger, ReadFromSQL) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 
 	const std::vector<std::tuple<
-		std::string, // Строка для чтения
-		bool, // Ожидаемый результат ReadFromSQL
-		std::optional<int> // Ожидаемое значение после чтения
+		std::string, // РЎС‚СЂРѕРєР° РґР»СЏ С‡С‚РµРЅРёСЏ
+		bool, // РћР¶РёРґР°РµРјС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚ ReadFromSQL
+		std::optional<int> // РћР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕСЃР»Рµ С‡С‚РµРЅРёСЏ
 		>>
 		testData{
 	{"0", true, 0},
@@ -121,10 +121,10 @@ TEST(SQLTypeInteger, ReadFromSQL) {
 			ASSERT_EQ(result, expectedReadResult);
 			ASSERT_EQ(sqlVar->GetValue(), expectedGetValueResult);
 			if (result)
-				// Если результат успешный, то строка должна была переместиться. То есть стать пустой.
+				// Р•СЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ СѓСЃРїРµС€РЅС‹Р№, С‚Рѕ СЃС‚СЂРѕРєР° РґРѕР»Р¶РЅР° Р±С‹Р»Р° РїРµСЂРµРјРµСЃС‚РёС‚СЊСЃСЏ. РўРѕ РµСЃС‚СЊ СЃС‚Р°С‚СЊ РїСѓСЃС‚РѕР№.
 				ASSERT_TRUE(sqlStringCopy.empty());
 			else
-				// Если результат неуспешный, то строка не должна была перемещаться
+				// Р•СЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ РЅРµСѓСЃРїРµС€РЅС‹Р№, С‚Рѕ СЃС‚СЂРѕРєР° РЅРµ РґРѕР»Р¶РЅР° Р±С‹Р»Р° РїРµСЂРµРјРµС‰Р°С‚СЊСЃСЏ
 				ASSERT_EQ(sqlString, sqlStringCopy);
 		}
 	}

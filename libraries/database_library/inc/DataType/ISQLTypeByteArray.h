@@ -7,28 +7,28 @@
 
 //------------------------------------------------------------------------------
 /**
-  Интерфейс SQL-типа данных "bytea".
+  РРЅС‚РµСЂС„РµР№СЃ SQL-С‚РёРїР° РґР°РЅРЅС‹С… "bytea".
 */
 //---
 class ISQLTypeByteArray : public ISQLType
 {
 public:
-	/// Деструктор
+	/// Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
 	virtual ~ISQLTypeByteArray() override = default;
 
 public:
-	/// Получить тип данных
+	/// РџРѕР»СѓС‡РёС‚СЊ С‚РёРї РґР°РЅРЅС‹С…
 	virtual SQLDataType GetType() const override final { return SQLDataType::ByteArray; }
 
 public:
-	/// Получить значение
+	/// РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
 	virtual const std::optional<std::vector<char>> & GetValue() const = 0;
-	/// Установить значение
-	/// \param value Массив, из которого нужно установить значение.
-	///              При успехе массив будет очищен, иначе останется неизменным.
+	/// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
+	/// \param value РњР°СЃСЃРёРІ, РёР· РєРѕС‚РѕСЂРѕРіРѕ РЅСѓР¶РЅРѕ СѓСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ.
+	///              РџСЂРё СѓСЃРїРµС…Рµ РјР°СЃСЃРёРІ Р±СѓРґРµС‚ РѕС‡РёС‰РµРЅ, РёРЅР°С‡Рµ РѕСЃС‚Р°РЅРµС‚СЃСЏ РЅРµРёР·РјРµРЅРЅС‹Рј.
 	virtual void SetValue(std::vector<char> && value) = 0;
 };
 
 
-/// Тип указателя на ISQLTypeByteArray
+/// РўРёРї СѓРєР°Р·Р°С‚РµР»СЏ РЅР° ISQLTypeByteArray
 using ISQLTypeByteArrayPtr = std::shared_ptr<ISQLTypeByteArray>;

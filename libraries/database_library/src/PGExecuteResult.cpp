@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Êîíñòðóêòîð
+  ÐšÐ¾Ð½ÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€
 */
 //---
 PGExecuteResult::PGExecuteResult(PGresult * result)
@@ -19,7 +19,7 @@ PGExecuteResult::PGExecuteResult(PGresult * result)
 
 //------------------------------------------------------------------------------
 /**
-  Äåñòðóêòîð
+  Ð”ÐµÑÑ‚Ñ€ÑƒÐºÑ‚Ð¾Ñ€
 */
 //---
 PGExecuteResult::~PGExecuteResult()
@@ -31,7 +31,7 @@ PGExecuteResult::~PGExecuteResult()
 
 //------------------------------------------------------------------------------
 /**
-  Ïîëó÷èòü òåêóùèé ñòàòóñ çàïðîñà
+  ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ‚ÐµÐºÑƒÑ‰Ð¸Ð¹ ÑÑ‚Ð°Ñ‚ÑƒÑ Ð·Ð°Ð¿Ñ€Ð¾ÑÐ°
 */
 //---
 IExecuteResultStatusPtr PGExecuteResult::GetCurrentExecuteStatus() const
@@ -43,7 +43,7 @@ IExecuteResultStatusPtr PGExecuteResult::GetCurrentExecuteStatus() const
 
 //------------------------------------------------------------------------------
 /**
-  Ïîëó÷èòü êîëè÷åñòâî ñòðîê â îòâåòå
+  ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÑÑ‚Ñ€Ð¾Ðº Ð² Ð¾Ñ‚Ð²ÐµÑ‚Ðµ
 */
 //---
 size_t PGExecuteResult::GetRowCount() const
@@ -57,7 +57,7 @@ size_t PGExecuteResult::GetRowCount() const
 
 //------------------------------------------------------------------------------
 /**
-  Ïîëó÷èòü êîëè÷åñòâî ñòîëáöîâ â îòâåòå
+  ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÑÑ‚Ð¾Ð»Ð±Ñ†Ð¾Ð² Ð² Ð¾Ñ‚Ð²ÐµÑ‚Ðµ
 */
 //---
 size_t PGExecuteResult::GetColCount() const
@@ -71,8 +71,8 @@ size_t PGExecuteResult::GetColCount() const
 
 //------------------------------------------------------------------------------
 /**
-  Ïîëó÷èòü íàçâàíèå ñòîëáöà
-  \return Íàçâàíèå ñòîëáöà, åñëè ïåðåäàí âàëèäíûé èíäåêñ, èíà÷å ïóñòóþ ñòðîêó.
+  ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð½Ð°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‚Ð¾Ð»Ð±Ñ†Ð°
+  \return ÐÐ°Ð·Ð²Ð°Ð½Ð¸Ðµ ÑÑ‚Ð¾Ð»Ð±Ñ†Ð°, ÐµÑÐ»Ð¸ Ð¿ÐµÑ€ÐµÐ´Ð°Ð½ Ð²Ð°Ð»Ð¸Ð´Ð½Ñ‹Ð¹ Ð¸Ð½Ð´ÐµÐºÑ, Ð¸Ð½Ð°Ñ‡Ðµ Ð¿ÑƒÑÑ‚ÑƒÑŽ ÑÑ‚Ñ€Ð¾ÐºÑƒ.
 */
 //---
 std::string PGExecuteResult::GetColName(size_t columnIndex) const
@@ -86,8 +86,8 @@ std::string PGExecuteResult::GetColName(size_t columnIndex) const
 
 //------------------------------------------------------------------------------
 /**
-  Ïîëó÷èòü èíäåêñ ñòîëáöà ïî èìåíè
-  \return Èíäåêñ ñòîëáöà, åñëè ïåðåäàí âàëèäíûé èíäåêñ, èíà÷å íåâàëèäíûé èíäåêñ.
+  ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð¸Ð½Ð´ÐµÐºÑ ÑÑ‚Ð¾Ð»Ð±Ñ†Ð° Ð¿Ð¾ Ð¸Ð¼ÐµÐ½Ð¸
+  \return Ð˜Ð½Ð´ÐµÐºÑ ÑÑ‚Ð¾Ð»Ð±Ñ†Ð°, ÐµÑÐ»Ð¸ Ð¿ÐµÑ€ÐµÐ´Ð°Ð½ Ð²Ð°Ð»Ð¸Ð´Ð½Ñ‹Ð¹ Ð¸Ð½Ð´ÐµÐºÑ, Ð¸Ð½Ð°Ñ‡Ðµ Ð½ÐµÐ²Ð°Ð»Ð¸Ð´Ð½Ñ‹Ð¹ Ð¸Ð½Ð´ÐµÐºÑ.
 */
 //---
 size_t PGExecuteResult::GetColIndex(const std::string & columnName)
@@ -101,8 +101,8 @@ size_t PGExecuteResult::GetColIndex(const std::string & columnName)
 
 //------------------------------------------------------------------------------
 /**
-  Ïîëó÷èòü òèï äàííûõ ñòîëáöà.
-  \return Òèï äàííûõ ñòîëáöà, åñëè ïåðåäàí âàëèäíûé èíäåêñ, èíà÷å íåâàëèäíûé òèï.
+  ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ñ‚Ð¸Ð¿ Ð´Ð°Ð½Ð½Ñ‹Ñ… ÑÑ‚Ð¾Ð»Ð±Ñ†Ð°.
+  \return Ð¢Ð¸Ð¿ Ð´Ð°Ð½Ð½Ñ‹Ñ… ÑÑ‚Ð¾Ð»Ð±Ñ†Ð°, ÐµÑÐ»Ð¸ Ð¿ÐµÑ€ÐµÐ´Ð°Ð½ Ð²Ð°Ð»Ð¸Ð´Ð½Ñ‹Ð¹ Ð¸Ð½Ð´ÐµÐºÑ, Ð¸Ð½Ð°Ñ‡Ðµ Ð½ÐµÐ²Ð°Ð»Ð¸Ð´Ð½Ñ‹Ð¹ Ñ‚Ð¸Ð¿.
 */
 //---
 SQLDataType PGExecuteResult::GetColType(size_t columnIndex) const
@@ -114,7 +114,7 @@ SQLDataType PGExecuteResult::GetColType(size_t columnIndex) const
 
 //------------------------------------------------------------------------------
 /**
-  Ïîëó÷èòü çíà÷åíèå.
+  ÐŸÐ¾Ð»ÑƒÑ‡Ð¸Ñ‚ÑŒ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ.
 */
 //---
 IExecuteResult::CellType PGExecuteResult::GetValue(size_t rowIndex, size_t columnIndex)
@@ -137,7 +137,7 @@ IExecuteResult::CellType PGExecuteResult::GetValue(size_t rowIndex, size_t colum
 	}
 	else if (format == 1)
 	{
-		// todo: IConnection::Execute ïåðåãðóçêà ñ áèíàðíûìè äàííûìè
+		// todo: IConnection::Execute Ð¿ÐµÑ€ÐµÐ³Ñ€ÑƒÐ·ÐºÐ° Ñ Ð±Ð¸Ð½Ð°Ñ€Ð½Ñ‹Ð¼Ð¸ Ð´Ð°Ð½Ð½Ñ‹Ð¼Ð¸
 		/*if (int intLength = PQgetlength(m_result, rowIndex, columnIndex);
 			intLength >= 0)
 		{

@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Получить менеджер базы данных
+  РџРѕР»СѓС‡РёС‚СЊ РјРµРЅРµРґР¶РµСЂ Р±Р°Р·С‹ РґР°РЅРЅС‹С…
 */
 //---
 template<>
@@ -21,7 +21,7 @@ IDatabaseManager & GetDatabaseManager<DatabaseType::PostgreSQL>()
 
 //------------------------------------------------------------------------------
 /**
-  Получить соединение
+  РџРѕР»СѓС‡РёС‚СЊ СЃРѕРµРґРёРЅРµРЅРёРµ
 */
 //---
 IConnectionPtr PGDatabaseManager::GetConnection(const std::string & connectionInfo)
@@ -32,7 +32,7 @@ IConnectionPtr PGDatabaseManager::GetConnection(const std::string & connectionIn
 
 //------------------------------------------------------------------------------
 /**
-  Получить исполнитель EAV-запросов
+  РџРѕР»СѓС‡РёС‚СЊ РёСЃРїРѕР»РЅРёС‚РµР»СЊ EAV-Р·Р°РїСЂРѕСЃРѕРІ
 */
 //---
 IExecutorEAVPtr PGDatabaseManager::GetExecutorEAV(const IConnectionPtr &  connection)
@@ -46,7 +46,7 @@ IExecutorEAVPtr PGDatabaseManager::GetExecutorEAV(const IConnectionPtr &  connec
 
 //------------------------------------------------------------------------------
 /**
-  Получить конвертер SQL-типов
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРЅРІРµСЂС‚РµСЂ SQL-С‚РёРїРѕРІ
 */
 //---
 ISQLTypeConverterPtr PGDatabaseManager::GetSQLTypeConverter() const

@@ -7,147 +7,147 @@
 
 //------------------------------------------------------------------------------
 /**
-  Реализация исполнителя запросов EAV.
-  todo : Возможная оптимизация - использование подготовленных операторов
-  для запросов. См. PostgreSQL PREPARE; libpq : PQprepare.
+  Р РµР°Р»РёР·Р°С†РёСЏ РёСЃРїРѕР»РЅРёС‚РµР»СЏ Р·Р°РїСЂРѕСЃРѕРІ EAV.
+  todo : Р’РѕР·РјРѕР¶РЅР°СЏ РѕРїС‚РёРјРёР·Р°С†РёСЏ - РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ РїРѕРґРіРѕС‚РѕРІР»РµРЅРЅС‹С… РѕРїРµСЂР°С‚РѕСЂРѕРІ
+  РґР»СЏ Р·Р°РїСЂРѕСЃРѕРІ. РЎРј. PostgreSQL PREPARE; libpq : PQprepare.
 */
 //---
 class PGExecutorEAV : public IExecutorEAV
 {
-	IConnectionPtr m_connection;             ///< Соединение с БД
-	ISQLTypeConverterPtr m_sqlTypeConverter; ///< Конвертер в SQL-типы
-	EAVRegisterEntries m_registerEntries;    ///< Зарегистрированные сущности с типами атрибутов
-	const PGExecutorEAVNamingRules m_rules;  ///< Правила именования таблиц
+	IConnectionPtr m_connection;             ///< РЎРѕРµРґРёРЅРµРЅРёРµ СЃ Р‘Р”
+	ISQLTypeConverterPtr m_sqlTypeConverter; ///< РљРѕРЅРІРµСЂС‚РµСЂ РІ SQL-С‚РёРїС‹
+	EAVRegisterEntries m_registerEntries;    ///< Р—Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Рµ СЃСѓС‰РЅРѕСЃС‚Рё СЃ С‚РёРїР°РјРё Р°С‚СЂРёР±СѓС‚РѕРІ
+	const PGExecutorEAVNamingRules m_rules;  ///< РџСЂР°РІРёР»Р° РёРјРµРЅРѕРІР°РЅРёСЏ С‚Р°Р±Р»РёС†
 
 public:
-	/// Конструктор
+	/// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 	PGExecutorEAV(const IConnectionPtr & connection, const ISQLTypeConverterPtr & sqlTypeConverter);
 
 public:
-	/// Регистрация EAV-сущностей для дальнешей работы с классом
+	/// Р РµРіРёСЃС‚СЂР°С†РёСЏ EAV-СЃСѓС‰РЅРѕСЃС‚РµР№ РґР»СЏ РґР°Р»СЊРЅРµС€РµР№ СЂР°Р±РѕС‚С‹ СЃ РєР»Р°СЃСЃРѕРј
 	virtual IExecuteResultStatusPtr SetRegisteredEntities(const EAVRegisterEntries & entries,
 		bool createTables) override;
-	/// Получить зарегистрированные сущности
+	/// РџРѕР»СѓС‡РёС‚СЊ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Рµ СЃСѓС‰РЅРѕСЃС‚Рё
 	virtual const EAVRegisterEntries & GetRegisteredEntities() const override;
 
 public:
-	/// Получить объект, определяющий правила именования таблиц
+	/// РџРѕР»СѓС‡РёС‚СЊ РѕР±СЉРµРєС‚, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РїСЂР°РІРёР»Р° РёРјРµРЅРѕРІР°РЅРёСЏ С‚Р°Р±Р»РёС†
 	virtual const IExecutorEAVNamingRules & GetNamingRules() const override;
 
 private:
-	/// Получить команду создания таблицы сущностей
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ СЃСѓС‰РЅРѕСЃС‚РµР№
 	std::string createEntityTableCommand(const std::string & entityName) const;
 
-	/// Получить команду создания таблицы атрибутов
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ Р°С‚СЂРёР±СѓС‚РѕРІ
 	std::string createAttributeTableCommand(const std::string & entityName,
 		const std::string & attributeType) const;
 
-	/// Получить команду создания таблицы значений
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 	std::string createValueTableCommand(const std::string & entityName,
 		const std::string & attributeType) const;
 
-public: // Методы для создания новых сущностей и поиска уже существующих сущностей
-	/// Создать новую сущность данного вида
+public: // РњРµС‚РѕРґС‹ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РЅРѕРІС‹С… СЃСѓС‰РЅРѕСЃС‚РµР№ Рё РїРѕРёСЃРєР° СѓР¶Рµ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёС… СЃСѓС‰РЅРѕСЃС‚РµР№
+	/// РЎРѕР·РґР°С‚СЊ РЅРѕРІСѓСЋ СЃСѓС‰РЅРѕСЃС‚СЊ РґР°РЅРЅРѕРіРѕ РІРёРґР°
 	virtual IExecuteResultStatusPtr CreateNewEntity(const EntityName & entityName, EntityId & result) override;
-	/// Получить все идентификаторы сущности данного вида
+	/// РџРѕР»СѓС‡РёС‚СЊ РІСЃРµ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂС‹ СЃСѓС‰РЅРѕСЃС‚Рё РґР°РЅРЅРѕРіРѕ РІРёРґР°
 	virtual IExecuteResultStatusPtr GetEntityIds(const EntityName & entityName,
 		std::vector<EntityId> & result) override;
-	/// Получить все наименования атрибутов указанного типа, которые использует данная сущность
+	/// РџРѕР»СѓС‡РёС‚СЊ РІСЃРµ РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ СѓРєР°Р·Р°РЅРЅРѕРіРѕ С‚РёРїР°, РєРѕС‚РѕСЂС‹Рµ РёСЃРїРѕР»СЊР·СѓРµС‚ РґР°РЅРЅР°СЏ СЃСѓС‰РЅРѕСЃС‚СЊ
 	virtual IExecuteResultStatusPtr GetAttributeNames(const EntityName & entityName,
 		SQLDataType sqlDataType, std::vector<AttrName> & result) override;
-	/// Найти сущности, у которых есть все из указанных пар атрибут-значение
+	/// РќР°Р№С‚Рё СЃСѓС‰РЅРѕСЃС‚Рё, Сѓ РєРѕС‚РѕСЂС‹С… РµСЃС‚СЊ РІСЃРµ РёР· СѓРєР°Р·Р°РЅРЅС‹С… РїР°СЂ Р°С‚СЂРёР±СѓС‚-Р·РЅР°С‡РµРЅРёРµ
 	virtual IExecuteResultStatusPtr FindEntitiesByAttrValues(const EntityName & entityName,
 		const std::vector<AttrValue> & attrValues, std::vector<EntityId> & result) override;
 
 private:
-	/// Получить команду "добавить сущность в таблицу сущностей и вернуть вставленный идентификатор"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РґРѕР±Р°РІРёС‚СЊ СЃСѓС‰РЅРѕСЃС‚СЊ РІ С‚Р°Р±Р»РёС†Сѓ СЃСѓС‰РЅРѕСЃС‚РµР№ Рё РІРµСЂРЅСѓС‚СЊ РІСЃС‚Р°РІР»РµРЅРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ"
 	std::string insertNewEntityReturningIdCommand(const std::string & entityName) const;
-	/// Получить команду "получить идентификаторы сущности"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РїРѕР»СѓС‡РёС‚СЊ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂС‹ СЃСѓС‰РЅРѕСЃС‚Рё"
 	std::string getEntityIdsCommand(const std::string & entityName) const;
-	/// Получить команду "получить названия атрибутов указанного типа, которые использует данная сущность"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РїРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ СѓРєР°Р·Р°РЅРЅРѕРіРѕ С‚РёРїР°, РєРѕС‚РѕСЂС‹Рµ РёСЃРїРѕР»СЊР·СѓРµС‚ РґР°РЅРЅР°СЏ СЃСѓС‰РЅРѕСЃС‚СЊ"
 	std::string getAttributeNamesCommand(const std::string & entityName,
 		const std::string & attributeType) const;
-	/// Получить внутреннюю команду "получить идентификаторы сущности по названию атрибута и его значению"
+	/// РџРѕР»СѓС‡РёС‚СЊ РІРЅСѓС‚СЂРµРЅРЅСЋСЋ РєРѕРјР°РЅРґСѓ "РїРѕР»СѓС‡РёС‚СЊ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂС‹ СЃСѓС‰РЅРѕСЃС‚Рё РїРѕ РЅР°Р·РІР°РЅРёСЋ Р°С‚СЂРёР±СѓС‚Р° Рё РµРіРѕ Р·РЅР°С‡РµРЅРёСЋ"
 	std::optional<std::string> getEntityIdByAttrValueInnerCommand(const EntityName & entityName,
 		const AttrValue & attrValue) const;
 
-public: // Методы для вставки/обновления данных
-	/// Вставить значение для атрибута сущности
+public: // РњРµС‚РѕРґС‹ РґР»СЏ РІСЃС‚Р°РІРєРё/РѕР±РЅРѕРІР»РµРЅРёСЏ РґР°РЅРЅС‹С…
+	/// Р’СЃС‚Р°РІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ Р°С‚СЂРёР±СѓС‚Р° СЃСѓС‰РЅРѕСЃС‚Рё
 	virtual IExecuteResultStatusPtr Insert(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, const ValueType & value) override;
-	/// Обновить значение для атрибута сущности
+	/// РћР±РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ Р°С‚СЂРёР±СѓС‚Р° СЃСѓС‰РЅРѕСЃС‚Рё
 	virtual IExecuteResultStatusPtr Update(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, const ValueType & value) override;
-	/// Обновить значение для атрибута сущности или вставить, если такого значения ещё не было
+	/// РћР±РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ Р°С‚СЂРёР±СѓС‚Р° СЃСѓС‰РЅРѕСЃС‚Рё РёР»Рё РІСЃС‚Р°РІРёС‚СЊ, РµСЃР»Рё С‚Р°РєРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РµС‰С‘ РЅРµ Р±С‹Р»Рѕ
 	virtual IExecuteResultStatusPtr InsertOrUpdate(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, const ValueType & value) override;
 
 private:
-	/// Получить команду "вставить атрибут в таблицу атрибутов, при конфликте ничего не делать"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РІСЃС‚Р°РІРёС‚СЊ Р°С‚СЂРёР±СѓС‚ РІ С‚Р°Р±Р»РёС†Сѓ Р°С‚СЂРёР±СѓС‚РѕРІ, РїСЂРё РєРѕРЅС„Р»РёРєС‚Рµ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°С‚СЊ"
 	std::string insertAttributeOnConflictDoNothingCommand(const EntityName & entityName, const std::string & attributeType,
 		const std::string & sqlAttrName) const;
-	/// Получить часть команды "вставить значение в таблицу значений"
+	/// РџРѕР»СѓС‡РёС‚СЊ С‡Р°СЃС‚СЊ РєРѕРјР°РЅРґС‹ "РІСЃС‚Р°РІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Сѓ Р·РЅР°С‡РµРЅРёР№"
 	std::string insertValuePartCommand(const EntityName & entityName, EntityId entityId,
 		const std::string & sqlAttrName, const std::string & attributeType,
 		const std::string & sqlValue) const;
-	/// Получить команду "вставить значение в таблицу значений"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РІСЃС‚Р°РІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Сѓ Р·РЅР°С‡РµРЅРёР№"
 	std::string insertValueCommand(const EntityName & entityName, EntityId entityId,
 		const std::string & sqlAttrName, const std::string & attributeType,
 		const std::string & sqlValue) const;
-	/// Получить команду "вставить значение в таблицу значений, при конфликте сделать обновление"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РІСЃС‚Р°РІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Сѓ Р·РЅР°С‡РµРЅРёР№, РїСЂРё РєРѕРЅС„Р»РёРєС‚Рµ СЃРґРµР»Р°С‚СЊ РѕР±РЅРѕРІР»РµРЅРёРµ"
 	std::string insertValueOnConflictDoUpdateCommand(const EntityName & entityName,
 		EntityId entityId, const std::string & sqlAttrName, const std::string & attributeType,
 		const std::string & sqlValue) const;
-	/// Получить команду "обновить значение в таблице значений"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РѕР±РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Рµ Р·РЅР°С‡РµРЅРёР№"
 	std::string updateValueCommand(const EntityName & entityName, EntityId entityId,
 		const std::string & sqlAttrName, const std::string & attributeType,
 		const std::string & sqlValue) const;
-	/// Получить команду "удалить значение в таблице значений"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "СѓРґР°Р»РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Рµ Р·РЅР°С‡РµРЅРёР№"
 	std::string removeValueCommand(const EntityName & entityName, EntityId entityId,
 		const std::string & attributeType, const std::string & sqlAttrName) const;
-	/// Получить команду "Бросить ошибку, если в таблице сущностей нет сущности с данным идентификатором"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "Р‘СЂРѕСЃРёС‚СЊ РѕС€РёР±РєСѓ, РµСЃР»Рё РІ С‚Р°Р±Р»РёС†Рµ СЃСѓС‰РЅРѕСЃС‚РµР№ РЅРµС‚ СЃСѓС‰РЅРѕСЃС‚Рё СЃ РґР°РЅРЅС‹Рј РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРј"
 	std::string throwErrorIfThereIsNoEntityWithSuchIdCommand(const EntityName & entityName,
 		EntityId entityId) const;
-	/// Получить команду "Бросить ошибку, если в таблице атрибутов нет атрибута с данным именем"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "Р‘СЂРѕСЃРёС‚СЊ РѕС€РёР±РєСѓ, РµСЃР»Рё РІ С‚Р°Р±Р»РёС†Рµ Р°С‚СЂРёР±СѓС‚РѕРІ РЅРµС‚ Р°С‚СЂРёР±СѓС‚Р° СЃ РґР°РЅРЅС‹Рј РёРјРµРЅРµРј"
 	std::string throwErrorIfThereIsNoAttributeWithSuchNameCommand(const EntityName & entityName,
 		const std::string & attributeType, const std::string & sqlAttrName) const;
 
-	/// Получить внутреннюю команду "получить идентификатор атрибута по его названию"
+	/// РџРѕР»СѓС‡РёС‚СЊ РІРЅСѓС‚СЂРµРЅРЅСЋСЋ РєРѕРјР°РЅРґСѓ "РїРѕР»СѓС‡РёС‚СЊ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р°С‚СЂРёР±СѓС‚Р° РїРѕ РµРіРѕ РЅР°Р·РІР°РЅРёСЋ"
 	std::string selectAttributeIdByNameInnerCommand(const EntityName & entityName,
 		const std::string & attributeType, const std::string & sqlAttrName) const;
 
-public: // Методы для получения данных
-	/// Получить значение атрибута сущности.
+public: // РњРµС‚РѕРґС‹ РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ РґР°РЅРЅС‹С…
+	/// РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ Р°С‚СЂРёР±СѓС‚Р° СЃСѓС‰РЅРѕСЃС‚Рё.
 	virtual IExecuteResultStatusPtr GetValue(const EntityName & entityName, EntityId entityId,
 		const AttrName & attrName, ValueType value) override;
-	/// Получить значения всех атрибутов сущности.
+	/// РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёСЏ РІСЃРµС… Р°С‚СЂРёР±СѓС‚РѕРІ СЃСѓС‰РЅРѕСЃС‚Рё.
 	virtual IExecuteResultStatusPtr GetAttributeValues(const EntityName & entityName,
 		EntityId entityId, std::map<SQLDataType, std::vector<AttrValue>> & attrValuesByType) override;
 
 private:
-	/// Получить команду "получить значение по идентификатору сущности и названию атрибута"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РїРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РїРѕ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ СЃСѓС‰РЅРѕСЃС‚Рё Рё РЅР°Р·РІР°РЅРёСЋ Р°С‚СЂРёР±СѓС‚Р°"
 	std::string selectValueByEntityIdAndAttributeNameCommand(const EntityName & entityName,
 		EntityId entityId, const std::string & attributeType, const std::string & sqlAttrName) const;
-	/// Получить команду "получить названия атрибутов и их значения"
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РїРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ Рё РёС… Р·РЅР°С‡РµРЅРёСЏ"
 	std::string selectAttrValuesCommand(const EntityName & entityName, EntityId entityId,
 		const std::string & attributeType) const;
 
-	/// Получить значения атрибутов сущности из результата.
+	/// РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ СЃСѓС‰РЅРѕСЃС‚Рё РёР· СЂРµР·СѓР»СЊС‚Р°С‚Р°.
 	IExecuteResultStatusPtr getAttributeValuesImpl(const IExecuteResultPtr & result,
 		std::vector<AttrValue> & attrValues) const;
 
-private: // Общие вспомогательные методы
-	/// Выполнить команду.
+private: // РћР±С‰РёРµ РІСЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ РјРµС‚РѕРґС‹
+	/// Р’С‹РїРѕР»РЅРёС‚СЊ РєРѕРјР°РЅРґСѓ.
 	bool executeQuery(const std::string query, IExecuteResultPtr & result, IExecuteResultStatusPtr & status);
-	/// Прочитать строку в SQL-переменную
+	/// РџСЂРѕС‡РёС‚Р°С‚СЊ СЃС‚СЂРѕРєСѓ РІ SQL-РїРµСЂРµРјРµРЅРЅСѓСЋ
 	template <class SQLConcreteType, class CppConcreteType>
 	bool readIntoSQLVariable(std::string && str, SQLDataType type, CppConcreteType & value,
 		IExecuteResultStatusPtr & status) const;
-	/// Получить название атрибута в форме, пригодной для вставления в запрос
+	/// РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ Р°С‚СЂРёР±СѓС‚Р° РІ С„РѕСЂРјРµ, РїСЂРёРіРѕРґРЅРѕР№ РґР»СЏ РІСЃС‚Р°РІР»РµРЅРёСЏ РІ Р·Р°РїСЂРѕСЃ
 	IExecuteResultStatusPtr getSQLAttrName(const AttrName & attrName, std::string & sqlAttrName) const;
-	/// Получить название типа SQL
+	/// РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ С‚РёРїР° SQL
 	IExecuteResultStatusPtr getSQLTypeName(SQLDataType sqlDataType, std::string & sqlTypeName) const;
 
-	/// Проверка значения на допустимость
+	/// РџСЂРѕРІРµСЂРєР° Р·РЅР°С‡РµРЅРёСЏ РЅР° РґРѕРїСѓСЃС‚РёРјРѕСЃС‚СЊ
 	bool valueTypeIsValid(const ValueType & value);
 };

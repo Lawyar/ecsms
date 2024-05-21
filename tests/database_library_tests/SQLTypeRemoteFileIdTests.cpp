@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 /**
-  Тесты для ISQLTypeRemoteFileId
+  РўРµСЃС‚С‹ РґР»СЏ ISQLTypeRemoteFileId
 */
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 #include <IDatabaseManager.h>
 
 
-/// Тесты ISQLTypeRemoteFileId::GetValue и ISQLTypeRemoteFileId::SetValue
+/// РўРµСЃС‚С‹ ISQLTypeRemoteFileId::GetValue Рё ISQLTypeRemoteFileId::SetValue
 TEST(SQLTypeRemoteFileId, GetValue) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	auto && var1 = converter->GetSQLTypeRemoteFileId("");
@@ -32,7 +32,7 @@ TEST(SQLTypeRemoteFileId, GetValue) {
 }
 
 
-/// Тесты ISQLTypeRemoteFileId::GetType
+/// РўРµСЃС‚С‹ ISQLTypeRemoteFileId::GetType
 TEST(SQLTypeRemoteFileId, GetType) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	auto && var1 = converter->GetSQLTypeRemoteFileId("");
@@ -46,7 +46,7 @@ TEST(SQLTypeRemoteFileId, GetType) {
 }
 
 
-/// Тесты ISQLTypeRemoteFileId::GetTypeName
+/// РўРµСЃС‚С‹ ISQLTypeRemoteFileId::GetTypeName
 TEST(SQLTypeRemoteFileId, GetTypeName) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	auto && var1 = converter->GetSQLTypeRemoteFileId("");
@@ -60,7 +60,7 @@ TEST(SQLTypeRemoteFileId, GetTypeName) {
 }
 
 
-/// Тесты ISQLTypeRemoteFileId::ToSQLString
+/// РўРµСЃС‚С‹ ISQLTypeRemoteFileId::ToSQLString
 TEST(SQLTypeRemoteFileId, ToSQLString) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	auto && var1 = converter->GetSQLTypeRemoteFileId("");
@@ -77,14 +77,14 @@ TEST(SQLTypeRemoteFileId, ToSQLString) {
 }
 
 
-/// Тесты ISQLTypeRemoteFileId::ReadFromSQL
+/// РўРµСЃС‚С‹ ISQLTypeRemoteFileId::ReadFromSQL
 TEST(SQLTypeRemoteFileId, ReadFromSQL) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 
 	const std::vector<std::tuple<
-		std::string, // Строка для чтения
-		bool, // Ожидаемый результат ReadFromSQL
-		std::optional<std::string> // Ожидаемое значение после чтения
+		std::string, // РЎС‚СЂРѕРєР° РґР»СЏ С‡С‚РµРЅРёСЏ
+		bool, // РћР¶РёРґР°РµРјС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚ ReadFromSQL
+		std::optional<std::string> // РћР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕСЃР»Рµ С‡С‚РµРЅРёСЏ
 		>>
 		testData{
 	{"", false, std::nullopt},
@@ -108,10 +108,10 @@ TEST(SQLTypeRemoteFileId, ReadFromSQL) {
 			ASSERT_EQ(result, expectedReadResult);
 			ASSERT_EQ(sqlVar->GetValue(), expectedGetValueResult);
 			if (result)
-				// Если результат успешный, то строка должна была переместиться. То есть стать пустой.
+				// Р•СЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ СѓСЃРїРµС€РЅС‹Р№, С‚Рѕ СЃС‚СЂРѕРєР° РґРѕР»Р¶РЅР° Р±С‹Р»Р° РїРµСЂРµРјРµСЃС‚РёС‚СЊСЃСЏ. РўРѕ РµСЃС‚СЊ СЃС‚Р°С‚СЊ РїСѓСЃС‚РѕР№.
 				ASSERT_TRUE(sqlStringCopy.empty());
 			else
-				// Если результат неуспешный, то строка не должна была перемещаться
+				// Р•СЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ РЅРµСѓСЃРїРµС€РЅС‹Р№, С‚Рѕ СЃС‚СЂРѕРєР° РЅРµ РґРѕР»Р¶РЅР° Р±С‹Р»Р° РїРµСЂРµРјРµС‰Р°С‚СЊСЃСЏ
 				ASSERT_EQ(sqlString, sqlStringCopy);
 		}
 	}

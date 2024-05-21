@@ -126,16 +126,16 @@ static const std::unordered_set<std::string> sqlKeywords({
 		"XMLSCHEMA", "XMLSERIALIZE", "XMLTABLE", "XMLTEXT", "XMLVALIDATE", "YEAR", "YES",
 		"ZONE"
 	}
-); ///< Ìàññèâ êëþ÷åâûõ ñëîâ SQL
+); ///< ÐœÐ°ÑÑÐ¸Ð² ÐºÐ»ÑŽÑ‡ÐµÐ²Ñ‹Ñ… ÑÐ»Ð¾Ð² SQL
 
 
 //------------------------------------------------------------------------------
 /**
-  Ýòî êëþ÷åâîå ñëîâî èç SQL
+  Ð­Ñ‚Ð¾ ÐºÐ»ÑŽÑ‡ÐµÐ²Ð¾Ðµ ÑÐ»Ð¾Ð²Ð¾ Ð¸Ð· SQL
 */
 //---
 bool IsSQLKeyword(const std::string & sourceStr)
 {
-	assert(sqlKeywords.size() == 841); // Ïðîâåðêà íà òî, ÷òî ÿ ïðàâèëüíî ñêîïèðîâàë êëþ÷åâûå ñëîâà
+	assert(sqlKeywords.size() == 841); // ÐŸÑ€Ð¾Ð²ÐµÑ€ÐºÐ° Ð½Ð° Ñ‚Ð¾, Ñ‡Ñ‚Ð¾ Ñ Ð¿Ñ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ð¾ ÑÐºÐ¾Ð¿Ð¸Ñ€Ð¾Ð²Ð°Ð» ÐºÐ»ÑŽÑ‡ÐµÐ²Ñ‹Ðµ ÑÐ»Ð¾Ð²Ð°
 	return sqlKeywords.find(utils::string::ToUpper(sourceStr)) != sqlKeywords.end();
 }

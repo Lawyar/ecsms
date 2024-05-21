@@ -4,14 +4,14 @@
 
 //------------------------------------------------------------------------------
 /**
-  Перевести строку в нижний регистр
+  РџРµСЂРµРІРµСЃС‚Рё СЃС‚СЂРѕРєСѓ РІ РЅРёР¶РЅРёР№ СЂРµРіРёСЃС‚СЂ
 */
 //---
 std::string utils::string::ToLower(const std::string & sourceStr)
 {
 	std::string str;
 	std::transform(sourceStr.begin(), sourceStr.end(), std::back_inserter(str),
-		// Это безопасный способ использования tolower
+		// Р­С‚Рѕ Р±РµР·РѕРїР°СЃРЅС‹Р№ СЃРїРѕСЃРѕР± РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ tolower
 		// (https://en.cppreference.com/w/cpp/string/byte/tolower)
 		[](char c) { return static_cast<char>(std::tolower(static_cast<unsigned char>(c))); });
 	return str;
@@ -20,14 +20,14 @@ std::string utils::string::ToLower(const std::string & sourceStr)
 
 //------------------------------------------------------------------------------
 /**
-  Перевести строку в верхний регистр
+  РџРµСЂРµРІРµСЃС‚Рё СЃС‚СЂРѕРєСѓ РІ РІРµСЂС…РЅРёР№ СЂРµРіРёСЃС‚СЂ
 */
 //---
 std::string utils::string::ToUpper(const std::string & sourceStr)
 {
 	std::string str;
 	std::transform(sourceStr.begin(), sourceStr.end(), std::back_inserter(str),
-		// Это безопасный способ использования toupper
+		// Р­С‚Рѕ Р±РµР·РѕРїР°СЃРЅС‹Р№ СЃРїРѕСЃРѕР± РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ toupper
 		// (https://en.cppreference.com/w/cpp/string/byte/toupper)
 		[](char c) { return static_cast<char>(std::toupper(static_cast<unsigned char>(c))); });
 	return str;
@@ -36,13 +36,13 @@ std::string utils::string::ToUpper(const std::string & sourceStr)
 
 //------------------------------------------------------------------------------
 /**
-  Строка содержит только цифры
+  РЎС‚СЂРѕРєР° СЃРѕРґРµСЂР¶РёС‚ С‚РѕР»СЊРєРѕ С†РёС„СЂС‹
 */
 //---
 bool utils::string::HasOnlyDigits(const std::string & str)
 {
 	return std::all_of(str.begin(), str.end(),
-		// Это безопасный способ использования isdigit
+		// Р­С‚Рѕ Р±РµР·РѕРїР°СЃРЅС‹Р№ СЃРїРѕСЃРѕР± РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ isdigit
 		// (https://en.cppreference.com/w/cpp/string/byte/isdigit)
 		[](char c) { return std::isdigit(static_cast<unsigned char>(c)); });
 }
@@ -50,10 +50,10 @@ bool utils::string::HasOnlyDigits(const std::string & str)
 
 //------------------------------------------------------------------------------
 /**
-	Замена всех подстрок
-	\param str Строка, в которой производится замена
-	\param before Подстрока, которую заменяем
-	\param after Подстрока, на которую заменяем
+	Р—Р°РјРµРЅР° РІСЃРµС… РїРѕРґСЃС‚СЂРѕРє
+	\param str РЎС‚СЂРѕРєР°, РІ РєРѕС‚РѕСЂРѕР№ РїСЂРѕРёР·РІРѕРґРёС‚СЃСЏ Р·Р°РјРµРЅР°
+	\param before РџРѕРґСЃС‚СЂРѕРєР°, РєРѕС‚РѕСЂСѓСЋ Р·Р°РјРµРЅСЏРµРј
+	\param after РџРѕРґСЃС‚СЂРѕРєР°, РЅР° РєРѕС‚РѕСЂСѓСЋ Р·Р°РјРµРЅСЏРµРј
 */
 //---
 void utils::string::ReplaceAll(std::string & str, const std::string & before, const std::string & after)
@@ -73,9 +73,9 @@ void utils::string::ReplaceAll(std::string & str, const std::string & before, co
 
 //------------------------------------------------------------------------------
 /**
-	Посчитать количество вхождений подстроки в строку
-	\param str Строка
-	\param substr Подстрока
+	РџРѕСЃС‡РёС‚Р°С‚СЊ РєРѕР»РёС‡РµСЃС‚РІРѕ РІС…РѕР¶РґРµРЅРёР№ РїРѕРґСЃС‚СЂРѕРєРё РІ СЃС‚СЂРѕРєСѓ
+	\param str РЎС‚СЂРѕРєР°
+	\param substr РџРѕРґСЃС‚СЂРѕРєР°
 */
 //---
 size_t utils::string::GetSubstringsCount(const std::string & str, const std::string & substr)

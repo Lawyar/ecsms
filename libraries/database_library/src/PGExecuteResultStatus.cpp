@@ -3,7 +3,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Конструктор
+  РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 */
 //---
 PGExecuteResultStatus::PGExecuteResultStatus(const PGresult * pgResult)
@@ -15,7 +15,7 @@ PGExecuteResultStatus::PGExecuteResultStatus(const PGresult * pgResult)
 
 //------------------------------------------------------------------------------
 /**
-  Получить статус
+  РџРѕР»СѓС‡РёС‚СЊ СЃС‚Р°С‚СѓСЃ
 */
 //---
 ResultStatus PGExecuteResultStatus::GetStatus() const
@@ -26,9 +26,9 @@ ResultStatus PGExecuteResultStatus::GetStatus() const
 
 //------------------------------------------------------------------------------
 /**
-  Получить сообщение об ошибке, связанное с командой
-  \return Сообщение об ошибке, связанное с командой,
-		  или пустую строку, если ошибки не произошло.
+  РџРѕР»СѓС‡РёС‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ РѕР± РѕС€РёР±РєРµ, СЃРІСЏР·Р°РЅРЅРѕРµ СЃ РєРѕРјР°РЅРґРѕР№
+  \return РЎРѕРѕР±С‰РµРЅРёРµ РѕР± РѕС€РёР±РєРµ, СЃРІСЏР·Р°РЅРЅРѕРµ СЃ РєРѕРјР°РЅРґРѕР№,
+		  РёР»Рё РїСѓСЃС‚СѓСЋ СЃС‚СЂРѕРєСѓ, РµСЃР»Рё РѕС€РёР±РєРё РЅРµ РїСЂРѕРёР·РѕС€Р»Рѕ.
 */
 //---
 std::string PGExecuteResultStatus::GetErrorMessage() const
@@ -44,7 +44,7 @@ std::string PGExecuteResultStatus::GetErrorMessage() const
 
 //------------------------------------------------------------------------------
 /**
-  Создать внутреннее представление ошибки
+  РЎРѕР·РґР°С‚СЊ РІРЅСѓС‚СЂРµРЅРЅРµРµ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµ РѕС€РёР±РєРё
 */
 //---
 PGExecuteResultStatus::InternalInfo PGExecuteResultStatus::createInternalInfo(ExecStatusType pqStatus)
@@ -52,32 +52,32 @@ PGExecuteResultStatus::InternalInfo PGExecuteResultStatus::createInternalInfo(Ex
 	InternalInfo internalInfo{ResultStatus::Unknown, std::string()};
 	switch (pqStatus)
 	{
-	case PGRES_EMPTY_QUERY: // Строка, отправленная серверу, была пустой
+	case PGRES_EMPTY_QUERY: // РЎС‚СЂРѕРєР°, РѕС‚РїСЂР°РІР»РµРЅРЅР°СЏ СЃРµСЂРІРµСЂСѓ, Р±С‹Р»Р° РїСѓСЃС‚РѕР№
 		internalInfo.status = ResultStatus::EmptyQuery;
 		break;
-	case PGRES_COMMAND_OK: // Успешное завершение команды, не возвращающей никаких данных
+	case PGRES_COMMAND_OK: // РЈСЃРїРµС€РЅРѕРµ Р·Р°РІРµСЂС€РµРЅРёРµ РєРѕРјР°РЅРґС‹, РЅРµ РІРѕР·РІСЂР°С‰Р°СЋС‰РµР№ РЅРёРєР°РєРёС… РґР°РЅРЅС‹С…
 		internalInfo.status = ResultStatus::OkWithoutData;
 		break;
-	case PGRES_TUPLES_OK: // Успешное завершение команды, возвращающей данные (такой, как SELECT или SHOW)
+	case PGRES_TUPLES_OK: // РЈСЃРїРµС€РЅРѕРµ Р·Р°РІРµСЂС€РµРЅРёРµ РєРѕРјР°РЅРґС‹, РІРѕР·РІСЂР°С‰Р°СЋС‰РµР№ РґР°РЅРЅС‹Рµ (С‚Р°РєРѕР№, РєР°Рє SELECT РёР»Рё SHOW)
 		internalInfo.status = ResultStatus::OkWithData;
 		break;
-	case PGRES_COPY_OUT: // Начат перенос данных Copy Out (с сервера)
-	case PGRES_COPY_IN: // Начат перенос данных Copy In (на сервер)
-	case PGRES_COPY_BOTH: // Начат перенос данных Copy In/Out (на сервер и с сервера)
+	case PGRES_COPY_OUT: // РќР°С‡Р°С‚ РїРµСЂРµРЅРѕСЃ РґР°РЅРЅС‹С… Copy Out (СЃ СЃРµСЂРІРµСЂР°)
+	case PGRES_COPY_IN: // РќР°С‡Р°С‚ РїРµСЂРµРЅРѕСЃ РґР°РЅРЅС‹С… Copy In (РЅР° СЃРµСЂРІРµСЂ)
+	case PGRES_COPY_BOTH: // РќР°С‡Р°С‚ РїРµСЂРµРЅРѕСЃ РґР°РЅРЅС‹С… Copy In/Out (РЅР° СЃРµСЂРІРµСЂ Рё СЃ СЃРµСЂРІРµСЂР°)
 		internalInfo.status = ResultStatus::InProgress;
 		break;
-	case PGRES_NONFATAL_ERROR: // Произошла не фатальная ошибка (уведомление или предупреждение)
+	case PGRES_NONFATAL_ERROR: // РџСЂРѕРёР·РѕС€Р»Р° РЅРµ С„Р°С‚Р°Р»СЊРЅР°СЏ РѕС€РёР±РєР° (СѓРІРµРґРѕРјР»РµРЅРёРµ РёР»Рё РїСЂРµРґСѓРїСЂРµР¶РґРµРЅРёРµ)
 		internalInfo.status = ResultStatus::NonFatalError;
 		break;
-	case PGRES_FATAL_ERROR: // Произошла фатальная ошибка
-	case PGRES_BAD_RESPONSE: // Ответ сервера не был распознан
+	case PGRES_FATAL_ERROR: // РџСЂРѕРёР·РѕС€Р»Р° С„Р°С‚Р°Р»СЊРЅР°СЏ РѕС€РёР±РєР°
+	case PGRES_BAD_RESPONSE: // РћС‚РІРµС‚ СЃРµСЂРІРµСЂР° РЅРµ Р±С‹Р» СЂР°СЃРїРѕР·РЅР°РЅ
 		internalInfo.status = ResultStatus::FatalError;
 		break;
 	case PGRES_SINGLE_TUPLE:
-		// Структура PGresult содержит только одну результирующую строку, возвращённую текущей командой.
-		// Этот статус имеет место только тогда, когда для данного запроса был выбран режим построчного
-		// вывода.
-		// Сейчас этот режим не реализован, поэтому этот статус не должен возвращаться.
+		// РЎС‚СЂСѓРєС‚СѓСЂР° PGresult СЃРѕРґРµСЂР¶РёС‚ С‚РѕР»СЊРєРѕ РѕРґРЅСѓ СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰СѓСЋ СЃС‚СЂРѕРєСѓ, РІРѕР·РІСЂР°С‰С‘РЅРЅСѓСЋ С‚РµРєСѓС‰РµР№ РєРѕРјР°РЅРґРѕР№.
+		// Р­С‚РѕС‚ СЃС‚Р°С‚СѓСЃ РёРјРµРµС‚ РјРµСЃС‚Рѕ С‚РѕР»СЊРєРѕ С‚РѕРіРґР°, РєРѕРіРґР° РґР»СЏ РґР°РЅРЅРѕРіРѕ Р·Р°РїСЂРѕСЃР° Р±С‹Р» РІС‹Р±СЂР°РЅ СЂРµР¶РёРј РїРѕСЃС‚СЂРѕС‡РЅРѕРіРѕ
+		// РІС‹РІРѕРґР°.
+		// РЎРµР№С‡Р°СЃ СЌС‚РѕС‚ СЂРµР¶РёРј РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅ, РїРѕСЌС‚РѕРјСѓ СЌС‚РѕС‚ СЃС‚Р°С‚СѓСЃ РЅРµ РґРѕР»Р¶РµРЅ РІРѕР·РІСЂР°С‰Р°С‚СЊСЃСЏ.
 		internalInfo.errorMessage = "[Error] The result status corresponds to the line-by-line output mode, "
 			"but the use of the line-by-line output mode is not implemented.";
 		internalInfo.status = ResultStatus::FatalError;

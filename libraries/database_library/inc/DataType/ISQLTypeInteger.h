@@ -8,26 +8,26 @@
 
 //------------------------------------------------------------------------------
 /**
-  Интерфейс SQL-типа данных "integer"
+  РРЅС‚РµСЂС„РµР№СЃ SQL-С‚РёРїР° РґР°РЅРЅС‹С… "integer"
 */
 //---
 class ISQLTypeInteger : public ISQLType
 {
 public:
-	/// Деструктор
+	/// Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
 	virtual ~ISQLTypeInteger() override = default;
 
 public:
-	/// Получить тип данных
+	/// РџРѕР»СѓС‡РёС‚СЊ С‚РёРї РґР°РЅРЅС‹С…
 	virtual SQLDataType GetType() const override final { return SQLDataType::Integer; }
 
 public:
-	/// Получить значение
+	/// РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
 	virtual std::optional<int> GetValue() const = 0;
-	/// Установить значение
+	/// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ
 	virtual void SetValue(int value) = 0;
 };
 
 
-/// Тип указателя на ISQLTypeInteger
+/// РўРёРї СѓРєР°Р·Р°С‚РµР»СЏ РЅР° ISQLTypeInteger
 using ISQLTypeIntegerPtr = std::shared_ptr<ISQLTypeInteger>;

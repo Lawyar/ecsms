@@ -4,7 +4,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Получить название таблицы сущностей
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ СЃСѓС‰РЅРѕСЃС‚РµР№
 */
 //---
 std::string PGExecutorEAVNamingRules::GetEntityTableName(const std::string & entityName) const
@@ -15,7 +15,7 @@ std::string PGExecutorEAVNamingRules::GetEntityTableName(const std::string & ent
 
 //------------------------------------------------------------------------------
 /**
-  Получить название таблицы аттрибутов
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ Р°С‚С‚СЂРёР±СѓС‚РѕРІ
 */
 //---
 std::string PGExecutorEAVNamingRules::GetAttributeTableName(const std::string & entityName,
@@ -27,7 +27,7 @@ std::string PGExecutorEAVNamingRules::GetAttributeTableName(const std::string & 
 
 //------------------------------------------------------------------------------
 /**
-  Получить название таблицы значений
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 */
 //---
 std::string PGExecutorEAVNamingRules::GetValueTableName(const std::string & entityName,
@@ -40,7 +40,7 @@ std::string PGExecutorEAVNamingRules::GetValueTableName(const std::string & enti
 
 //------------------------------------------------------------------------------
 /**
-  Получить название поля идентификатора таблицы сущностей
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° С‚Р°Р±Р»РёС†С‹ СЃСѓС‰РЅРѕСЃС‚РµР№
 */
 //---
 std::string PGExecutorEAVNamingRules::GetEntityTable_Short_IdField(const std::string & entityName) const
@@ -51,7 +51,7 @@ std::string PGExecutorEAVNamingRules::GetEntityTable_Short_IdField(const std::st
 
 //------------------------------------------------------------------------------
 /**
-  Получить название поля идентификатора таблицы атрибутов
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° С‚Р°Р±Р»РёС†С‹ Р°С‚СЂРёР±СѓС‚РѕРІ
 */
 //---
 std::string PGExecutorEAVNamingRules::GetAttributeTable_Short_IdField(const std::string & entityName,
@@ -63,7 +63,7 @@ std::string PGExecutorEAVNamingRules::GetAttributeTable_Short_IdField(const std:
 
 //------------------------------------------------------------------------------
 /**
-  Получить название поля навания таблицы атрибутов
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РЅР°РІР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ Р°С‚СЂРёР±СѓС‚РѕРІ
 */
 //---
 std::string PGExecutorEAVNamingRules::GetAttributeTable_Short_NameField(const std::string & entityName,
@@ -75,7 +75,7 @@ std::string PGExecutorEAVNamingRules::GetAttributeTable_Short_NameField(const st
 
 //------------------------------------------------------------------------------
 /**
-  Получить название поля идентификатора сущности таблицы значений
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° СЃСѓС‰РЅРѕСЃС‚Рё С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 */
 //---
 std::string PGExecutorEAVNamingRules::GetValueTable_Short_EntityIdField(const std::string & entityName,
@@ -87,7 +87,7 @@ std::string PGExecutorEAVNamingRules::GetValueTable_Short_EntityIdField(const st
 
 //------------------------------------------------------------------------------
 /**
-  Получить название поля идентификатора атрибута таблицы значений
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° Р°С‚СЂРёР±СѓС‚Р° С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 */
 //---
 std::string PGExecutorEAVNamingRules::GetValueTable_Short_AttributeIdField(const std::string & entityName,
@@ -99,7 +99,7 @@ std::string PGExecutorEAVNamingRules::GetValueTable_Short_AttributeIdField(const
 
 //------------------------------------------------------------------------------
 /**
-  Получить название поля значения таблицы значений
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ Р·РЅР°С‡РµРЅРёСЏ С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 */
 //---
 std::string PGExecutorEAVNamingRules::GetValueTable_Short_ValueField(const std::string & entityName,

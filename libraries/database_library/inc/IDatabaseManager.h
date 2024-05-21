@@ -10,33 +10,33 @@
 
 //------------------------------------------------------------------------------
 /**
-  Интерфейс менеджера базы данных
+  РРЅС‚РµСЂС„РµР№СЃ РјРµРЅРµРґР¶РµСЂР° Р±Р°Р·С‹ РґР°РЅРЅС‹С…
 */
 //---
 class IDatabaseManager
 {
 public:
-	/// Деструктор
+	/// Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
 	virtual ~IDatabaseManager() = default;
 public:
-	/// Получить соединение
+	/// РџРѕР»СѓС‡РёС‚СЊ СЃРѕРµРґРёРЅРµРЅРёРµ
 	virtual IConnectionPtr GetConnection(const std::string & connectionInfo) = 0;
 
-	/// Получить исполнитель EAV-запросов
+	/// РџРѕР»СѓС‡РёС‚СЊ РёСЃРїРѕР»РЅРёС‚РµР»СЊ EAV-Р·Р°РїСЂРѕСЃРѕРІ
 	virtual IExecutorEAVPtr GetExecutorEAV(const IConnectionPtr & connection) = 0;
 
-	/// Получить конвертер SQL-типов
+	/// РџРѕР»СѓС‡РёС‚СЊ РєРѕРЅРІРµСЂС‚РµСЂ SQL-С‚РёРїРѕРІ
 	virtual ISQLTypeConverterPtr GetSQLTypeConverter() const = 0;
 };
 
 
-/// Тип базы данных
+/// РўРёРї Р±Р°Р·С‹ РґР°РЅРЅС‹С…
 enum class DatabaseType
 {
 	PostgreSQL
 };
 
 
-/// Получить менеджер базы данных
+/// РџРѕР»СѓС‡РёС‚СЊ РјРµРЅРµРґР¶РµСЂ Р±Р°Р·С‹ РґР°РЅРЅС‹С…
 template<DatabaseType type = DatabaseType::PostgreSQL>
 extern IDatabaseManager & GetDatabaseManager();

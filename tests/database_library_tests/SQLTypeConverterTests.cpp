@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 /**
-  Тесты для ISQLTypeConverter
+  РўРµСЃС‚С‹ РґР»СЏ ISQLTypeConverter
 */
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -10,14 +10,14 @@
 
 #include <IDatabaseManager.h>
 
-/// Можем получить конвертер
+/// РњРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ РєРѕРЅРІРµСЂС‚РµСЂ
 TEST(SQLTypeConverter, CanGetConverter) {
 	auto && databaseManager = GetDatabaseManager();
 	ASSERT_NE(databaseManager.GetSQLTypeConverter(), nullptr);
 }
 
 
-/// Можем получить SQL-переменную
+/// РњРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ SQL-РїРµСЂРµРјРµРЅРЅСѓСЋ
 TEST(SQLTypeConverter, CanGetSQLVariable) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	for (int i = 0; i <= static_cast<int>(SQLDataType::LastValidType); ++i)
@@ -37,7 +37,7 @@ TEST(SQLTypeConverter, CanGetSQLVariable) {
 }
 
 
-/// Можем получить SQL-Integer
+/// РњРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ SQL-Integer
 TEST(SQLTypeConverter, CanGetSQLTypeInteger) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	auto sqlVar1 = converter->GetSQLTypeInteger();
@@ -56,7 +56,7 @@ TEST(SQLTypeConverter, CanGetSQLTypeInteger) {
 }
 
 
-/// Можем получить SQL-Text
+/// РњРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ SQL-Text
 TEST(SQLTypeConverter, CanGetSQLTypeText) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	auto sqlVar1 = converter->GetSQLTypeText();
@@ -74,7 +74,7 @@ TEST(SQLTypeConverter, CanGetSQLTypeText) {
 }
 
 
-/// Можем получить SQL-ByteArray
+/// РњРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ SQL-ByteArray
 TEST(SQLTypeConverter, CanGetSQLTypeByteArray) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	auto sqlVar1 = converter->GetSQLTypeByteArray();

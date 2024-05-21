@@ -5,7 +5,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Конструктор
+  РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 */
 //---
 PGSQLTypeRemoteFileId::PGSQLTypeRemoteFileId(const std::string & id)
@@ -16,7 +16,7 @@ PGSQLTypeRemoteFileId::PGSQLTypeRemoteFileId(const std::string & id)
 
 //------------------------------------------------------------------------------
 /**
-  Получить идентификатор
+  РџРѕР»СѓС‡РёС‚СЊ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ
 */
 //---
 const std::optional<std::string>& PGSQLTypeRemoteFileId::GetValue() const
@@ -27,7 +27,7 @@ const std::optional<std::string>& PGSQLTypeRemoteFileId::GetValue() const
 
 //------------------------------------------------------------------------------
 /**
-  Сконвертировать в строку
+  РЎРєРѕРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ РІ СЃС‚СЂРѕРєСѓ
 */
 //---
 std::optional<std::string> PGSQLTypeRemoteFileId::ToSQLString() const
@@ -38,7 +38,7 @@ std::optional<std::string> PGSQLTypeRemoteFileId::ToSQLString() const
 
 //------------------------------------------------------------------------------
 /**
-  Получить название SQL-типа
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ SQL-С‚РёРїР°
 */
 //---
 const std::string & PGSQLTypeRemoteFileId::GetTypeName() const
@@ -50,7 +50,7 @@ const std::string & PGSQLTypeRemoteFileId::GetTypeName() const
 
 //------------------------------------------------------------------------------
 /**
-  Прочитать значение из строки
+  РџСЂРѕС‡РёС‚Р°С‚СЊ Р·РЅР°С‡РµРЅРёРµ РёР· СЃС‚СЂРѕРєРё
 */
 //---
 bool PGSQLTypeRemoteFileId::ReadFromSQL(std::string && value)
@@ -64,7 +64,7 @@ bool PGSQLTypeRemoteFileId::ReadFromSQL(std::string && value)
 
 //------------------------------------------------------------------------------
 /**
-  Строка валидна для установки в объект
+  РЎС‚СЂРѕРєР° РІР°Р»РёРґРЅР° РґР»СЏ СѓСЃС‚Р°РЅРѕРІРєРё РІ РѕР±СЉРµРєС‚
 */
 //---
 bool PGSQLTypeRemoteFileId::isValid(const std::string & str)

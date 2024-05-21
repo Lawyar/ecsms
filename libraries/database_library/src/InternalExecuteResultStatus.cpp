@@ -2,7 +2,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Конструктор
+  РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 */
 //---
 InternalExecuteResultStatus::InternalExecuteResultStatus(ResultStatus status,
@@ -14,7 +14,7 @@ InternalExecuteResultStatus::InternalExecuteResultStatus(ResultStatus status,
 
 //------------------------------------------------------------------------------
 /**
-  Получить статус
+  РџРѕР»СѓС‡РёС‚СЊ СЃС‚Р°С‚СѓСЃ
 */
 //---
 ResultStatus InternalExecuteResultStatus::GetStatus() const
@@ -25,7 +25,7 @@ ResultStatus InternalExecuteResultStatus::GetStatus() const
 
 //------------------------------------------------------------------------------
 /**
-  Получить сообщение об ошибке
+  РџРѕР»СѓС‡РёС‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ РѕР± РѕС€РёР±РєРµ
 */
 //---
 std::string InternalExecuteResultStatus::GetErrorMessage() const
@@ -36,7 +36,7 @@ std::string InternalExecuteResultStatus::GetErrorMessage() const
 
 //------------------------------------------------------------------------------
 /**
-  Получить статус внутренней ошибки
+  РџРѕР»СѓС‡РёС‚СЊ СЃС‚Р°С‚СѓСЃ РІРЅСѓС‚СЂРµРЅРЅРµР№ РѕС€РёР±РєРё
 */
 //---
 IExecuteResultStatusPtr InternalExecuteResultStatus::GetInternalError(const std::string & errorMessage, ResultStatus status)
@@ -47,7 +47,7 @@ IExecuteResultStatusPtr InternalExecuteResultStatus::GetInternalError(const std:
 
 //------------------------------------------------------------------------------
 /**
-  Получить успешный статус
+  РџРѕР»СѓС‡РёС‚СЊ СѓСЃРїРµС€РЅС‹Р№ СЃС‚Р°С‚СѓСЃ
 */
 //---
 IExecuteResultStatusPtr InternalExecuteResultStatus::GetSuccessStatus(ResultStatus status)

@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 /**
-  Тесты для ISQLType
+  РўРµСЃС‚С‹ РґР»СЏ ISQLType
 */
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -13,7 +13,7 @@
 static const std::string testString = "`1234567890-=qwertyuiop[]\\asdfghjkl;'zxcvbnm,./ ~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?\t\r\n";
 static const std::string testStringToSQLString = "'`1234567890-=qwertyuiop[]\\asdfghjkl;''zxcvbnm,./ ~!@#$%^&*()_+QWERTYUIOP{}|ASDFGHJKL:\"ZXCVBNM<>?\t\r\n'";
 
-/// Тесты ISQLTypeText::GetValue и ISQLTypeText::SetValue
+/// РўРµСЃС‚С‹ ISQLTypeText::GetValue Рё ISQLTypeText::SetValue
 TEST(SQLTypeText, GetSetValue) {
 
 	const std::string invalidString1 = std::string("abc\0qwe", 7);
@@ -22,24 +22,24 @@ TEST(SQLTypeText, GetSetValue) {
 
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	std::vector<std::tuple<
-		ISQLTypeTextPtr, // SQL-переменная
-		std::optional<std::string>, // Её ожидаемое значение
-		std::string, // Аргумент для SetValue
-		std::optional<std::string> // Ожидаемое значение после SetValue
+		ISQLTypeTextPtr, // SQL-РїРµСЂРµРјРµРЅРЅР°СЏ
+		std::optional<std::string>, // Р•С‘ РѕР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ
+		std::string, // РђСЂРіСѓРјРµРЅС‚ РґР»СЏ SetValue
+		std::optional<std::string> // РћР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕСЃР»Рµ SetValue
 	>> testData = {
-			// Конструктор с валидными данными и SetValue с валидными данными
+			// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё Рё SetValue СЃ РІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё
 			{converter->GetSQLTypeText(),							std::nullopt,		"abc",						"abc"},
 			{converter->GetSQLTypeText(""),							"",					testString,					testString},
 			{converter->GetSQLTypeText("simple string"),			"simple string",	"1 simple string",			"1 simple string"},
 			{converter->GetSQLTypeText(std::string(testString)),	testString,			"",							""},
 	
-			// Конструктор с валидными данными и SetValue с невалидными данными
+			// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё Рё SetValue СЃ РЅРµРІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё
 			{converter->GetSQLTypeText(),							std::nullopt,		invalidString1,				std::nullopt},
 			{converter->GetSQLTypeText(""),							"",					invalidString2,				std::nullopt},
 			{converter->GetSQLTypeText("simple string"),			"simple string",	invalidString3,				std::nullopt},
 			{converter->GetSQLTypeText(std::string(testString)),	testString,			invalidString1,				std::nullopt},
 	
-			// Конструктор с невалидными данными и SetValue с валидными и невалидными данными
+			// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РЅРµРІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё Рё SetValue СЃ РІР°Р»РёРґРЅС‹РјРё Рё РЅРµРІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё
 			{converter->GetSQLTypeText(std::string(invalidString1)),	std::nullopt,	invalidString1,		std::nullopt},
 			{converter->GetSQLTypeText(std::string(invalidString2)),	std::nullopt,	testString,			testString},
 			{converter->GetSQLTypeText(std::string(invalidString3)),	std::nullopt,	invalidString2,		std::nullopt}
@@ -51,8 +51,8 @@ TEST(SQLTypeText, GetSetValue) {
 		std::string setValueArgCopy = setValueArg;
 		sqlVar->SetValue(std::move(setValueArgCopy));
 		ASSERT_EQ(sqlVar->GetValue(), expectedValueAfterSetValue);
-		// Проверка, что при успехе SetValue значение передаваемого аргумента очистилось,
-		// а при неуспехе - не изменилось
+		// РџСЂРѕРІРµСЂРєР°, С‡С‚Рѕ РїСЂРё СѓСЃРїРµС…Рµ SetValue Р·РЅР°С‡РµРЅРёРµ РїРµСЂРµРґР°РІР°РµРјРѕРіРѕ Р°СЂРіСѓРјРµРЅС‚Р° РѕС‡РёСЃС‚РёР»РѕСЃСЊ,
+		// Р° РїСЂРё РЅРµСѓСЃРїРµС…Рµ - РЅРµ РёР·РјРµРЅРёР»РѕСЃСЊ
 		if (sqlVar->GetValue().has_value())
 			ASSERT_TRUE(setValueArgCopy.empty());
 		else
@@ -61,7 +61,7 @@ TEST(SQLTypeText, GetSetValue) {
 }
 
 
-/// Тесты ISQLTypeText::GetType
+/// РўРµСЃС‚С‹ ISQLTypeText::GetType
 TEST(SQLTypeText, GetType) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	for (auto && sqlVar : {converter->GetSQLTypeText(), converter->GetSQLTypeText(""),
@@ -73,7 +73,7 @@ TEST(SQLTypeText, GetType) {
 }
 
 
-/// Тесты ISQLTypeText::GetTypeName
+/// РўРµСЃС‚С‹ ISQLTypeText::GetTypeName
 TEST(SQLTypeText, GetTypeName) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	for (auto && sqlVar : { converter->GetSQLTypeText(), converter->GetSQLTypeText(""),
@@ -85,12 +85,12 @@ TEST(SQLTypeText, GetTypeName) {
 }
 
 
-/// Тесты ISQLTypeText::ToSQLString
+/// РўРµСЃС‚С‹ ISQLTypeText::ToSQLString
 TEST(SQLTypeText, ToSQLString) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 	std::vector<std::tuple<
-		ISQLTypeTextPtr, // SQL переменная
-		std::optional<std::string> // Ожидаемое значение вызова ToSQLString
+		ISQLTypeTextPtr, // SQL РїРµСЂРµРјРµРЅРЅР°СЏ
+		std::optional<std::string> // РћР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ РІС‹Р·РѕРІР° ToSQLString
 		>> testData = {
 			{converter->GetSQLTypeText(), std::nullopt},
 			{converter->GetSQLTypeText(std::string("invalid string\0", 15)), std::nullopt},
@@ -110,7 +110,7 @@ TEST(SQLTypeText, ToSQLString) {
 }
 
 
-/// Тесты ISQLTypeText::ReadFromSQL
+/// РўРµСЃС‚С‹ ISQLTypeText::ReadFromSQL
 TEST(SQLTypeText, ReadFromSQL) {
 	auto && converter = GetDatabaseManager().GetSQLTypeConverter();
 
@@ -119,24 +119,24 @@ TEST(SQLTypeText, ReadFromSQL) {
 	const std::string invalidString3 = std::string("simple string\0", 14);
 
 	std::vector<std::tuple<
-		ISQLTypeTextPtr, // SQL-переменная
-		std::string, // Аргумент для ReadFromSQL
-		bool, // Ожидаемое значение ReadFromSQL
-		std::optional<std::string> // Ожидаемое значение после ReadFromSQL
+		ISQLTypeTextPtr, // SQL-РїРµСЂРµРјРµРЅРЅР°СЏ
+		std::string, // РђСЂРіСѓРјРµРЅС‚ РґР»СЏ ReadFromSQL
+		bool, // РћР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ ReadFromSQL
+		std::optional<std::string> // РћР¶РёРґР°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРѕСЃР»Рµ ReadFromSQL
 		>> testData = {
-		// Конструктор с валидными данными и ReadFromSQL с валидными данными
+		// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё Рё ReadFromSQL СЃ РІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё
 		{converter->GetSQLTypeText(),							"'abc'",					true,	"'abc'"},
 		{converter->GetSQLTypeText(""),							testString,					true,	testString},
 		{converter->GetSQLTypeText("simple string"),			"1 simple string",			true,	"1 simple string"},
 		{converter->GetSQLTypeText(std::string(testString)),	"",							true,	""},
 
-		// Конструктор с валидными данными и ReadFromSQL с невалидными данными
+		// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё Рё ReadFromSQL СЃ РЅРµРІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё
 		{converter->GetSQLTypeText(),							invalidString1,				false,	std::nullopt},
 		{converter->GetSQLTypeText(""),							invalidString2,				false,	std::nullopt},
 		{converter->GetSQLTypeText("simple string"),			invalidString3,				false,	std::nullopt},
 		{converter->GetSQLTypeText(std::string(testString)),	invalidString1,				false,	std::nullopt},
 
-		// Конструктор с невалидными данными и ReadFromSQL с валидными и невалидными данными
+		// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ СЃ РЅРµРІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё Рё ReadFromSQL СЃ РІР°Р»РёРґРЅС‹РјРё Рё РЅРµРІР°Р»РёРґРЅС‹РјРё РґР°РЅРЅС‹РјРё
 		{converter->GetSQLTypeText(std::string(invalidString1)),	invalidString1,		false,	std::nullopt},
 		{converter->GetSQLTypeText(std::string(invalidString2)),	testString,			true,	testString},
 		{converter->GetSQLTypeText(std::string(invalidString3)),	invalidString2,		false,	std::nullopt}
@@ -149,10 +149,10 @@ TEST(SQLTypeText, ReadFromSQL) {
 		ASSERT_EQ(result, expectedReadFromSQLResult);
 		ASSERT_EQ(sqlVar->GetValue(), expectedValueAfterReadFromSQL);
 		if (result)
-			// Если результат успешный, то строка должна была переместиться. То есть стать пустой.
+			// Р•СЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ СѓСЃРїРµС€РЅС‹Р№, С‚Рѕ СЃС‚СЂРѕРєР° РґРѕР»Р¶РЅР° Р±С‹Р»Р° РїРµСЂРµРјРµСЃС‚РёС‚СЊСЃСЏ. РўРѕ РµСЃС‚СЊ СЃС‚Р°С‚СЊ РїСѓСЃС‚РѕР№.
 			ASSERT_TRUE(readFromSQLArgCopy.empty());
 		else
-			// Если результат неуспешный, то строка не должна была перемещаться.
+			// Р•СЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ РЅРµСѓСЃРїРµС€РЅС‹Р№, С‚Рѕ СЃС‚СЂРѕРєР° РЅРµ РґРѕР»Р¶РЅР° Р±С‹Р»Р° РїРµСЂРµРјРµС‰Р°С‚СЊСЃСЏ.
 			ASSERT_EQ(readFromSQLArg, readFromSQLArgCopy);
 	}
 }

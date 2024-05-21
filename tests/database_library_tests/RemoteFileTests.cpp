@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 /**
-  Тесты для RemoteFile
+  РўРµСЃС‚С‹ РґР»СЏ RemoteFile
 */
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -17,7 +17,7 @@
 #include <cstdlib>
 #include <ctime>
 
-// Тест для проверок с валидным файлом
+// РўРµСЃС‚ РґР»СЏ РїСЂРѕРІРµСЂРѕРє СЃ РІР°Р»РёРґРЅС‹Рј С„Р°Р№Р»РѕРј
 class TestWithValidRemoteFile : public ::testing::Test
 {
 protected:
@@ -25,14 +25,14 @@ protected:
 	IFilePtr remoteFilePtr;
 
 protected:
-	// Действия в начале теста
+	// Р”РµР№СЃС‚РІРёСЏ РІ РЅР°С‡Р°Р»Рµ С‚РµСЃС‚Р°
 	virtual void SetUp() override
 	{
 		connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		remoteFilePtr = connection->CreateRemoteFile();
 	}
 
-	// Действия в конце теста
+	// Р”РµР№СЃС‚РІРёСЏ РІ РєРѕРЅС†Рµ С‚РµСЃС‚Р°
 	virtual void TearDown() override
 	{
 		ASSERT_TRUE(connection->DeleteRemoteFile(remoteFilePtr->GetFileName()));
@@ -44,10 +44,10 @@ protected:
 };
 
 
-static const int _InitializeSeed = (srand(time(nullptr)), 0); ///< Инициализация семени рандома
+static const int _InitializeSeed = (srand(time(nullptr)), 0); ///< РРЅРёС†РёР°Р»РёР·Р°С†РёСЏ СЃРµРјРµРЅРё СЂР°РЅРґРѕРјР°
 
 
-///  Сгенерировать массив байтов
+///  РЎРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РјР°СЃСЃРёРІ Р±Р°Р№С‚РѕРІ
 static std::vector<char> GenerateBytes(size_t size)
 {
 	std::vector<char> arr(size);
@@ -57,10 +57,10 @@ static std::vector<char> GenerateBytes(size_t size)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// Тесты режимов открытия
+// РўРµСЃС‚С‹ СЂРµР¶РёРјРѕРІ РѕС‚РєСЂС‹С‚РёСЏ
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Можно писать файл, если он открыт на запись
+/// РњРѕР¶РЅРѕ РїРёСЃР°С‚СЊ С„Р°Р№Р», РµСЃР»Рё РѕРЅ РѕС‚РєСЂС‹С‚ РЅР° Р·Р°РїРёСЃСЊ
 TEST_F(TestWithValidRemoteFile, CanWriteWhenFileOpenedForWriting)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -75,7 +75,7 @@ TEST_F(TestWithValidRemoteFile, CanWriteWhenFileOpenedForWriting)
 }
 
 
-/// Можно писать файл, если он открыт на дозапись
+/// РњРѕР¶РЅРѕ РїРёСЃР°С‚СЊ С„Р°Р№Р», РµСЃР»Рё РѕРЅ РѕС‚РєСЂС‹С‚ РЅР° РґРѕР·Р°РїРёСЃСЊ
 TEST_F(TestWithValidRemoteFile, CanWriteWhenFileOpenedForAppending)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -90,7 +90,7 @@ TEST_F(TestWithValidRemoteFile, CanWriteWhenFileOpenedForAppending)
 }
 
 
-/// Нельзя писать в файл, если он открыт на чтение
+/// РќРµР»СЊР·СЏ РїРёСЃР°С‚СЊ РІ С„Р°Р№Р», РµСЃР»Рё РѕРЅ РѕС‚РєСЂС‹С‚ РЅР° С‡С‚РµРЅРёРµ
 TEST_F(TestWithValidRemoteFile, CantWriteWhenFileOpenedForReading)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -105,7 +105,7 @@ TEST_F(TestWithValidRemoteFile, CantWriteWhenFileOpenedForReading)
 }
 
 
-/// Можно читать из файла, если он открыт на чтение
+/// РњРѕР¶РЅРѕ С‡РёС‚Р°С‚СЊ РёР· С„Р°Р№Р»Р°, РµСЃР»Рё РѕРЅ РѕС‚РєСЂС‹С‚ РЅР° С‡С‚РµРЅРёРµ
 TEST_F(TestWithValidRemoteFile, CanReadWhenFileOpenedForReading)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -118,7 +118,7 @@ TEST_F(TestWithValidRemoteFile, CanReadWhenFileOpenedForReading)
 }
 
 
-/// Нельзя читать из файла, если он открыт на запись
+/// РќРµР»СЊР·СЏ С‡РёС‚Р°С‚СЊ РёР· С„Р°Р№Р»Р°, РµСЃР»Рё РѕРЅ РѕС‚РєСЂС‹С‚ РЅР° Р·Р°РїРёСЃСЊ
 TEST_F(TestWithValidRemoteFile, CantReadWhenFileOpenedForWriting)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -131,7 +131,7 @@ TEST_F(TestWithValidRemoteFile, CantReadWhenFileOpenedForWriting)
 }
 
 
-/// Нельзя читать из файла, если он открыт на дозапись
+/// РќРµР»СЊР·СЏ С‡РёС‚Р°С‚СЊ РёР· С„Р°Р№Р»Р°, РµСЃР»Рё РѕРЅ РѕС‚РєСЂС‹С‚ РЅР° РґРѕР·Р°РїРёСЃСЊ
 TEST_F(TestWithValidRemoteFile, CantReadWhenFileOpenedForAppending)
 {
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
@@ -144,14 +144,14 @@ TEST_F(TestWithValidRemoteFile, CantReadWhenFileOpenedForAppending)
 }
 
 
-/// Режим открытия на запись прочищает файл, созданный в рамках той же транзакции
+/// Р РµР¶РёРј РѕС‚РєСЂС‹С‚РёСЏ РЅР° Р·Р°РїРёСЃСЊ РїСЂРѕС‡РёС‰Р°РµС‚ С„Р°Р№Р», СЃРѕР·РґР°РЅРЅС‹Р№ РІ СЂР°РјРєР°С… С‚РѕР№ Р¶Рµ С‚СЂР°РЅР·Р°РєС†РёРё
 TEST_F(TestWithValidRemoteFile, WriteModeClearsFileCreatedByTheSameTransaction)
 {
 	constexpr size_t size = 1000;
 
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	{
-		// Сначала что-то запишем (чтобы было что прочищать)
+		// РЎРЅР°С‡Р°Р»Р° С‡С‚Рѕ-С‚Рѕ Р·Р°РїРёС€РµРј (С‡С‚РѕР±С‹ Р±С‹Р»Рѕ С‡С‚Рѕ РїСЂРѕС‡РёС‰Р°С‚СЊ)
 		auto bytes1 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 		size_t numberOfBytesWritten = 0;
@@ -161,13 +161,13 @@ TEST_F(TestWithValidRemoteFile, WriteModeClearsFileCreatedByTheSameTransaction)
 	}
 
 	{
-		// Откроем файл на запись, чтобы он прочистился
+		// РћС‚РєСЂРѕРµРј С„Р°Р№Р» РЅР° Р·Р°РїРёСЃСЊ, С‡С‚РѕР±С‹ РѕРЅ РїСЂРѕС‡РёСЃС‚РёР»СЃСЏ
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 		ASSERT_TRUE(remoteFilePtr->Close());
 	}
 
 	{
-		// Проверим, что файл прочистился
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С„Р°Р№Р» РїСЂРѕС‡РёСЃС‚РёР»СЃСЏ
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 		std::vector<char> buffer;
 		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, buffer));
@@ -178,13 +178,13 @@ TEST_F(TestWithValidRemoteFile, WriteModeClearsFileCreatedByTheSameTransaction)
 }
 
 
-/// Режим открытия на запись прочищает файл, созданный в предыдущей транзакции
+/// Р РµР¶РёРј РѕС‚РєСЂС‹С‚РёСЏ РЅР° Р·Р°РїРёСЃСЊ РїСЂРѕС‡РёС‰Р°РµС‚ С„Р°Р№Р», СЃРѕР·РґР°РЅРЅС‹Р№ РІ РїСЂРµРґС‹РґСѓС‰РµР№ С‚СЂР°РЅР·Р°РєС†РёРё
 TEST_F(TestWithValidRemoteFile, WriteModeClearsFileCreatedInPreviousTransaction)
 {
 	constexpr size_t size = 1000;
 
 	{
-		// Сначала что-то запишем (чтобы было что прочищать)
+		// РЎРЅР°С‡Р°Р»Р° С‡С‚Рѕ-С‚Рѕ Р·Р°РїРёС€РµРј (С‡С‚РѕР±С‹ Р±С‹Р»Рѕ С‡С‚Рѕ РїСЂРѕС‡РёС‰Р°С‚СЊ)
 		ASSERT_FALSE(connection->BeginTransaction()->HasError());
 		auto bytes1 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
@@ -196,7 +196,7 @@ TEST_F(TestWithValidRemoteFile, WriteModeClearsFileCreatedInPreviousTransaction)
 	}
 
 	{
-		// Откроем файл на запись, чтобы он прочистился
+		// РћС‚РєСЂРѕРµРј С„Р°Р№Р» РЅР° Р·Р°РїРёСЃСЊ, С‡С‚РѕР±С‹ РѕРЅ РїСЂРѕС‡РёСЃС‚РёР»СЃСЏ
 		ASSERT_FALSE(connection->BeginTransaction()->HasError());
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 		ASSERT_TRUE(remoteFilePtr->Close());
@@ -206,7 +206,7 @@ TEST_F(TestWithValidRemoteFile, WriteModeClearsFileCreatedInPreviousTransaction)
 
 	{
 		ASSERT_FALSE(connection->BeginTransaction()->HasError());
-		// Проверим, что файл прочистился
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С„Р°Р№Р» РїСЂРѕС‡РёСЃС‚РёР»СЃСЏ
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 		std::vector<char> buffer;
 		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, buffer));
@@ -217,7 +217,7 @@ TEST_F(TestWithValidRemoteFile, WriteModeClearsFileCreatedInPreviousTransaction)
 }
 
 
-/// Режим открытия на дозапись дописывает файл, созданный в рамках той же транзакции
+/// Р РµР¶РёРј РѕС‚РєСЂС‹С‚РёСЏ РЅР° РґРѕР·Р°РїРёСЃСЊ РґРѕРїРёСЃС‹РІР°РµС‚ С„Р°Р№Р», СЃРѕР·РґР°РЅРЅС‹Р№ РІ СЂР°РјРєР°С… С‚РѕР№ Р¶Рµ С‚СЂР°РЅР·Р°РєС†РёРё
 TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedByTheSameTransaction)
 {
 	constexpr size_t size = 1000;
@@ -226,7 +226,7 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedByTheSameTransaction
 
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	{
-		// Сначала что-то запишем
+		// РЎРЅР°С‡Р°Р»Р° С‡С‚Рѕ-С‚Рѕ Р·Р°РїРёС€РµРј
 		bytes1 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 		size_t numberOfBytesWritten = 0;
@@ -236,7 +236,7 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedByTheSameTransaction
 	}
 
 	{
-		// Откроем файл на дозапись
+		// РћС‚РєСЂРѕРµРј С„Р°Р№Р» РЅР° РґРѕР·Р°РїРёСЃСЊ
 		bytes2 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
 		size_t numberOfBytesWritten = 0;
@@ -246,7 +246,7 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedByTheSameTransaction
 	}
 
 	{
-		// Проверим, что файл дополнился
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С„Р°Р№Р» РґРѕРїРѕР»РЅРёР»СЃСЏ
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 		std::vector<char> buffer;
 		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, buffer));
@@ -261,7 +261,7 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedByTheSameTransaction
 }
 
 
-/// Режим открытия на дозапись дописывает файл, созданный в предыдущей транзакции
+/// Р РµР¶РёРј РѕС‚РєСЂС‹С‚РёСЏ РЅР° РґРѕР·Р°РїРёСЃСЊ РґРѕРїРёСЃС‹РІР°РµС‚ С„Р°Р№Р», СЃРѕР·РґР°РЅРЅС‹Р№ РІ РїСЂРµРґС‹РґСѓС‰РµР№ С‚СЂР°РЅР·Р°РєС†РёРё
 TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedInPreviousTransaction)
 {
 	constexpr size_t size = 1000;
@@ -270,7 +270,7 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedInPreviousTransactio
 
 	{
 		ASSERT_FALSE(connection->BeginTransaction()->HasError());
-		// Сначала что-то запишем
+		// РЎРЅР°С‡Р°Р»Р° С‡С‚Рѕ-С‚Рѕ Р·Р°РїРёС€РµРј
 		bytes1 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 		size_t numberOfBytesWritten = 0;
@@ -282,7 +282,7 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedInPreviousTransactio
 
 	{
 		ASSERT_FALSE(connection->BeginTransaction()->HasError());
-		// Откроем файл на дозапись
+		// РћС‚РєСЂРѕРµРј С„Р°Р№Р» РЅР° РґРѕР·Р°РїРёСЃСЊ
 		bytes2 = GenerateBytes(size);
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
 		size_t numberOfBytesWritten = 0;
@@ -294,7 +294,7 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedInPreviousTransactio
 
 	{
 		ASSERT_FALSE(connection->BeginTransaction()->HasError());
-		// Проверим, что файл дополнился
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С„Р°Р№Р» РґРѕРїРѕР»РЅРёР»СЃСЏ
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 		std::vector<char> buffer;
 		ASSERT_TRUE(remoteFilePtr->ReadBytes(size, buffer));
@@ -310,16 +310,16 @@ TEST_F(TestWithValidRemoteFile, AppendModeAppendsFileCreatedInPreviousTransactio
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Тесты методов чтения/записи
+// РўРµСЃС‚С‹ РјРµС‚РѕРґРѕРІ С‡С‚РµРЅРёСЏ/Р·Р°РїРёСЃРё
 ////////////////////////////////////////////////////////////////////////////////
 
 
-/// Записанные в файл байты можно прочесть
+/// Р—Р°РїРёСЃР°РЅРЅС‹Рµ РІ С„Р°Р№Р» Р±Р°Р№С‚С‹ РјРѕР¶РЅРѕ РїСЂРѕС‡РµСЃС‚СЊ
 TEST_F(TestWithValidRemoteFile, CanReadAfterWriting)
 {
 	constexpr size_t size = 1000;
 
-	// Запишем байты
+	// Р—Р°РїРёС€РµРј Р±Р°Р№С‚С‹
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 
@@ -330,7 +330,7 @@ TEST_F(TestWithValidRemoteFile, CanReadAfterWriting)
 	ASSERT_TRUE(remoteFilePtr->Close());
 	ASSERT_FALSE(connection->CommitTransaction()->HasError());
 
-	// Прочитаем байты
+	// РџСЂРѕС‡РёС‚Р°РµРј Р±Р°Р№С‚С‹
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	ASSERT_TRUE(remoteFilePtr->Open({ FileOpenMode::Read }));
 
@@ -341,7 +341,7 @@ TEST_F(TestWithValidRemoteFile, CanReadAfterWriting)
 	}
 	{
 		std::vector<char> buffer;
-		// Проверим, что файл кончился
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С„Р°Р№Р» РєРѕРЅС‡РёР»СЃСЏ
 		ASSERT_TRUE(remoteFilePtr->ReadBytes(1, buffer));
 		ASSERT_TRUE(buffer.empty());
 	}
@@ -350,8 +350,8 @@ TEST_F(TestWithValidRemoteFile, CanReadAfterWriting)
 }
 
 
-/// Можно дописать данные в файл в рамках одного сеанса работы с файлом в рамках одной транзакции
-/// в режиме открытия на запись
+/// РњРѕР¶РЅРѕ РґРѕРїРёСЃР°С‚СЊ РґР°РЅРЅС‹Рµ РІ С„Р°Р№Р» РІ СЂР°РјРєР°С… РѕРґРЅРѕРіРѕ СЃРµР°РЅСЃР° СЂР°Р±РѕС‚С‹ СЃ С„Р°Р№Р»РѕРј РІ СЂР°РјРєР°С… РѕРґРЅРѕР№ С‚СЂР°РЅР·Р°РєС†РёРё
+/// РІ СЂРµР¶РёРјРµ РѕС‚РєСЂС‹С‚РёСЏ РЅР° Р·Р°РїРёСЃСЊ
 TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWithWriteMode)
 {
 	constexpr size_t size = 1000;
@@ -359,13 +359,13 @@ TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWith
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 
-	// Запишем байты
+	// Р—Р°РїРёС€РµРј Р±Р°Р№С‚С‹
 	auto bytes1 = GenerateBytes(size);
 	size_t numberOfBytesWritten = 0;
 	ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes1, &numberOfBytesWritten));
 	ASSERT_EQ(numberOfBytesWritten, size);
 
-	// Запишем ещё байты
+	// Р—Р°РїРёС€РµРј РµС‰С‘ Р±Р°Р№С‚С‹
 	auto bytes2 = GenerateBytes(size);
 	numberOfBytesWritten = 1;
 	ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes2, &numberOfBytesWritten));
@@ -373,7 +373,7 @@ TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWith
 
 	ASSERT_TRUE(remoteFilePtr->Close());
 
-	// Прочитаем байты
+	// РџСЂРѕС‡РёС‚Р°РµРј Р±Р°Р№С‚С‹
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 	{
 		std::vector<char> readBytes;
@@ -387,7 +387,7 @@ TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWith
 	}
 	{
 		std::vector<char> readBytes;
-		// Проверим, что файл кончился
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С„Р°Р№Р» РєРѕРЅС‡РёР»СЃСЏ
 		ASSERT_TRUE(remoteFilePtr->ReadBytes(1, readBytes));
 		ASSERT_TRUE(readBytes.empty());
 	}
@@ -396,8 +396,8 @@ TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWith
 }
 
 
-/// Можно дописать данные в файл в рамках одного сеанса работы с файлом в рамках одной транзакции
-/// в режиме открытия на дозапись
+/// РњРѕР¶РЅРѕ РґРѕРїРёСЃР°С‚СЊ РґР°РЅРЅС‹Рµ РІ С„Р°Р№Р» РІ СЂР°РјРєР°С… РѕРґРЅРѕРіРѕ СЃРµР°РЅСЃР° СЂР°Р±РѕС‚С‹ СЃ С„Р°Р№Р»РѕРј РІ СЂР°РјРєР°С… РѕРґРЅРѕР№ С‚СЂР°РЅР·Р°РєС†РёРё
+/// РІ СЂРµР¶РёРјРµ РѕС‚РєСЂС‹С‚РёСЏ РЅР° РґРѕР·Р°РїРёСЃСЊ
 TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWithAppendMode)
 {
 	constexpr size_t size = 1000;
@@ -405,20 +405,20 @@ TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWith
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
 
-	// Запишем байты
+	// Р—Р°РїРёС€РµРј Р±Р°Р№С‚С‹
 	auto bytes1 = GenerateBytes(size);
 	size_t numberOfBytesWritten = 0;
 	ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes1, &numberOfBytesWritten));
 	ASSERT_EQ(numberOfBytesWritten, size);
 
-	// Запишем ещё байты
+	// Р—Р°РїРёС€РµРј РµС‰С‘ Р±Р°Р№С‚С‹
 	auto bytes2 = GenerateBytes(size);
 	ASSERT_TRUE(remoteFilePtr->WriteBytes(bytes2, &numberOfBytesWritten));
 	ASSERT_EQ(numberOfBytesWritten, size);
 
 	ASSERT_TRUE(remoteFilePtr->Close());
 
-	// Прочитаем байты
+	// РџСЂРѕС‡РёС‚Р°РµРј Р±Р°Р№С‚С‹
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 	{
 		std::vector<char> readBytes;
@@ -432,7 +432,7 @@ TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWith
 	}
 	{
 		std::vector<char> readBytes;
-		// Проверим, что файл кончился
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С„Р°Р№Р» РєРѕРЅС‡РёР»СЃСЏ
 		ASSERT_TRUE(remoteFilePtr->ReadBytes(1, readBytes));
 		ASSERT_TRUE(readBytes.empty());
 	}
@@ -441,7 +441,7 @@ TEST_F(TestWithValidRemoteFile, CanAddDataToFileInOneSessionInOneTransactionWith
 }
 
 
-///  Сгенерировать быстро массив байтов
+///  РЎРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ Р±С‹СЃС‚СЂРѕ РјР°СЃСЃРёРІ Р±Р°Р№С‚РѕРІ
 static std::vector<char> FastGenerateBytes(size_t count, const int * seed = nullptr)
 {
 	static int next = 0;
@@ -450,7 +450,7 @@ static std::vector<char> FastGenerateBytes(size_t count, const int * seed = null
 
 	next = next * 1103515245 + 12345;
 
-	// Дополним до границы int
+	// Р”РѕРїРѕР»РЅРёРј РґРѕ РіСЂР°РЅРёС†С‹ int
 	std::vector<char> arr(count % sizeof(int) == 0 ? count : count + sizeof(int) - count % sizeof(int));
 	for (size_t i = 0; i < count / 4; ++i)
 	{
@@ -462,26 +462,26 @@ static std::vector<char> FastGenerateBytes(size_t count, const int * seed = null
 }
 
 
-/// Можно записать и прочитать большой объем данных
+/// РњРѕР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ Рё РїСЂРѕС‡РёС‚Р°С‚СЊ Р±РѕР»СЊС€РѕР№ РѕР±СЉРµРј РґР°РЅРЅС‹С…
 TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 {
-	// Запишем и прочитаем большой объем данных
-	static constexpr size_t c_blockSize = 50'000'000ULL; ///< 50 МБ
-	static constexpr size_t c_blocksCount = 4; ///< 4 блока
+	// Р—Р°РїРёС€РµРј Рё РїСЂРѕС‡РёС‚Р°РµРј Р±РѕР»СЊС€РѕР№ РѕР±СЉРµРј РґР°РЅРЅС‹С…
+	static constexpr size_t c_blockSize = 50'000'000ULL; ///< 50 РњР‘
+	static constexpr size_t c_blocksCount = 4; ///< 4 Р±Р»РѕРєР°
 
 	ASSERT_FALSE(connection->BeginTransaction()->HasError());
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 
-	// Обновим семя рандома
+	// РћР±РЅРѕРІРёРј СЃРµРјСЏ СЂР°РЅРґРѕРјР°
 	const int seed = 0;
 	FastGenerateBytes(0, &seed);
 
-	clock_t generateClocks = 0; ///< Время, потраченное на генерацию случайных чисел
-	clock_t writeClocks = 0; ///< Время, потраченное на запись
-	clock_t readClocks = 0; ///< Время, потраченное на чтение
+	clock_t generateClocks = 0; ///< Р’СЂРµРјСЏ, РїРѕС‚СЂР°С‡РµРЅРЅРѕРµ РЅР° РіРµРЅРµСЂР°С†РёСЋ СЃР»СѓС‡Р°Р№РЅС‹С… С‡РёСЃРµР»
+	clock_t writeClocks = 0; ///< Р’СЂРµРјСЏ, РїРѕС‚СЂР°С‡РµРЅРЅРѕРµ РЅР° Р·Р°РїРёСЃСЊ
+	clock_t readClocks = 0; ///< Р’СЂРµРјСЏ, РїРѕС‚СЂР°С‡РµРЅРЅРѕРµ РЅР° С‡С‚РµРЅРёРµ
 	clock_t start = 0, end = 0;
 
-	// Запишем байты
+	// Р—Р°РїРёС€РµРј Р±Р°Р№С‚С‹
 	for (size_t blockIndex = 0; blockIndex < c_blocksCount; ++blockIndex)
 	{
 		start = clock();
@@ -498,8 +498,8 @@ TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 	}
 	ASSERT_TRUE(remoteFilePtr->Close());
 
-	// Прочитаем байты
-	FastGenerateBytes(0, &seed); // зададим то же семя рандома, чтобы генерировать такие же массивы
+	// РџСЂРѕС‡РёС‚Р°РµРј Р±Р°Р№С‚С‹
+	FastGenerateBytes(0, &seed); // Р·Р°РґР°РґРёРј С‚Рѕ Р¶Рµ СЃРµРјСЏ СЂР°РЅРґРѕРјР°, С‡С‚РѕР±С‹ РіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ С‚Р°РєРёРµ Р¶Рµ РјР°СЃСЃРёРІС‹
 
 	ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Read));
 	for (size_t blockIndex = 0; blockIndex < c_blocksCount; ++blockIndex)
@@ -524,7 +524,7 @@ TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 	std::cout << "Time spent reading data: "
 		<< (float)readClocks / CLOCKS_PER_SEC << " seconds" << std::endl;
 
-	// Проверим, что файл кончился
+	// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С„Р°Р№Р» РєРѕРЅС‡РёР»СЃСЏ
 	{
 		std::vector<char> readBytes;
 		ASSERT_TRUE(remoteFilePtr->ReadBytes(1, readBytes));
@@ -536,12 +536,12 @@ TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Тесты методов чтения/записи на корректность поведения при обрыве транзакций
-// с пустым файлом
+// РўРµСЃС‚С‹ РјРµС‚РѕРґРѕРІ С‡С‚РµРЅРёСЏ/Р·Р°РїРёСЃРё РЅР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РїРѕРІРµРґРµРЅРёСЏ РїСЂРё РѕР±СЂС‹РІРµ С‚СЂР°РЅР·Р°РєС†РёР№
+// СЃ РїСѓСЃС‚С‹Рј С„Р°Р№Р»РѕРј
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Записанные в пустой файл данные не сохраняются при обрыве транзакции в режиме
-/// открытия на запись
+/// Р—Р°РїРёСЃР°РЅРЅС‹Рµ РІ РїСѓСЃС‚РѕР№ С„Р°Р№Р» РґР°РЅРЅС‹Рµ РЅРµ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РїСЂРё РѕР±СЂС‹РІРµ С‚СЂР°РЅР·Р°РєС†РёРё РІ СЂРµР¶РёРјРµ
+/// РѕС‚РєСЂС‹С‚РёСЏ РЅР° Р·Р°РїРёСЃСЊ
 TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionAbortsInOpenWriteMode)
 {
 	std::string filename;
@@ -554,7 +554,7 @@ TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionAbortsInOpenWrit
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 		ASSERT_TRUE(remoteFilePtr->WriteBytes(GenerateBytes(1000), nullptr));
 		ASSERT_TRUE(remoteFilePtr->Close());
-		// Обрыв транзакции
+		// РћР±СЂС‹РІ С‚СЂР°РЅР·Р°РєС†РёРё
 	}
 	{
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -567,15 +567,15 @@ TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionAbortsInOpenWrit
 		ASSERT_TRUE(readBytes.empty());
 		ASSERT_TRUE(remoteFilePtr->Close());
 
-		// Почистим напоследок
+		// РџРѕС‡РёСЃС‚РёРј РЅР°РїРѕСЃР»РµРґРѕРє
 		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
 }
 
 
-/// Записанные в пустой файл данные не сохраняются при откате транзакции в режиме
-/// открытия на запись
+/// Р—Р°РїРёСЃР°РЅРЅС‹Рµ РІ РїСѓСЃС‚РѕР№ С„Р°Р№Р» РґР°РЅРЅС‹Рµ РЅРµ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РїСЂРё РѕС‚РєР°С‚Рµ С‚СЂР°РЅР·Р°РєС†РёРё РІ СЂРµР¶РёРјРµ
+/// РѕС‚РєСЂС‹С‚РёСЏ РЅР° Р·Р°РїРёСЃСЊ
 TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionRollbacksInOpenWriteMode)
 {
 	std::string filename;
@@ -588,7 +588,7 @@ TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionRollbacksInOpenW
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 		ASSERT_TRUE(remoteFilePtr->WriteBytes(GenerateBytes(1000), nullptr));
 		ASSERT_TRUE(remoteFilePtr->Close());
-		// Откат транзакции
+		// РћС‚РєР°С‚ С‚СЂР°РЅР·Р°РєС†РёРё
 		ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 	}
 	{
@@ -602,15 +602,15 @@ TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionRollbacksInOpenW
 		ASSERT_TRUE(readBytes.empty());
 		ASSERT_TRUE(remoteFilePtr->Close());
 
-		// Почистим напоследок
+		// РџРѕС‡РёСЃС‚РёРј РЅР°РїРѕСЃР»РµРґРѕРє
 		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
 }
 
 
-/// Записанные в пустой файл данные не сохраняются при обрыве транзакции в режиме
-/// открытия на дозапись
+/// Р—Р°РїРёСЃР°РЅРЅС‹Рµ РІ РїСѓСЃС‚РѕР№ С„Р°Р№Р» РґР°РЅРЅС‹Рµ РЅРµ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РїСЂРё РѕР±СЂС‹РІРµ С‚СЂР°РЅР·Р°РєС†РёРё РІ СЂРµР¶РёРјРµ
+/// РѕС‚РєСЂС‹С‚РёСЏ РЅР° РґРѕР·Р°РїРёСЃСЊ
 TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionAbortsInOpenAppendMode)
 {
 	std::string filename;
@@ -623,7 +623,7 @@ TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionAbortsInOpenAppe
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
 		ASSERT_TRUE(remoteFilePtr->WriteBytes(GenerateBytes(1000), nullptr));
 		ASSERT_TRUE(remoteFilePtr->Close());
-		// Обрыв транзакции
+		// РћР±СЂС‹РІ С‚СЂР°РЅР·Р°РєС†РёРё
 	}
 	{
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -636,15 +636,15 @@ TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionAbortsInOpenAppe
 		ASSERT_TRUE(readBytes.empty());
 		ASSERT_TRUE(remoteFilePtr->Close());
 
-		// Почистим напоследок
+		// РџРѕС‡РёСЃС‚РёРј РЅР°РїРѕСЃР»РµРґРѕРє
 		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
 }
 
 
-/// Записанные в пустой файл данные не сохраняются при откате транзакции в режиме
-/// открытия на дозапись
+/// Р—Р°РїРёСЃР°РЅРЅС‹Рµ РІ РїСѓСЃС‚РѕР№ С„Р°Р№Р» РґР°РЅРЅС‹Рµ РЅРµ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РїСЂРё РѕС‚РєР°С‚Рµ С‚СЂР°РЅР·Р°РєС†РёРё РІ СЂРµР¶РёРјРµ
+/// РѕС‚РєСЂС‹С‚РёСЏ РЅР° РґРѕР·Р°РїРёСЃСЊ
 TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionRollbacksInOpenAppendMode)
 {
 	std::string filename;
@@ -657,7 +657,7 @@ TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionRollbacksInOpenA
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
 		ASSERT_TRUE(remoteFilePtr->WriteBytes(GenerateBytes(1000), nullptr));
 		ASSERT_TRUE(remoteFilePtr->Close());
-		// Откат транзакции
+		// РћС‚РєР°С‚ С‚СЂР°РЅР·Р°РєС†РёРё
 		ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 	}
 	{
@@ -671,7 +671,7 @@ TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionRollbacksInOpenA
 		ASSERT_TRUE(readBytes.empty());
 		ASSERT_TRUE(remoteFilePtr->Close());
 
-		// Почистим напоследок
+		// РџРѕС‡РёСЃС‚РёРј РЅР°РїРѕСЃР»РµРґРѕРє
 		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
@@ -679,18 +679,18 @@ TEST(RemoteFile, DataWrittenToEmptyFileIsNotSavedWhenTransactionRollbacksInOpenA
 
 
 ////////////////////////////////////////////////////////////////////////////////
-// Тесты методов чтения/записи на корректность поведения при обрыве транзакций
-// с непустым файлом
+// РўРµСЃС‚С‹ РјРµС‚РѕРґРѕРІ С‡С‚РµРЅРёСЏ/Р·Р°РїРёСЃРё РЅР° РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ РїРѕРІРµРґРµРЅРёСЏ РїСЂРё РѕР±СЂС‹РІРµ С‚СЂР°РЅР·Р°РєС†РёР№
+// СЃ РЅРµРїСѓСЃС‚С‹Рј С„Р°Р№Р»РѕРј
 ////////////////////////////////////////////////////////////////////////////////
 
-/// Записанные в непустой файл данные не сохраняются при обрыве транзакции в режиме
-/// открытия на запись
+/// Р—Р°РїРёСЃР°РЅРЅС‹Рµ РІ РЅРµРїСѓСЃС‚РѕР№ С„Р°Р№Р» РґР°РЅРЅС‹Рµ РЅРµ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РїСЂРё РѕР±СЂС‹РІРµ С‚СЂР°РЅР·Р°РєС†РёРё РІ СЂРµР¶РёРјРµ
+/// РѕС‚РєСЂС‹С‚РёСЏ РЅР° Р·Р°РїРёСЃСЊ
 TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionAbortsInOpenWriteMode)
 {
 	std::string filename;
 	const std::vector<char> writtenBytes = GenerateBytes(1000);
 	{
-		// Сначала создадим непустой файл
+		// РЎРЅР°С‡Р°Р»Р° СЃРѕР·РґР°РґРёРј РЅРµРїСѓСЃС‚РѕР№ С„Р°Р№Р»
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto && remoteFilePtr = connection->CreateRemoteFile();
 		filename = remoteFilePtr->GetFileName();
@@ -702,7 +702,7 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionAbortsInOpenW
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
 	{
-		// Теперь напишем что-нибудь в этот файл
+		// РўРµРїРµСЂСЊ РЅР°РїРёС€РµРј С‡С‚Рѕ-РЅРёР±СѓРґСЊ РІ СЌС‚РѕС‚ С„Р°Р№Р»
 		std::vector<char> someOtherBytes = GenerateBytes(1000);
 
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -712,7 +712,7 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionAbortsInOpenW
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 		ASSERT_TRUE(remoteFilePtr->WriteBytes(someOtherBytes, nullptr));
 		ASSERT_TRUE(remoteFilePtr->Close());
-		// Обрыв транзакции
+		// РћР±СЂС‹РІ С‚СЂР°РЅР·Р°РєС†РёРё
 	}
 	{
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -732,21 +732,21 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionAbortsInOpenW
 		}
 		ASSERT_TRUE(remoteFilePtr->Close());
 
-		// Почистим напоследок
+		// РџРѕС‡РёСЃС‚РёРј РЅР°РїРѕСЃР»РµРґРѕРє
 		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
 }
 
 
-/// Записанные в непустой файл данные не сохраняются при откате транзакции в режиме
-/// открытия на запись
+/// Р—Р°РїРёСЃР°РЅРЅС‹Рµ РІ РЅРµРїСѓСЃС‚РѕР№ С„Р°Р№Р» РґР°РЅРЅС‹Рµ РЅРµ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РїСЂРё РѕС‚РєР°С‚Рµ С‚СЂР°РЅР·Р°РєС†РёРё РІ СЂРµР¶РёРјРµ
+/// РѕС‚РєСЂС‹С‚РёСЏ РЅР° Р·Р°РїРёСЃСЊ
 TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionRollbacksInOpenWriteMode)
 {
 	std::string filename;
 	const std::vector<char> writtenBytes = GenerateBytes(1000);
 	{
-		// Сначала создадим непустой файл
+		// РЎРЅР°С‡Р°Р»Р° СЃРѕР·РґР°РґРёРј РЅРµРїСѓСЃС‚РѕР№ С„Р°Р№Р»
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto && remoteFilePtr = connection->CreateRemoteFile();
 		filename = remoteFilePtr->GetFileName();
@@ -758,7 +758,7 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionRollbacksInOp
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
 	{
-		// Теперь напишем что-нибудь в этот файл
+		// РўРµРїРµСЂСЊ РЅР°РїРёС€РµРј С‡С‚Рѕ-РЅРёР±СѓРґСЊ РІ СЌС‚РѕС‚ С„Р°Р№Р»
 		std::vector<char> someOtherBytes = GenerateBytes(1000);
 
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -768,7 +768,7 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionRollbacksInOp
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Write));
 		ASSERT_TRUE(remoteFilePtr->WriteBytes(someOtherBytes, nullptr));
 		ASSERT_TRUE(remoteFilePtr->Close());
-		// Откат транзакции
+		// РћС‚РєР°С‚ С‚СЂР°РЅР·Р°РєС†РёРё
 		ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 	}
 	{
@@ -789,21 +789,21 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionRollbacksInOp
 		}
 		ASSERT_TRUE(remoteFilePtr->Close());
 
-		// Почистим напоследок
+		// РџРѕС‡РёСЃС‚РёРј РЅР°РїРѕСЃР»РµРґРѕРє
 		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
 }
 
 
-/// Записанные в непустой файл данные не сохраняются при обрыве транзакции в режиме
-/// открытия на дозапись
+/// Р—Р°РїРёСЃР°РЅРЅС‹Рµ РІ РЅРµРїСѓСЃС‚РѕР№ С„Р°Р№Р» РґР°РЅРЅС‹Рµ РЅРµ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РїСЂРё РѕР±СЂС‹РІРµ С‚СЂР°РЅР·Р°РєС†РёРё РІ СЂРµР¶РёРјРµ
+/// РѕС‚РєСЂС‹С‚РёСЏ РЅР° РґРѕР·Р°РїРёСЃСЊ
 TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionAbortsInOpenAppendMode)
 {
 	std::string filename;
 	const std::vector<char> writtenBytes = GenerateBytes(1000);
 	{
-		// Сначала создадим непустой файл
+		// РЎРЅР°С‡Р°Р»Р° СЃРѕР·РґР°РґРёРј РЅРµРїСѓСЃС‚РѕР№ С„Р°Р№Р»
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto && remoteFilePtr = connection->CreateRemoteFile();
 		filename = remoteFilePtr->GetFileName();
@@ -815,7 +815,7 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionAbortsInOpenA
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
 	{
-		// Теперь напишем что-нибудь в этот файл
+		// РўРµРїРµСЂСЊ РЅР°РїРёС€РµРј С‡С‚Рѕ-РЅРёР±СѓРґСЊ РІ СЌС‚РѕС‚ С„Р°Р№Р»
 		std::vector<char> someOtherBytes = GenerateBytes(1000);
 
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -825,7 +825,7 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionAbortsInOpenA
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
 		ASSERT_TRUE(remoteFilePtr->WriteBytes(someOtherBytes, nullptr));
 		ASSERT_TRUE(remoteFilePtr->Close());
-		// Обрыв транзакции
+		// РћР±СЂС‹РІ С‚СЂР°РЅР·Р°РєС†РёРё
 	}
 	{
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -845,21 +845,21 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionAbortsInOpenA
 		}
 		ASSERT_TRUE(remoteFilePtr->Close());
 
-		// Почистим напоследок
+		// РџРѕС‡РёСЃС‚РёРј РЅР°РїРѕСЃР»РµРґРѕРє
 		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
 }
 
 
-/// Записанные в непустой файл данные не сохраняются при откате транзакции в режиме
-/// открытия на дозапись
+/// Р—Р°РїРёСЃР°РЅРЅС‹Рµ РІ РЅРµРїСѓСЃС‚РѕР№ С„Р°Р№Р» РґР°РЅРЅС‹Рµ РЅРµ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ РїСЂРё РѕС‚РєР°С‚Рµ С‚СЂР°РЅР·Р°РєС†РёРё РІ СЂРµР¶РёРјРµ
+/// РѕС‚РєСЂС‹С‚РёСЏ РЅР° РґРѕР·Р°РїРёСЃСЊ
 TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionRollbacksInOpenAppendMode)
 {
 	std::string filename;
 	const std::vector<char> writtenBytes = GenerateBytes(1000);
 	{
-		// Сначала создадим непустой файл
+		// РЎРЅР°С‡Р°Р»Р° СЃРѕР·РґР°РґРёРј РЅРµРїСѓСЃС‚РѕР№ С„Р°Р№Р»
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto && remoteFilePtr = connection->CreateRemoteFile();
 		filename = remoteFilePtr->GetFileName();
@@ -871,7 +871,7 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionRollbacksInOp
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}
 	{
-		// Теперь напишем что-нибудь в этот файл
+		// РўРµРїРµСЂСЊ РЅР°РїРёС€РµРј С‡С‚Рѕ-РЅРёР±СѓРґСЊ РІ СЌС‚РѕС‚ С„Р°Р№Р»
 		std::vector<char> someOtherBytes = GenerateBytes(1000);
 
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -881,7 +881,7 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionRollbacksInOp
 		ASSERT_TRUE(remoteFilePtr->Open(FileOpenMode::Append));
 		ASSERT_TRUE(remoteFilePtr->WriteBytes(someOtherBytes, nullptr));
 		ASSERT_TRUE(remoteFilePtr->Close());
-		// Откат транзакции
+		// РћС‚РєР°С‚ С‚СЂР°РЅР·Р°РєС†РёРё
 		ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 	}
 	{
@@ -902,7 +902,7 @@ TEST(RemoteFile, DataWrittenToNonEmptyFileIsNotSavedWhenTransactionRollbacksInOp
 		}
 		ASSERT_TRUE(remoteFilePtr->Close());
 
-		// Почистим напоследок
+		// РџРѕС‡РёСЃС‚РёРј РЅР°РїРѕСЃР»РµРґРѕРє
 		ASSERT_TRUE(connection->DeleteRemoteFile(filename));
 		ASSERT_FALSE(connection->CommitTransaction()->HasError());
 	}

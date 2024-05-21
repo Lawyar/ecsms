@@ -7,7 +7,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Конструктор
+  РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 */
 //---
 PGRemoteFile::PGRemoteFile(std::weak_ptr<PGConnection> connection, Oid objId)
@@ -19,7 +19,7 @@ PGRemoteFile::PGRemoteFile(std::weak_ptr<PGConnection> connection, Oid objId)
 
 //------------------------------------------------------------------------------
 /**
-  Деструктор
+  Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
 */
 //---
 PGRemoteFile::~PGRemoteFile()
@@ -30,7 +30,7 @@ PGRemoteFile::~PGRemoteFile()
 
 //------------------------------------------------------------------------------
 /**
-  Получить имя файла (для большого бинарного объекта имя - это идентификатор)
+  РџРѕР»СѓС‡РёС‚СЊ РёРјСЏ С„Р°Р№Р»Р° (РґР»СЏ Р±РѕР»СЊС€РѕРіРѕ Р±РёРЅР°СЂРЅРѕРіРѕ РѕР±СЉРµРєС‚Р° РёРјСЏ - СЌС‚Рѕ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ)
 */
 //---
 std::string PGRemoteFile::GetFileName() const
@@ -41,7 +41,7 @@ std::string PGRemoteFile::GetFileName() const
 
 //------------------------------------------------------------------------------
 /**
-  Перевести FileOpenMode в флаг, который принимает libpq
+  РџРµСЂРµРІРµСЃС‚Рё FileOpenMode РІ С„Р»Р°Рі, РєРѕС‚РѕСЂС‹Р№ РїСЂРёРЅРёРјР°РµС‚ libpq
 */
 //---
 static std::optional<int> FileOpenModeToFlag(FileOpenMode mode)
@@ -54,7 +54,7 @@ static std::optional<int> FileOpenModeToFlag(FileOpenMode mode)
 
 //------------------------------------------------------------------------------
 /**
-  Открыть файл
+  РћС‚РєСЂС‹С‚СЊ С„Р°Р№Р»
 */
 //---
 bool PGRemoteFile::Open(FileOpenMode openMode)
@@ -72,7 +72,7 @@ bool PGRemoteFile::Open(FileOpenMode openMode)
 		flag = INV_WRITE;
 		break;
 	default:
-		// Неизвестный тип
+		// РќРµРёР·РІРµСЃС‚РЅС‹Р№ С‚РёРї
 		assert(false);
 		return false;
 	}
@@ -85,21 +85,21 @@ bool PGRemoteFile::Open(FileOpenMode openMode)
 	if (fd == -1)
 		return false;
 
-	bool errorOccured = false; // случилась ошибка
+	bool errorOccured = false; // СЃР»СѓС‡РёР»Р°СЃСЊ РѕС€РёР±РєР°
 	if (openMode == FileOpenMode::Write)
 	{
-		// Если файл открывается на запись, очистим его содержимое
+		// Р•СЃР»Рё С„Р°Р№Р» РѕС‚РєСЂС‹РІР°РµС‚СЃСЏ РЅР° Р·Р°РїРёСЃСЊ, РѕС‡РёСЃС‚РёРј РµРіРѕ СЃРѕРґРµСЂР¶РёРјРѕРµ
 		errorOccured = (connection->LoTruncate64(fd, 0) == -1);
 	}
 	else if (openMode == FileOpenMode::Append)
 	{
-		// Если файл открывается на дозапись, переместим курсор в конец файла
+		// Р•СЃР»Рё С„Р°Р№Р» РѕС‚РєСЂС‹РІР°РµС‚СЃСЏ РЅР° РґРѕР·Р°РїРёСЃСЊ, РїРµСЂРµРјРµСЃС‚РёРј РєСѓСЂСЃРѕСЂ РІ РєРѕРЅРµС† С„Р°Р№Р»Р°
 		errorOccured = (connection->LoLseek64(fd, 0, SEEK_END) == -1);
 	}
 
 	if (errorOccured)
 	{
-		// Если случилась ошибка, закроем файл
+		// Р•СЃР»Рё СЃР»СѓС‡РёР»Р°СЃСЊ РѕС€РёР±РєР°, Р·Р°РєСЂРѕРµРј С„Р°Р№Р»
 		connection->LoClose(fd);
 		return false;
 	}
@@ -112,13 +112,13 @@ bool PGRemoteFile::Open(FileOpenMode openMode)
 
 //------------------------------------------------------------------------------
 /**
-  Закрыть файл
+  Р—Р°РєСЂС‹С‚СЊ С„Р°Р№Р»
 */
 //---
 bool PGRemoteFile::Close()
 {
 	if (!m_fd)
-		// Нечего закрывать
+		// РќРµС‡РµРіРѕ Р·Р°РєСЂС‹РІР°С‚СЊ
 		return false;
 
 	auto connection = m_connection.lock();
@@ -136,34 +136,34 @@ bool PGRemoteFile::Close()
 
 //------------------------------------------------------------------------------
 /**
-  Прочитать байты
+  РџСЂРѕС‡РёС‚Р°С‚СЊ Р±Р°Р№С‚С‹
 */
 //---
 bool PGRemoteFile::ReadBytes(size_t count, std::vector<char> & buffer)
 {
 	if (!m_fd || !m_openMode)
-		// Файл не открыт
+		// Р¤Р°Р№Р» РЅРµ РѕС‚РєСЂС‹С‚
 		return false;
 
 	if (*m_openMode != FileOpenMode::Read)
-		// Файл не открыт на чтение
+		// Р¤Р°Р№Р» РЅРµ РѕС‚РєСЂС‹С‚ РЅР° С‡С‚РµРЅРёРµ
 		return false;
 
 	auto connection = m_connection.lock();
 	if (!connection)
 		return false;
 
-	// Количество байт, читаемых за раз (16 МБ)
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚, С‡РёС‚Р°РµРјС‹С… Р·Р° СЂР°Р· (16 РњР‘)
 	static constexpr const size_t c_maxPackageSize = 16'000'000ULL;
 
 	bool result = true;
 
 	std::vector<char> data(count);
-	// Количество записанных байтов
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РїРёСЃР°РЅРЅС‹С… Р±Р°Р№С‚РѕРІ
 	size_t readBytesCount = 0;
 	for (size_t currentPos = 0; currentPos < data.size(); currentPos += c_maxPackageSize)
 	{
-		// Размер текущего читаемого пакета
+		// Р Р°Р·РјРµСЂ С‚РµРєСѓС‰РµРіРѕ С‡РёС‚Р°РµРјРѕРіРѕ РїР°РєРµС‚Р°
 		size_t currentPackageSize = c_maxPackageSize <= data.size() - currentPos
 			? c_maxPackageSize : data.size() - currentPos;
 
@@ -171,7 +171,7 @@ bool PGRemoteFile::ReadBytes(size_t count, std::vector<char> & buffer)
 			currentPackageSize);
 		if (readBytesCountInCurrentPackage < 0)
 		{
-			// Произошла ошибка
+			// РџСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°
 			result = false;
 			break;
 		}
@@ -188,7 +188,7 @@ bool PGRemoteFile::ReadBytes(size_t count, std::vector<char> & buffer)
 
 //------------------------------------------------------------------------------
 /**
-  Записать байты
+  Р—Р°РїРёСЃР°С‚СЊ Р±Р°Р№С‚С‹
 */
 //---
 bool PGRemoteFile::WriteBytes(const std::vector<char> & data, size_t * numberOfBytesWritten)
@@ -197,27 +197,27 @@ bool PGRemoteFile::WriteBytes(const std::vector<char> & data, size_t * numberOfB
 		*numberOfBytesWritten = 0;
 
 	if (!m_fd || !m_openMode)
-		// Файл не открыт
+		// Р¤Р°Р№Р» РЅРµ РѕС‚РєСЂС‹С‚
 		return false;
 
 	if (*m_openMode != FileOpenMode::Write && *m_openMode != FileOpenMode::Append)
-		// Файл не открыт на запись/дозапись
+		// Р¤Р°Р№Р» РЅРµ РѕС‚РєСЂС‹С‚ РЅР° Р·Р°РїРёСЃСЊ/РґРѕР·Р°РїРёСЃСЊ
 		return false;
 
 	auto connection = m_connection.lock();
 	if (!connection || !connection->IsValid())
 		return false;
 
-	// Количество байт, отправляемых за раз (16 МБ)
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚, РѕС‚РїСЂР°РІР»СЏРµРјС‹С… Р·Р° СЂР°Р· (16 РњР‘)
 	static constexpr const size_t c_maxPackageSize = 16'000'000ULL;
 
 	bool result = true;
 
-	// Количество записанных байтов
+	// РљРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РїРёСЃР°РЅРЅС‹С… Р±Р°Р№С‚РѕРІ
 	size_t writtenBytesCount = 0;
 	for (size_t currentPos = 0; currentPos < data.size(); currentPos += c_maxPackageSize)
 	{
-		// Размер текущего отправляемого пакета
+		// Р Р°Р·РјРµСЂ С‚РµРєСѓС‰РµРіРѕ РѕС‚РїСЂР°РІР»СЏРµРјРѕРіРѕ РїР°РєРµС‚Р°
 		size_t currentPackageSize = c_maxPackageSize <= data.size() - currentPos
 			? c_maxPackageSize : data.size() - currentPos;
 
@@ -225,7 +225,7 @@ bool PGRemoteFile::WriteBytes(const std::vector<char> & data, size_t * numberOfB
 			currentPackageSize);
 		if (writtenBytesCount < 0)
 		{
-			// Произошла ошибка
+			// РџСЂРѕРёР·РѕС€Р»Р° РѕС€РёР±РєР°
 			result = false;
 			break;
 		}

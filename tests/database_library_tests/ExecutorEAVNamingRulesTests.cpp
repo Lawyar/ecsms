@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 /**
-  Тесты для ExecutorEAVNamingRules
+  РўРµСЃС‚С‹ РґР»СЏ ExecutorEAVNamingRules
 */
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 
 #include <IExecutorEAVNamingRules.h>
 
-// Тест для проверок
+// РўРµСЃС‚ РґР»СЏ РїСЂРѕРІРµСЂРѕРє
 class ExecutorEAVNamingRules : public ::testing::Test
 {
 protected:
@@ -23,14 +23,14 @@ protected:
 	IExecutorEAVPtr executorEAV;
 
 protected:
-	// Действия в начале теста
+	// Р”РµР№СЃС‚РІРёСЏ РІ РЅР°С‡Р°Р»Рµ С‚РµСЃС‚Р°
 	virtual void SetUp() override
 	{
 		connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		executorEAV = GetDatabaseManager().GetExecutorEAV(connection);
 	}
 
-	// Получить объект для проверок
+	// РџРѕР»СѓС‡РёС‚СЊ РѕР±СЉРµРєС‚ РґР»СЏ РїСЂРѕРІРµСЂРѕРє
 	const IExecutorEAVNamingRules & GetRules() const
 	{
 		return executorEAV->GetNamingRules();

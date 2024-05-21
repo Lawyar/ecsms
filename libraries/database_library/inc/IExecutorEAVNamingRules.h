@@ -4,41 +4,41 @@
 
 //------------------------------------------------------------------------------
 /**
-  Интерфейс, определяющий правила именования таблиц для IExecutorEAV.
+  РРЅС‚РµСЂС„РµР№СЃ, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РїСЂР°РІРёР»Р° РёРјРµРЅРѕРІР°РЅРёСЏ С‚Р°Р±Р»РёС† РґР»СЏ IExecutorEAV.
 */
 //---
 class IExecutorEAVNamingRules
 {
 public:
-	/// Деструктор
+	/// Р”РµСЃС‚СЂСѓРєС‚РѕСЂ
 	virtual ~IExecutorEAVNamingRules() = default;
 
 public:
-	/// Получить название таблицы сущностей
+	/// РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ СЃСѓС‰РЅРѕСЃС‚РµР№
 	virtual std::string GetEntityTableName(const std::string & entityName) const = 0;
-	/// Получить название таблицы атрибутов
+	/// РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ Р°С‚СЂРёР±СѓС‚РѕРІ
 	virtual std::string GetAttributeTableName(const std::string & entityName,
 		const std::string & attributeType) const = 0;
-	/// Получить название таблицы значений
+	/// РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 	virtual std::string GetValueTableName(const std::string & entityName,
 		const std::string & attributeType) const = 0;
 
 public:
-	/// Получить название поля идентификатора таблицы сущностей
+	/// РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° С‚Р°Р±Р»РёС†С‹ СЃСѓС‰РЅРѕСЃС‚РµР№
 	virtual std::string GetEntityTable_Short_IdField(const std::string & entityName) const = 0;
-	/// Получить полное название поля идентификатора таблицы сущностей, включающее
-	/// название таблицы
+	/// РџРѕР»СѓС‡РёС‚СЊ РїРѕР»РЅРѕРµ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° С‚Р°Р±Р»РёС†С‹ СЃСѓС‰РЅРѕСЃС‚РµР№, РІРєР»СЋС‡Р°СЋС‰РµРµ
+	/// РЅР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹
 	std::string GetEntityTable_Full_IdField(const std::string & entityName) const
 	{
 		return GetEntityTable_Short_IdField(entityName) + "." + GetEntityTableName(entityName);
 	}
 
 public:
-	/// Получить название поля идентификатора таблицы атрибутов
+	/// РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° С‚Р°Р±Р»РёС†С‹ Р°С‚СЂРёР±СѓС‚РѕРІ
 	virtual std::string GetAttributeTable_Short_IdField(const std::string & entityName,
 		const std::string & attributeType) const = 0;
-	/// Получить полное название поля идентификатора таблицы атрибутов, включающее
-	/// название таблицы атрибутов
+	/// РџРѕР»СѓС‡РёС‚СЊ РїРѕР»РЅРѕРµ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° С‚Р°Р±Р»РёС†С‹ Р°С‚СЂРёР±СѓС‚РѕРІ, РІРєР»СЋС‡Р°СЋС‰РµРµ
+	/// РЅР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ Р°С‚СЂРёР±СѓС‚РѕРІ
 	std::string GetAttributeTable_Full_IdField(const std::string & entityName,
 		const std::string & attributeType) const
 	{
@@ -46,11 +46,11 @@ public:
 			GetAttributeTable_Short_IdField(entityName, attributeType);
 	}
 
-	/// Получить название поля названия таблицы атрибутов
+	/// РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РЅР°Р·РІР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ Р°С‚СЂРёР±СѓС‚РѕРІ
 	virtual std::string GetAttributeTable_Short_NameField(const std::string & entityName,
 		const std::string & attributeType) const = 0;
-	/// Получить полное название поля названия таблицы атрибутов, включающее название
-	/// таблицы атрибутов
+	/// РџРѕР»СѓС‡РёС‚СЊ РїРѕР»РЅРѕРµ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РЅР°Р·РІР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ Р°С‚СЂРёР±СѓС‚РѕРІ, РІРєР»СЋС‡Р°СЋС‰РµРµ РЅР°Р·РІР°РЅРёРµ
+	/// С‚Р°Р±Р»РёС†С‹ Р°С‚СЂРёР±СѓС‚РѕРІ
 	std::string GetAttributeTable_Full_NameField(const std::string & entityName,
 		const std::string & attributeType) const
 	{
@@ -59,11 +59,11 @@ public:
 	}
 
 public:
-	/// Получить название поля идентификатора сущности таблицы значений
+	/// РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° СЃСѓС‰РЅРѕСЃС‚Рё С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 	virtual std::string GetValueTable_Short_EntityIdField(const std::string & entityName,
 		const std::string & attributeType) const = 0;
-	/// Получить полное название поля идентификатора сущности таблицы значений,
-	/// включающее название таблицы значений
+	/// РџРѕР»СѓС‡РёС‚СЊ РїРѕР»РЅРѕРµ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° СЃСѓС‰РЅРѕСЃС‚Рё С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№,
+	/// РІРєР»СЋС‡Р°СЋС‰РµРµ РЅР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 	std::string GetValueTable_Full_EntityIdField(const std::string & entityName,
 		const std::string & attributeType) const
 	{
@@ -71,11 +71,11 @@ public:
 			GetValueTable_Short_EntityIdField(entityName, attributeType);
 	}
 
-	/// Получить название поля идентификатора атрибута таблицы значений
+	/// РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° Р°С‚СЂРёР±СѓС‚Р° С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 	virtual std::string GetValueTable_Short_AttributeIdField(const std::string & entityName,
 		const std::string & attributeType) const = 0;
-	/// Получить полное название поля идентификатора атрибута таблицы значений,
-	/// включающее название таблицы значений
+	/// РџРѕР»СѓС‡РёС‚СЊ РїРѕР»РЅРѕРµ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР° Р°С‚СЂРёР±СѓС‚Р° С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№,
+	/// РІРєР»СЋС‡Р°СЋС‰РµРµ РЅР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 	std::string GetValueTable_Full_AttributeIdField(const std::string & entityName,
 		const std::string & attributeType) const
 	{
@@ -83,11 +83,11 @@ public:
 			GetValueTable_Short_AttributeIdField(entityName, attributeType);
 	}
 
-	/// Получить название поля значения атрибута таблицы значений
+	/// РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ Р·РЅР°С‡РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚Р° С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 	virtual std::string GetValueTable_Short_ValueField(const std::string & entityName,
 		const std::string & attributeType) const = 0;
-	/// Получить полное название поля значения атрибута таблицы значений,
-	/// включающее название таблицы значений
+	/// РџРѕР»СѓС‡РёС‚СЊ РїРѕР»РЅРѕРµ РЅР°Р·РІР°РЅРёРµ РїРѕР»СЏ Р·РЅР°С‡РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚Р° С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№,
+	/// РІРєР»СЋС‡Р°СЋС‰РµРµ РЅР°Р·РІР°РЅРёРµ С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
 	std::string GetValueTable_Full_ValueField(const std::string & entityName,
 		const std::string & attributeType) const
 	{

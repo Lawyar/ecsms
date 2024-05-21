@@ -12,7 +12,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Конструктор
+  РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ
 */
 //---
 PGExecutorEAV::PGExecutorEAV(const IConnectionPtr & connection,
@@ -25,8 +25,8 @@ PGExecutorEAV::PGExecutorEAV(const IConnectionPtr & connection,
 
 //------------------------------------------------------------------------------
 /**
-  Регистрация EAV-сущностей
-  \param createTables Требуется ли пытаться создать таблицы по зарегистрированным сущностям
+  Р РµРіРёСЃС‚СЂР°С†РёСЏ EAV-СЃСѓС‰РЅРѕСЃС‚РµР№
+  \param createTables РўСЂРµР±СѓРµС‚СЃСЏ Р»Рё РїС‹С‚Р°С‚СЊСЃСЏ СЃРѕР·РґР°С‚СЊ С‚Р°Р±Р»РёС†С‹ РїРѕ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Рј СЃСѓС‰РЅРѕСЃС‚СЏРј
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::SetRegisteredEntities(const EAVRegisterEntries & entries,
@@ -42,8 +42,8 @@ IExecuteResultStatusPtr PGExecutorEAV::SetRegisteredEntities(const EAVRegisterEn
 					entityName));
 	}
 
-	// В любом случае соберем запрос
-	// Если на этом этапе произойдет ошибка, то не надо переустанавливать контейнер
+	// Р’ Р»СЋР±РѕРј СЃР»СѓС‡Р°Рµ СЃРѕР±РµСЂРµРј Р·Р°РїСЂРѕСЃ
+	// Р•СЃР»Рё РЅР° СЌС‚РѕРј СЌС‚Р°РїРµ РїСЂРѕРёР·РѕР№РґРµС‚ РѕС€РёР±РєР°, С‚Рѕ РЅРµ РЅР°РґРѕ РїРµСЂРµСѓСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ РєРѕРЅС‚РµР№РЅРµСЂ
 	std::string query;
 	for (auto &&[entityName, attributeTypes] : entries)
 	{
@@ -77,7 +77,7 @@ IExecuteResultStatusPtr PGExecutorEAV::SetRegisteredEntities(const EAVRegisterEn
 
 //------------------------------------------------------------------------------
 /**
-  Получить зарегистрированные сущности
+  РџРѕР»СѓС‡РёС‚СЊ Р·Р°СЂРµРіРёСЃС‚СЂРёСЂРѕРІР°РЅРЅС‹Рµ СЃСѓС‰РЅРѕСЃС‚Рё
 */
 //---
 const IExecutorEAV::EAVRegisterEntries & PGExecutorEAV::GetRegisteredEntities() const
@@ -88,7 +88,7 @@ const IExecutorEAV::EAVRegisterEntries & PGExecutorEAV::GetRegisteredEntities() 
 
 //------------------------------------------------------------------------------
 /**
-  Получить объект, определяющий правила именования таблиц
+  РџРѕР»СѓС‡РёС‚СЊ РѕР±СЉРµРєС‚, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РїСЂР°РІРёР»Р° РёРјРµРЅРѕРІР°РЅРёСЏ С‚Р°Р±Р»РёС†
 */
 //---
 const IExecutorEAVNamingRules & PGExecutorEAV::GetNamingRules() const
@@ -99,7 +99,7 @@ const IExecutorEAVNamingRules & PGExecutorEAV::GetNamingRules() const
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду создания таблицы сущностей
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ СЃСѓС‰РЅРѕСЃС‚РµР№
 */
 //---
 std::string PGExecutorEAV::createEntityTableCommand(const std::string & entityName) const
@@ -118,7 +118,7 @@ std::string PGExecutorEAV::createEntityTableCommand(const std::string & entityNa
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду создания таблицы атрибутов
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ Р°С‚СЂРёР±СѓС‚РѕРІ
 */
 //---
 std::string PGExecutorEAV::createAttributeTableCommand(const std::string & entityName,
@@ -143,8 +143,8 @@ std::string PGExecutorEAV::createAttributeTableCommand(const std::string & entit
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду создания таблицы значений
-  todo : Надо переиспользовать именованные константы из базового класса...
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ СЃРѕР·РґР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹ Р·РЅР°С‡РµРЅРёР№
+  todo : РќР°РґРѕ РїРµСЂРµРёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РёРјРµРЅРѕРІР°РЅРЅС‹Рµ РєРѕРЅСЃС‚Р°РЅС‚С‹ РёР· Р±Р°Р·РѕРІРѕРіРѕ РєР»Р°СЃСЃР°...
 */
 //---
 std::string PGExecutorEAV::createValueTableCommand(const std::string & entityName,
@@ -179,7 +179,7 @@ std::string PGExecutorEAV::createValueTableCommand(const std::string & entityNam
 
 //------------------------------------------------------------------------------
 /**
-  Создать новую сущность
+  РЎРѕР·РґР°С‚СЊ РЅРѕРІСѓСЋ СЃСѓС‰РЅРѕСЃС‚СЊ
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::CreateNewEntity(const EntityName & entityName, EntityId & entityId)
@@ -205,7 +205,7 @@ IExecuteResultStatusPtr PGExecutorEAV::CreateNewEntity(const EntityName & entity
 
 //------------------------------------------------------------------------------
 /**
-  Получить все идентификаторы сущности данного вида
+  РџРѕР»СѓС‡РёС‚СЊ РІСЃРµ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂС‹ СЃСѓС‰РЅРѕСЃС‚Рё РґР°РЅРЅРѕРіРѕ РІРёРґР°
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::GetEntityIds(const EntityName & entityName,
@@ -220,8 +220,8 @@ IExecuteResultStatusPtr PGExecutorEAV::GetEntityIds(const EntityName & entityNam
 	auto colType = result->GetColType(0);
 	if (result->GetColCount() != 1 || colType != SQLDataType::Integer)
 	{
-		// Запрос был сформирован таким образом, что в результате должен быть один столбец
-		// типа INTEGER
+		// Р—Р°РїСЂРѕСЃ Р±С‹Р» СЃС„РѕСЂРјРёСЂРѕРІР°РЅ С‚Р°РєРёРј РѕР±СЂР°Р·РѕРј, С‡С‚Рѕ РІ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РѕРґРёРЅ СЃС‚РѕР»Р±РµС†
+		// С‚РёРїР° INTEGER
 		assert(false);
 
 		return InternalExecuteResultStatus::GetInternalError(
@@ -239,7 +239,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetEntityIds(const EntityName & entityNam
 		tempEntityIds.push_back(entityId);
 	}
 
-	// Теперь уже точно нет ошибок, можно сохранять результат
+	// РўРµРїРµСЂСЊ СѓР¶Рµ С‚РѕС‡РЅРѕ РЅРµС‚ РѕС€РёР±РѕРє, РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅСЏС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚
 	entityIds = std::move(tempEntityIds);
 	
 	return resultStatus;
@@ -248,7 +248,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetEntityIds(const EntityName & entityNam
 
 //------------------------------------------------------------------------------
 /**
-  Получить все наименования атрибутов указанного типа, которые использует данная сущность
+  РџРѕР»СѓС‡РёС‚СЊ РІСЃРµ РЅР°РёРјРµРЅРѕРІР°РЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ СѓРєР°Р·Р°РЅРЅРѕРіРѕ С‚РёРїР°, РєРѕС‚РѕСЂС‹Рµ РёСЃРїРѕР»СЊР·СѓРµС‚ РґР°РЅРЅР°СЏ СЃСѓС‰РЅРѕСЃС‚СЊ
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::GetAttributeNames(const EntityName & entityName,
@@ -271,8 +271,8 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeNames(const EntityName & enti
 	auto colType = result->GetColType(0);
 	if (result->GetColCount() != 1 || colType != SQLDataType::Text)
 	{
-		// Запрос был сформирован таким образом, что в результате должен быть один столбец
-		// типа TEXT
+		// Р—Р°РїСЂРѕСЃ Р±С‹Р» СЃС„РѕСЂРјРёСЂРѕРІР°РЅ С‚Р°РєРёРј РѕР±СЂР°Р·РѕРј, С‡С‚Рѕ РІ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РѕРґРёРЅ СЃС‚РѕР»Р±РµС†
+		// С‚РёРїР° TEXT
 		assert(false);
 
 		return InternalExecuteResultStatus::GetInternalError(
@@ -290,7 +290,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeNames(const EntityName & enti
 		tempAttrNames.push_back(m_sqlTypeConverter->GetSQLTypeText(std::move(attrNameStr)));
 	}
 
-	// Теперь уже точно нет ошибок, можно сохранять результат
+	// РўРµРїРµСЂСЊ СѓР¶Рµ С‚РѕС‡РЅРѕ РЅРµС‚ РѕС€РёР±РѕРє, РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅСЏС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚
 	attrNames = std::move(tempAttrNames);
 
 	return resultStatus;
@@ -299,7 +299,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeNames(const EntityName & enti
 
 //------------------------------------------------------------------------------
 /**
-  Найти сущности, у которых есть все из указанных пар атрибут-значение
+  РќР°Р№С‚Рё СЃСѓС‰РЅРѕСЃС‚Рё, Сѓ РєРѕС‚РѕСЂС‹С… РµСЃС‚СЊ РІСЃРµ РёР· СѓРєР°Р·Р°РЅРЅС‹С… РїР°СЂ Р°С‚СЂРёР±СѓС‚-Р·РЅР°С‡РµРЅРёРµ
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::FindEntitiesByAttrValues(const EntityName & entityName,
@@ -327,7 +327,7 @@ IExecuteResultStatusPtr PGExecutorEAV::FindEntitiesByAttrValues(const EntityName
 	if (!executeQuery(query, result, resultStatus))
 		return resultStatus;
 
-	// Запрос формировался таким образом, что в ответе должен получиться один столбец
+	// Р—Р°РїСЂРѕСЃ С„РѕСЂРјРёСЂРѕРІР°Р»СЃСЏ С‚Р°РєРёРј РѕР±СЂР°Р·РѕРј, С‡С‚Рѕ РІ РѕС‚РІРµС‚Рµ РґРѕР»Р¶РµРЅ РїРѕР»СѓС‡РёС‚СЊСЃСЏ РѕРґРёРЅ СЃС‚РѕР»Р±РµС†
 	assert(result->GetColCount() == 1);
 	std::vector<EntityId> tempEntityIds;
 	for (size_t j = 0, colCount = result->GetColCount(); j < colCount; ++j)
@@ -344,7 +344,7 @@ IExecuteResultStatusPtr PGExecutorEAV::FindEntitiesByAttrValues(const EntityName
 		}
 	}
 
-	// Теперь уже точно нет ошибок, можно сохранять результат
+	// РўРµРїРµСЂСЊ СѓР¶Рµ С‚РѕС‡РЅРѕ РЅРµС‚ РѕС€РёР±РѕРє, РјРѕР¶РЅРѕ СЃРѕС…СЂР°РЅСЏС‚СЊ СЂРµР·СѓР»СЊС‚Р°С‚
 	entityIds = std::move(tempEntityIds);
 
 	return resultStatus;
@@ -353,8 +353,8 @@ IExecuteResultStatusPtr PGExecutorEAV::FindEntitiesByAttrValues(const EntityName
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "добавить сущность в таблицу сущностей и вернуть
-  вставленный идентификатор".
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РґРѕР±Р°РІРёС‚СЊ СЃСѓС‰РЅРѕСЃС‚СЊ РІ С‚Р°Р±Р»РёС†Сѓ СЃСѓС‰РЅРѕСЃС‚РµР№ Рё РІРµСЂРЅСѓС‚СЊ
+  РІСЃС‚Р°РІР»РµРЅРЅС‹Р№ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ".
 */
 //---
 std::string PGExecutorEAV::insertNewEntityReturningIdCommand(const std::string & entityName) const
@@ -367,7 +367,7 @@ std::string PGExecutorEAV::insertNewEntityReturningIdCommand(const std::string &
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "получить идентификаторы сущности".
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РїРѕР»СѓС‡РёС‚СЊ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂС‹ СЃСѓС‰РЅРѕСЃС‚Рё".
 */
 //---
 std::string PGExecutorEAV::getEntityIdsCommand(const std::string & entityName) const
@@ -380,8 +380,8 @@ std::string PGExecutorEAV::getEntityIdsCommand(const std::string & entityName) c
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "получить названия атрибутов указанного типа, которые
-  использует данная сущность"
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РїРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ СѓРєР°Р·Р°РЅРЅРѕРіРѕ С‚РёРїР°, РєРѕС‚РѕСЂС‹Рµ
+  РёСЃРїРѕР»СЊР·СѓРµС‚ РґР°РЅРЅР°СЏ СЃСѓС‰РЅРѕСЃС‚СЊ"
 */
 //---
 std::string PGExecutorEAV::getAttributeNamesCommand(const std::string & entityName,
@@ -395,8 +395,8 @@ std::string PGExecutorEAV::getAttributeNamesCommand(const std::string & entityNa
 
 //------------------------------------------------------------------------------
 /**
-  Получить внутреннюю команды "получить идентификаторы сущности по названию атрибута
-  и его значению"
+  РџРѕР»СѓС‡РёС‚СЊ РІРЅСѓС‚СЂРµРЅРЅСЋСЋ РєРѕРјР°РЅРґС‹ "РїРѕР»СѓС‡РёС‚СЊ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂС‹ СЃСѓС‰РЅРѕСЃС‚Рё РїРѕ РЅР°Р·РІР°РЅРёСЋ Р°С‚СЂРёР±СѓС‚Р°
+  Рё РµРіРѕ Р·РЅР°С‡РµРЅРёСЋ"
 */
 //---
 std::optional<std::string> PGExecutorEAV::getEntityIdByAttrValueInnerCommand(const EntityName & entityName,
@@ -429,9 +429,9 @@ std::optional<std::string> PGExecutorEAV::getEntityIdByAttrValueInnerCommand(con
 	}
 	else if (attrValue.value->IsEmpty())
 	{
-		// Если значение пустое, то найдем все идентификаторы сущностей, у которых данных
-		// данный атрибут не задан. Для этого возьмем все идентификаторы и исключим из них те,
-		// у которых значение по атрибуту задано (т.е. присутствует запись в таблице значений).
+		// Р•СЃР»Рё Р·РЅР°С‡РµРЅРёРµ РїСѓСЃС‚РѕРµ, С‚Рѕ РЅР°Р№РґРµРј РІСЃРµ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂС‹ СЃСѓС‰РЅРѕСЃС‚РµР№, Сѓ РєРѕС‚РѕСЂС‹С… РґР°РЅРЅС‹С…
+		// РґР°РЅРЅС‹Р№ Р°С‚СЂРёР±СѓС‚ РЅРµ Р·Р°РґР°РЅ. Р”Р»СЏ СЌС‚РѕРіРѕ РІРѕР·СЊРјРµРј РІСЃРµ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂС‹ Рё РёСЃРєР»СЋС‡РёРј РёР· РЅРёС… С‚Рµ,
+		// Сѓ РєРѕС‚РѕСЂС‹С… Р·РЅР°С‡РµРЅРёРµ РїРѕ Р°С‚СЂРёР±СѓС‚Сѓ Р·Р°РґР°РЅРѕ (С‚.Рµ. РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚ Р·Р°РїРёСЃСЊ РІ С‚Р°Р±Р»РёС†Рµ Р·РЅР°С‡РµРЅРёР№).
 		return utils::string::Format(
 			"(SELECT * FROM {} EXCEPT SELECT {} FROM {} WHERE {} IN (SELECT {} FROM {} WHERE {} = {}))\n",
 			GetNamingRules().GetEntityTableName(entityName),
@@ -451,7 +451,7 @@ std::optional<std::string> PGExecutorEAV::getEntityIdByAttrValueInnerCommand(con
 
 //------------------------------------------------------------------------------
 /**
-  Вставить значение для атрибута сущности
+  Р’СЃС‚Р°РІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ Р°С‚СЂРёР±СѓС‚Р° СЃСѓС‰РЅРѕСЃС‚Рё
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::Insert(const EntityName & entityName,
@@ -471,10 +471,10 @@ IExecuteResultStatusPtr PGExecutorEAV::Insert(const EntityName & entityName,
 	std::string query;
 	if (value->IsEmpty())
 	{
-		// Пустое значение считаем ошибкой, потому что не имеет смысла вставлять пустое значение
-		// Смысл EAV в том, что мы не храним пустые значения (null), если они есть.
-		// А если мы их не храним, то и нечего вставлять.
-		// Также не будем вставлять и атрибут в таблицу атрибутов.
+		// РџСѓСЃС‚РѕРµ Р·РЅР°С‡РµРЅРёРµ СЃС‡РёС‚Р°РµРј РѕС€РёР±РєРѕР№, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РЅРµ РёРјРµРµС‚ СЃРјС‹СЃР»Р° РІСЃС‚Р°РІР»СЏС‚СЊ РїСѓСЃС‚РѕРµ Р·РЅР°С‡РµРЅРёРµ
+		// РЎРјС‹СЃР» EAV РІ С‚РѕРј, С‡С‚Рѕ РјС‹ РЅРµ С…СЂР°РЅРёРј РїСѓСЃС‚С‹Рµ Р·РЅР°С‡РµРЅРёСЏ (null), РµСЃР»Рё РѕРЅРё РµСЃС‚СЊ.
+		// Рђ РµСЃР»Рё РјС‹ РёС… РЅРµ С…СЂР°РЅРёРј, С‚Рѕ Рё РЅРµС‡РµРіРѕ РІСЃС‚Р°РІР»СЏС‚СЊ.
+		// РўР°РєР¶Рµ РЅРµ Р±СѓРґРµРј РІСЃС‚Р°РІР»СЏС‚СЊ Рё Р°С‚СЂРёР±СѓС‚ РІ С‚Р°Р±Р»РёС†Сѓ Р°С‚СЂРёР±СѓС‚РѕРІ.
 		return InternalExecuteResultStatus::GetInternalError(
 			"IExecutorEAV::Insert: Empty value was passed", ResultStatus::EmptyQuery);
 	}
@@ -496,7 +496,7 @@ IExecuteResultStatusPtr PGExecutorEAV::Insert(const EntityName & entityName,
 
 //------------------------------------------------------------------------------
 /**
-  Обновить значение для атрибута сущности
+  РћР±РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ Р°С‚СЂРёР±СѓС‚Р° СЃСѓС‰РЅРѕСЃС‚Рё
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::Update(const EntityName & entityName,
@@ -540,7 +540,7 @@ IExecuteResultStatusPtr PGExecutorEAV::Update(const EntityName & entityName,
 
 //------------------------------------------------------------------------------
 /**
-  Обновить значение для атрибута сущности или вставить, если такого значения ещё не было
+  РћР±РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ Р°С‚СЂРёР±СѓС‚Р° СЃСѓС‰РЅРѕСЃС‚Рё РёР»Рё РІСЃС‚Р°РІРёС‚СЊ, РµСЃР»Рё С‚Р°РєРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РµС‰С‘ РЅРµ Р±С‹Р»Рѕ
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::InsertOrUpdate(const EntityName & entityName,
@@ -583,7 +583,7 @@ IExecuteResultStatusPtr PGExecutorEAV::InsertOrUpdate(const EntityName & entityN
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "вставить атрибут в таблицу атрибутов".
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РІСЃС‚Р°РІРёС‚СЊ Р°С‚СЂРёР±СѓС‚ РІ С‚Р°Р±Р»РёС†Сѓ Р°С‚СЂРёР±СѓС‚РѕРІ".
 */
 //---
 std::string PGExecutorEAV::insertAttributeOnConflictDoNothingCommand(const EntityName & entityName,
@@ -598,7 +598,7 @@ std::string PGExecutorEAV::insertAttributeOnConflictDoNothingCommand(const Entit
 
 //------------------------------------------------------------------------------
 /**
-  Получить часть команды "вставить значение в таблицу значений".
+  РџРѕР»СѓС‡РёС‚СЊ С‡Р°СЃС‚СЊ РєРѕРјР°РЅРґС‹ "РІСЃС‚Р°РІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Сѓ Р·РЅР°С‡РµРЅРёР№".
 */
 //---
 std::string PGExecutorEAV::insertValuePartCommand(const EntityName & entityName, EntityId entityId,
@@ -617,7 +617,7 @@ std::string PGExecutorEAV::insertValuePartCommand(const EntityName & entityName,
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "вставить значение в таблицу значений".
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РІСЃС‚Р°РІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Сѓ Р·РЅР°С‡РµРЅРёР№".
 */
 //---
 std::string PGExecutorEAV::insertValueCommand(const EntityName & entityName,
@@ -632,7 +632,7 @@ std::string PGExecutorEAV::insertValueCommand(const EntityName & entityName,
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "вставить значение в таблицу значений, при конфликте сделать обновление"
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РІСЃС‚Р°РІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Сѓ Р·РЅР°С‡РµРЅРёР№, РїСЂРё РєРѕРЅС„Р»РёРєС‚Рµ СЃРґРµР»Р°С‚СЊ РѕР±РЅРѕРІР»РµРЅРёРµ"
 */
 //---
 std::string PGExecutorEAV::insertValueOnConflictDoUpdateCommand(const EntityName & entityName,
@@ -652,7 +652,7 @@ std::string PGExecutorEAV::insertValueOnConflictDoUpdateCommand(const EntityName
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "обновить значение в таблице значений".
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РѕР±РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Рµ Р·РЅР°С‡РµРЅРёР№".
 */
 //---
 std::string PGExecutorEAV::updateValueCommand(const EntityName & entityName,
@@ -676,7 +676,7 @@ std::string PGExecutorEAV::updateValueCommand(const EntityName & entityName,
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "удалить значение в таблице значений".
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "СѓРґР°Р»РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РІ С‚Р°Р±Р»РёС†Рµ Р·РЅР°С‡РµРЅРёР№".
 */
 //---
 std::string PGExecutorEAV::removeValueCommand(const EntityName & entityName, EntityId entityId,
@@ -697,8 +697,8 @@ std::string PGExecutorEAV::removeValueCommand(const EntityName & entityName, Ent
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "Бросить ошибку, если в таблице сущностей нет сущности с
-  данным идентификатором"
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "Р‘СЂРѕСЃРёС‚СЊ РѕС€РёР±РєСѓ, РµСЃР»Рё РІ С‚Р°Р±Р»РёС†Рµ СЃСѓС‰РЅРѕСЃС‚РµР№ РЅРµС‚ СЃСѓС‰РЅРѕСЃС‚Рё СЃ
+  РґР°РЅРЅС‹Рј РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРј"
 */
 //---
 std::string PGExecutorEAV::throwErrorIfThereIsNoEntityWithSuchIdCommand(const EntityName & entityName,
@@ -718,8 +718,8 @@ std::string PGExecutorEAV::throwErrorIfThereIsNoEntityWithSuchIdCommand(const En
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "Бросить ошибку, если в таблице атрибутов нет атрибута с
-  данным именем"
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "Р‘СЂРѕСЃРёС‚СЊ РѕС€РёР±РєСѓ, РµСЃР»Рё РІ С‚Р°Р±Р»РёС†Рµ Р°С‚СЂРёР±СѓС‚РѕРІ РЅРµС‚ Р°С‚СЂРёР±СѓС‚Р° СЃ
+  РґР°РЅРЅС‹Рј РёРјРµРЅРµРј"
 */
 //---
 std::string PGExecutorEAV::throwErrorIfThereIsNoAttributeWithSuchNameCommand(const EntityName & entityName, const std::string & attributeType, const std::string & sqlAttrName) const
@@ -738,7 +738,7 @@ std::string PGExecutorEAV::throwErrorIfThereIsNoAttributeWithSuchNameCommand(con
 
 //------------------------------------------------------------------------------
 /**
-  Получить внутреннюю команду "получить идентификатор атрибута по его названию".
+  РџРѕР»СѓС‡РёС‚СЊ РІРЅСѓС‚СЂРµРЅРЅСЋСЋ РєРѕРјР°РЅРґСѓ "РїРѕР»СѓС‡РёС‚СЊ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂ Р°С‚СЂРёР±СѓС‚Р° РїРѕ РµРіРѕ РЅР°Р·РІР°РЅРёСЋ".
 */
 //---
 std::string PGExecutorEAV::selectAttributeIdByNameInnerCommand(const EntityName & entityName, const std::string & attributeType, const std::string & sqlAttrName) const
@@ -755,7 +755,7 @@ std::string PGExecutorEAV::selectAttributeIdByNameInnerCommand(const EntityName 
 
 //------------------------------------------------------------------------------
 /**
-  Получить значение атрибута сущности.
+  РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ Р°С‚СЂРёР±СѓС‚Р° СЃСѓС‰РЅРѕСЃС‚Рё.
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::GetValue(const EntityName & entityName, EntityId entityId,
@@ -798,10 +798,10 @@ IExecuteResultStatusPtr PGExecutorEAV::GetValue(const EntityName & entityName, E
 	}
 	else
 	{
-		// Если ячейка не содержит, это нормально.
-		// Значит, у данной атрибута данной сущности не записано значение.
-		// Считаем, что оно равно null и возвращаем пустую переменную
-		// (ту же самую, что и приняли)
+		// Р•СЃР»Рё СЏС‡РµР№РєР° РЅРµ СЃРѕРґРµСЂР¶РёС‚, СЌС‚Рѕ РЅРѕСЂРјР°Р»СЊРЅРѕ.
+		// Р—РЅР°С‡РёС‚, Сѓ РґР°РЅРЅРѕР№ Р°С‚СЂРёР±СѓС‚Р° РґР°РЅРЅРѕР№ СЃСѓС‰РЅРѕСЃС‚Рё РЅРµ Р·Р°РїРёСЃР°РЅРѕ Р·РЅР°С‡РµРЅРёРµ.
+		// РЎС‡РёС‚Р°РµРј, С‡С‚Рѕ РѕРЅРѕ СЂР°РІРЅРѕ null Рё РІРѕР·РІСЂР°С‰Р°РµРј РїСѓСЃС‚СѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ
+		// (С‚Сѓ Р¶Рµ СЃР°РјСѓСЋ, С‡С‚Рѕ Рё РїСЂРёРЅСЏР»Рё)
 	}
 
 	return resultStatus;
@@ -810,7 +810,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetValue(const EntityName & entityName, E
 
 //------------------------------------------------------------------------------
 /**
-  Получить значения всех атрибутов сущности.
+  РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёСЏ РІСЃРµС… Р°С‚СЂРёР±СѓС‚РѕРІ СЃСѓС‰РЅРѕСЃС‚Рё.
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & entityName,
@@ -830,8 +830,8 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & ent
 		), ResultStatus::EmptyQuery);
 	}
 	/*
-	todo: С помощью такого запроса можно собрать данные по всем атрибутам одним запросом.
-	Но пока поддержка массивов не реализована, буду делать через несколько запросов.
+	todo: РЎ РїРѕРјРѕС‰СЊСЋ С‚Р°РєРѕРіРѕ Р·Р°РїСЂРѕСЃР° РјРѕР¶РЅРѕ СЃРѕР±СЂР°С‚СЊ РґР°РЅРЅС‹Рµ РїРѕ РІСЃРµРј Р°С‚СЂРёР±СѓС‚Р°Рј РѕРґРЅРёРј Р·Р°РїСЂРѕСЃРѕРј.
+	РќРѕ РїРѕРєР° РїРѕРґРґРµСЂР¶РєР° РјР°СЃСЃРёРІРѕРІ РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅР°, Р±СѓРґСѓ РґРµР»Р°С‚СЊ С‡РµСЂРµР· РЅРµСЃРєРѕР»СЊРєРѕ Р·Р°РїСЂРѕСЃРѕРІ.
 
 	WITH
 
@@ -849,7 +849,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & ent
 	*/
 
 	{
-		// Если нет такого идентификатора, надо вернуть ошибку
+		// Р•СЃР»Рё РЅРµС‚ С‚Р°РєРѕРіРѕ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂР°, РЅР°РґРѕ РІРµСЂРЅСѓС‚СЊ РѕС€РёР±РєСѓ
 		std::string prepareQuery = throwErrorIfThereIsNoEntityWithSuchIdCommand(entityName, entityId);
 		IExecuteResultPtr result;
 		IExecuteResultStatusPtr status;
@@ -876,7 +876,7 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & ent
 			return status;
 	}
 
-	// Тут уже ошибок точно нет. Перепишем результат
+	// РўСѓС‚ СѓР¶Рµ РѕС€РёР±РѕРє С‚РѕС‡РЅРѕ РЅРµС‚. РџРµСЂРµРїРёС€РµРј СЂРµР·СѓР»СЊС‚Р°С‚
 	attrValuesByType = std::move(tempAttrValuesByType);
 
 	return InternalExecuteResultStatus::GetSuccessStatus();
@@ -885,16 +885,16 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & ent
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "получить значение по идентификатору сущности и названию атрибута".
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РїРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РїРѕ РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂСѓ СЃСѓС‰РЅРѕСЃС‚Рё Рё РЅР°Р·РІР°РЅРёСЋ Р°С‚СЂРёР±СѓС‚Р°".
 */
 //---
 std::string PGExecutorEAV::selectValueByEntityIdAndAttributeNameCommand(const EntityName & entityName,
 	EntityId entityId, const std::string & attributeType, const std::string & sqlAttrName) const
 {
 	return utils::string::Format(
-		// Бросим ошибку, если в таблице сущностей нет сущности с данным идентификатором
+		// Р‘СЂРѕСЃРёРј РѕС€РёР±РєСѓ, РµСЃР»Рё РІ С‚Р°Р±Р»РёС†Рµ СЃСѓС‰РЅРѕСЃС‚РµР№ РЅРµС‚ СЃСѓС‰РЅРѕСЃС‚Рё СЃ РґР°РЅРЅС‹Рј РёРґРµРЅС‚РёС„РёРєР°С‚РѕСЂРѕРј
 		"DO $$DECLARE BEGIN IF NOT EXISTS (SELECT * FROM {} WHERE {} = {}) THEN RAISE EXCEPTION 'There is no entity with such id (id={};entity={})'; END IF; END; $$;\n"
-		// Бросим ошибку, если в таблице атрибутов нет данного атрибута
+		// Р‘СЂРѕСЃРёРј РѕС€РёР±РєСѓ, РµСЃР»Рё РІ С‚Р°Р±Р»РёС†Рµ Р°С‚СЂРёР±СѓС‚РѕРІ РЅРµС‚ РґР°РЅРЅРѕРіРѕ Р°С‚СЂРёР±СѓС‚Р°
 		"DO $$DECLARE BEGIN IF NOT EXISTS (SELECT * FROM {} WHERE {} = {}) THEN RAISE EXCEPTION 'There is no attribute with such name (name=%;entity={})', {}; END IF; END; $$;\n"
 		"SELECT {} FROM {} WHERE {} = {} AND {} = {};\n",
 		GetNamingRules().GetEntityTableName(entityName),
@@ -921,7 +921,7 @@ std::string PGExecutorEAV::selectValueByEntityIdAndAttributeNameCommand(const En
 
 //------------------------------------------------------------------------------
 /**
-  Получить команду "получить названия атрибутов и их значения"
+  РџРѕР»СѓС‡РёС‚СЊ РєРѕРјР°РЅРґСѓ "РїРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ Рё РёС… Р·РЅР°С‡РµРЅРёСЏ"
 */
 //---
 std::string PGExecutorEAV::selectAttrValuesCommand(const EntityName & entityName, EntityId entityId,
@@ -947,7 +947,7 @@ std::string PGExecutorEAV::selectAttrValuesCommand(const EntityName & entityName
 
 //------------------------------------------------------------------------------
 /**
-  Получить значения атрибутов сущности из результата
+  РџРѕР»СѓС‡РёС‚СЊ Р·РЅР°С‡РµРЅРёСЏ Р°С‚СЂРёР±СѓС‚РѕРІ СЃСѓС‰РЅРѕСЃС‚Рё РёР· СЂРµР·СѓР»СЊС‚Р°С‚Р°
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::getAttributeValuesImpl(const IExecuteResultPtr & result,
@@ -955,7 +955,7 @@ IExecuteResultStatusPtr PGExecutorEAV::getAttributeValuesImpl(const IExecuteResu
 {
 	if (!result)
 	{
-		// Должны были передать непустой результат
+		// Р”РѕР»Р¶РЅС‹ Р±С‹Р»Рё РїРµСЂРµРґР°С‚СЊ РЅРµРїСѓСЃС‚РѕР№ СЂРµР·СѓР»СЊС‚Р°С‚
 		assert(false);
 		return InternalExecuteResultStatus::GetInternalError(
 			"PGExecutorEAV::getAttributeValuesImpl: Empty result passed");
@@ -965,7 +965,7 @@ IExecuteResultStatusPtr PGExecutorEAV::getAttributeValuesImpl(const IExecuteResu
 	size_t colCount = result->GetColCount();
 	if (colCount != 2)
 	{
-		// SELECT должен был вернуть два столбца - название атрибута и его значение
+		// SELECT РґРѕР»Р¶РµРЅ Р±С‹Р» РІРµСЂРЅСѓС‚СЊ РґРІР° СЃС‚РѕР»Р±С†Р° - РЅР°Р·РІР°РЅРёРµ Р°С‚СЂРёР±СѓС‚Р° Рё РµРіРѕ Р·РЅР°С‡РµРЅРёРµ
 		assert(false);
 		return InternalExecuteResultStatus::GetInternalError(
 			"PGExecutorEAV::getAttributeValuesImpl: the query returned the wrong number of columns");
@@ -990,8 +990,8 @@ IExecuteResultStatusPtr PGExecutorEAV::getAttributeValuesImpl(const IExecuteResu
 		auto cellValue = result->GetValue(i, 1);
 		if (!cellName.HasString())
 		{
-			// Название должно содержать строку, потому что они не могут содержать NULL
-			// И не могут содержать массивы байт, потому что мы их не запрашивали
+			// РќР°Р·РІР°РЅРёРµ РґРѕР»Р¶РЅРѕ СЃРѕРґРµСЂР¶Р°С‚СЊ СЃС‚СЂРѕРєСѓ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РѕРЅРё РЅРµ РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ NULL
+			// Р РЅРµ РјРѕРіСѓС‚ СЃРѕРґРµСЂР¶Р°С‚СЊ РјР°СЃСЃРёРІС‹ Р±Р°Р№С‚, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РјС‹ РёС… РЅРµ Р·Р°РїСЂР°С€РёРІР°Р»Рё
 			assert(false);
 			return InternalExecuteResultStatus::GetInternalError(
 				"PGExecutorEAV::getAttributeValuesImpl: The result cells are empty");
@@ -1007,11 +1007,11 @@ IExecuteResultStatusPtr PGExecutorEAV::getAttributeValuesImpl(const IExecuteResu
 		}
 		else if (cellValue.HasNull())
 		{
-			// Окей, значит у данного атрибута нет значения. Оставим пустую переменную
+			// РћРєРµР№, Р·РЅР°С‡РёС‚ Сѓ РґР°РЅРЅРѕРіРѕ Р°С‚СЂРёР±СѓС‚Р° РЅРµС‚ Р·РЅР°С‡РµРЅРёСЏ. РћСЃС‚Р°РІРёРј РїСѓСЃС‚СѓСЋ РїРµСЂРµРјРµРЅРЅСѓСЋ
 		}
 		else
 		{
-			// Таких случаев пока нет
+			// РўР°РєРёС… СЃР»СѓС‡Р°РµРІ РїРѕРєР° РЅРµС‚
 			assert(false);
 		}
 
@@ -1025,12 +1025,12 @@ IExecuteResultStatusPtr PGExecutorEAV::getAttributeValuesImpl(const IExecuteResu
 
 //------------------------------------------------------------------------------
 /**
-  Выполнить команду.
-  \param query Команда
-  \param result Переменная, в которую записывается результат выполнения команды.
-  \param status Переменная, в которую записывается статус результата выполнения команды.
-				Статус выполнения всегда записывается (даже при возникновении ошибки).
-  \return true, если команда выполнена без ошибок, иначе false.
+  Р’С‹РїРѕР»РЅРёС‚СЊ РєРѕРјР°РЅРґСѓ.
+  \param query РљРѕРјР°РЅРґР°
+  \param result РџРµСЂРµРјРµРЅРЅР°СЏ, РІ РєРѕС‚РѕСЂСѓСЋ Р·Р°РїРёСЃС‹РІР°РµС‚СЃСЏ СЂРµР·СѓР»СЊС‚Р°С‚ РІС‹РїРѕР»РЅРµРЅРёСЏ РєРѕРјР°РЅРґС‹.
+  \param status РџРµСЂРµРјРµРЅРЅР°СЏ, РІ РєРѕС‚РѕСЂСѓСЋ Р·Р°РїРёСЃС‹РІР°РµС‚СЃСЏ СЃС‚Р°С‚СѓСЃ СЂРµР·СѓР»СЊС‚Р°С‚Р° РІС‹РїРѕР»РЅРµРЅРёСЏ РєРѕРјР°РЅРґС‹.
+				РЎС‚Р°С‚СѓСЃ РІС‹РїРѕР»РЅРµРЅРёСЏ РІСЃРµРіРґР° Р·Р°РїРёСЃС‹РІР°РµС‚СЃСЏ (РґР°Р¶Рµ РїСЂРё РІРѕР·РЅРёРєРЅРѕРІРµРЅРёРё РѕС€РёР±РєРё).
+  \return true, РµСЃР»Рё РєРѕРјР°РЅРґР° РІС‹РїРѕР»РЅРµРЅР° Р±РµР· РѕС€РёР±РѕРє, РёРЅР°С‡Рµ false.
 */
 //---
 bool PGExecutorEAV::executeQuery(const std::string query, IExecuteResultPtr & result, IExecuteResultStatusPtr & status)
@@ -1058,16 +1058,16 @@ bool PGExecutorEAV::executeQuery(const std::string query, IExecuteResultPtr & re
 
 //------------------------------------------------------------------------------
 /**
-  Прочитать строку в SQL-переменную.
-  \tparam SQLConcreteType Тип SQL-переменной, у которой надо вызывать
-	метод GetValue
-  \param str Строка
-  \param type Тип переменной, которую надо создать.
-  \param value Переменная, в которую будет записан результат
-  \param status Переменная, в которую записывается статус результата
-  \return true, если выполнено без ошибок, иначе false.
-	Если функция вернула true, значит в переменную value записан результат.
-	Если функция вернула false, значит переменная status будет гарантировано непустая.
+  РџСЂРѕС‡РёС‚Р°С‚СЊ СЃС‚СЂРѕРєСѓ РІ SQL-РїРµСЂРµРјРµРЅРЅСѓСЋ.
+  \tparam SQLConcreteType РўРёРї SQL-РїРµСЂРµРјРµРЅРЅРѕР№, Сѓ РєРѕС‚РѕСЂРѕР№ РЅР°РґРѕ РІС‹Р·С‹РІР°С‚СЊ
+	РјРµС‚РѕРґ GetValue
+  \param str РЎС‚СЂРѕРєР°
+  \param type РўРёРї РїРµСЂРµРјРµРЅРЅРѕР№, РєРѕС‚РѕСЂСѓСЋ РЅР°РґРѕ СЃРѕР·РґР°С‚СЊ.
+  \param value РџРµСЂРµРјРµРЅРЅР°СЏ, РІ РєРѕС‚РѕСЂСѓСЋ Р±СѓРґРµС‚ Р·Р°РїРёСЃР°РЅ СЂРµР·СѓР»СЊС‚Р°С‚
+  \param status РџРµСЂРµРјРµРЅРЅР°СЏ, РІ РєРѕС‚РѕСЂСѓСЋ Р·Р°РїРёСЃС‹РІР°РµС‚СЃСЏ СЃС‚Р°С‚СѓСЃ СЂРµР·СѓР»СЊС‚Р°С‚Р°
+  \return true, РµСЃР»Рё РІС‹РїРѕР»РЅРµРЅРѕ Р±РµР· РѕС€РёР±РѕРє, РёРЅР°С‡Рµ false.
+	Р•СЃР»Рё С„СѓРЅРєС†РёСЏ РІРµСЂРЅСѓР»Р° true, Р·РЅР°С‡РёС‚ РІ РїРµСЂРµРјРµРЅРЅСѓСЋ value Р·Р°РїРёСЃР°РЅ СЂРµР·СѓР»СЊС‚Р°С‚.
+	Р•СЃР»Рё С„СѓРЅРєС†РёСЏ РІРµСЂРЅСѓР»Р° false, Р·РЅР°С‡РёС‚ РїРµСЂРµРјРµРЅРЅР°СЏ status Р±СѓРґРµС‚ РіР°СЂР°РЅС‚РёСЂРѕРІР°РЅРѕ РЅРµРїСѓСЃС‚Р°СЏ.
 */
 //---
 template<class SQLConcreteType, class CppConcreteType>
@@ -1077,7 +1077,7 @@ bool PGExecutorEAV::readIntoSQLVariable(std::string && str, SQLDataType type,
 	ISQLTypePtr sqlVar = m_sqlTypeConverter->GetSQLVariable(type);
 	if (!sqlVar)
 	{
-		// Для каждого SQL-типа должен быть класс
+		// Р”Р»СЏ РєР°Р¶РґРѕРіРѕ SQL-С‚РёРїР° РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РєР»Р°СЃСЃ
 		assert(false);
 		status = InternalExecuteResultStatus::GetInternalError(ErrorMessages::ISQLTypeConverter_GetSQLVariable);
 		return false;
@@ -1101,13 +1101,13 @@ bool PGExecutorEAV::readIntoSQLVariable(std::string && str, SQLDataType type,
 	auto optValue = sqlConcreteVar->GetValue();
 	if (!optValue)
 	{
-		// Если ReadFromSQL вернул true, то здесь не должны проваливаться
+		// Р•СЃР»Рё ReadFromSQL РІРµСЂРЅСѓР» true, С‚Рѕ Р·РґРµСЃСЊ РЅРµ РґРѕР»Р¶РЅС‹ РїСЂРѕРІР°Р»РёРІР°С‚СЊСЃСЏ
 		assert(false);
 		status = InternalExecuteResultStatus::GetInternalError(ErrorMessages::ISQLType_GetValue);
 		return false;
 	}
 
-	// Типы должны полностью совпадать (не хотелось бы здесь получить неявный каст int к double, например)
+	// РўРёРїС‹ РґРѕР»Р¶РЅС‹ РїРѕР»РЅРѕСЃС‚СЊСЋ СЃРѕРІРїР°РґР°С‚СЊ (РЅРµ С…РѕС‚РµР»РѕСЃСЊ Р±С‹ Р·РґРµСЃСЊ РїРѕР»СѓС‡РёС‚СЊ РЅРµСЏРІРЅС‹Р№ РєР°СЃС‚ int Рє double, РЅР°РїСЂРёРјРµСЂ)
 	static_assert(std::is_same_v<std::decay_t<decltype(value)>, std::decay_t<decltype(*optValue)>>);
 	value = *optValue;
 	return true;
@@ -1116,10 +1116,10 @@ bool PGExecutorEAV::readIntoSQLVariable(std::string && str, SQLDataType type,
 
 //------------------------------------------------------------------------------
 /**
-  Получить название атрибута в форме, пригодной для вставления в запрос
-  \param attrName Название атрибута
-  \param sqlAttrName Переменная, в которую записывается результат
-  \return nullptr, если операция выполнена успешно, иначе статус ошибки.
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ Р°С‚СЂРёР±СѓС‚Р° РІ С„РѕСЂРјРµ, РїСЂРёРіРѕРґРЅРѕР№ РґР»СЏ РІСЃС‚Р°РІР»РµРЅРёСЏ РІ Р·Р°РїСЂРѕСЃ
+  \param attrName РќР°Р·РІР°РЅРёРµ Р°С‚СЂРёР±СѓС‚Р°
+  \param sqlAttrName РџРµСЂРµРјРµРЅРЅР°СЏ, РІ РєРѕС‚РѕСЂСѓСЋ Р·Р°РїРёСЃС‹РІР°РµС‚СЃСЏ СЂРµР·СѓР»СЊС‚Р°С‚
+  \return nullptr, РµСЃР»Рё РѕРїРµСЂР°С†РёСЏ РІС‹РїРѕР»РЅРµРЅР° СѓСЃРїРµС€РЅРѕ, РёРЅР°С‡Рµ СЃС‚Р°С‚СѓСЃ РѕС€РёР±РєРё.
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::getSQLAttrName(const AttrName & attrName,
@@ -1141,7 +1141,7 @@ IExecuteResultStatusPtr PGExecutorEAV::getSQLAttrName(const AttrName & attrName,
 
 //------------------------------------------------------------------------------
 /**
-  Получить название типа SQL
+  РџРѕР»СѓС‡РёС‚СЊ РЅР°Р·РІР°РЅРёРµ С‚РёРїР° SQL
 */
 //---
 IExecuteResultStatusPtr PGExecutorEAV::getSQLTypeName(SQLDataType sqlDataType,
@@ -1159,7 +1159,7 @@ IExecuteResultStatusPtr PGExecutorEAV::getSQLTypeName(SQLDataType sqlDataType,
 	sqlTypeName = sqlVar->GetTypeName();
 	if (sqlTypeName.empty())
 	{
-		assert(false); // Название типа не должно быть пустым
+		assert(false); // РќР°Р·РІР°РЅРёРµ С‚РёРїР° РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РїСѓСЃС‚С‹Рј
 		return InternalExecuteResultStatus::GetInternalError(
 			"PGExecutorEAV::getSQLTypeName: SQL typename is empty");
 	}
@@ -1169,12 +1169,12 @@ IExecuteResultStatusPtr PGExecutorEAV::getSQLTypeName(SQLDataType sqlDataType,
 
 //------------------------------------------------------------------------------
 /**
-  Проверка значения на допустимость
+  РџСЂРѕРІРµСЂРєР° Р·РЅР°С‡РµРЅРёСЏ РЅР° РґРѕРїСѓСЃС‚РёРјРѕСЃС‚СЊ
 */
 //---
 bool PGExecutorEAV::valueTypeIsValid(const ValueType & value)
 {
-	// Если тип значения поменяется, то эту проверку надо будет поменять
+	// Р•СЃР»Рё С‚РёРї Р·РЅР°С‡РµРЅРёСЏ РїРѕРјРµРЅСЏРµС‚СЃСЏ, С‚Рѕ СЌС‚Сѓ РїСЂРѕРІРµСЂРєСѓ РЅР°РґРѕ Р±СѓРґРµС‚ РїРѕРјРµРЅСЏС‚СЊ
 	static_assert(std::is_same_v<ValueType, ISQLTypePtr>);
 
 	return value != nullptr;

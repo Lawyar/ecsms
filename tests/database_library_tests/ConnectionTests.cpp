@@ -1,7 +1,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 //
 /**
-  Тесты для IConnection
+  РўРµСЃС‚С‹ РґР»СЏ IConnection
 */
 //
 ////////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,7 @@
 #include <IDatabaseManager.h>
 
 
-/// Можем получить валидное соединение к базе данных, передав валидный URL
+/// РњРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ РІР°Р»РёРґРЅРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С…, РїРµСЂРµРґР°РІ РІР°Р»РёРґРЅС‹Р№ URL
 TEST(Connection, ConnectionWithValidURLIsValid) {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
@@ -25,7 +25,7 @@ TEST(Connection, ConnectionWithValidURLIsValid) {
 }
 
 
-/// Можем получить невалидное соединение к базе данных, передав невалидный URL
+/// РњРѕР¶РµРј РїРѕР»СѓС‡РёС‚СЊ РЅРµРІР°Р»РёРґРЅРѕРµ СЃРѕРµРґРёРЅРµРЅРёРµ Рє Р±Р°Р·Рµ РґР°РЅРЅС‹С…, РїРµСЂРµРґР°РІ РЅРµРІР°Р»РёРґРЅС‹Р№ URL
 TEST(Connection, ConnectionWithInvalidURLIsInvalid) {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection("");
@@ -35,7 +35,7 @@ TEST(Connection, ConnectionWithInvalidURLIsInvalid) {
 }
 
 
-/// Не можем выполнить запрос, переданный по невалидному соединению
+/// РќРµ РјРѕР¶РµРј РІС‹РїРѕР»РЅРёС‚СЊ Р·Р°РїСЂРѕСЃ, РїРµСЂРµРґР°РЅРЅС‹Р№ РїРѕ РЅРµРІР°Р»РёРґРЅРѕРјСѓ СЃРѕРµРґРёРЅРµРЅРёСЋ
 TEST(Connection, InvalidConnectionExecuteReturnsInvalidResult) {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection("");
@@ -50,12 +50,12 @@ TEST(Connection, InvalidConnectionExecuteReturnsInvalidResult) {
 }
 
 
-/// Можем выполнить запрос, переданный по валидному соединению
+/// РњРѕР¶РµРј РІС‹РїРѕР»РЅРёС‚СЊ Р·Р°РїСЂРѕСЃ, РїРµСЂРµРґР°РЅРЅС‹Р№ РїРѕ РІР°Р»РёРґРЅРѕРјСѓ СЃРѕРµРґРёРЅРµРЅРёСЋ
 TEST(Connection, ValidConnectionExecuteReturnsValidResult) {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
 
-	// Создадим таблицу
+	// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ
 	{
 		auto && result = connection->Execute(
 			"CREATE TABLE IF NOT EXISTS ValidConnectionExecuteReturnsValidResult(id integer PRIMARY KEY);");
@@ -67,7 +67,7 @@ TEST(Connection, ValidConnectionExecuteReturnsValidResult) {
 		ASSERT_EQ(status->GetStatus(), ResultStatus::OkWithoutData);
 	}
 
-	// Удалим таблицу
+	// РЈРґР°Р»РёРј С‚Р°Р±Р»РёС†Сѓ
 	{
 		auto && result = connection->Execute(
 			"DROP TABLE ValidConnectionExecuteReturnsValidResult;");
@@ -81,14 +81,14 @@ TEST(Connection, ValidConnectionExecuteReturnsValidResult) {
 }
 
 
-/// Выполнение запроса, содержащего ошибку, возвращает результат с ошибкой
+/// Р’С‹РїРѕР»РЅРµРЅРёРµ Р·Р°РїСЂРѕСЃР°, СЃРѕРґРµСЂР¶Р°С‰РµРіРѕ РѕС€РёР±РєСѓ, РІРѕР·РІСЂР°С‰Р°РµС‚ СЂРµР·СѓР»СЊС‚Р°С‚ СЃ РѕС€РёР±РєРѕР№
 TEST(Connection, InvalidQueryReturnsInvalidResult) {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
 
-	// Создадим таблицу
+	// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ
 	{
-		// Допущена ошибка в ключевом слове "EXIST" - правильно будет "EXISTS".
+		// Р”РѕРїСѓС‰РµРЅР° РѕС€РёР±РєР° РІ РєР»СЋС‡РµРІРѕРј СЃР»РѕРІРµ "EXIST" - РїСЂР°РІРёР»СЊРЅРѕ Р±СѓРґРµС‚ "EXISTS".
 		auto && result = connection->Execute(
 			"CREATE TABLE IF NOT EXIST InvalidQueryReturnsInvalidResult(id integer PRIMARY KEY);");
 		ASSERT_NE(result, nullptr);
@@ -105,13 +105,13 @@ TEST(Connection, InvalidQueryReturnsInvalidResult) {
 }
 
 
-/// Выполнение корректного запроса возвращает корректный результат
-// В этом тесте проверяются все основные возможности IExecuteResult сразу
+/// Р’С‹РїРѕР»РЅРµРЅРёРµ РєРѕСЂСЂРµРєС‚РЅРѕРіРѕ Р·Р°РїСЂРѕСЃР° РІРѕР·РІСЂР°С‰Р°РµС‚ РєРѕСЂСЂРµРєС‚РЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚
+// Р’ СЌС‚РѕРј С‚РµСЃС‚Рµ РїСЂРѕРІРµСЂСЏСЋС‚СЃСЏ РІСЃРµ РѕСЃРЅРѕРІРЅС‹Рµ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё IExecuteResult СЃСЂР°Р·Сѓ
 TEST(Connection, ValidQueryReturnsValidResult) {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
 
-	// Удалим таблицу, если она была
+	// РЈРґР°Р»РёРј С‚Р°Р±Р»РёС†Сѓ, РµСЃР»Рё РѕРЅР° Р±С‹Р»Р°
 	{
 		auto && result = connection->Execute(
 			"DROP TABLE IF EXISTS ValidQueryReturnsValidResult;");
@@ -123,7 +123,7 @@ TEST(Connection, ValidQueryReturnsValidResult) {
 		ASSERT_EQ(status->GetStatus(), ResultStatus::OkWithoutData);
 	}
 
-	// Создадим таблицу, состоящую из двух полей - id и text
+	// РЎРѕР·РґР°РґРёРј С‚Р°Р±Р»РёС†Сѓ, СЃРѕСЃС‚РѕСЏС‰СѓСЋ РёР· РґРІСѓС… РїРѕР»РµР№ - id Рё text
 	{
 		auto && result = connection->Execute(
 			"CREATE TABLE ValidQueryReturnsValidResult(id integer PRIMARY KEY, data text);");
@@ -136,7 +136,7 @@ TEST(Connection, ValidQueryReturnsValidResult) {
 	const int id = 1;
 	const std::string data = "some text";
 
-	// Вставим в эту таблицу одну строку
+	// Р’СЃС‚Р°РІРёРј РІ СЌС‚Сѓ С‚Р°Р±Р»РёС†Сѓ РѕРґРЅСѓ СЃС‚СЂРѕРєСѓ
 	{
 		auto && result = connection->Execute(utils::string::Format(
 			"INSERT INTO ValidQueryReturnsValidResult VALUES({}, '{}');",
@@ -148,7 +148,7 @@ TEST(Connection, ValidQueryReturnsValidResult) {
 		ASSERT_TRUE(status && !status->HasError() && status->GetStatus() == ResultStatus::OkWithoutData);
 	}
 
-	// Селектируем эту строку
+	// РЎРµР»РµРєС‚РёСЂСѓРµРј СЌС‚Сѓ СЃС‚СЂРѕРєСѓ
 	{
 		auto && result = connection->Execute("SELECT * FROM ValidQueryReturnsValidResult;");
 		ASSERT_NE(result, nullptr);
@@ -177,7 +177,7 @@ TEST(Connection, ValidQueryReturnsValidResult) {
 		ASSERT_EQ(result->GetValue(0, 1).ExtractString(), data);
 	}
 
-	// Удалим таблицу
+	// РЈРґР°Р»РёРј С‚Р°Р±Р»РёС†Сѓ
 	{
 		auto && result = connection->Execute(
 			"DROP TABLE ValidQueryReturnsValidResult;");
@@ -191,7 +191,7 @@ TEST(Connection, ValidQueryReturnsValidResult) {
 }
 
 
-// Проверка открытия транзакции без корректного закрытия
+// РџСЂРѕРІРµСЂРєР° РѕС‚РєСЂС‹С‚РёСЏ С‚СЂР°РЅР·Р°РєС†РёРё Р±РµР· РєРѕСЂСЂРµРєС‚РЅРѕРіРѕ Р·Р°РєСЂС‹С‚РёСЏ
 TEST(Connection, JustBeginTransaction)
 {
 	auto && databaseManager = GetDatabaseManager();
@@ -202,7 +202,7 @@ TEST(Connection, JustBeginTransaction)
 		ASSERT_FALSE(status->HasError());
 
 		connection->Execute("CREATE TABLE JustBeginTransaction(id INTEGER PRIMARY KEY);");
-		// Не закрываем транзакцию
+		// РќРµ Р·Р°РєСЂС‹РІР°РµРј С‚СЂР°РЅР·Р°РєС†РёСЋ
 	}
 
 	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
@@ -211,7 +211,7 @@ TEST(Connection, JustBeginTransaction)
 }
 
 
-// Проверка открытия транзакции с последующим закрытием
+// РџСЂРѕРІРµСЂРєР° РѕС‚РєСЂС‹С‚РёСЏ С‚СЂР°РЅР·Р°РєС†РёРё СЃ РїРѕСЃР»РµРґСѓСЋС‰РёРј Р·Р°РєСЂС‹С‚РёРµРј
 TEST(Connection, BeginCommitTransaction)
 {
 	auto && databaseManager = GetDatabaseManager();
@@ -231,13 +231,13 @@ TEST(Connection, BeginCommitTransaction)
 	auto result = connection->Execute("SELECT * FROM BeginCommitTransaction;");
 	ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
 
-	// Удалим таблицу
+	// РЈРґР°Р»РёРј С‚Р°Р±Р»РёС†Сѓ
 	result = connection->Execute("DROP TABLE BeginCommitTransaction;");
 	ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
 }
 
 
-// Проверка открытия транзакции с последующей отменой
+// РџСЂРѕРІРµСЂРєР° РѕС‚РєСЂС‹С‚РёСЏ С‚СЂР°РЅР·Р°РєС†РёРё СЃ РїРѕСЃР»РµРґСѓСЋС‰РµР№ РѕС‚РјРµРЅРѕР№
 TEST(Connection, BeginRollbackTransaction)
 {
 	auto && databaseManager = GetDatabaseManager();
@@ -258,13 +258,13 @@ TEST(Connection, BeginRollbackTransaction)
 }
 
 
-// Проверка GetColType для всех типов
+// РџСЂРѕРІРµСЂРєР° GetColType РґР»СЏ РІСЃРµС… С‚РёРїРѕРІ
 TEST(Connection, CanGetColType)
 {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
 
-	// Порядок (типов) аргументов в запросе должен соответствовать порядку типов в SQLDataType
+	// РџРѕСЂСЏРґРѕРє (С‚РёРїРѕРІ) Р°СЂРіСѓРјРµРЅС‚РѕРІ РІ Р·Р°РїСЂРѕСЃРµ РґРѕР»Р¶РµРЅ СЃРѕРѕС‚РІРµС‚СЃС‚РІРѕРІР°С‚СЊ РїРѕСЂСЏРґРєСѓ С‚РёРїРѕРІ РІ SQLDataType
 	const std::string query = "SELECT 1, 'text', '\\x0123456789ABCDEF'::bytea, 20000::oid, 1.5;";
 
 	auto && result = connection->Execute(query);
@@ -280,7 +280,7 @@ TEST(Connection, CanGetColType)
 }
 
 
-// Проверка GetColName
+// РџСЂРѕРІРµСЂРєР° GetColName
 TEST(Connection, CanGetColName)
 {
 	auto && databaseManager = GetDatabaseManager();
@@ -300,7 +300,7 @@ TEST(Connection, CanGetColName)
 }
 
 
-// Проверка GetColIndex
+// РџСЂРѕРІРµСЂРєР° GetColIndex
 TEST(Connection, CanGetColIndex)
 {
 	auto && databaseManager = GetDatabaseManager();
@@ -324,7 +324,7 @@ TEST(Connection, CanGetColIndex)
 }
 
 
-// Проверка GetRowCount
+// РџСЂРѕРІРµСЂРєР° GetRowCount
 TEST(Connection, CanGetRowCount)
 {
 	auto && databaseManager = GetDatabaseManager();
@@ -350,7 +350,7 @@ TEST(Connection, CanGetRowCount)
 }
 
 
-// Проверка GetColCount
+// РџСЂРѕРІРµСЂРєР° GetColCount
 TEST(Connection, CanGetColCount)
 {
 	auto && databaseManager = GetDatabaseManager();
@@ -385,7 +385,7 @@ TEST(Connection, CanGetColCount)
 }
 
 
-// Проверка GetValue
+// РџСЂРѕРІРµСЂРєР° GetValue
 TEST(Connection, CanGetValue)
 {
 	auto && databaseManager = GetDatabaseManager();
@@ -466,7 +466,7 @@ TEST(Connection, CanGetValue)
 }
 
 
-// Проверка конструкторов CellType
+// РџСЂРѕРІРµСЂРєР° РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂРѕРІ CellType
 TEST(Connection, CellTypeConstructors)
 {
 	{
@@ -504,7 +504,7 @@ TEST(Connection, CellTypeConstructors)
 }
 
 
-/// Команды выполняются транзакционно
+/// РљРѕРјР°РЅРґС‹ РІС‹РїРѕР»РЅСЏСЋС‚СЃСЏ С‚СЂР°РЅР·Р°РєС†РёРѕРЅРЅРѕ
 TEST(Connection, CommandsAreExecutedTransactionally) {
 	auto && databaseManager = GetDatabaseManager();
 	IConnectionPtr connection = databaseManager.GetConnection(c_PostgreSQLConnectionURL);
@@ -514,7 +514,7 @@ TEST(Connection, CommandsAreExecutedTransactionally) {
 			"DROP TABLE IF EXISTS CommandsAreExecutedTransactionally;\n"
 			"CREATE TABLE CommandsAreExecutedTransactionally(id INTEGER PRIMARY KEY);\n"
 			"INSERT INTO CommandsAreExecutedTransactionally VALUES(1);\n"
-			// В этой команде допущена ошибка - "FOM" вместо "FROM"
+			// Р’ СЌС‚РѕР№ РєРѕРјР°РЅРґРµ РґРѕРїСѓС‰РµРЅР° РѕС€РёР±РєР° - "FOM" РІРјРµСЃС‚Рѕ "FROM"
 			"SELECT * FOM CommandsAreExecutedTransactionally;\n"
 		);
 
@@ -529,14 +529,14 @@ TEST(Connection, CommandsAreExecutedTransactionally) {
 
 		auto && status = result->GetCurrentExecuteStatus();
 
-		// Если бы команды выполнялись не транзакционно, то таблица бы создалась на предыдущем вызове.
-		// И здесь мы бы получили корректный результат, а не ошибку.
+		// Р•СЃР»Рё Р±С‹ РєРѕРјР°РЅРґС‹ РІС‹РїРѕР»РЅСЏР»РёСЃСЊ РЅРµ С‚СЂР°РЅР·Р°РєС†РёРѕРЅРЅРѕ, С‚Рѕ С‚Р°Р±Р»РёС†Р° Р±С‹ СЃРѕР·РґР°Р»Р°СЃСЊ РЅР° РїСЂРµРґС‹РґСѓС‰РµРј РІС‹Р·РѕРІРµ.
+		// Р Р·РґРµСЃСЊ РјС‹ Р±С‹ РїРѕР»СѓС‡РёР»Рё РєРѕСЂСЂРµРєС‚РЅС‹Р№ СЂРµР·СѓР»СЊС‚Р°С‚, Р° РЅРµ РѕС€РёР±РєСѓ.
 		ASSERT_TRUE(status->HasError());
 	}
 }
 
 
-/// По валидному соединению можно создать и удалить файл
+/// РџРѕ РІР°Р»РёРґРЅРѕРјСѓ СЃРѕРµРґРёРЅРµРЅРёСЋ РјРѕР¶РЅРѕ СЃРѕР·РґР°С‚СЊ Рё СѓРґР°Р»РёС‚СЊ С„Р°Р№Р»
 TEST(Connection, CanCreateAndDeleteRemoteFileWithValidConnection)
 {
 	auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -547,7 +547,7 @@ TEST(Connection, CanCreateAndDeleteRemoteFileWithValidConnection)
 }
 
 
-/// По невалидному соединению нельзя создать файл
+/// РџРѕ РЅРµРІР°Р»РёРґРЅРѕРјСѓ СЃРѕРµРґРёРЅРµРЅРёСЋ РЅРµР»СЊР·СЏ СЃРѕР·РґР°С‚СЊ С„Р°Р№Р»
 TEST(Connection, CantCreateRemoteFileWithValidConnection)
 {
 	auto && connection = GetDatabaseManager().GetConnection("");
@@ -556,7 +556,7 @@ TEST(Connection, CantCreateRemoteFileWithValidConnection)
 }
 
 
-/// По невалидному соединению нельзя получить файл
+/// РџРѕ РЅРµРІР°Р»РёРґРЅРѕРјСѓ СЃРѕРµРґРёРЅРµРЅРёСЋ РЅРµР»СЊР·СЏ РїРѕР»СѓС‡РёС‚СЊ С„Р°Р№Р»
 TEST(Connection, CantGetExistingRemoteFileWithInvalidConnection)
 {
 	auto && connection = GetDatabaseManager().GetConnection("");
@@ -565,12 +565,12 @@ TEST(Connection, CantGetExistingRemoteFileWithInvalidConnection)
 }
 
 
-/// По валидному соединению можно получить существующий удаленный файл, и он доступен
+/// РџРѕ РІР°Р»РёРґРЅРѕРјСѓ СЃРѕРµРґРёРЅРµРЅРёСЋ РјРѕР¶РЅРѕ РїРѕР»СѓС‡РёС‚СЊ СЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ СѓРґР°Р»РµРЅРЅС‹Р№ С„Р°Р№Р», Рё РѕРЅ РґРѕСЃС‚СѓРїРµРЅ
 TEST(Connection, CanGetExistingRemoteFileWithValidConnection)
 {
 	std::string createdFileName;
 	{
-		// Создадим файл
+		// РЎРѕР·РґР°РґРёРј С„Р°Р№Р»
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto remoteFile = connection->CreateRemoteFile();
 		createdFileName = remoteFile->GetFileName();
@@ -578,7 +578,7 @@ TEST(Connection, CanGetExistingRemoteFileWithValidConnection)
 	}
 
 	{
-		// Попытаемся его получить
+		// РџРѕРїС‹С‚Р°РµРјСЃСЏ РµРіРѕ РїРѕР»СѓС‡РёС‚СЊ
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto remoteFile = connection->GetRemoteFile(createdFileName);
 		ASSERT_EQ(remoteFile->GetFileName(), createdFileName);
@@ -586,7 +586,7 @@ TEST(Connection, CanGetExistingRemoteFileWithValidConnection)
 		auto status = connection->BeginTransaction();
 		ASSERT_FALSE(status->HasError());
 
-		// Проверка на доступность
+		// РџСЂРѕРІРµСЂРєР° РЅР° РґРѕСЃС‚СѓРїРЅРѕСЃС‚СЊ
 		ASSERT_TRUE(remoteFile->Open(FileOpenMode::Read));
 
 		status = connection->CommitTransaction();
@@ -594,18 +594,18 @@ TEST(Connection, CanGetExistingRemoteFileWithValidConnection)
 	}
 
 	{
-		// Удалим файл
+		// РЈРґР°Р»РёРј С„Р°Р№Р»
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		ASSERT_TRUE(connection->DeleteRemoteFile(createdFileName));
 	}
 }
 
 
-/// По валидному соединению можно получить несуществующий удаленный файл, но он будет недоступен
+/// РџРѕ РІР°Р»РёРґРЅРѕРјСѓ СЃРѕРµРґРёРЅРµРЅРёСЋ РјРѕР¶РЅРѕ РїРѕР»СѓС‡РёС‚СЊ РЅРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ СѓРґР°Р»РµРЅРЅС‹Р№ С„Р°Р№Р», РЅРѕ РѕРЅ Р±СѓРґРµС‚ РЅРµРґРѕСЃС‚СѓРїРµРЅ
 TEST(Connection, CanGetNonExistingRemoteFileWithValidConnection)
 {
 	{
-		// Попытаемся получить несуществующий файл
+		// РџРѕРїС‹С‚Р°РµРјСЃСЏ РїРѕР»СѓС‡РёС‚СЊ РЅРµСЃСѓС‰РµСЃС‚РІСѓСЋС‰РёР№ С„Р°Р№Р»
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto remoteFile = connection->GetRemoteFile("100000");
 		ASSERT_NE(remoteFile, nullptr);
@@ -613,7 +613,7 @@ TEST(Connection, CanGetNonExistingRemoteFileWithValidConnection)
 		auto status = connection->BeginTransaction();
 		ASSERT_FALSE(status->HasError());
 
-		// Проверка на недоступность (раз файл не существует, то не должен открываться)
+		// РџСЂРѕРІРµСЂРєР° РЅР° РЅРµРґРѕСЃС‚СѓРїРЅРѕСЃС‚СЊ (СЂР°Р· С„Р°Р№Р» РЅРµ СЃСѓС‰РµСЃС‚РІСѓРµС‚, С‚Рѕ РЅРµ РґРѕР»Р¶РµРЅ РѕС‚РєСЂС‹РІР°С‚СЊСЃСЏ)
 		ASSERT_FALSE(remoteFile->Open(FileOpenMode::Read));
 
 		status = connection->CommitTransaction();
@@ -622,7 +622,7 @@ TEST(Connection, CanGetNonExistingRemoteFileWithValidConnection)
 }
 
 
-/// По валидному соединению нельзя получить файл с невалидным именем
+/// РџРѕ РІР°Р»РёРґРЅРѕРјСѓ СЃРѕРµРґРёРЅРµРЅРёСЋ РЅРµР»СЊР·СЏ РїРѕР»СѓС‡РёС‚СЊ С„Р°Р№Р» СЃ РЅРµРІР°Р»РёРґРЅС‹Рј РёРјРµРЅРµРј
 TEST(Connection, CantGetRemoteFileWithInvalidName)
 {
 	auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -631,7 +631,7 @@ TEST(Connection, CantGetRemoteFileWithInvalidName)
 }
 
 
-/// Файл не создается, если транзакция оборвалась
+/// Р¤Р°Р№Р» РЅРµ СЃРѕР·РґР°РµС‚СЃСЏ, РµСЃР»Рё С‚СЂР°РЅР·Р°РєС†РёСЏ РѕР±РѕСЂРІР°Р»Р°СЃСЊ
 TEST(Connection, CantCreateRemoteFileWithFailedTransaction)
 {
 	std::string createdFileName;
@@ -641,7 +641,7 @@ TEST(Connection, CantCreateRemoteFileWithFailedTransaction)
 		ASSERT_FALSE(status->HasError());
 		auto remoteFile = connection->CreateRemoteFile();
 		createdFileName = remoteFile->GetFileName();
-		// Обрыв транзакции
+		// РћР±СЂС‹РІ С‚СЂР°РЅР·Р°РєС†РёРё
 	}
 
 	auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
@@ -654,7 +654,7 @@ TEST(Connection, CantCreateRemoteFileWithFailedTransaction)
 }
 
 
-/// Файл не создается, если транзакция была отменена
+/// Р¤Р°Р№Р» РЅРµ СЃРѕР·РґР°РµС‚СЃСЏ, РµСЃР»Рё С‚СЂР°РЅР·Р°РєС†РёСЏ Р±С‹Р»Р° РѕС‚РјРµРЅРµРЅР°
 TEST(Connection, CantCreateRemoteFileWithRollbackTransaction)
 {
 	std::string createdFileName;
@@ -679,7 +679,7 @@ TEST(Connection, CantCreateRemoteFileWithRollbackTransaction)
 }
 
 
-/// Файл создается, если транзакция была зафиксирована
+/// Р¤Р°Р№Р» СЃРѕР·РґР°РµС‚СЃСЏ, РµСЃР»Рё С‚СЂР°РЅР·Р°РєС†РёСЏ Р±С‹Р»Р° Р·Р°С„РёРєСЃРёСЂРѕРІР°РЅР°
 TEST(Connection, CanCreateRemoteFileWithCommitTransaction)
 {
 	std::string createdFileName;
@@ -702,34 +702,34 @@ TEST(Connection, CanCreateRemoteFileWithCommitTransaction)
 	status = connection->CommitTransaction();
 	ASSERT_FALSE(status->HasError());
 
-	// Удалим файл в конце
+	// РЈРґР°Р»РёРј С„Р°Р№Р» РІ РєРѕРЅС†Рµ
 	ASSERT_TRUE(connection->DeleteRemoteFile(createdFileName));
 }
 
 
-/// Файл не удаляется, если транзакция оборвалась
+/// Р¤Р°Р№Р» РЅРµ СѓРґР°Р»СЏРµС‚СЃСЏ, РµСЃР»Рё С‚СЂР°РЅР·Р°РєС†РёСЏ РѕР±РѕСЂРІР°Р»Р°СЃСЊ
 TEST(Connection, CantDeleteRemoteFileWithFailedTransaction)
 {
 	std::string createdFileName;
 	{
-		// Создадим файл для удаления
+		// РЎРѕР·РґР°РґРёРј С„Р°Р№Р» РґР»СЏ СѓРґР°Р»РµРЅРёСЏ
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto remoteFilePtr = connection->CreateRemoteFile();
 		createdFileName = remoteFilePtr->GetFileName();
 	}
 
 	{
-		// Попытаемся его удалить в рамках транзакции
+		// РџРѕРїС‹С‚Р°РµРјСЃСЏ РµРіРѕ СѓРґР°Р»РёС‚СЊ РІ СЂР°РјРєР°С… С‚СЂР°РЅР·Р°РєС†РёРё
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto status = connection->BeginTransaction();
 		ASSERT_FALSE(status->HasError());
 
 		connection->DeleteRemoteFile(createdFileName);
-		// Обрыв транзакции
+		// РћР±СЂС‹РІ С‚СЂР°РЅР·Р°РєС†РёРё
 	}
 
 	{
-		// Проверим, что файл не удалился
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С„Р°Р№Р» РЅРµ СѓРґР°Р»РёР»СЃСЏ
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
 		ASSERT_EQ(remoteFilePtr->GetFileName(), createdFileName);
@@ -744,39 +744,39 @@ TEST(Connection, CantDeleteRemoteFileWithFailedTransaction)
 	}
 
 	{
-		// Удалим файл
+		// РЈРґР°Р»РёРј С„Р°Р№Р»
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		ASSERT_TRUE(connection->DeleteRemoteFile(createdFileName));
 	}	
 }
 
 
-/// Файл не удаляется, если транзакция была отменена
+/// Р¤Р°Р№Р» РЅРµ СѓРґР°Р»СЏРµС‚СЃСЏ, РµСЃР»Рё С‚СЂР°РЅР·Р°РєС†РёСЏ Р±С‹Р»Р° РѕС‚РјРµРЅРµРЅР°
 TEST(Connection, CantDeleteRemoteFileWithRollbackTransaction)
 {
 	std::string createdFileName;
 	{
-		// Создадим файл для удаления
+		// РЎРѕР·РґР°РґРёРј С„Р°Р№Р» РґР»СЏ СѓРґР°Р»РµРЅРёСЏ
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto remoteFilePtr = connection->CreateRemoteFile();
 		createdFileName = remoteFilePtr->GetFileName();
 	}
 
 	{
-		// Попытаемся его удалить в рамках транзакции
+		// РџРѕРїС‹С‚Р°РµРјСЃСЏ РµРіРѕ СѓРґР°Р»РёС‚СЊ РІ СЂР°РјРєР°С… С‚СЂР°РЅР·Р°РєС†РёРё
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto status = connection->BeginTransaction();
 		ASSERT_FALSE(status->HasError());
 
 		connection->DeleteRemoteFile(createdFileName);
 		
-		// Отмена транзакции
+		// РћС‚РјРµРЅР° С‚СЂР°РЅР·Р°РєС†РёРё
 		status = connection->RollbackTransaction();
 		ASSERT_FALSE(status->HasError());
 	}
 
 	{
-		// Проверим, что файл не удалился
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С„Р°Р№Р» РЅРµ СѓРґР°Р»РёР»СЃСЏ
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
 		ASSERT_EQ(remoteFilePtr->GetFileName(), createdFileName);
@@ -791,39 +791,39 @@ TEST(Connection, CantDeleteRemoteFileWithRollbackTransaction)
 	}
 
 	{
-		// Удалим файл
+		// РЈРґР°Р»РёРј С„Р°Р№Р»
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		ASSERT_TRUE(connection->DeleteRemoteFile(createdFileName));
 	}
 }
 
 
-/// Файл удаляется, если транзакция была зафиксирована
+/// Р¤Р°Р№Р» СѓРґР°Р»СЏРµС‚СЃСЏ, РµСЃР»Рё С‚СЂР°РЅР·Р°РєС†РёСЏ Р±С‹Р»Р° Р·Р°С„РёРєСЃРёСЂРѕРІР°РЅР°
 TEST(Connection, CanDeleteRemoteFileWithCommitTransaction)
 {
 	std::string createdFileName;
 	{
-		// Создадим файл для удаления
+		// РЎРѕР·РґР°РґРёРј С„Р°Р№Р» РґР»СЏ СѓРґР°Р»РµРЅРёСЏ
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto remoteFilePtr = connection->CreateRemoteFile();
 		createdFileName = remoteFilePtr->GetFileName();
 	}
 
 	{
-		// Попытаемся его удалить в рамках транзакции
+		// РџРѕРїС‹С‚Р°РµРјСЃСЏ РµРіРѕ СѓРґР°Р»РёС‚СЊ РІ СЂР°РјРєР°С… С‚СЂР°РЅР·Р°РєС†РёРё
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto status = connection->BeginTransaction();
 		ASSERT_FALSE(status->HasError());
 
 		connection->DeleteRemoteFile(createdFileName);
 
-		// Фиксация транзакции
+		// Р¤РёРєСЃР°С†РёСЏ С‚СЂР°РЅР·Р°РєС†РёРё
 		status = connection->CommitTransaction();
 		ASSERT_FALSE(status->HasError());
 	}
 
 	{
-		// Проверим, что файл удалился
+		// РџСЂРѕРІРµСЂРёРј, С‡С‚Рѕ С„Р°Р№Р» СѓРґР°Р»РёР»СЃСЏ
 		auto && connection = GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
 		auto remoteFilePtr = connection->GetRemoteFile(createdFileName);
 		ASSERT_EQ(remoteFilePtr->GetFileName(), createdFileName);
