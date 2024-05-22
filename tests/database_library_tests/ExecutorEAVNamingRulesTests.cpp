@@ -38,10 +38,19 @@ protected:
 };
 
 
-// todo
-/*
-TEST_F(ExecutorEAVNamingRules, test)
+/// Проверка методов IExecutorEAVNamingRules
+TEST_F(ExecutorEAVNamingRules, Methods)
 {
-	ASSERT_EQ(GetRules().SomeMethod(SomeArg), expectedValue);
+	const std::string entityName = "EntityName";
+	const std::string attributeType = "INTEGER";
+
+	EXPECT_EQ(GetRules().GetEntityTable_Short_IdField(entityName), "id");
+	EXPECT_EQ(GetRules().GetAttributeTable_Short_IdField(entityName, attributeType), "id");
+	EXPECT_EQ(GetRules().GetAttributeTable_Short_NameField(entityName, attributeType), "name");
+	EXPECT_EQ(GetRules().GetValueTable_Short_EntityIdField(entityName, attributeType), "entity_id");
+	EXPECT_EQ(GetRules().GetValueTable_Short_AttributeIdField(entityName, attributeType), "attribute_id");
+	EXPECT_EQ(GetRules().GetValueTable_Short_ValueField(entityName, attributeType), "value");
+	EXPECT_EQ(GetRules().GetEntityTableName(entityName), "entityname");
+	EXPECT_EQ(GetRules().GetAttributeTableName(entityName, attributeType), "entityname_attribute_integer");
+	EXPECT_EQ(GetRules().GetValueTableName(entityName, attributeType), "entityname_value_integer");
 }
-*/
