@@ -148,6 +148,7 @@ private: // Общие вспомогательные методы
 	/// Получить название типа SQL
 	IExecuteResultStatusPtr getSQLTypeName(SQLDataType sqlDataType, std::string & sqlTypeName) const;
 
-	/// Проверка значения на допустимость
-	bool valueTypeIsValid(const ValueType & value);
+	/// Проверка на то, что сущность зарегистрирована, и с ней ассоциирован тип данных
+	IExecuteResultStatusPtr checkEntityWithDataTypeError(const std::string & entityName,
+		std::optional<SQLDataType> sqlDataType = std::nullopt) const;
 };

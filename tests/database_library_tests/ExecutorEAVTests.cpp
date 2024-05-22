@@ -574,6 +574,27 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityCreatesNewEntity)
 }
 
 
+/// CreateNewEntity не создает новую сущность, если передать несуществующее название сущности
+TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityDoesNotCreateEntityWithInvalidName)
+{
+	const std::string entityName1 = "SomeEntity1", entityName2 = "SomeEntity2";
+	const IExecutorEAV::EAVRegisterEntries entries({
+		{entityName1, {SQLDataType::Integer}},
+		{entityName2, {SQLDataType::Text}} });
+	ASSERT_TRUE(AllTablesDoNotExist({ entries }, *connection, GetRules(), *converter));
+
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries, true)->HasError());
+
+	// Создадим сущность несуществующего типа
+	int result = -1;
+	ASSERT_TRUE(executorEAV->CreateNewEntity("SomeEntity3", result)->HasError());
+	ASSERT_EQ(result, -1);
+
+	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Тесты Insert/Update/InsertOrUpdate, тестирующие доступность всех валидных типов
 ////////////////////////////////////////////////////////////////////////////////
@@ -944,9 +965,10 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertsWithInvalidEntityNam
 	ASSERT_EQ(result, 1);
 
 	std::string attributeName = "SomeIntegerAttr";
-	ASSERT_TRUE(executorEAV->Insert(nonExistingEntityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
-		->HasError());
+	auto status = executorEAV->Insert(nonExistingEntityName, result,
+		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5));
+	ASSERT_TRUE(status->HasError());
+	ASSERT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
 
 	// Проверим, что таблицы не создались
 	ASSERT_FALSE(IsTableExist(
@@ -986,9 +1008,10 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertsWithInvalidE
 	ASSERT_EQ(result, 1);
 
 	std::string attributeName = "SomeIntegerAttr";
-	ASSERT_TRUE(executorEAV->InsertOrUpdate(nonExistingEntityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
-		->HasError());
+	auto status = executorEAV->InsertOrUpdate(nonExistingEntityName, result,
+		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5));
+	ASSERT_TRUE(status->HasError());
+	ASSERT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
 
 	// Проверим, что таблицы не создались
 	ASSERT_FALSE(IsTableExist(
@@ -1031,9 +1054,10 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdatesWithInvalidEntityNam
 	executorEAV->Insert(existingEntityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5));
 
-	ASSERT_TRUE(executorEAV->Update(nonExistingEntityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(6))
-		->HasError());
+	auto status = executorEAV->Update(nonExistingEntityName, result,
+		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(6));
+	ASSERT_TRUE(status->HasError());
+	ASSERT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
 
 	// Проверим, что таблицы не создались
 	ASSERT_FALSE(IsTableExist(
@@ -1076,9 +1100,10 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdatesWithInvalidE
 	executorEAV->Insert(existingEntityName, result,
 		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5));
 
-	ASSERT_TRUE(executorEAV->InsertOrUpdate(nonExistingEntityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(6))
-		->HasError());
+	auto status = executorEAV->InsertOrUpdate(nonExistingEntityName, result,
+		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(6));
+	ASSERT_TRUE(status->HasError());
+	ASSERT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
 
 	// Проверим, что таблицы не создались
 	ASSERT_FALSE(IsTableExist(
@@ -1093,6 +1118,180 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdatesWithInvalidE
 		GetRules().GetValueTableName(nonExistingEntityName, attributeTypeName),
 		*connection
 	));
+
+	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+}
+
+
+/// Insert не вставляет значение при невалидном типе атрибута
+TEST_F(ExecutorEAVWithEmptyEnvironment, InsertDoesNotInsertsWithInvalidAttributeType)
+{
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	const std::string entityName = "SomeEntity1";
+	const SQLDataType attributeType = SQLDataType::Integer;
+	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)->GetTypeName();
+
+	ASSERT_FALSE(executorEAV->SetRegisteredEntities({ {entityName, {attributeType}} }, true)->HasError());
+
+	int result = -1;
+	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
+	ASSERT_EQ(result, 1);
+
+	std::string attributeName = "SomeTextAttr";
+	// вставляем атрибут Text, в то время как зарегистрирован только Integer
+	auto status = executorEAV->Insert(entityName, result,
+		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeText("Text"));
+	ASSERT_TRUE(status->HasError());
+	ASSERT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+
+	// Проверим, что таблицы атрибутов и значений пустые
+	{
+		auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
+			GetRules().GetAttributeTableName(entityName, attributeTypeName)));
+		ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(result->GetRowCount(), 0);
+	}
+	{
+		auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
+			GetRules().GetValueTableName(entityName, attributeTypeName)));
+		ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(result->GetRowCount(), 0);
+	}
+
+	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+}
+
+
+/// InsertOrUpdate не вставляет значение при невалидном типе атрибута
+TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotInsertWithInvalidAttributeType)
+{
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	const std::string entityName = "SomeEntity1";
+	const SQLDataType attributeType = SQLDataType::Integer;
+	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)->GetTypeName();
+
+	ASSERT_FALSE(executorEAV->SetRegisteredEntities({ {entityName, {attributeType}} }, true)->HasError());
+
+	int result = -1;
+	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
+	ASSERT_EQ(result, 1);
+
+	std::string attributeName = "SomeTextAttr";
+	// вставляем атрибут Text, в то время как зарегистрирован только Integer
+	auto status = executorEAV->InsertOrUpdate(entityName, result,
+		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeText("Text"));
+	ASSERT_TRUE(status->HasError());
+	ASSERT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+
+	// Проверим, что таблицы атрибутов и значений пустые
+	{
+		auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
+			GetRules().GetAttributeTableName(entityName, attributeTypeName)));
+		ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(result->GetRowCount(), 0);
+	}
+	{
+		auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
+			GetRules().GetValueTableName(entityName, attributeTypeName)));
+		ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(result->GetRowCount(), 0);
+	}
+
+	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+}
+
+
+/// Update не обновляет значение при невалидном типе атрибута
+TEST_F(ExecutorEAVWithEmptyEnvironment, UpdateDoesNotUpdateWithInvalidAttributeType)
+{
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	const std::string entityName = "SomeEntity1";
+	const SQLDataType attributeType = SQLDataType::Integer;
+	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)->GetTypeName();
+
+	ASSERT_FALSE(executorEAV->SetRegisteredEntities({ {entityName, {attributeType}} }, true)->HasError());
+
+	int result = -1;
+	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
+	ASSERT_EQ(result, 1);
+
+	std::string attributeName = "SomeIntAttr";
+	// Для начала вставим значение, чтобы было, что обновлять
+	int intValue = 5;
+	ASSERT_FALSE(executorEAV->Insert(entityName, result, converter->GetSQLTypeText(std::string(attributeName)),
+		converter->GetSQLTypeInteger(intValue))->HasError());
+
+	// обновим значение атрибутом Text, в то время как зарегистрирован только Integer
+	auto status = executorEAV->Update(entityName, result,
+		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeText("Text"));
+	ASSERT_TRUE(status->HasError());
+	ASSERT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+
+	// Проверим, что таблицы атрибутов и значений не обновились Update'ом - в них только вставленное значение
+	{
+		auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
+			GetRules().GetAttributeTableName(entityName, attributeTypeName)));
+		ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(result->GetRowCount(), 1);
+		ASSERT_EQ(result->GetValue(0, 1).ExtractString(), attributeName);
+	}
+	{
+		auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
+			GetRules().GetValueTableName(entityName, attributeTypeName)));
+		ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(result->GetRowCount(), 1);
+		ASSERT_EQ(result->GetValue(0, 2).ExtractString(), std::to_string(intValue));
+	}
+
+	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+}
+
+
+/// InsertOrUpdate не обновляет значение при невалидном типе атрибута
+TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateDoesNotUpdateWithInvalidAttributeType)
+{
+	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+
+	const std::string entityName = "SomeEntity1";
+	const SQLDataType attributeType = SQLDataType::Integer;
+	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)->GetTypeName();
+
+	ASSERT_FALSE(executorEAV->SetRegisteredEntities({ {entityName, {attributeType}} }, true)->HasError());
+
+	int result = -1;
+	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
+	ASSERT_EQ(result, 1);
+
+	std::string attributeName = "SomeIntAttr";
+	// Для начала вставим значение, чтобы было, что обновлять
+	int intValue = 5;
+	ASSERT_FALSE(executorEAV->Insert(entityName, result, converter->GetSQLTypeText(std::string(attributeName)),
+		converter->GetSQLTypeInteger(intValue))->HasError());
+
+	// обновим значение атрибутом Text, в то время как зарегистрирован только Integer
+	auto status = executorEAV->InsertOrUpdate(entityName, result,
+		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeText("Text"));
+	ASSERT_TRUE(status->HasError());
+	ASSERT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+
+	// Проверим, что таблицы атрибутов и значений не обновились InsertOrUpdate'ом - в них только вставленное значение
+	{
+		auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
+			GetRules().GetAttributeTableName(entityName, attributeTypeName)));
+		ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(result->GetRowCount(), 1);
+		ASSERT_EQ(result->GetValue(0, 1).ExtractString(), attributeName);
+	}
+	{
+		auto result = connection->Execute(utils::string::Format("SELECT * FROM {};",
+			GetRules().GetValueTableName(entityName, attributeTypeName)));
+		ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
+		ASSERT_EQ(result->GetRowCount(), 1);
+		ASSERT_EQ(result->GetValue(0, 2).ExtractString(), std::to_string(intValue));
+	}
 
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 }
@@ -2135,7 +2334,9 @@ TEST_F(ExecutorEAVWithFilledEnvironment, GetEntityIdsDoesNotWorkForNonExistingEn
 
 	// будем заполнять вектор мусором, чтобы дополнительно проверять, что метод его не чистит
 	result = { 7, 4, 5, 3 };
-	EXPECT_TRUE(executorEAV->GetEntityIds("birds", result)->HasError());
+	auto status = executorEAV->GetEntityIds("birds", result);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
 	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
 }
 
@@ -2188,11 +2389,10 @@ TEST_F(ExecutorEAVWithFilledEnvironment,
 	result.push_back(nullptr);
 	result.push_back(nullptr);
 	// У users нет атрибута SQLDataType::ByteArray
-	EXPECT_TRUE(executorEAV->GetAttributeNames("users", SQLDataType::ByteArray, result)->HasError());
-	EXPECT_EQ(result.size(), 3);
-	EXPECT_EQ(result[0], nullptr);
-	EXPECT_EQ(result[1], nullptr);
-	EXPECT_EQ(result[2], nullptr);
+	auto status = executorEAV->GetAttributeNames("users", SQLDataType::ByteArray, result);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+	EXPECT_EQ(result, std::vector<ISQLTypeTextPtr>({nullptr, nullptr, nullptr}));
 }
 
 
@@ -2207,11 +2407,10 @@ TEST_F(ExecutorEAVWithFilledEnvironment,
 	result.push_back(nullptr);
 	result.push_back(nullptr);
 	// Не существует сущности "birds"
-	EXPECT_TRUE(executorEAV->GetAttributeNames("birds", SQLDataType::Integer, result)->HasError());
-	EXPECT_EQ(result.size(), 3);
-	EXPECT_EQ(result[0], nullptr);
-	EXPECT_EQ(result[1], nullptr);
-	EXPECT_EQ(result[2], nullptr);
+	auto status = executorEAV->GetAttributeNames("birds", SQLDataType::Integer, result);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+	EXPECT_EQ(result, std::vector<ISQLTypeTextPtr>({ nullptr, nullptr, nullptr }));
 }
 
 
@@ -2272,7 +2471,7 @@ TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesFindsExistingEn
 }
 
 
-/// FindEntitiesByAttrValues ищет существующие записи по нескольких парам атрибут-значение
+/// FindEntitiesByAttrValues ищет существующие записи по нескольким парам атрибут-значение
 TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesFindsExistingEntriesByAttrValues)
 {
 	// Тестируем только две пары атрибут-значение
@@ -2433,7 +2632,7 @@ TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindWith
 	auto status = executorEAV->FindEntitiesByAttrValues("birds", std::vector<IExecutorEAV::AttrValue>({
 		{converter->GetSQLTypeText("Name"), converter->GetSQLTypeText("Ivan")} }),
 		result);
-	EXPECT_EQ(status->GetStatus(), ResultStatus::FatalError);
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
 	EXPECT_TRUE(status->HasError());
 	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
 
@@ -2442,7 +2641,7 @@ TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindWith
 	status = executorEAV->FindEntitiesByAttrValues("", std::vector<IExecutorEAV::AttrValue>({
 		{converter->GetSQLTypeText("Name"), converter->GetSQLTypeText("Ivan")} }),
 		result);
-	EXPECT_EQ(status->GetStatus(), ResultStatus::FatalError);
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
 	EXPECT_TRUE(status->HasError());
 	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
 
@@ -2491,12 +2690,12 @@ TEST_F(ExecutorEAVWithFilledEnvironment, FindEntitiesByAttrValuesDoesNotFindWith
 	EXPECT_TRUE(status->HasError());
 	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
 
-	//    3. Значение атрибута принадлежит несуществующиму типу данных
+	//    3. Значение атрибута принадлежит незарегистрированному типу данных
 	result = { 7, 4, 5, 3 };
 	status = executorEAV->FindEntitiesByAttrValues("users", std::vector<IExecutorEAV::AttrValue>({
 		{converter->GetSQLTypeText("Name"), converter->GetSQLTypeInteger(5)} }),
 		result);
-	EXPECT_EQ(status->GetStatus(), ResultStatus::FatalError);
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
 	EXPECT_TRUE(status->HasError());
 	EXPECT_EQ(result, std::vector<IExecutorEAV::EntityId>({ 7, 4, 5, 3 }));
 }
@@ -2549,6 +2748,32 @@ TEST_F(ExecutorEAVWithFilledEnvironment, GetValueGetsEmptyVarForExistingEntityAn
 	EXPECT_FALSE(status->HasError());
 	EXPECT_EQ(status->GetStatus(), ResultStatus::OkWithData);
 	EXPECT_EQ(textValue->GetValue(), std::nullopt);
+}
+
+
+/// GetValue возвращает ошибку, если ему передать незарегистрированное название сущности
+TEST_F(ExecutorEAVWithFilledEnvironment, GetValuesDoesNotGetWithUnregisteredEntityName)
+{
+	ISQLTypeTextPtr textValue = converter->GetSQLTypeText();
+	// Не зарегистрирована сущность с названием "birds"
+	auto status = executorEAV->GetValue("birds", 1, converter->GetSQLTypeText("Name"),
+		textValue);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+	EXPECT_EQ(textValue->GetValue(), std::nullopt);
+}
+
+
+/// GetValue возвращает ошибку, если ему передать незарегистрированный тип атрибута
+TEST_F(ExecutorEAVWithFilledEnvironment, GetValuesDoesNotGetWithUnregisteredAttributeType)
+{
+	ISQLTypeIntegerPtr intValue = converter->GetSQLTypeInteger();
+	// У "users" нет атрибута типа Integer
+	auto status = executorEAV->GetValue("users", 1, converter->GetSQLTypeText("Score"),
+		intValue);
+	EXPECT_TRUE(status->HasError());
+	EXPECT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+	EXPECT_EQ(intValue->GetValue(), std::nullopt);
 }
 
 
@@ -2688,6 +2913,7 @@ TEST_F(ExecutorEAVWithFilledEnvironment, GetAttributeValuesDoesNotWorkWithInvali
 	EXPECT_EQ(attrValuesByType.at(SQLDataType::RemoteFileId).at(0).attrName, nullptr);
 	EXPECT_EQ(attrValuesByType.at(SQLDataType::RemoteFileId).at(0).value, nullptr);
 }
+
 
 /// GetAttributeValues не работает с незарегистрированной сущностью
 TEST_F(ExecutorEAVWithFilledEnvironment, GetAttributeValuesDoesNotWorkWithUnregisteredEntity)

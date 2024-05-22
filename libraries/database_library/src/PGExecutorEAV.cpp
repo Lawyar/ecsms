@@ -184,6 +184,9 @@ std::string PGExecutorEAV::createValueTableCommand(const std::string & entityNam
 //---
 IExecuteResultStatusPtr PGExecutorEAV::CreateNewEntity(const EntityName & entityName, EntityId & entityId)
 {
+	if (auto error = checkEntityWithDataTypeError(entityName))
+		return error;
+
 	std::string query;
 	query += insertNewEntityReturningIdCommand(entityName);
 
@@ -211,6 +214,9 @@ IExecuteResultStatusPtr PGExecutorEAV::CreateNewEntity(const EntityName & entity
 IExecuteResultStatusPtr PGExecutorEAV::GetEntityIds(const EntityName & entityName,
 	std::vector<EntityId> & entityIds)
 {
+	if (auto error = checkEntityWithDataTypeError(entityName))
+		return error;
+
 	std::string query = getEntityIdsCommand(entityName);
 	IExecuteResultPtr result;
 	IExecuteResultStatusPtr resultStatus;
@@ -254,6 +260,9 @@ IExecuteResultStatusPtr PGExecutorEAV::GetEntityIds(const EntityName & entityNam
 IExecuteResultStatusPtr PGExecutorEAV::GetAttributeNames(const EntityName & entityName,
 	SQLDataType sqlDataType, std::vector<AttrName> & attrNames)
 {
+	if (auto error = checkEntityWithDataTypeError(entityName, sqlDataType))
+		return error;
+
 	std::string attributeType;
 	if (auto sqlVar = m_sqlTypeConverter->GetSQLVariable(sqlDataType))
 		attributeType = sqlVar->GetTypeName();
@@ -305,6 +314,16 @@ IExecuteResultStatusPtr PGExecutorEAV::GetAttributeNames(const EntityName & enti
 IExecuteResultStatusPtr PGExecutorEAV::FindEntitiesByAttrValues(const EntityName & entityName,
 	const std::vector<AttrValue> & attrValues, std::vector<EntityId>& entityIds)
 {
+	for (auto && attrValue : attrValues)
+	{
+		if (attrValue.value == nullptr)
+			return InternalExecuteResultStatus::GetInternalError(
+				"IExecutorEAV::FindEntitiesByAttrValues: Null value was passed",
+				ResultStatus::EmptyQuery);
+		else if (auto error = checkEntityWithDataTypeError(entityName, attrValue.value->GetType()))
+			return error;
+	}
+
 	if (attrValues.empty())
 		return InternalExecuteResultStatus::GetInternalError(
 			"IExecutorEAV::FindEntitiesByAttrValues: Empty array was passed", ResultStatus::EmptyQuery);
@@ -457,9 +476,12 @@ std::optional<std::string> PGExecutorEAV::getEntityIdByAttrValueInnerCommand(con
 IExecuteResultStatusPtr PGExecutorEAV::Insert(const EntityName & entityName,
 	EntityId entityId, const AttrName & _attrName, const ValueType & value)
 {
-	if (!valueTypeIsValid(value))
+	if (value == nullptr)
 		return InternalExecuteResultStatus::GetInternalError(
-			"IExecutorEAV::Insert: Invalid value", ResultStatus::EmptyQuery);
+			"IExecutorEAV::Insert: Value is null", ResultStatus::EmptyQuery);
+
+	if (auto error = checkEntityWithDataTypeError(entityName, value->GetType()))
+		return error;
 
 	std::string sqlAttrName;
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
@@ -502,9 +524,12 @@ IExecuteResultStatusPtr PGExecutorEAV::Insert(const EntityName & entityName,
 IExecuteResultStatusPtr PGExecutorEAV::Update(const EntityName & entityName,
 	EntityId entityId, const AttrName & _attrName, const ValueType & value)
 {
-	if (!valueTypeIsValid(value))
+	if (value == nullptr)
 		return InternalExecuteResultStatus::GetInternalError(
-			"IExecutorEAV::Insert: Invalid value", ResultStatus::EmptyQuery);
+			"IExecutorEAV::Update: Value is null", ResultStatus::EmptyQuery);
+
+	if (auto error = checkEntityWithDataTypeError(entityName, value->GetType()))
+		return error;
 
 	std::string sqlAttrName;
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
@@ -546,9 +571,12 @@ IExecuteResultStatusPtr PGExecutorEAV::Update(const EntityName & entityName,
 IExecuteResultStatusPtr PGExecutorEAV::InsertOrUpdate(const EntityName & entityName,
 	EntityId entityId, const AttrName & _attrName, const ValueType & value)
 {
-	if (!valueTypeIsValid(value))
+	if (value == nullptr)
 		return InternalExecuteResultStatus::GetInternalError(
-			"IExecutorEAV::Insert: Invalid value", ResultStatus::EmptyQuery);
+			"IExecutorEAV::InsertOrUpdate: Value is null", ResultStatus::EmptyQuery);
+
+	if (auto error = checkEntityWithDataTypeError(entityName, value->GetType()))
+		return error;
 
 	std::string sqlAttrName;
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
@@ -761,13 +789,16 @@ std::string PGExecutorEAV::selectAttributeIdByNameInnerCommand(const EntityName 
 IExecuteResultStatusPtr PGExecutorEAV::GetValue(const EntityName & entityName, EntityId entityId,
 	const AttrName & _attrName, ValueType value)
 {
-	if (!valueTypeIsValid(value))
+	if (value == nullptr)
 		return InternalExecuteResultStatus::GetInternalError(
-			"IExecutorEAV::Insert: Value is null", ResultStatus::EmptyQuery);
+			"IExecutorEAV::GetValue: Value is null", ResultStatus::EmptyQuery);
 
 	if (value->ToSQLString().has_value())
 		return InternalExecuteResultStatus::GetInternalError(
-			"IExecutorEAV::Insert: Value is not empty", ResultStatus::EmptyQuery);
+			"IExecutorEAV::GetValue: Value is not empty", ResultStatus::EmptyQuery);
+
+	if (auto error = checkEntityWithDataTypeError(entityName, value->GetType()))
+		return error;
 
 	std::string sqlAttrName;
 	if (auto status = getSQLAttrName(_attrName, sqlAttrName))
@@ -816,6 +847,9 @@ IExecuteResultStatusPtr PGExecutorEAV::GetValue(const EntityName & entityName, E
 IExecuteResultStatusPtr PGExecutorEAV::GetAttributeValues(const EntityName & entityName,
 	EntityId entityId, std::map<SQLDataType, std::vector<AttrValue>> & attrValuesByType)
 {
+	if (auto error = checkEntityWithDataTypeError(entityName))
+		return error;
+
 	std::vector<SQLDataType> attributeTypes;
 	if (auto iter = GetRegisteredEntities().find(entityName); iter != GetRegisteredEntities().end())
 	{
@@ -1169,13 +1203,30 @@ IExecuteResultStatusPtr PGExecutorEAV::getSQLTypeName(SQLDataType sqlDataType,
 
 //------------------------------------------------------------------------------
 /**
-  Проверка значения на допустимость
+  Проверка на то, что сущность зарегистрирована, и с ней ассоциирован тип данных
 */
 //---
-bool PGExecutorEAV::valueTypeIsValid(const ValueType & value)
+IExecuteResultStatusPtr PGExecutorEAV::checkEntityWithDataTypeError(const std::string & entityName,
+	std::optional<SQLDataType> sqlDataType) const
 {
-	// Если тип значения поменяется, то эту проверку надо будет поменять
-	static_assert(std::is_same_v<ValueType, ISQLTypePtr>);
+	auto && entries = GetRegisteredEntities();
+	if (auto iter = entries.find(entityName); iter == entries.end())
+	{
+		return InternalExecuteResultStatus::GetInternalError(
+			"Entity with this name is not registered",
+			ResultStatus::EmptyQuery);
+	}
+	else if (sqlDataType.has_value())
+	{
+		const std::vector<SQLDataType> & sqlDataTypes = iter->second;
+		if (std::find(sqlDataTypes.begin(), sqlDataTypes.end(), *sqlDataType) == sqlDataTypes.end())
+		{
+			return InternalExecuteResultStatus::GetInternalError(utils::string::Format(
+				"SQLDataType (value={}) is not registered for entity {}",
+				static_cast<int>(*sqlDataType),
+				entityName), ResultStatus::EmptyQuery);
+		}
+	}
 
-	return value != nullptr;
+	return nullptr;
 }
