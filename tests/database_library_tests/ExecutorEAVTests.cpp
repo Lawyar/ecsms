@@ -507,30 +507,6 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 }
 
 
-/// SetRegisteredEntities не закрывает транзакцию
-/// при флаге createTable = true
-TEST_F(ExecutorEAVWithEmptyEnvironment,
-	SetRegisteredEntitiesDoesNotEndTransactionWithCreateTableFlagEqualTrue)
-{
-	const IExecutorEAV::EAVRegisterEntries entries1({ {"SomeEntity1", {SQLDataType::Integer}} });
-	ASSERT_TRUE(AllTablesDoNotExist({ entries1 }, *connection, GetRules(), *converter));
-
-	ASSERT_FALSE(connection->BeginTransaction()->HasError());
-
-	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries1, true)->HasError());
-	ASSERT_EQ(executorEAV->GetRegisteredEntities(), entries1);
-	ASSERT_TRUE(AllTablesExist({ entries1 }, *connection, GetRules(), *converter));
-
-	// Откатим транзакцию
-	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
-
-	// Если SetRegisteredEntities фиксирует транзакцию, то изменения сохранятся
-	// (а предыдущий вызов проигнорируется)
-	// Проверим, что измнения они не сохранились
-	ASSERT_TRUE(AllTablesDoNotExist({ entries1 }, *connection, GetRules(), *converter));
-}
-
-
 ////////////////////////////////////////////////////////////////////////////////
 // Тесты CreateNewEntity
 ////////////////////////////////////////////////////////////////////////////////
@@ -595,63 +571,6 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityCreatesNewEntity)
 	}
 
 	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
-}
-
-
-/// CreateNewEntity не фиксирует транзакцию
-TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityDoesNotEndTransaction)
-{
-	const std::string entityName = "SomeEntity1";
-	const IExecutorEAV::EAVRegisterEntries entries1({ {entityName, {SQLDataType::Integer}} });
-	ASSERT_TRUE(AllTablesDoNotExist({ entries1 }, *connection, GetRules(), *converter));
-
-	ASSERT_FALSE(connection->BeginTransaction()->HasError());
-	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries1, true)->HasError());
-
-	int result = -1;
-	// Создадим сущность
-	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
-	ASSERT_EQ(result, 1);
-
-	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
-
-	// Если CreateNewEntity фиксирует транзакцию, то таблицы создадутся и новая сущность добавится
-	// Проверим, что это не так
-	ASSERT_TRUE(AllTablesDoNotExist({ entries1 }, *connection, GetRules(), *converter));
-}
-
-
-/// CreateNewEntity не открывает транзакцию
-TEST_F(ExecutorEAVWithEmptyEnvironment, CreateNewEntityDoesNotBeginTransaction)
-{
-	const std::string entityName = "SomeEntity1";
-	const IExecutorEAV::EAVRegisterEntries entries1({ {entityName, {SQLDataType::Integer}} });
-	ASSERT_TRUE(AllTablesDoNotExist({ entries1 }, *connection, GetRules(), *converter));
-
-	ASSERT_FALSE(connection->BeginTransaction()->HasError());
-	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries1, true)->HasError());
-	ASSERT_FALSE(connection->CommitTransaction()->HasError());
-
-	int result = -1;
-	// Создадим сущность
-	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
-	ASSERT_EQ(result, 1);
-
-	// Попробуем откатить транзакцию.
-	// Если это получится, значит CreateNewEntity открывает транзакцию
-	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
-
-	{
-		auto result = connection->Execute(utils::string::Format(
-			"SELECT * FROM {};",
-			GetRules().GetEntityTableName(entityName)));
-		ASSERT_FALSE(result->GetCurrentExecuteStatus()->HasError());
-		// Если количество строк равно нулю, значит транзакция откатилась
-		ASSERT_EQ(result->GetRowCount(), 1);
-		ASSERT_EQ(result->GetColCount(), 1);
-	}
-
-	ASSERT_TRUE(DropAllTables({ entries1 }, *connection, GetRules(), *converter));
 }
 
 
@@ -1882,8 +1801,8 @@ TEST_F(ExecutorEAVWithEmptyEnvironment, InsertOrUpdateUpdatesWithEmptyValue)
 
 
 ////////////////////////////////////////////////////////////////////////////////
-/// Тесты Insert/Update/InsertOrUpdate, которые проверяют, что
-/// данные методы не открывают и не закрывают транзакции
+/// Тесты, которые проверяют, что
+/// методы ExecutorEAV не открывают и не закрывают транзакции
 ////////////////////////////////////////////////////////////////////////////////
 
 /// Класс для проверок данной группы тестов
@@ -1901,284 +1820,133 @@ protected:
 	}
 };
 
-/// Insert не открывает транзакцию
-TEST_F(ExecutorEAVForCheckTransactions, InsertDoesNotBeginTransaction)
+
+/// Методы ExecutorEAV не открывают транзакции
+TEST_F(ExecutorEAVForCheckTransactions, MethodsDoNotBeginTransactions)
 {
-	const std::string entityName = "SomeEntity1";
+	const std::string entityName = "SomeEntity";
+	const std::string attrName = "IntAttr";
+	IExecutorEAV::EAVRegisterEntries entries({ {entityName, {SQLDataType::Integer}} });
 
-	const SQLDataType attributeType = SQLDataType::Integer;
-	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)
-		->GetTypeName();
+	// Для начала вызовем все доступные методы
 
-	const IExecutorEAV::EAVRegisterEntries entries({ {entityName, {attributeType}} });
-	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries, true)
+	EXPECT_FALSE(executorEAV->SetRegisteredEntities(entries, true)->HasError());
+	EXPECT_FALSE(executorEAV->SetRegisteredEntities(entries, false)->HasError());
+	IExecutorEAV::EntityId entityId = -1;
+	EXPECT_FALSE(executorEAV->CreateNewEntity(entityName, entityId)->HasError());
+	EXPECT_EQ(entityId, 1);
+	auto attrInt = converter->GetSQLTypeText(std::string(attrName));
+	int intValue = 5;
+	auto attrValue = converter->GetSQLTypeInteger(intValue);
+	EXPECT_FALSE(executorEAV->Insert(entityName, entityId, attrInt, attrValue)->HasError());
+	EXPECT_FALSE(executorEAV->InsertOrUpdate(entityName, entityId, attrInt, attrValue)->HasError());
+	EXPECT_FALSE(executorEAV->Update(entityName, entityId, attrInt, attrValue)->HasError());
+
+	std::vector<IExecutorEAV::EntityId> entityIds;
+	EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues(entityName, { {attrInt, attrValue} },
+		entityIds)->HasError());
+	EXPECT_EQ(entityIds, std::vector<IExecutorEAV::EntityId>{ 1 });
+	
+	std::vector<ISQLTypeTextPtr> attributeNames;
+	EXPECT_FALSE(executorEAV->GetAttributeNames(entityName, SQLDataType::Integer, attributeNames)
 		->HasError());
+	EXPECT_EQ(attributeNames.size(), 1);
+	EXPECT_EQ(attributeNames.front()->GetValue(), attrName);
 
-	int result = -1;
-	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
-	ASSERT_EQ(result, 1);
+	ISQLTypeIntegerPtr value = converter->GetSQLTypeInteger();
+	EXPECT_FALSE(executorEAV->GetValue(entityName, entityId, attrInt, value)->HasError());
+	EXPECT_EQ(value->GetValue(), intValue);
 
-	std::string attributeName = "SomeIntegerAttr";
+	std::map<SQLDataType, std::vector<IExecutorEAV::AttrValue>> attrValuesByType;
+	EXPECT_FALSE(executorEAV->GetAttributeValues(entityName, entityId, attrValuesByType)->HasError());
 
-	// Зафиксируем активную транзакцию, если она вдруг есть
-	ASSERT_FALSE(connection->CommitTransaction()->HasError());
+	EXPECT_EQ(attrValuesByType.size(), 1);
+	EXPECT_EQ(attrValuesByType.at(SQLDataType::Integer).size(), 1);
+	EXPECT_EQ(attrValuesByType.at(SQLDataType::Integer).front().attrName->GetValue(), attrName);
+	EXPECT_EQ(std::dynamic_pointer_cast<ISQLTypeInteger>(attrValuesByType.at(SQLDataType::Integer)
+		.front().value)->GetValue(), intValue);
 
-	// Добавим запись
-	ASSERT_FALSE(executorEAV->Insert(entityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
-		->HasError());
-
-	const std::string newTableName = "SimpleTable";
-	// Создадим пустую таблицу
+	// Теперь создадим пустую таблицу
+	const std::string newTableName = "NewTable";
 	CreateSimpleTable(newTableName);
-	// Откатим транзакцию
-	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
 
-	// Если Insert открывает транзакцию, тогда таблица SimpleTable не создастся
-	ASSERT_TRUE(IsTableExist(newTableName, *connection));
+	// попробуем отменить транзакцию
+	EXPECT_FALSE(connection->RollbackTransaction()->HasError());
+
+	// Если таблица newTableName не создастся, значит один из методов открыл транзакцию,
+	// чего быть не должно.
+	// Поэтому проверим, что таблица все ещё существует
+	EXPECT_TRUE(IsTableExist(newTableName, *connection));
 
 	// Удалим созданные таблицы
-	ASSERT_TRUE(DropTable(newTableName, *connection));
-	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
+	EXPECT_TRUE(DropTable(newTableName, *connection));
+	EXPECT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
 }
 
 
-/// InsertOrUpdate не открывает транзакцию
-TEST_F(ExecutorEAVForCheckTransactions, InsertOrUpdateDoesNotBeginTransaction)
+/// Методы ExecutorEAV не открывают транзакции
+TEST_F(ExecutorEAVForCheckTransactions, MethodsDoNotEndTransactions)
 {
-	const std::string entityName = "SomeEntity1";
+	const std::string entityName = "SomeEntity";
+	const std::string attrName = "IntAttr";
+	IExecutorEAV::EAVRegisterEntries entries({ {entityName, {SQLDataType::Integer}} });
 
-	const SQLDataType attributeType = SQLDataType::Integer;
-	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)
-		->GetTypeName();
-
-	const IExecutorEAV::EAVRegisterEntries entries({ {entityName, {attributeType}} });
-	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries, true)
-		->HasError());
-
-	int result = -1;
-	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
-	ASSERT_EQ(result, 1);
-
-	std::string attributeName = "SomeIntegerAttr";
-
-	// Зафиксируем активную транзакцию, если она вдруг есть
-	ASSERT_FALSE(connection->CommitTransaction()->HasError());
-
-	// Добавим запись
-	ASSERT_FALSE(executorEAV->InsertOrUpdate(entityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
-		->HasError());
-
-	const std::string newTableName = "SimpleTable";
-	// Создадим пустую таблицу
-	CreateSimpleTable(newTableName);
-	// Откатим транзакцию
-	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
-
-	// Если InsertOrUpdate открывает транзакцию, тогда таблица SimpleTable не создастся
-	ASSERT_TRUE(IsTableExist(newTableName, *connection));
-
-	// Удалим созданные таблицы
-	ASSERT_TRUE(DropTable(newTableName, *connection));
-	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
-}
-
-
-/// Update не открывает транзакцию
-TEST_F(ExecutorEAVForCheckTransactions, UpdateDoesNotBeginTransaction)
-{
-	const std::string entityName = "SomeEntity1";
-
-	const SQLDataType attributeType = SQLDataType::Integer;
-	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)
-		->GetTypeName();
-
-	const IExecutorEAV::EAVRegisterEntries entries({ {entityName, {attributeType}} });
-	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries, true)
-		->HasError());
-
-	int result = -1;
-	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
-	ASSERT_EQ(result, 1);
-
-	std::string attributeName = "SomeIntegerAttr";
-
-	// Добавим запись, чтобы было, что обновлять
-	ASSERT_FALSE(executorEAV->Insert(entityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
-		->HasError());
-
-	// Зафиксируем активную транзакцию, если она вдруг есть
-	ASSERT_FALSE(connection->CommitTransaction()->HasError());
-
-	// Обновим запись
-	ASSERT_FALSE(executorEAV->Update(entityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(7))
-		->HasError());
-
-	const std::string newTableName = "SimpleTable";
-	// Создадим пустую таблицу
-	CreateSimpleTable(newTableName);
-	// Откатим транзакцию
-	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
-
-	// Если Update открывает транзакцию, тогда таблица SimpleTable не создастся
-	ASSERT_TRUE(IsTableExist(newTableName, *connection));
-
-	// Удалим созданные таблицы
-	ASSERT_TRUE(DropTable(newTableName, *connection));
-	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
-}
-
-
-/// Insert не фиксирует транзакцию
-TEST_F(ExecutorEAVForCheckTransactions, InsertDoesNotEndTransaction)
-{
-	const std::string entityName = "SomeEntity1";
-
-	const SQLDataType attributeType = SQLDataType::Integer;
-	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)
-		->GetTypeName();
-
-	const IExecutorEAV::EAVRegisterEntries entries({ {entityName, {attributeType}} });
-	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries, true)
-		->HasError());
-
-	int result = -1;
-	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
-	ASSERT_EQ(result, 1);
-
-	std::string attributeName = "SomeIntegerAttr";
-
-	// Зафиксируем активную транзакцию, если она вдруг есть
-	ASSERT_FALSE(connection->CommitTransaction()->HasError());
-
-	// Начнем новую транзакцию
-	ASSERT_FALSE(connection->BeginTransaction()->HasError());
+	// Откроем транзакцию
+	EXPECT_FALSE(connection->BeginTransaction()->HasError());
 
 	// Создадим пустую таблицу
-	const std::string newTableName = "SimpleTable";
+	const std::string newTableName = "NewTable";
 	CreateSimpleTable(newTableName);
 
-	// Добавим запись
-	ASSERT_FALSE(executorEAV->Insert(entityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
+	// Вызовем все доступные методы
+	EXPECT_FALSE(executorEAV->SetRegisteredEntities(entries, true)->HasError());
+	EXPECT_FALSE(executorEAV->SetRegisteredEntities(entries, false)->HasError());
+	IExecutorEAV::EntityId entityId = -1;
+	EXPECT_FALSE(executorEAV->CreateNewEntity(entityName, entityId)->HasError());
+	EXPECT_EQ(entityId, 1);
+	auto attrInt = converter->GetSQLTypeText(std::string(attrName));
+	int intValue = 5;
+	auto attrValue = converter->GetSQLTypeInteger(intValue);
+	EXPECT_FALSE(executorEAV->Insert(entityName, entityId, attrInt, attrValue)->HasError());
+	EXPECT_FALSE(executorEAV->InsertOrUpdate(entityName, entityId, attrInt, attrValue)->HasError());
+	EXPECT_FALSE(executorEAV->Update(entityName, entityId, attrInt, attrValue)->HasError());
+
+	std::vector<IExecutorEAV::EntityId> entityIds;
+	EXPECT_FALSE(executorEAV->FindEntitiesByAttrValues(entityName, { {attrInt, attrValue} },
+		entityIds)->HasError());
+	EXPECT_EQ(entityIds, std::vector<IExecutorEAV::EntityId>{ 1 });
+
+	std::vector<ISQLTypeTextPtr> attributeNames;
+	EXPECT_FALSE(executorEAV->GetAttributeNames(entityName, SQLDataType::Integer, attributeNames)
 		->HasError());
+	EXPECT_EQ(attributeNames.size(), 1);
+	EXPECT_EQ(attributeNames.front()->GetValue(), attrName);
 
-	// Проверим, что таблица ещё существует (что метод не производит откат транзакции)
-	ASSERT_TRUE(IsTableExist(newTableName, *connection));
+	ISQLTypeIntegerPtr value = converter->GetSQLTypeInteger();
+	EXPECT_FALSE(executorEAV->GetValue(entityName, entityId, attrInt, value)->HasError());
+	EXPECT_EQ(value->GetValue(), intValue);
 
-	// Откатим транзакцию
-	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
+	std::map<SQLDataType, std::vector<IExecutorEAV::AttrValue>> attrValuesByType;
+	EXPECT_FALSE(executorEAV->GetAttributeValues(entityName, entityId, attrValuesByType)->HasError());
 
-	// Проверим, что таблица теперь не существует (что метод не производит фиксацию транзакции)
-	ASSERT_FALSE(IsTableExist(newTableName, *connection));
+	EXPECT_EQ(attrValuesByType.size(), 1);
+	EXPECT_EQ(attrValuesByType.at(SQLDataType::Integer).size(), 1);
+	EXPECT_EQ(attrValuesByType.at(SQLDataType::Integer).front().attrName->GetValue(), attrName);
+	EXPECT_EQ(std::dynamic_pointer_cast<ISQLTypeInteger>(attrValuesByType.at(SQLDataType::Integer)
+		.front().value)->GetValue(), intValue);
 
-	// Удалим созданные таблицы
-	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
+	// Проверим, что таблица всё ещё существует
+	// (она может перестать существовать, если какой-то из методов откатывает транзакцию (Rollback))
+	EXPECT_TRUE(IsTableExist(newTableName, *connection));
+
+	// Откатим транзакцию самостоятельно
+	EXPECT_FALSE(connection->RollbackTransaction()->HasError());
+
+	// Проверим, что таблица теперь не существует (это может не случиться, если какой-то из методов
+	// фиксирует транзакцию (Commit))
+	EXPECT_FALSE(IsTableExist(newTableName, *connection));
 }
 
-
-/// InsertOrUpdate не фиксирует транзакцию
-TEST_F(ExecutorEAVForCheckTransactions, InsertOrUpdateDoesNotEndTransaction)
-{
-	const std::string entityName = "SomeEntity1";
-
-	const SQLDataType attributeType = SQLDataType::Integer;
-	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)
-		->GetTypeName();
-
-	const IExecutorEAV::EAVRegisterEntries entries({ {entityName, {attributeType}} });
-	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries, true)
-		->HasError());
-
-	int result = -1;
-	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
-	ASSERT_EQ(result, 1);
-
-	std::string attributeName = "SomeIntegerAttr";
-
-	// Зафиксируем активную транзакцию, если она вдруг есть
-	ASSERT_FALSE(connection->CommitTransaction()->HasError());
-
-	// Начнем новую транзакцию
-	ASSERT_FALSE(connection->BeginTransaction()->HasError());
-
-	// Создадим пустую таблицу
-	const std::string newTableName = "SimpleTable";
-	CreateSimpleTable(newTableName);
-
-	// Добавим запись
-	ASSERT_FALSE(executorEAV->InsertOrUpdate(entityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
-		->HasError());
-
-	// Проверим, что таблица ещё существует (что метод не производит откат транзакции)
-	ASSERT_TRUE(IsTableExist(newTableName, *connection));
-
-	// Откатим транзакцию
-	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
-
-	// Проверим, что таблица теперь не существует (что метод не производит фиксацию транзакции)
-	ASSERT_FALSE(IsTableExist(newTableName, *connection));
-
-	// Удалим созданные таблицы
-	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
-}
-
-
-/// Update не фиксирует транзакцию
-TEST_F(ExecutorEAVForCheckTransactions, UpdateDoesNotEndTransaction)
-{
-	const std::string entityName = "SomeEntity1";
-
-	const SQLDataType attributeType = SQLDataType::Integer;
-	const std::string attributeTypeName = converter->GetSQLVariable(SQLDataType::Integer)
-		->GetTypeName();
-
-	const IExecutorEAV::EAVRegisterEntries entries({ {entityName, {attributeType}} });
-	ASSERT_FALSE(executorEAV->SetRegisteredEntities(entries, true)
-		->HasError());
-
-	int result = -1;
-	ASSERT_FALSE(executorEAV->CreateNewEntity(entityName, result)->HasError());
-	ASSERT_EQ(result, 1);
-
-	std::string attributeName = "SomeIntegerAttr";
-
-	// Зафиксируем активную транзакцию, если она вдруг есть
-	ASSERT_FALSE(connection->CommitTransaction()->HasError());
-
-	// Добавим запись, чтобы было, что обновлять
-	ASSERT_FALSE(executorEAV->Insert(entityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(5))
-		->HasError());
-
-	// Начнем новую транзакцию
-	ASSERT_FALSE(connection->BeginTransaction()->HasError());
-
-	// Обновим запись
-	ASSERT_FALSE(executorEAV->Update(entityName, result,
-		converter->GetSQLTypeText(std::string(attributeName)), converter->GetSQLTypeInteger(7))
-		->HasError());
-
-	// Создадим пустую таблицу
-	const std::string newTableName = "SimpleTable";
-	CreateSimpleTable(newTableName);
-
-	// Проверим, что таблица ещё существует (что метод не производит откат транзакции)
-	ASSERT_TRUE(IsTableExist(newTableName, *connection));
-
-	// Откатим транзакцию
-	ASSERT_FALSE(connection->RollbackTransaction()->HasError());
-
-	// Проверим, что таблица теперь не существует (что метод не производит фиксацию транзакции)
-	ASSERT_FALSE(IsTableExist(newTableName, *connection));
-
-	// Удалим созданные таблицы
-	ASSERT_TRUE(DropAllTables({ entries }, *connection, GetRules(), *converter));
-}
 
 
 ////////////////////////////////////////////////////////////////////////////////
