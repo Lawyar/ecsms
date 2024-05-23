@@ -89,7 +89,7 @@ const std::string &PGSQLTypeText::GetTypeName() const {
   Прочитать значение из строки
   \param value Строка, из которой нужно читать значение.
                Если чтение прошло успешно, то строка будет очищена, иначе
-  останется неизменной.
+               останется неизменной.
 */
 //---
 bool PGSQLTypeText::ReadFromSQL(std::string &&value) {
@@ -102,7 +102,7 @@ bool PGSQLTypeText::ReadFromSQL(std::string &&value) {
   Прочитать значение из массива байт
   \param value Массив, из которого нужно читать значение.
                Если чтение прошло успешно, то массив будет очищен, иначе
-  останется неизменным.
+               останется неизменным.
 */
 //---
 bool PGSQLTypeText::ReadFromSQL(std::vector<char> &&value) {

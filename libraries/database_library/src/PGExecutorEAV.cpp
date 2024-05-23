@@ -21,8 +21,6 @@ PGExecutorEAV::PGExecutorEAV(const IConnectionPtr &connection,
 //------------------------------------------------------------------------------
 /**
   Регистрация EAV-сущностей
-  \param createTables Требуется ли пытаться создать таблицы по
-  зарегистрированным сущностям
 */
 //---
 IExecuteResultStatusPtr
@@ -1066,8 +1064,9 @@ IExecuteResultStatusPtr PGExecutorEAV::getAttributeValuesImpl(
   \param query Команда
   \param result Переменная, в которую записывается результат выполнения команды.
   \param status Переменная, в которую записывается статус результата выполнения
-  команды. Статус выполнения всегда записывается (даже при возникновении
-  ошибки). \return true, если команда выполнена без ошибок, иначе false.
+                команды. Статус выполнения всегда записывается (даже при
+                возникновении ошибки).
+  \return true, если команда выполнена без ошибок, иначе false.
 */
 //---
 bool PGExecutorEAV::executeQuery(const std::string query,
@@ -1096,15 +1095,15 @@ bool PGExecutorEAV::executeQuery(const std::string query,
 /**
   Прочитать строку в SQL-переменную.
   \tparam SQLConcreteType Тип SQL-переменной, у которой надо вызывать
-        метод GetValue
+          метод GetValue
   \param str Строка
   \param type Тип переменной, которую надо создать.
   \param value Переменная, в которую будет записан результат
   \param status Переменная, в которую записывается статус результата
   \return true, если выполнено без ошибок, иначе false.
-        Если функция вернула true, значит в переменную value записан результат.
-        Если функция вернула false, значит переменная status будет гарантировано
-  непустая.
+          Если функция вернула true, значит в переменную value записан
+          результат. Если функция вернула false, значит переменная status
+          будет гарантировано непустая.
 */
 //---
 template <class SQLConcreteType, class CppConcreteType>

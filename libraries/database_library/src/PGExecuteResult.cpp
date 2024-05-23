@@ -86,7 +86,7 @@ size_t PGExecuteResult::GetColIndex(const std::string &columnName) {
 /**
   Получить тип данных столбца.
   \return Тип данных столбца, если передан валидный индекс, иначе невалидный
-  тип.
+          тип.
 */
 //---
 SQLDataType PGExecuteResult::GetColType(size_t columnIndex) const {

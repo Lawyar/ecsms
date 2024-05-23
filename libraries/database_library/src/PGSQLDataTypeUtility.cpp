@@ -91,8 +91,6 @@ Oid SQLDataTypeToOid(SQLDataType type) {
   auto &&map = Converter.GetSQLDataTypeToOidMap();
   if (auto iter = map.find(type); iter != map.end())
     return iter->second;
-  // fprintf(stderr, "[Error] No match between the internal \"SQLDataType\" (%d)
-  // and the external \"Oid\" was found.", 	static_cast<int>(type));
   return InvalidOid;
 }
 
@@ -105,7 +103,5 @@ SQLDataType OidToSQLDataType(Oid id) {
   auto &&map = Converter.GetOidToSQLDataTypeMap();
   if (auto iter = map.find(id); iter != map.end())
     return iter->second;
-  // fprintf(stderr, "[Error] No match between the external \"Oid\" (%d) and the
-  // internal \"SQLDataType\" was found.", id);
   return SQLDataType::Unknown;
 }

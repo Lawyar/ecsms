@@ -51,10 +51,10 @@ bool utils::string::HasOnlyDigits(const std::string &str) {
 
 //------------------------------------------------------------------------------
 /**
-        Замена всех подстрок
-        \param str Строка, в которой производится замена
-        \param before Подстрока, которую заменяем
-        \param after Подстрока, на которую заменяем
+  Замена всех подстрок
+  \param str Строка, в которой производится замена
+  \param before Подстрока, которую заменяем
+  \param after Подстрока, на которую заменяем
 */
 //---
 void utils::string::ReplaceAll(std::string &str, const std::string &before,
@@ -72,9 +72,9 @@ void utils::string::ReplaceAll(std::string &str, const std::string &before,
 
 //------------------------------------------------------------------------------
 /**
-        Посчитать количество вхождений подстроки в строку
-        \param str Строка
-        \param substr Подстрока
+  Посчитать количество вхождений подстроки в строку
+  \param str Строка
+  \param substr Подстрока
 */
 //---
 size_t utils::string::GetSubstringsCount(const std::string &str,
