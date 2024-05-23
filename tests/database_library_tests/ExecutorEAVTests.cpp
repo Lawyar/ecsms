@@ -507,6 +507,31 @@ TEST_F(ExecutorEAVWithEmptyEnvironment,
 }
 
 
+/// SetRegisteredEntities не позволяет зарегистрировать сущности, если они имеют невалидные имена
+TEST_F(ExecutorEAVWithEmptyEnvironment, SetRegisteredEntitiesDoesNotRegisterWithInvalidEntityName)
+{
+	const std::string validEntityName = "ValidEntity";
+	const std::string invalidEntityName = "InvalidEntity; SELECT * FROM InvalidEntity;";
+	IExecutorEAV::EAVRegisterEntries entries({
+		{validEntityName, {SQLDataType::Integer}},
+		{invalidEntityName, {SQLDataType::Integer}}
+	});
+
+	{
+		auto status = executorEAV->SetRegisteredEntities(entries, true);
+		ASSERT_TRUE(status->HasError());
+		ASSERT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+		ASSERT_FALSE(IsTableExist(validEntityName, *connection));
+	}
+	{
+		auto status = executorEAV->SetRegisteredEntities(entries, false);
+		ASSERT_TRUE(status->HasError());
+		ASSERT_EQ(status->GetStatus(), ResultStatus::EmptyQuery);
+		ASSERT_FALSE(IsTableExist(validEntityName, *connection));
+	}
+}
+
+
 ////////////////////////////////////////////////////////////////////////////////
 // Тесты CreateNewEntity
 ////////////////////////////////////////////////////////////////////////////////

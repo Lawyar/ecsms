@@ -34,12 +34,12 @@ IExecuteResultStatusPtr PGExecutorEAV::SetRegisteredEntities(const EAVRegisterEn
 {
 	for (auto &&[entityName, attributeTypes] : entries)
 	{
-		if (IsSQLKeyword(entityName))
+		if (!IsValidSQLIdentifier(entityName))
 			return InternalExecuteResultStatus::GetInternalError(
 				utils::string::Format(
 					"IExecutorEAV::SetRegisteredEntities: "
-					"The entity name ({}) matches the SQL keyword",
-					entityName));
+					"The entity name ({}) is invalid SQL identifier",
+					entityName), ResultStatus::EmptyQuery);
 	}
 
 	// В любом случае соберем запрос

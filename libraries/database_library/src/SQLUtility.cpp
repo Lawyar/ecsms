@@ -139,3 +139,29 @@ bool IsSQLKeyword(const std::string & sourceStr)
 	assert(sqlKeywords.size() == 841); // Проверка на то, что я правильно скопировал ключевые слова
 	return sqlKeywords.find(utils::string::ToUpper(sourceStr)) != sqlKeywords.end();
 }
+
+
+//------------------------------------------------------------------------------
+/**
+  Это валидный идентификатор SQL (строка может использоваться в качестве
+  идентификатора в SQL)
+*/
+//---
+bool IsValidSQLIdentifier(const std::string & str)
+{
+	constexpr size_t c_maxSize = 63;
+	if (str.empty() || str.size() > c_maxSize)
+		// Размер выходит за границы
+		return false;
+
+	if (IsSQLKeyword(str))
+		// Ключевое слово SQL не может быть идентификатором
+		return false;
+
+	if (!std::isalpha(static_cast<unsigned char>(str.front())))
+		// Должно начинаться с буквы
+		return false;
+
+	return std::all_of(str.begin(), str.end(), [](unsigned char ch) {
+		return std::isalpha(ch) || std::isdigit(ch) || ch == '_' || ch == '$'; });
+}
