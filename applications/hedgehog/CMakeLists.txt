@@ -3,6 +3,8 @@ add_executable(hedgehog WIN32
     main.cpp
     mainwindow.cpp mainwindow.h mainwindow.ui
     qlineeditdelegate.cpp qlineeditdelegate.h
+    blockfield.cpp blockfield.h
+    connectnodewidget.cpp connectnodewidget.h
 )
 target_link_libraries(hedgehog PRIVATE
     Qt5::Charts
