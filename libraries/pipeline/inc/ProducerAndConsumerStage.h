@@ -17,17 +17,16 @@ ProducerAndConsumerStage<In, Out>::ProducerAndConsumerStage(
     std::shared_ptr<InStageConnection<In>> inConnection,
     std::shared_ptr<OutStageConnection<Out>> outConnection)
     : ConnectablePipelineStage<In, Out>(stageName, consumerStrategy,
-                                            inConnection, outConnection) {
-if (!inConnection)
+                                        inConnection, outConnection) {
+  if (!inConnection)
     throw std::invalid_argument("inConnection is null");
 
-if (!outConnection)
+  if (!outConnection)
     throw std::invalid_argument("outConnection is null");
 
-outConnection->connectProducer();
-auto consumer_id =
-    inConnection->connect_consumer(this->getStatisticsCollector());
+  outConnection->connectProducer();
+  auto consumer_id =
+      inConnection->connect_consumer(this->getStatisticsCollector());
 
-setConsumerId(consumer_id);
+  setConsumerId(consumer_id);
 }
-

@@ -4,9 +4,7 @@
 
 using namespace std;
 
-Pipeline::~Pipeline() {
-  shutdown();
-}
+Pipeline::~Pipeline() { shutdown(); }
 
 void Pipeline::add_stage(std::shared_ptr<PipelineStage> stage) {
   if (!stage)
@@ -22,7 +20,9 @@ void Pipeline::add_connection(std::shared_ptr<StageConnection> connection) {
   _connections.push_back(connection);
 }
 
-vector<std::shared_ptr<PipelineStage>> &Pipeline::getStages() { return _stages; }
+vector<std::shared_ptr<PipelineStage>> &Pipeline::getStages() {
+  return _stages;
+}
 
 std::shared_ptr<PipelineStage>
 Pipeline::getStage(const std::string &stageName) {
@@ -31,8 +31,7 @@ Pipeline::getStage(const std::string &stageName) {
       return stage;
   }
 
-  throw std::invalid_argument(std::string("stage ") + stageName +
-                              " not found");
+  throw std::invalid_argument(std::string("stage ") + stageName + " not found");
 }
 
 void Pipeline::run() {

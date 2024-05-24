@@ -2,9 +2,11 @@
 
 #include "ProducerStage.h"
 
-class int32_random_generator : public ProducerStage<int32_t> {
+class Int32RandomGenerator : public ProducerStage<int32_t> {
 public:
-	int32_random_generator(std::shared_ptr<mpmc_cycle_queue<int32_t>> connection);
+  Int32RandomGenerator(
+      const std::string_view stageName,
+      std::shared_ptr<OutStageConnection<int32_t>> outConnection);
 
-	int32_t produce(bool& item_produced) override;
+  void produce(std::shared_ptr<int32_t> outData) override;
 };

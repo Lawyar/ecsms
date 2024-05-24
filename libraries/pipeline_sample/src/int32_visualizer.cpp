@@ -4,14 +4,12 @@
 
 using namespace std;
 
-namespace ecsms {
-    int32_visualizer::int32_visualizer(shared_ptr<mpmc_cycle_queue<int32_t>> connection)
-        : consuming_stage(connection)
-    {}
+Int32Visualizer::Int32Visualizer(
+    const std::string_view stageName, TaskRetrieveStrategy strategy,
+    std::shared_ptr<InStageConnection<int32_t>> connection)
+    : ConsumerStage(stageName, strategy, connection) {}
 
-    void int32_visualizer::consume(const int32_t& item, bool& item_consumed) {
-        if(item)
-            cout << item << endl;
-        item_consumed = true;
-    }
+void Int32Visualizer::consume(std::shared_ptr<int32_t> inData) {
+  cout << *inData << endl;
+  releaseConsumerTask(inData);
 }

@@ -1,12 +1,11 @@
 #pragma once
 
-#include "consuming_stage.h"
+#include "ConsumerStage.h"
 
-namespace ecsms {
-    class int32_visualizer : public consuming_stage<int32_t> {
-    public:
-        int32_visualizer(std::shared_ptr<mpmc_cycle_queue<int32_t>> connection);
+class Int32Visualizer : public ConsumerStage<int32_t> {
+public:
+  Int32Visualizer(const std::string_view stageName, TaskRetrieveStrategy,
+                  std::shared_ptr<InStageConnection<int32_t>>);
 
-        void consume(const int32_t&, bool& item_consumed) override;
-    };
-}
+  void consume(std::shared_ptr<int32_t> inData) override;
+};

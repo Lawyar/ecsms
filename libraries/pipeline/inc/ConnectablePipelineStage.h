@@ -2,10 +2,10 @@
 
 #include "InStageConnection.h"
 #include "OutStageConnection.h"
+#include "PipelineException.h"
 #include "PipelineStage.h"
 #include "SteadyClock.h"
 #include "TaskRetrieveStrategy.h"
-#include "PipelineException.h"
 
 #include <iostream>
 #include <optional>
@@ -27,8 +27,7 @@ public:
 protected:
   void setConsumerId(size_t consumerId);
   void releaseConsumerTask(std::shared_ptr<In> taskData);
-  void releaseProducerTask(std::shared_ptr<Out> taskData,
-                           bool produced = true);
+  void releaseProducerTask(std::shared_ptr<Out> taskData, bool produced = true);
 
 private:
   virtual void function(std::shared_ptr<In> inData,
@@ -68,7 +67,7 @@ template <typename In, typename Out>
 void ConnectablePipelineStage<In, Out>::run() {
   if (m_inConnection != nullptr && !m_consumerId.has_value())
     throw PipelineException(std::string("consumerId not set for stage ") +
-                                getName());
+                            getName());
 
   m_thread = std::thread([this] {
     while (!m_shutdownSignaled) {
@@ -77,7 +76,7 @@ void ConnectablePipelineStage<In, Out>::run() {
 
       if (m_inConnection) {
         auto inTask = m_inConnection->getConsumerTask(
-            m_consumerId, m_consumerStrategy, m_leastTimestamp);
+            m_consumerId.value(), m_consumerStrategy.value(), m_leastTimestamp);
         if (!inTask)
           break;
 
@@ -124,7 +123,8 @@ bool ConnectablePipelineStage<In, Out>::consumerTasksAvailable() {
   if (!m_inConnection)
     throw PipelineException("m_inConnection is null");
 
-  return m_inConnection->consumerTasksAvailable(m_consumerId, m_leastTimestamp);
+  return m_inConnection->consumerTasksAvailable(m_consumerId.value(),
+                                                m_leastTimestamp);
 }
 
 template <typename In, typename Out>
@@ -153,7 +153,7 @@ void ConnectablePipelineStage<In, Out>::releaseConsumerTask(
   if (!taskData)
     throw std::invalid_argument("taskData is null");
 
-  m_inConnection->releaseConsumerTask(taskData, m_consumerId);
+  m_inConnection->releaseConsumerTask(taskData, m_consumerId.value());
 }
 
 template <typename In, typename Out>

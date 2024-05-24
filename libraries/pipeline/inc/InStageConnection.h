@@ -1,15 +1,14 @@
 #pragma once
 
+#include "PipelineException.h"
 #include "StageConnection.h"
 #include "StageTask.h"
 #include "TaskRetrieveStrategy.h"
-#include "PipelineException.h"
 
 #include <algorithm>
 #include <vector>
 
-template <typename T>
-class InStageConnection : public virtual StageConnection {
+template <typename T> class InStageConnection : public virtual StageConnection {
 public:
   InStageConnection();
 
@@ -36,7 +35,8 @@ template <typename T> size_t InStageConnection<T>::connectConsumer() {
   auto consumer_id = onConsumerConnected();
 
   if (consumer_id >= max_consumers_count)
-    throw PipelineException("Cannot connect consumer: the consumers' limit has been reached");
+    throw PipelineException(
+        "Cannot connect consumer: the consumers' limit has been reached");
 
   return consumer_id;
 }

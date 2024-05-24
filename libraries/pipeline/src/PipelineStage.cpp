@@ -4,7 +4,7 @@
 
 using namespace std;
 
-PipelineStage::PipelineStage(const string &stageName)
+PipelineStage::PipelineStage(const string_view stageName)
     : m_stageName(stageName), m_shutdownSignaled(false) {}
 
 PipelineStage::~PipelineStage() { stop(); }

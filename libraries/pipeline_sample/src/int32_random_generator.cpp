@@ -1,17 +1,17 @@
 #include "int32_random_generator.h"
 
+#include <random>
+#include <thread>
+
 using namespace std;
 
-namespace ecsms {
-	int32_random_generator::int32_random_generator(shared_ptr<mpmc_cycle_queue<int32_t>> connection)
-		: producing_stage(connection)
-	{
-		srand(time(nullptr));
-	}
+Int32RandomGenerator::Int32RandomGenerator(
+    const std::string_view stageName,
+    std::shared_ptr<OutStageConnection<int32_t>> outConnection)
+    : ProducerStage(stageName, outConnection) {}
 
-	int32_t ecsms::int32_random_generator::produce(bool& item_produced) {
-		this_thread::sleep_for(chrono::milliseconds(500));
-		item_produced = true;
-		return rand() % 100;
-	}
+void Int32RandomGenerator::produce(std::shared_ptr<int32_t> outData) {
+  this_thread::sleep_for(chrono::milliseconds(500));
+  *outData = rand() % 100;
+  releaseProducerTask(outData, true);
 }

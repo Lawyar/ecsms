@@ -9,7 +9,7 @@
 
 class PipelineStage {
 public:
-  PipelineStage(const std::string &stageName);
+  PipelineStage(const std::string_view stageName);
   virtual ~PipelineStage();
 
   virtual void run() = 0;

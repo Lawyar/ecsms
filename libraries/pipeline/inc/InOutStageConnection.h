@@ -256,7 +256,8 @@ bool InOutStageConnection<T>::consumerTasksAvailable(
 
 template <typename T> size_t InOutStageConnection<T>::onConsumerConnected() {
   if (m_consumersCount == max_consumers_count)
-    throw PipelineException("Cannot connect consumer: the consumers' limit has been reached");
+    throw PipelineException(
+        "Cannot connect consumer: the consumers' limit has been reached");
 
   auto consumerId = m_consumersCount;
   m_consumersCount++;
