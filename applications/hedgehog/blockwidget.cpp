@@ -13,7 +13,6 @@ BlockWidget::BlockWidget(BlockField *parent)
       right_node(new ConnectNodeWidget(Outgoing, this)),
       resume_pause_button(new QPushButton("||", this))
 {
-    qDebug() << "BlockWidget::BlockWidget";
     connect(left_node, &ConnectNodeWidget::start, this, &BlockWidget::on_leftCircle_clicked);
     connect(right_node, &ConnectNodeWidget::start, this, &BlockWidget::on_rightCircle_clicked);
 

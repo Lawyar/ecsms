@@ -20,6 +20,8 @@ public:
 
     void makeTransparent(bool value);
 
+	QPoint coordToParent() const;
+
 protected:
     void mousePressEvent(QMouseEvent *event) override;
 
@@ -30,9 +32,6 @@ signals:
 
 private:
     NodeType _type;
-
-    QVector<ConnectNodeWidget*> _connections;
-
 };
 
 #endif // CONNECTNODEWIDGET_H
