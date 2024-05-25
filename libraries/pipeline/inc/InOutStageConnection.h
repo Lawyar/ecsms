@@ -15,6 +15,8 @@ class InOutStageConnection : public InStageConnection<T>,
 public:
   InOutStageConnection(std::vector<std::shared_ptr<T>> data);
 
+  InOutStageConnection(size_t connectionSize);
+
   void shutdown() override;
 
   std::shared_ptr<StageTask<T>> getProducerTask() override;
@@ -34,6 +36,8 @@ private:
   size_t onConsumerConnected() override;
 
   void onProducerConnected() override;
+
+  static std::vector<std::shared_ptr<T>> initData(size_t size);
 
 private:
   enum TaskState { empty, produced, consuming };
@@ -80,6 +84,10 @@ InOutStageConnection<T>::InOutStageConnection(
     m_tasksProducingStates[i] = false;
   }
 }
+
+template <typename T>
+InOutStageConnection<T>::InOutStageConnection(size_t connectionSize)
+    : InOutStageConnection(initData(connectionSize)) {}
 
 template <typename T> void InOutStageConnection<T>::shutdown() {
   m_shutdownSignaled = true;
@@ -269,6 +277,15 @@ template <typename T> size_t InOutStageConnection<T>::onConsumerConnected() {
 }
 
 template <typename T> void InOutStageConnection<T>::onProducerConnected() {}
+
+template <typename T>
+std::vector<std::shared_ptr<T>> InOutStageConnection<T>::initData(size_t size) {
+  std::vector<std::shared_ptr<T>> data(size);
+  for (auto &el : data)
+    el = std::make_shared<T>();
+
+  return data;
+}
 
 template <typename T> bool InOutStageConnection<T>::taskBusy(size_t taskId) {
   if (m_tasksProducingStates[taskId])

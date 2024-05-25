@@ -1,4 +1,11 @@
-add_library(pipeline_sample inc/int32_random_generator.h inc/int32_visualizer.h inc/int32_random_generator_pipeline_factory.h src/int32_random_generator.cpp src/int32_visualizer.cpp src/int32_random_generator_pipeline_factory.cpp)
+add_library(pipeline_sample
+    inc/Int32RandomGenerator.h
+    inc/Int32Visualizer.h
+    inc/Int32RandomGeneratorPipelineFactory.h
+    
+    src/Int32RandomGenerator.cpp
+    src/Int32Visualizer.cpp
+    src/Int32RandomGeneratorPipelineFactory.cpp)
 
 target_include_directories(pipeline_sample PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 target_link_libraries(pipeline_sample PUBLIC pipeline)

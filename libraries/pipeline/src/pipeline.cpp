@@ -6,27 +6,27 @@ using namespace std;
 
 Pipeline::~Pipeline() { shutdown(); }
 
-void Pipeline::add_stage(std::shared_ptr<PipelineStage> stage) {
+void Pipeline::addStage(std::shared_ptr<PipelineStage> stage) {
   if (!stage)
     throw std::invalid_argument("stage is null");
 
-  _stages.push_back(stage);
+  m_stages.push_back(stage);
 }
 
-void Pipeline::add_connection(std::shared_ptr<StageConnection> connection) {
+void Pipeline::addConnection(std::shared_ptr<StageConnection> connection) {
   if (!connection)
     throw std::invalid_argument("connection is null");
 
-  _connections.push_back(connection);
+  m_connections.push_back(connection);
 }
 
 vector<std::shared_ptr<PipelineStage>> &Pipeline::getStages() {
-  return _stages;
+  return m_stages;
 }
 
 std::shared_ptr<PipelineStage>
 Pipeline::getStage(const std::string &stageName) {
-  for (auto &stage : _stages) {
+  for (auto &stage : m_stages) {
     if (stage->getName() == stageName)
       return stage;
   }
@@ -35,14 +35,14 @@ Pipeline::getStage(const std::string &stageName) {
 }
 
 void Pipeline::run() {
-  for (auto &it : _stages)
+  for (auto &it : m_stages)
     it->run();
 }
 
 void Pipeline::shutdown() {
-  for (auto &it : _connections)
+  for (auto &it : m_connections)
     it->shutdown();
 
-  for (auto &it : _stages)
+  for (auto &it : m_stages)
     it->stop();
 }
