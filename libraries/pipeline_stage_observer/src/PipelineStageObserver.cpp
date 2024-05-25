@@ -2,6 +2,8 @@
 #include "PipelineStageObserverException.h"
 #include "Int32RandomGenerator.h"
 #include "Int32Visualizer.h"
+#include "Int32ToDoubleConverter.h"
+#include "DoubleVisualizer.h"
 
 #include <algorithm>
 
@@ -22,6 +24,8 @@ void PipelineStageObserver::init() {
 
   addStage(Int32RandomGenerator::stageName, Int32RandomGenerator::stageType);
   addStage(Int32Visualizer::stageName, Int32Visualizer::stageType);
+  addStage(Int32ToDoubleConverter::stageName, Int32ToDoubleConverter::stageType);
+  addStage(DoubleVisualizer::stageName, DoubleVisualizer::stageType);
 
   m_initialized = true;
 }
