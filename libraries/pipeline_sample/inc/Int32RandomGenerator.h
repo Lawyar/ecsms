@@ -10,4 +10,7 @@ public:
 
 public:
   static constexpr auto stageName = "Int32RandomGenerator";
+  static constexpr auto stageType = PipelineStageType::producer;
+  using consumptionT = void;
+  using productionT = int32_t;
 };

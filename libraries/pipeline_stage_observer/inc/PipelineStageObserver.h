@@ -1,5 +1,6 @@
 #pragma once
 
+#include "PipelineStageType.h"
 #include "StageRepresentation.h"
 
 #include <memory>
@@ -7,8 +8,7 @@
 
 class PipelineStageObserver {
 public:
-  template <typename T>
-  static void addStage();
+  static void init();
 
   static std::vector<StageRepresentation> getStages();
 
@@ -16,10 +16,14 @@ public:
                           const StageRepresentation& second);
 
 private:
+  static void addStage(const std::string_view stageName,
+                       PipelineStageType stageType);
+
   PipelineStageObserver();
 
 private:
   static std::unique_ptr<PipelineStageObserver> m_singleton;
+  static bool m_initialized;
 
   std::vector<StageRepresentation> m_stages;
 };

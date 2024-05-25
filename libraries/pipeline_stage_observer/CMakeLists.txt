@@ -6,7 +6,6 @@ add_library(pipeline_stage_observer
     src/PipelineStageObserver.cpp)
 
 target_include_directories(pipeline_stage_observer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
+target_include_directories(pipeline_stage_observer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../pipeline/inc)
+target_include_directories(pipeline_stage_observer PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/../pipeline_sample/inc)
 
-target_link_libraries(pipeline_stage_observer PUBLIC 
-    pipeline
-    pipeline_sample)
