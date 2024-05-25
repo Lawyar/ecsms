@@ -509,6 +509,102 @@ TEST_F(TestWithValidRemoteFile, CanWriteAndReadLargeData) {
   ASSERT_FALSE(connection->CommitTransaction()->HasError());
 }
 
+/// Можно писать и читать массивы структур
+TEST(RemoteFile, CanReadAndWriteArrayOfStructs) {
+  struct SimpleStruct {
+    int intField;
+    double doubleField;
+    char charField;
+
+    bool operator==(const SimpleStruct &other) const {
+      return intField == other.intField && doubleField == other.doubleField &&
+             charField == other.charField;
+    }
+  };
+
+  auto GetRandomSimpleStruct = []() {
+    return SimpleStruct{static_cast<int>(rand()), static_cast<double>(rand()),
+                        static_cast<char>(rand())};
+  };
+
+  constexpr size_t len = 1000;
+  static_assert(len % 2 == 0 && len % 4 == 0); // используется в тестах
+  std::vector<SimpleStruct> arr;
+  for (size_t i = 0; i < len; ++i)
+    arr.push_back(GetRandomSimpleStruct());
+
+  auto &&connection =
+      GetDatabaseManager().GetConnection(c_PostgreSQLConnectionURL);
+  connection->BeginTransaction();
+
+  auto &&remoteFile = connection->CreateRemoteFile();
+  ASSERT_TRUE(remoteFile->Open(FileOpenMode::Write));
+  size_t numberOfElementsWritten = 0;
+  ASSERT_TRUE(remoteFile->WriteBytes(arr, &numberOfElementsWritten));
+  ASSERT_EQ(numberOfElementsWritten, len);
+  ASSERT_TRUE(remoteFile->Close());
+
+  {
+    // Просто прочитаем массив
+    size_t numberOfElementsRead = 0;
+    std::vector<SimpleStruct> readArr;
+    ASSERT_TRUE(remoteFile->Open(FileOpenMode::Read));
+    ASSERT_TRUE(remoteFile->ReadBytes(len, readArr, &numberOfElementsRead));
+    ASSERT_EQ(numberOfElementsRead, len);
+    ASSERT_EQ(readArr, arr);
+
+    // Проверим, что больше нечего читать
+    ASSERT_TRUE(remoteFile->ReadBytes(len, readArr, &numberOfElementsRead));
+    ASSERT_EQ(numberOfElementsRead, 0);
+    ASSERT_EQ(readArr, arr);
+
+    ASSERT_TRUE(remoteFile->Close());
+  }
+
+  {
+    // Прочитаем за раз больше, чем есть в массиве
+    size_t numberOfElementsRead = 0;
+    std::vector<SimpleStruct> readArr;
+    ASSERT_TRUE(remoteFile->Open(FileOpenMode::Read));
+    ASSERT_TRUE(
+        remoteFile->ReadBytes(len + 100, readArr, &numberOfElementsRead));
+    ASSERT_EQ(numberOfElementsRead, len);
+    ASSERT_EQ(readArr, arr);
+
+    // Проверим, что больше нечего читать
+    ASSERT_TRUE(remoteFile->ReadBytes(1, readArr, &numberOfElementsRead));
+    ASSERT_EQ(numberOfElementsRead, 0);
+    ASSERT_EQ(readArr, arr);
+
+    ASSERT_TRUE(remoteFile->Close());
+  }
+
+  {
+    // Проверим, что при чтении данные записываются в конец
+    size_t numberOfElementsRead = 0;
+    std::vector<SimpleStruct> readArr;
+    ASSERT_TRUE(remoteFile->Open(FileOpenMode::Read));
+    ASSERT_TRUE(remoteFile->ReadBytes(len / 2, readArr, &numberOfElementsRead));
+    ASSERT_EQ(numberOfElementsRead, len / 2);
+    ASSERT_EQ(readArr.size(), len / 2);
+    ASSERT_TRUE(remoteFile->ReadBytes(len / 4, readArr, &numberOfElementsRead));
+    ASSERT_EQ(numberOfElementsRead, len / 4);
+    ASSERT_EQ(readArr.size(), len / 2 + len / 4);
+    ASSERT_TRUE(remoteFile->ReadBytes(len / 4, readArr, &numberOfElementsRead));
+    ASSERT_EQ(numberOfElementsRead, len / 4);
+    ASSERT_EQ(readArr, arr);
+
+    // Проверим, что больше нечего читать
+    ASSERT_TRUE(remoteFile->ReadBytes(1, readArr, &numberOfElementsRead));
+    ASSERT_EQ(numberOfElementsRead, 0);
+    ASSERT_EQ(readArr, arr);
+
+    ASSERT_TRUE(remoteFile->Close());
+  }
+
+  connection->RollbackTransaction();
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Тесты методов чтения/записи на корректность поведения при обрыве транзакций
 // с пустым файлом

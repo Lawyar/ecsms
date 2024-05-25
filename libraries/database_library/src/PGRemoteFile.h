@@ -45,18 +45,22 @@ public:
   /// \return Статус выполнения операции
   virtual bool Close() override;
   /// Попытаться прочесть байты
-  /// \param count Количество байт, которое требуется попытаться прочесть.
   /// \param buffer Буфер, в который требуется прочитать байты.
-  ///   Результат будет дописан в конец этого буфера.
-  ///   Если в буфер было записано менее, чем count байтов, это может
-  ///   свидельствовать о том, что файл закончился, или о том, что произошла
-  ///   ошибка.
+  /// \param bytesCount Количество байт, которое требуется попытаться прочесть.
+  /// \param numberOfBytesReadPtr Переменная, в которую запишется количество
+  ///                             успешно прочитанных байтов. Если было
+  ///                             прочитано менее, чем bytesCount байтов, это
+  ///                             может свидельствовать о том, что файл
+  ///                             закончился, или о том, что произошла ошибка.
   /// \return Статус выполнения операции.
-  virtual bool ReadBytes(size_t count, std::vector<char> &buffer) override;
+  virtual bool ReadBytes(char *buffer, size_t bytesCount,
+                         size_t *numberOfBytesReadPtr = nullptr) override;
   /// Попытаться записать байты
   /// \param data Массив байтов, который требуется записать.
-  /// \param numberOfBytesWritten Количество успешно записанных байтов.
+  /// \param len Длина этого массива
+  /// \param numberOfBytesWrittenPtr Переменная, в которую запишется количество
+  ///                                успешно записанных байтов.
   /// \return Статус выполнения операции.
-  virtual bool WriteBytes(const std::vector<char> &data,
-                          size_t *numberOfBytesWritten) override;
+  virtual bool WriteBytes(const char *data, size_t len,
+                          size_t *numberOfBytesWrittenPtr = nullptr) override;
 };

@@ -118,7 +118,11 @@ bool PGRemoteFile::Close() {
   Прочитать байты
 */
 //---
-bool PGRemoteFile::ReadBytes(size_t count, std::vector<char> &buffer) {
+bool PGRemoteFile::ReadBytes(char *buffer, size_t bytesCount,
+                             size_t *numberOfBytesReadPtr) {
+  if (numberOfBytesReadPtr)
+    *numberOfBytesReadPtr = 0;
+
   if (!m_fd || !m_openMode)
     // Файл не открыт
     return false;
@@ -136,18 +140,17 @@ bool PGRemoteFile::ReadBytes(size_t count, std::vector<char> &buffer) {
 
   bool result = true;
 
-  std::vector<char> data(count);
   // Количество записанных байтов
   size_t readBytesCount = 0;
-  for (size_t currentPos = 0; currentPos < data.size();
+  for (size_t currentPos = 0; currentPos < bytesCount;
        currentPos += c_maxPackageSize) {
     // Размер текущего читаемого пакета
-    size_t currentPackageSize = c_maxPackageSize <= data.size() - currentPos
+    size_t currentPackageSize = c_maxPackageSize <= bytesCount - currentPos
                                     ? c_maxPackageSize
-                                    : data.size() - currentPos;
+                                    : bytesCount - currentPos;
 
     int readBytesCountInCurrentPackage =
-        connection->LoRead(*m_fd, &data[currentPos], currentPackageSize);
+        connection->LoRead(*m_fd, &buffer[currentPos], currentPackageSize);
     if (readBytesCountInCurrentPackage < 0) {
       // Произошла ошибка
       result = false;
@@ -157,9 +160,8 @@ bool PGRemoteFile::ReadBytes(size_t count, std::vector<char> &buffer) {
     readBytesCount += static_cast<size_t>(readBytesCountInCurrentPackage);
   }
 
-  data.resize(static_cast<size_t>(readBytesCount));
-  buffer.insert(buffer.end(), std::make_move_iterator(data.begin()),
-                std::make_move_iterator(data.end()));
+  if (numberOfBytesReadPtr)
+    *numberOfBytesReadPtr = readBytesCount;
 
   return result;
 }
@@ -169,10 +171,10 @@ bool PGRemoteFile::ReadBytes(size_t count, std::vector<char> &buffer) {
   Записать байты
 */
 //---
-bool PGRemoteFile::WriteBytes(const std::vector<char> &data,
-                              size_t *numberOfBytesWritten) {
-  if (numberOfBytesWritten)
-    *numberOfBytesWritten = 0;
+bool PGRemoteFile::WriteBytes(const char *data, size_t bytesCount,
+                              size_t *numberOfBytesWrittenPtr) {
+  if (numberOfBytesWrittenPtr)
+    *numberOfBytesWrittenPtr = 0;
 
   if (!m_fd || !m_openMode)
     // Файл не открыт
@@ -193,12 +195,12 @@ bool PGRemoteFile::WriteBytes(const std::vector<char> &data,
 
   // Количество записанных байтов
   size_t writtenBytesCount = 0;
-  for (size_t currentPos = 0; currentPos < data.size();
+  for (size_t currentPos = 0; currentPos < bytesCount;
        currentPos += c_maxPackageSize) {
     // Размер текущего отправляемого пакета
-    size_t currentPackageSize = c_maxPackageSize <= data.size() - currentPos
+    size_t currentPackageSize = c_maxPackageSize <= bytesCount - currentPos
                                     ? c_maxPackageSize
-                                    : data.size() - currentPos;
+                                    : bytesCount - currentPos;
 
     int writtenBytesCountInCurrentPackage =
         connection->LoWrite(*m_fd, &data[currentPos], currentPackageSize);
@@ -211,8 +213,8 @@ bool PGRemoteFile::WriteBytes(const std::vector<char> &data,
     writtenBytesCount += static_cast<size_t>(writtenBytesCountInCurrentPackage);
   }
 
-  if (numberOfBytesWritten)
-    *numberOfBytesWritten = writtenBytesCount;
+  if (numberOfBytesWrittenPtr)
+    *numberOfBytesWrittenPtr = writtenBytesCount;
 
   return result;
 }

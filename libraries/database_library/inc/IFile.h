@@ -2,6 +2,7 @@
 
 #include <memory>
 #include <optional>
+#include <type_traits>
 #include <vector>
 
 //------------------------------------------------------------------------------
@@ -44,21 +45,92 @@ public:
   /// Файл, оставшийся открытым в конце транзакции, будет закрыт автоматически
   /// \return Статус выполнения операции
   virtual bool Close() = 0;
+
   /// Попытаться прочесть байты
-  /// \param count Количество байт, которое требуется попытаться прочесть.
   /// \param buffer Буфер, в который требуется прочитать байты.
-  ///   Результат будет дописан в конец этого буфера.
-  ///   Если в буфер было записано менее, чем count байтов, это может
-  ///   свидельствовать о том, что файл закончился, или о том, что произошла
-  ///   ошибка.
+  /// \param bytesCount Количество байт, которое требуется попытаться прочесть.
+  /// \param numberOfBytesReadPtr Переменная, в которую запишется количество
+  ///                             успешно прочитанных байтов. Если было
+  ///                             прочитано менее, чем bytesCount байтов, это
+  ///                             может свидельствовать о том, что файл
+  ///                             закончился, или о том, что произошла ошибка.
   /// \return Статус выполнения операции.
-  virtual bool ReadBytes(size_t count, std::vector<char> &buffer) = 0;
+  virtual bool ReadBytes(char *buffer, size_t bytesCount,
+                         size_t *numberOfBytesReadPtr = nullptr) = 0;
+  /// Попытаться прочесть объекты
+  /// \tparam T Простой тип данных, который имеет смысл записывать в базу данных
+  ///           (Например, если структура имеет указатели, которые хранят адреса
+  ///           на выделенную память, то записывать эти адреса в базу данных не
+  ///           имеет смысла, поскольку эти адреса в рамках другого запуска
+  ///           программы будут указывать на другую область в памяти)
+  /// \param elementsCount Количество элементов, которое требуется попытаться
+  ///                      прочесть.
+  /// \param arr Массив, в который требуется прочитать объекты.
+  ///            Результат будет дописан в конец этого буфера.
+  ///            Если в массив было записано менее, чем elementsCount элементов,
+  ///            это может свидельствовать о том, что файл закончился, или о
+  ///            том, что произошла ошибка.
+  /// \param numberOfElementsReadPtr Переменная, в которую запишется количество
+  ///                                успешно прочитанных байтов. Если было
+  ///                                прочитано менее, чем bytesCount байтов, это
+  ///                                может свидельствовать о том, что файл
+  ///                                закончился, или о том, что произошла
+  ///                                ошибка.
+  /// \return Статус выполнения операции.
+  template <class T>
+  bool ReadBytes(size_t elementsCount, std::vector<T> &arr,
+                 size_t *numberOfElementsReadPtr = nullptr) {
+    static_assert(std::is_pod_v<T>);
+
+    const size_t oldSize = arr.size();
+    arr.resize(oldSize + elementsCount);
+
+    size_t numberOfBytesRead = 0;
+    bool result = ReadBytes(reinterpret_cast<char *>(arr.data() + oldSize),
+                            elementsCount * sizeof(T), &numberOfBytesRead);
+
+    const size_t numberOfElementsRead = numberOfBytesRead / sizeof(T);
+    if (numberOfElementsReadPtr)
+      *numberOfElementsReadPtr = numberOfElementsRead;
+
+    arr.resize(oldSize + numberOfElementsRead);
+    return result;
+  }
+
   /// Попытаться записать байты
   /// \param data Массив байтов, который требуется записать.
-  /// \param numberOfBytesWritten Количество успешно записанных байтов.
+  /// \param len Длина этого массива
+  /// \param numberOfBytesWrittenPtr Переменная, в которую запишется количество
+  ///                                успешно записанных байтов.
   /// \return Статус выполнения операции.
-  virtual bool WriteBytes(const std::vector<char> &data,
-                          size_t *numberOfBytesWritten = nullptr) = 0;
+  virtual bool WriteBytes(const char *data, size_t len,
+                          size_t *numberOfBytesWrittenPtr = nullptr) = 0;
+  /// Попытаться записать данные.
+  /// \tparam T Простой тип данных, который имеет смысл записывать в базу данных
+  ///           (Например, если структура имеет указатели, которые хранят адреса
+  ///           на выделенную память, то записывать эти адреса в базу данных не
+  ///           имеет смысла, поскольку эти адреса в рамках другого запуска
+  ///           программы будут указывать на другую область в памяти)
+  /// \param data Вектор с данными.
+  /// \param len Длина этого массива
+  /// \param numberOfBytesWrittenPtr Переменная, в которую запишется количество
+  ///                                успешно записанных байтов.
+  /// \return Статус выполнения операции.
+  template <class T>
+  bool WriteBytes(const std::vector<T> &data,
+                  size_t *numberOfElementsWrittenPtr = nullptr) {
+    static_assert(std::is_pod_v<T>);
+
+    size_t numberOfBytesWritten;
+    bool result = WriteBytes(reinterpret_cast<const char *>(data.data()),
+                             data.size() * sizeof(T), &numberOfBytesWritten);
+
+    const size_t numberOfElementsWritten = numberOfBytesWritten / sizeof(T);
+    if (numberOfElementsWrittenPtr)
+      *numberOfElementsWrittenPtr = numberOfElementsWritten;
+
+    return result;
+  }
 };
 
 /// Указатель на IFile
