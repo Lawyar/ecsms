@@ -8,15 +8,15 @@
 class SelectionModel : public IModel {
 public:
   SelectionModel() = default;
-  const QMap<const ConnectNodeWidget *, QVector<const ConnectNodeWidget *>> &
+  const QMap<ConnectNodeWidget *, QVector<ConnectNodeWidget *>> &
   GetSelectionMap() const;
-  void AddSelection(const ConnectNodeWidget *start,
-                    const ConnectNodeWidget *end);
-  void RemoveSelection(const ConnectNodeWidget *start,
-                       const ConnectNodeWidget *end);
+  void AddSelection(ConnectNodeWidget *start,
+                    ConnectNodeWidget *end);
+  void RemoveSelection(ConnectNodeWidget *start,
+                       ConnectNodeWidget *end);
   void Clear();
 
 private:
-  QMap<const ConnectNodeWidget *, QVector<const ConnectNodeWidget *>>
+  QMap<ConnectNodeWidget *, QVector<ConnectNodeWidget *>>
       _map_of_selected_nodes;
 };

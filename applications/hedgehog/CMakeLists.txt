@@ -10,7 +10,7 @@ set(SOURCE_LIST
     controlls/icontroller.h
     events/changecontrollerevent.h events/changecontrollerevent.cpp
     events/drawevent.h events/drawevent.cpp
-    events/drawlineevent.h events/drawlineevent.cpp
+    events/repaintevent.h events/repaintevent.cpp
     events/event.h
     events/mypaintevent.h events/mypaintevent.cpp
     models/fieldmodel.h models/fieldmodel.cpp

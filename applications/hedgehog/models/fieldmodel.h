@@ -8,14 +8,16 @@
 class FieldModel : public IModel {
 public:
   FieldModel() = default;
-  const QMap<const ConnectNodeWidget *, QVector<const ConnectNodeWidget *>> &
+  const QMap<ConnectNodeWidget *, QVector<ConnectNodeWidget *>> &
   GetConnectionMap() const;
-  void Remove(const ConnectNodeWidget *start);
-  void AddConnection(const ConnectNodeWidget *start,
-                     const ConnectNodeWidget *end);
-  void RemoveConnection(const ConnectNodeWidget *start, const ConnectNodeWidget *end);
+  void Remove(ConnectNodeWidget *start);
+  void AddConnection(ConnectNodeWidget *start,
+                     ConnectNodeWidget *end);
+  void RemoveConnection(ConnectNodeWidget *start, ConnectNodeWidget *end);
+
+  bool IsNodeUsed(ConnectNodeWidget * node) const;
 
 private:
-  QMap<const ConnectNodeWidget *, QVector<const ConnectNodeWidget *>>
+  QMap<ConnectNodeWidget *, QVector<ConnectNodeWidget *>>
       _connection_map;
 };

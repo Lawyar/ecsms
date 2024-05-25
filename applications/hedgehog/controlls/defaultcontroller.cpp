@@ -30,13 +30,11 @@ void DefaultController::onMousePressEvent(QMouseEvent *event) {
       bool find_line = isPointOnLine(QLine(start_pos, end_pos), event->pos());
       if (find_line) {
         _selection_model.AddSelection(start, end);
-        // repaint();
         return;
       }
     }
   }
   _selection_model.Clear();
-  // repaint();
 }
 
 void DefaultController::onKeyPressEvent(QKeyEvent *event) {

@@ -4,13 +4,14 @@
 #include "controlls/drawlinecontroller.h"
 #include "events/changecontrollerevent.h"
 #include "events/drawevent.h"
-#include "events/drawlineevent.h"
 #include "events/mypaintevent.h"
+#include "events/repaintevent.h"
 
 #include <QCoreApplication>
 #include <QDebug>
 #include <QMouseEvent>
 #include <QPainter>
+#include <set>
 
 BlockField::BlockField(QWidget *parent) : QWidget(parent) {
   setMouseTracking(true);
@@ -25,7 +26,17 @@ BlockField::BlockField(QWidget *parent) : QWidget(parent) {
 void BlockField::Update(std::shared_ptr<Event> e) {
   switch (e->GetEventType()) {
   case drawEvent: {
-    repaint();
+    auto &&draw_e = std::static_pointer_cast<DrawEvent>(e);
+    switch (draw_e->GetDrawEventType()) {
+    case repaintEvent: {
+      repaint();
+      break;
+    }
+    default: {
+      assert(false);
+      break;
+    }
+    }
     break;
   }
   case changeControllerEvent: {
@@ -67,41 +78,18 @@ void BlockField::paintEvent(QPaintEvent *event) {
   p.eraseRect(rect());
   p.setBackground(QBrush(Qt::white));
 
-  if (auto && begin = _line_model.GetBegin())
-  {
-    auto &&point1 = begin->coordToParent();
-    auto &&point2 = _line_model.GetEnd();
-    p.setPen(QPen(Qt::red, 1, Qt::SolidLine));
-    p.drawLine(point1, point2);
-  }
-
-  /*if (auto &&my_paint_ev = dynamic_cast<MyPaintEvent *>(event)) {
-    auto &&drawEvent = my_paint_ev->GetEvent();
-    switch (drawEvent->GetDrawEventType()) {
-    case DrawEventType::Line: {
-      auto drawLineEvent = static_cast<DrawLineEvent *>(drawEvent.get());
-      
-      break;
-    }
-    default: {
-      assert(false);
-      break;
-    }
-    }
-  }
-
-  /*QVector<QLineF> unselected_lines, selected_lines;
+  QVector<QLineF> unselected_lines, selected_lines;
+  auto &&_connection_map = _field_model.GetConnectionMap();
   for (auto it = _connection_map.begin(); it != _connection_map.end(); ++it) {
     auto start = it.key();
-    auto start_pos = start->pos; // coordToBlockField(start);
     for (auto end_node_it = it.value().begin(); end_node_it != it.value().end();
          ++end_node_it) {
       auto end = *end_node_it;
-      auto end_pos = end->pos; // coordToBlockField(end);
-      start->makeTransparent(false);
-      end->makeTransparent(false);
 
-      if (_map_of_selected_nodes.value(start).contains(end)) {
+      auto start_pos = start->coordToParent();
+      auto end_pos = end->coordToParent();
+      auto &&connect_vec = _selection_model.GetSelectionMap().value(start);
+      if (connect_vec.contains(end)) {
         selected_lines.append({start_pos, end_pos});
       } else {
         unselected_lines.append({start_pos, end_pos});
@@ -115,11 +103,13 @@ void BlockField::paintEvent(QPaintEvent *event) {
   p.setPen(QPen(Qt::red, 1, Qt::SolidLine));
   p.drawLines(unselected_lines.data(), unselected_lines.size());
 
-  if (!selected_node)
-    return;
-
-  selected_node->makeTransparent(false);
-  p.drawLine(coordToBlockField(selected_node), _pos);*/
+    if (auto &&begin = _line_model.GetBegin()) { // draw connection line
+    begin->makeTransparent(false);
+    auto &&point1 = begin->coordToParent();
+    auto &&point2 = _line_model.GetEnd();
+    p.setPen(QPen(Qt::red, 1, Qt::SolidLine));
+    p.drawLine(point1, point2);
+  }
 }
 
 void BlockField::keyPressEvent(QKeyEvent *event) {

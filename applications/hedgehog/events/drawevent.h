@@ -2,9 +2,9 @@
 
 #include "event.h"
 
-enum class DrawEventType
+enum DrawEventType
 {
-	Line,
+  repaintEvent,
 };
 
 class DrawEvent: public Event
