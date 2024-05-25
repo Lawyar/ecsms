@@ -1,7 +1,6 @@
 add_library(pipeline
     inc/ConnectablePipelineStage.h
     inc/ConsumerStage.h
-    inc/ConsumerTaskRetrieveStrategy.h
     inc/InOutStageConnection.h
     inc/InStageConnection.h
     inc/OutStageConnection.h
@@ -15,6 +14,7 @@ add_library(pipeline
     inc/SteadyClock.h
     inc/TaskRetrieveStrategy.h
     inc/PipelineException.h
+    inc/PipelineStageType.h
     
     src/Pipeline.cpp
     src/SteadyClock.cpp

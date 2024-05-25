@@ -10,4 +10,6 @@ public:
 
 public:
   static constexpr auto stageName = "Int32Visualizer";
+  static constexpr auto stageType = PipelineStageType::consumer;
+  using elementType = int32_t;
 };

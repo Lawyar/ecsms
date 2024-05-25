@@ -20,7 +20,7 @@ public:
 
   void run() override;
 
-  bool isConsumer() override;
+  PipelineStageType getStageType() override;
   bool consumerTasksAvailable() override;
   std::shared_ptr<StageConnection> getInConnection() override;
 
@@ -114,8 +114,13 @@ void ConnectablePipelineStage<In, Out>::run() {
 }
 
 template <typename In, typename Out>
-bool ConnectablePipelineStage<In, Out>::isConsumer() {
-  return m_inConnection != nullptr;
+PipelineStageType ConnectablePipelineStage<In, Out>::getStageType() {
+  if (!m_inConnection)
+    return PipelineStageType::producer;
+  else if (!m_outConnection)
+    return PipelineStageType::consumer;
+  else
+    return PipelineStageType::producerConsumer;
 }
 
 template <typename In, typename Out>

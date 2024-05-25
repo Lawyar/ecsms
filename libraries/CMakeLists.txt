@@ -1,3 +1,4 @@
 add_subdirectory(test_library)
 add_subdirectory(pipeline)
+add_subdirectory(pipeline_stage_observer)
 add_subdirectory(pipeline_sample)

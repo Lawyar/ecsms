@@ -1,6 +1,7 @@
 #pragma once
 
 #include "StageConnection.h"
+#include "PipelineStageType.h"
 
 #include <atomic>
 #include <memory>
@@ -17,7 +18,7 @@ public:
 
   std::string getName();
 
-  virtual bool isConsumer() = 0;
+  virtual PipelineStageType getStageType() = 0;
   virtual bool consumerTasksAvailable() = 0;
   virtual std::shared_ptr<StageConnection> getInConnection() = 0;
 
