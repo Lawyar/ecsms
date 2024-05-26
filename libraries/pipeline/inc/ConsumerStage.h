@@ -11,7 +11,7 @@ public:
 private:
   virtual void consume(std::shared_ptr<In> inData) = 0;
 
-  void function(std::shared_ptr<In> inData, std::shared_ptr<void>) override;
+  void consumeAndProduce(std::shared_ptr<In> inData, std::shared_ptr<void>) override;
 
   void releaseProducerTask(std::shared_ptr<void>, bool) = delete;
 };
@@ -31,7 +31,7 @@ ConsumerStage<In>::ConsumerStage(
 }
 
 template <typename In>
-void ConsumerStage<In>::function(std::shared_ptr<In> inData,
+void ConsumerStage<In>::consumeAndProduce(std::shared_ptr<In> inData,
                                  std::shared_ptr<void>) {
   consume(inData);
 }

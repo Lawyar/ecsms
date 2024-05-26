@@ -29,8 +29,7 @@ ConsumerAndProducerStage<In, Out>::ConsumerAndProducerStage(
     throw std::invalid_argument("outConnection is null");
 
   outConnection->connectProducer();
-  auto consumer_id =
-      inConnection->connect_consumer(this->getStatisticsCollector());
+  auto consumerId = inConnection->connectConsumer();
 
-  setConsumerId(consumer_id);
+  setConsumerId(consumerId);
 }

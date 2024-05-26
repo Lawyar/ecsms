@@ -30,7 +30,7 @@ protected:
   void releaseProducerTask(std::shared_ptr<Out> taskData, bool produced = true);
 
 private:
-  virtual void function(std::shared_ptr<In> inData,
+  virtual void consumeAndProduce(std::shared_ptr<In> inData,
                         std::shared_ptr<Out> outData) = 0;
 
 private:
@@ -93,7 +93,7 @@ void ConnectablePipelineStage<In, Out>::run() {
       }
 
       try {
-        function(inData, outData);
+        consumeAndProduce(inData, outData);
 
         inData = nullptr;
         outData = nullptr;

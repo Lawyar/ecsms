@@ -6,7 +6,7 @@
 
 class Int32ToDoubleConverter
     : public ConsumerAndProducerStage<int32_t, double> {
-  void function(std::shared_ptr<int32_t> inData,
+  void consumeAndProduce(std::shared_ptr<int32_t> inData,
                 std::shared_ptr<double> outData) override;
 public:
   static constexpr auto stageName = "Int32ToDoubleConverter";

@@ -11,7 +11,7 @@ public:
 private:
   virtual void produce(std::shared_ptr<Out> outData) = 0;
 
-  void function(std::shared_ptr<void>, std::shared_ptr<Out> outData) override;
+  void consumeAndProduce(std::shared_ptr<void>, std::shared_ptr<Out> outData) override;
 
   void releaseConsumerTask(std::shared_ptr<void>) = delete;
 };
@@ -29,7 +29,7 @@ ProducerStage<Out>::ProducerStage(
 }
 
 template <typename Out>
-void ProducerStage<Out>::function(std::shared_ptr<void>,
+void ProducerStage<Out>::consumeAndProduce(std::shared_ptr<void>,
                                   std::shared_ptr<Out> outData) {
   produce(outData);
 }
