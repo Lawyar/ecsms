@@ -65,12 +65,28 @@ void BlockField::Update(std::shared_ptr<Event> e) {
   }
 }
 
+std::unique_ptr<IController> &BlockField::GetController() {
+  return _controller;
+}
+
 void BlockField::mouseMoveEvent(QMouseEvent *event) {
-  _controller->onMouseMoveEvent(event);
+  _controller->onMouseMoveEvent(this, event);
 }
 
 void BlockField::mousePressEvent(QMouseEvent *event) {
-  _controller->onMousePressEvent(event);
+  _controller->onMousePressEvent(this, event);
+}
+
+void BlockField::keyPressEvent(QKeyEvent *event) {
+  _controller->onKeyPressEvent(this, event);
+}
+
+void BlockField::leaveEvent(QEvent *event) {
+  _controller->onLeaveEvent(this, event);
+}
+
+void BlockField::mouseReleaseEvent(QMouseEvent *event) {
+  _controller->onMouseReleaseEvent(this, event);
 }
 
 void BlockField::paintEvent(QPaintEvent *event) {
@@ -103,19 +119,11 @@ void BlockField::paintEvent(QPaintEvent *event) {
   p.setPen(QPen(Qt::red, 1, Qt::SolidLine));
   p.drawLines(unselected_lines.data(), unselected_lines.size());
 
-    if (auto &&begin = _line_model.GetBegin()) { // draw connection line
+  if (auto &&begin = _line_model.GetBegin()) { // draw connection line
     begin->makeTransparent(false);
     auto &&point1 = begin->coordToParent();
     auto &&point2 = _line_model.GetEnd();
     p.setPen(QPen(Qt::red, 1, Qt::SolidLine));
     p.drawLine(point1, point2);
   }
-}
-
-void BlockField::keyPressEvent(QKeyEvent *event) {
-  _controller->onKeyPressEvent(event);
-}
-
-void BlockField::on_start(ConnectNodeWidget *start) {
-  _controller->on_start(start);
 }

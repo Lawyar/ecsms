@@ -1,17 +1,15 @@
 #pragma once
 
+#include "../connectnodewidget.h"
+
 #include <QKeyEvent>
 #include <QMouseEvent>
 
-#include "../connectnodewidget.h"
-
 class IController {
 public:
-  virtual void onMouseMoveEvent(QMouseEvent *event) = 0;
-
-  virtual void onMousePressEvent(QMouseEvent *event) = 0;
-
-  virtual void onKeyPressEvent(QKeyEvent *event) = 0;
-
-  virtual void on_start(ConnectNodeWidget *node) = 0;
+  virtual void onMouseMoveEvent(QWidget *widget, QMouseEvent *event) = 0;
+  virtual void onMousePressEvent(QWidget *widget, QMouseEvent *event) = 0;
+  virtual void onKeyPressEvent(QWidget *widget, QKeyEvent *event) = 0;
+  virtual void onLeaveEvent(QWidget *widget, QEvent *event) = 0;
+  virtual void onMouseReleaseEvent(QWidget *widget, QMouseEvent *event) = 0;
 };

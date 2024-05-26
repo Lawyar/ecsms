@@ -16,7 +16,7 @@
 
 static void createDefaultBlock(BlockField *parent)
 {
-    auto default_block = new BlockWidget(parent);
+    auto default_block = new BlockWidget(parent->GetController(), parent);
     default_block->show();
     default_block->move(parent->rect().center());
 }

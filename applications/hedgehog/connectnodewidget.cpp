@@ -3,8 +3,9 @@
 #include <QDebug>
 #include <QPainter>
 
-ConnectNodeWidget::ConnectNodeWidget(NodeType type, QWidget *parent)
-    : QLabel(parent), _type(type) {
+ConnectNodeWidget::ConnectNodeWidget(std::unique_ptr<IController> &controller,
+                                     NodeType type, QWidget *parent)
+    : QLabel(parent), _controller(controller), _type(type) {
   QPixmap pixmap(11, 11);
   setPixmap(pixmap);
   makeTransparent(true);
@@ -34,7 +35,22 @@ QPoint ConnectNodeWidget::coordToParent() const {
   return parent->mapToParent(pos()) + QPoint(width() / 2, height() / 2);
 }
 
+void ConnectNodeWidget::mouseMoveEvent(QMouseEvent *event) {
+  _controller->onMouseMoveEvent(this, event);
+}
+
 void ConnectNodeWidget::mousePressEvent(QMouseEvent *event) {
-  emit start(this);
-  qDebug() << "start from node";
+  _controller->onMousePressEvent(this, event);
+}
+
+void ConnectNodeWidget::keyPressEvent(QKeyEvent *event) {
+  _controller->onKeyPressEvent(this, event);
+}
+
+void ConnectNodeWidget::leaveEvent(QEvent *event) {
+  _controller->onLeaveEvent(this, event);
+}
+
+void ConnectNodeWidget::mouseReleaseEvent(QMouseEvent *event) {
+  _controller->onMouseReleaseEvent(this, event);
 }

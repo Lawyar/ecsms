@@ -1,113 +1,83 @@
 #include "blockwidget.h"
-#include "connectnodewidget.h"
 #include "blockfield.h"
+#include "connectnodewidget.h"
 
+#include <QDebug>
 #include <QMouseEvent>
 #include <QPainter>
-#include <QDebug>
 
-BlockWidget::BlockWidget(BlockField *parent)
-    : QWidget(parent),
+BlockWidget::BlockWidget(std::unique_ptr<IController> &controller,
+                         BlockField *parent)
+    : QWidget(parent), _controller(controller),
       _block_name(new QLabel("block name", this)),
-      _left_node(new ConnectNodeWidget(Incoming, this)),
-      _right_node(new ConnectNodeWidget(Outgoing, this)),
-      _resume_pause_button(new QPushButton("||", this))
-{
-    connect(_left_node, &ConnectNodeWidget::start, this, &BlockWidget::on_leftCircle_clicked);
-    connect(_right_node, &ConnectNodeWidget::start, this, &BlockWidget::on_rightCircle_clicked);
+      _left_node(new ConnectNodeWidget(controller, Incoming, this)),
+      _right_node(new ConnectNodeWidget(controller, Outgoing, this)),
+      _resume_pause_button(new QPushButton("||", this)) {
+  _block_name->setWordWrap(true);
+  _block_name->setAlignment(Qt::AlignCenter);
+  _block_name->setFrameStyle(QFrame::Box | QFrame::Plain);
+  auto new_font = _block_name->font();
+  new_font.setPointSize(12);
+  _block_name->setFont(new_font);
+  _resume_pause_button->setFont(new_font);
 
-    connect(this, &BlockWidget::start, parent, &BlockField::on_start);
+  _block_name->show();
+  _resume_pause_button->show();
 
-    /*connect(left_node, &ConnectNodeWidget::end, this, &BlockWidget::on_leftCircle_clicked);
-    connect(right_node, &ConnectNodeWidget::end, this, &BlockWidget::on_rightCircle_clicked);*/
+  auto label_width = _block_name->width();
+  auto label_height = _block_name->height();
+  auto spacing = 2, spacing2 = 3;
+  auto button_width = _resume_pause_button->width();
+  auto button_height = _resume_pause_button->height();
+  auto radius = 5, diameter = radius * 2;
 
-    _block_name->setWordWrap(true);
-    _block_name->setAlignment(Qt::AlignCenter);
-    _block_name->setFrameStyle(QFrame::Box | QFrame::Plain);
-    auto new_font = _block_name->font();
-    new_font.setPointSize(12);
-    _block_name->setFont(new_font);
-    _resume_pause_button->setFont(new_font);
+  auto width = 2 * (2 * spacing + diameter) + label_width;
+  auto height = 2 * spacing + button_height + spacing2 + label_height;
+  setGeometry(0, 0, width, height);
 
-    _block_name->show();
-    _resume_pause_button->show();
+  _resume_pause_button->move((width - button_width) / 2, spacing);
+  _block_name->move(2 * spacing + diameter, spacing + button_height + spacing2);
 
-    auto label_width = _block_name->width();
-    auto label_height = _block_name->height();
-    auto spacing = 2, spacing2 = 3;
-    auto button_width = _resume_pause_button->width();
-    auto button_height = _resume_pause_button->height();
-    auto radius = 5, diameter = radius * 2;
+  _left_node->move(spacing, spacing + button_height + spacing2 +
+                                label_height / 2 - diameter / 2);
+  _right_node->move(width - spacing - diameter,
+                    spacing + button_height + spacing2 + label_height / 2 -
+                        diameter / 2);
 
-    auto width = 2 * (2 * spacing + diameter) + label_width;
-    auto height = 2 * spacing + button_height + spacing2 + label_height;
-    setGeometry(0,0, width, height);
+  setMouseTracking(true);
 
-    _resume_pause_button->move((width - button_width) / 2, spacing);
-    _block_name->move(2 * spacing + diameter, spacing + button_height + spacing2);
-
-    _left_node->move(spacing, spacing + button_height + spacing2 + label_height / 2 - diameter / 2);
-    _right_node->move(width - spacing - diameter, spacing + button_height + spacing2 + label_height / 2 - diameter / 2);
-
-    setMouseTracking(true);
-
-    connect(_resume_pause_button, &QPushButton::clicked, this, &BlockWidget::on_pushButton_clicked);
+  connect(_resume_pause_button, &QPushButton::clicked, this,
+          &BlockWidget::on_pushButton_clicked);
 }
 
 ConnectNodeWidget *BlockWidget::GetLeftNode() { return _left_node; }
 
 ConnectNodeWidget *BlockWidget::GetRightNode() { return _right_node; }
 
+void BlockWidget::mouseMoveEvent(QMouseEvent *event) {
+  _controller->onMouseMoveEvent(this, event);
+}
+
 void BlockWidget::mousePressEvent(QMouseEvent *event) {
-    if (event->button() == Qt::LeftButton) {
-        _old_pos = event->pos();
-        parentWidget()->repaint();
-    }
+  _controller->onMousePressEvent(this, event);
 }
 
-void BlockWidget::mouseMoveEvent(QMouseEvent *event)
-{
-    _left_node->makeTransparent(false);
-    _right_node->makeTransparent(false);
-    if (event->buttons() ==  Qt::LeftButton)
-    {
-        QPoint delta = event->pos() - _old_pos;
-        move(pos() + delta);
-        parentWidget()->repaint();
-    }
+void BlockWidget::keyPressEvent(QKeyEvent *event) {
+  _controller->onKeyPressEvent(this, event);
 }
 
-void BlockWidget::leaveEvent(QEvent *event)
-{
-    _left_node->makeTransparent(true);
-    _right_node->makeTransparent(true);
+void BlockWidget::leaveEvent(QEvent *event) {
+  _controller->onLeaveEvent(this, event);
 }
 
-void BlockWidget::paintEvent(QPaintEvent* event)
-{
-
+void BlockWidget::mouseReleaseEvent(QMouseEvent *event) {
+  _controller->onMouseReleaseEvent(this, event);
 }
 
-void BlockWidget::on_pushButton_clicked()
-{
-    auto text = _resume_pause_button->text();
-    if(text == "||")
-        _resume_pause_button->setText("▶");
-    else
-        _resume_pause_button->setText("||");
+void BlockWidget::on_pushButton_clicked() {
+  auto text = _resume_pause_button->text();
+  if (text == "||")
+    _resume_pause_button->setText("▶");
+  else
+    _resume_pause_button->setText("||");
 }
-
-void BlockWidget::on_leftCircle_clicked(ConnectNodeWidget* start_node)
-{
-    start_node->makeTransparent(false);
-    qDebug() << "start from block";
-    emit start(start_node);
-}
-
-void BlockWidget::on_rightCircle_clicked(ConnectNodeWidget* start_node)
-{
-    start_node->makeTransparent(false);
-    qDebug() << "start from block";
-    emit start(start_node);    
-}
-

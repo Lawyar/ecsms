@@ -10,14 +10,12 @@
 class DrawLineController : public IController {
 public:
   DrawLineController(FieldModel &model, LineModel &line_model);
-
-  virtual void onMouseMoveEvent(QMouseEvent *event) override;
-
-  virtual void onMousePressEvent(QMouseEvent *event) override;
-
-  virtual void onKeyPressEvent(QKeyEvent *event) override;
-
-  virtual void on_start(ConnectNodeWidget *selected_node) override;
+  virtual void onMouseMoveEvent(QWidget *widget, QMouseEvent *event) override;
+  virtual void onMousePressEvent(QWidget *widget, QMouseEvent *event) override;
+  virtual void onKeyPressEvent(QWidget *widget, QKeyEvent *event) override;
+  virtual void onLeaveEvent(QWidget *widget, QEvent *event) override;
+  virtual void onMouseReleaseEvent(QWidget *widget,
+                                   QMouseEvent *event) override;
 
 private:
   FieldModel &_field_model;
