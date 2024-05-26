@@ -6,14 +6,15 @@
 
 #include <QLabel>
 
-enum NodeType { Incoming, Outgoing };
 
 class ConnectNodeWidget : public QLabel {
   Q_OBJECT
 public:
-  explicit ConnectNodeWidget(std::unique_ptr<IController> &controller,
+  explicit ConnectNodeWidget(const NodeId &id,
+                             std::unique_ptr<IController> &controller,
                              NodeType type, QWidget *parent = nullptr);
-  NodeType getNodeType() const;
+  NodeId GetId() const;
+  NodeType GetNodeType() const;
   void makeTransparent(bool value);
   QPoint coordToBlockField(QPoint pos) const;
   QPoint getCenterCoordToBlockField() const;
@@ -27,6 +28,7 @@ protected:
   void mouseReleaseEvent(QMouseEvent *event) override;
 
 private:
+  NodeId _id;
   std::unique_ptr<IController> &_controller;
   NodeType _type;
 };

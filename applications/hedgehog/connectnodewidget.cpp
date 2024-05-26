@@ -3,16 +3,19 @@
 #include <QDebug>
 #include <QPainter>
 
-ConnectNodeWidget::ConnectNodeWidget(std::unique_ptr<IController> &controller,
+ConnectNodeWidget::ConnectNodeWidget(const NodeId &id,
+                                     std::unique_ptr<IController> &controller,
                                      NodeType type, QWidget *parent)
-    : QLabel(parent), _controller(controller), _type(type) {
+    : _id(id), _controller(controller), _type(type), QLabel(parent) {
   QPixmap pixmap(11, 11);
   setPixmap(pixmap);
   makeTransparent(true);
   setMouseTracking(true);
 }
 
-NodeType ConnectNodeWidget::getNodeType() const { return _type; }
+NodeId ConnectNodeWidget::GetId() const { return _id; }
+
+NodeType ConnectNodeWidget::GetNodeType() const { return _type; }
 
 void ConnectNodeWidget::makeTransparent(bool is_transparent) {
   if (is_transparent) {

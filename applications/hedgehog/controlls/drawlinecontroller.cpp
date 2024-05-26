@@ -35,9 +35,9 @@ void DrawLineController::onMousePressEvent(QWidget *widget,
       auto start = _line_model.GetBegin();
       if (connect_node_w != start &&
           connect_node_w->parent() != start->parent()) {
-        _field_model.AddConnection(start, connect_node_w);
-        _active_nodes_model.IncreaseNodeCount(start);
-        _active_nodes_model.IncreaseNodeCount(connect_node_w);
+        _field_model.AddConnection(start->GetId(), connect_node_w->GetId());
+        _active_nodes_model.IncreaseNodeCount(start->GetId());
+        _active_nodes_model.IncreaseNodeCount(connect_node_w->GetId());
       }
       _line_model.SetBegin(nullptr);
     } else {

@@ -34,16 +34,17 @@ void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
     auto &&_connection_map = _field_model.GetConnectionMap();
     auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
     for (auto it = _connection_map.begin(); it != _connection_map.end(); ++it) {
-      auto start = it.key();
-      auto start_pos = start->getCenterCoordToBlockField();
-      for (auto end_node_it = it.value().begin();
-           end_node_it != it.value().end(); ++end_node_it) {
-        auto end = *end_node_it;
-        auto end_pos = end->getCenterCoordToBlockField();
-        bool find_line = isPointOnLine(QLine(start_pos, end_pos), event->pos());
-        if (find_line) {
-          _selection_model.AddSelection(start, end);
-          return;
+      if (auto &&start = qobject_cast<ConnectNodeWidget*>(field_w->FindById(it.key()))) {
+        auto start_pos = start->getCenterCoordToBlockField();
+        for (auto end_node_it = it.value().begin();
+             end_node_it != it.value().end(); ++end_node_it) {
+          auto end = *end_node_it;
+          auto end_pos = end->getCenterCoordToBlockField();
+          bool find_line = isPointOnLine(QLine(start_pos, end_pos), event->pos());
+          if (find_line) {
+            _selection_model.AddSelection(start, end);
+            return;
+          }
         }
       }
     }

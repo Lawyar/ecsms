@@ -6,6 +6,8 @@ set(SOURCE_LIST
     mainwindow.cpp mainwindow.h mainwindow.ui
     qlineeditdelegate.cpp qlineeditdelegate.h
     controlls/activenodeslock.h controlls/activenodeslock.cpp
+    controlls/command/deleteblocksandconnectionscommand.h controlls/command/deleteblocksandconnectionscommand.cpp
+    controlls/command/icommand.h
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
     controlls/icontroller.h
@@ -20,6 +22,10 @@ set(SOURCE_LIST
     models/imodel.h
     models/linemodel.h models/linemodel.cpp
     models/selectionmodel.h models/selectionmodel.cpp
+    namemaker/blocknamemaker.h  namemaker/blocknamemaker.cpp
+    namemaker/id.h  namemaker/id.cpp
+    namemaker/blockid.h  namemaker/blockid.cpp
+    namemaker/nodeid.h  namemaker/nodeid.cpp
     observer/iobserver.h
 )
 

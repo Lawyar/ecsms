@@ -18,6 +18,7 @@ public:
   void AddNewBlock();
   virtual void Update(std::shared_ptr<Event> e) override;
   std::unique_ptr<IController> &GetController();
+  QWidget *FindById(Id id);
 
 protected:
   void mouseMoveEvent(QMouseEvent *event) override;
@@ -29,6 +30,7 @@ protected:
   void paintEvent(QPaintEvent *event) override;
 
 private:
+  NameMaker _name_maker;
   std::unique_ptr<IController> _controller;
   QPoint _pos;
   FieldModel _field_model;

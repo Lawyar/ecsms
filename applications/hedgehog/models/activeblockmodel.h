@@ -8,11 +8,11 @@
 class ActiveNodesModel : public IModel {
 public:
   ActiveNodesModel() = default;
-  std::map<ConnectNodeWidget *, int> GetActiveNodes();
-  void IncreaseNodeCount(ConnectNodeWidget *active_node);
-  void DecreaseNodeCount(ConnectNodeWidget *active_node);
-  int GetNodeCount(ConnectNodeWidget *active_node);
+  std::map<NodeId, int> GetActiveNodes();
+  void IncreaseNodeCount(const NodeId &active_node);
+  void DecreaseNodeCount(const NodeId &active_node);
+  int GetNodeCount(const NodeId &active_node);
 
 private:
-  std::map<ConnectNodeWidget *, int> _active_nodes;
+  std::map<NodeId, int> _active_nodes;
 };

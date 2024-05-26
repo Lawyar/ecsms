@@ -6,12 +6,18 @@
 #include <QMouseEvent>
 #include <QPainter>
 
-BlockWidget::BlockWidget(std::unique_ptr<IController> &controller,
+BlockWidget::BlockWidget(const BlockId &id,
+                         std::unique_ptr<IController> &controller,
                          BlockField *parent)
-    : QWidget(parent), _controller(controller),
+    : _id(id), _controller(controller), QWidget(parent),
       _block_name(new QLabel("block name", this)),
-      _left_node(new ConnectNodeWidget(controller, Incoming, this)),
-      _right_node(new ConnectNodeWidget(controller, Outgoing, this)),
+
+      _left_node(new ConnectNodeWidget(id.GetNodeId(Incoming), controller,
+                                       Incoming, this)),
+
+      _right_node(new ConnectNodeWidget(id.GetNodeId(Outgoing),
+                                        controller, Outgoing, this)),
+
       _resume_pause_button(new QPushButton("||", this)) {
   _block_name->setWordWrap(true);
   _block_name->setAlignment(Qt::AlignCenter);
@@ -48,6 +54,19 @@ BlockWidget::BlockWidget(std::unique_ptr<IController> &controller,
 
   connect(_resume_pause_button, &QPushButton::clicked, this,
           &BlockWidget::on_pushButton_clicked);
+}
+
+BlockId BlockWidget::GetId() const { return _id; }
+
+QWidget *BlockWidget::FindById(Id id) { 
+  ConnectNodeWidget *res = nullptr;
+  for (auto &&node : {_left_node, _right_node}) {
+    if (node->GetId() == id) {
+      res = node;
+      break;
+    }
+  }
+  return res; 
 }
 
 ConnectNodeWidget *BlockWidget::GetLeftNode() { return _left_node; }

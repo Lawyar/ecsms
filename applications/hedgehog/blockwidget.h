@@ -1,6 +1,9 @@
 #ifndef BLOCKWIDGET_H
 #define BLOCKWIDGET_H
 
+#include "namemaker/blockid.h"
+#include "namemaker/blocknamemaker.h"
+
 #include <QLabel>
 #include <QObject>
 #include <QPushButton>
@@ -13,8 +16,10 @@ class IController;
 class BlockWidget : public QWidget {
   Q_OBJECT
 public:
-  explicit BlockWidget(std::unique_ptr<IController> &controller,
+  explicit BlockWidget(const BlockId &id, std::unique_ptr<IController> &controller,
                        BlockField *parent = nullptr);
+  BlockId GetId() const;
+  QWidget *FindById(Id id);
   ConnectNodeWidget *GetLeftNode();
   ConnectNodeWidget *GetRightNode();
   QPoint coordToBlockField(QPoint p) const;
@@ -31,6 +36,7 @@ public slots:
   void on_pushButton_clicked();
 
 private:
+  BlockId _id;
   std::unique_ptr<IController> &_controller;
   QLabel *_block_name;
   ConnectNodeWidget *_left_node, *_right_node;

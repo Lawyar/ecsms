@@ -1,26 +1,29 @@
 #pragma once
 
-#include "imodel.h"
 #include "../connectnodewidget.h"
+#include "../namemaker/blocknamemaker.h"
+#include "imodel.h"
 
 #include <QMap>
 
 class FieldModel : public IModel {
 public:
-  FieldModel() = default;
-  const QMap<ConnectNodeWidget *, QVector<ConnectNodeWidget *>> &
-  GetConnectionMap() const;
-  void Remove(ConnectNodeWidget *start);
-  void AddConnection(ConnectNodeWidget *start,
-                     ConnectNodeWidget *end);
-  void RemoveConnection(ConnectNodeWidget *start, ConnectNodeWidget *end);
+  struct BlockData {
+    QPoint pos;
+  };
 
-  bool IsNodeUsed(ConnectNodeWidget * node) const;
-  void AddBlock(BlockWidget *block);
-  void RemoveBlock(BlockWidget *block);
+public:
+  FieldModel() = default;
+  const QMap<NodeId, QVector<NodeId>> &GetConnectionMap() const;
+  void Remove(const NodeId &start);
+  void AddConnection(const NodeId &start, const NodeId &end);
+  void RemoveConnection(const NodeId &start, const NodeId &end);
+
+  bool IsNodeUsed(const NodeId &node) const;
+  void AddBlock(const BlockId &block, const BlockData &bd);
+  void RemoveBlock(const BlockId &block);
 
 private:
-  QMap<ConnectNodeWidget *, QVector<ConnectNodeWidget *>>
-      _connection_map;
-  QSet<BlockWidget *> _blocks;
+  QMap<NodeId, QVector<NodeId>> _connection_map;
+  QMap<BlockId, BlockData> _blocks;
 };

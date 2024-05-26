@@ -7,6 +7,7 @@
 #include "events/drawevent.h"
 #include "events/mypaintevent.h"
 #include "events/repaintevent.h"
+#include "namemaker/blocknamemaker.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -26,8 +27,8 @@ BlockField::BlockField(QWidget *parent) : QWidget(parent) {
 }
 
 void BlockField::AddNewBlock() {
-  auto default_block = new BlockWidget(_controller, this);
-  _field_model.AddBlock(default_block);
+  auto default_block = new BlockWidget(_name_maker.MakeName(), _controller, this);
+  _field_model.AddBlock(default_block->GetId());
   default_block->show();
   default_block->move(rect().center());
 }
@@ -85,6 +86,22 @@ std::unique_ptr<IController> &BlockField::GetController() {
   return _controller;
 }
 
+QWidget *BlockField::FindById(Id id) {
+  QWidget *res = nullptr;
+  for (auto &&child : children()) {
+    if (auto &&block = qobject_cast<BlockWidget *>(child)) {
+      if (block->GetId() == id) {
+        res = block;
+        break;
+      } else if (auto &&node = block->FindById(id)) {
+        res = node;
+        break;
+      }
+    }
+  }
+  return res;
+}
+
 void BlockField::mouseMoveEvent(QMouseEvent *event) {
   _controller->onMouseMoveEvent(this, event);
 }
@@ -97,7 +114,9 @@ void BlockField::keyPressEvent(QKeyEvent *event) {
   _controller->onKeyPressEvent(this, event);
 }
 
-void BlockField::enterEvent(QEvent *event) { _controller->onEnterEvent(this, event); }
+void BlockField::enterEvent(QEvent *event) {
+  _controller->onEnterEvent(this, event);
+}
 
 void BlockField::leaveEvent(QEvent *event) {
   _controller->onLeaveEvent(this, event);
@@ -144,7 +163,8 @@ void BlockField::paintEvent(QPaintEvent *event) {
   for (auto &&selected_block : _selection_model.GetSelectedBlocks()) {
     auto &&rect = selected_block->rect();
     auto &&mapped_rect =
-        QRect(selected_block->mapToParent({rect.x(), rect.y()}), QSize({rect.width(), rect.height()}));
+        QRect(selected_block->mapToParent({rect.x(), rect.y()}),
+              QSize({rect.width(), rect.height()}));
     p.drawRect(mapped_rect);
   }
   /*--------------------------------*/

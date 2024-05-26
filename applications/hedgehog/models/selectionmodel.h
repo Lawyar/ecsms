@@ -9,17 +9,15 @@
 class SelectionModel : public IModel {
 public:
   SelectionModel() = default;
-  const QMap<ConnectNodeWidget *, QVector<ConnectNodeWidget *>> &
-  GetSelectionMap() const;
-  const QSet<BlockWidget *> &GetSelectedBlocks() const;
-  void AddSelection(BlockWidget *block);
-  void RemoveSelection(BlockWidget *block);
-  void AddSelection(ConnectNodeWidget *start, ConnectNodeWidget *end);
-  void RemoveSelection(ConnectNodeWidget *start, ConnectNodeWidget *end);
+  const QMap<NodeId, QVector<NodeId>> &GetSelectionMap() const;
+  const QSet<BlockId> &GetSelectedBlocks() const;
+  void AddSelection(const BlockId &block);
+  void RemoveSelection(const BlockId &block);
+  void AddSelection(const NodeId &start, const NodeId &end);
+  void RemoveSelection(const NodeId &start, const NodeId &end);
   void Clear();
 
 private:
-  QMap<ConnectNodeWidget *, QVector<ConnectNodeWidget *>>
-      _map_of_selected_nodes;
-  QSet<BlockWidget *> _selected_blocks;
+  QMap<NodeId, QVector<NodeId>> _map_of_selected_nodes;
+  QSet<BlockId> _selected_blocks;
 };

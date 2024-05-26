@@ -3,35 +3,35 @@
 
 #include <QDebug>
 
-const QMap<ConnectNodeWidget *, QVector<ConnectNodeWidget *>> &
+const QMap<NodeId, QVector<NodeId>> &
 SelectionModel::GetSelectionMap() const {
   return _map_of_selected_nodes;
 }
 
-const QSet<BlockWidget *> &SelectionModel::GetSelectedBlocks() const {
+const QSet<BlockId> &SelectionModel::GetSelectedBlocks() const {
   return _selected_blocks;
 }
 
-void SelectionModel::AddSelection(BlockWidget *block) {
+void SelectionModel::AddSelection(const BlockId &block) {
   qDebug() << "add block to selection";
   _selected_blocks.insert(block);
   Notify(std::make_shared<RepaintEvent>());
 }
 
-void SelectionModel::RemoveSelection(BlockWidget *block) {
+void SelectionModel::RemoveSelection(const BlockId &block) {
   qDebug() << "remove block from selection";
   _selected_blocks.remove(block);
   Notify(std::make_shared<RepaintEvent>());
 }
 
-void SelectionModel::AddSelection(ConnectNodeWidget *start,
-                                  ConnectNodeWidget *end) {
+void SelectionModel::AddSelection(const NodeId &start,
+                                  const NodeId &end) {
   _map_of_selected_nodes[start].append(end);
   Notify(std::make_shared<RepaintEvent>());
 }
 
-void SelectionModel::RemoveSelection(ConnectNodeWidget *start,
-                                     ConnectNodeWidget *end) {
+void SelectionModel::RemoveSelection(const NodeId &start,
+                                     const NodeId &end) {
   _map_of_selected_nodes[start].erase(
       std::find(_map_of_selected_nodes[start].begin(),
                 _map_of_selected_nodes[start].end(), end));
