@@ -1,13 +1,13 @@
 #ifndef BLOCKFIELD_H
 #define BLOCKFIELD_H
 
-#include <QMap>
-#include <QWidget>
-#include <memory>
-
+#include "observer/iobserver.h"
 #include "controlls/defaultcontroller.h"
 #include "controlls/drawlinecontroller.h"
-#include "observer/iobserver.h"
+#include "models/activeblockmodel.h"
+
+#include <QMap>
+#include <QWidget>
 
 class ConnectNodeWidget;
 
@@ -24,6 +24,7 @@ protected:
   void mouseMoveEvent(QMouseEvent *event) override;
   void mousePressEvent(QMouseEvent *event) override;
   void keyPressEvent(QKeyEvent *event) override;
+  void enterEvent(QEvent *event) override;
   void leaveEvent(QEvent *event) override;
   void mouseReleaseEvent(QMouseEvent *event) override;
   void paintEvent(QPaintEvent *event) override;
@@ -34,6 +35,7 @@ private:
   FieldModel _field_model;
   SelectionModel _selection_model;
   LineModel _line_model;
+  ActiveNodesModel _active_nodes_model;
 };
 
 #endif // BLOCKFIELD_H

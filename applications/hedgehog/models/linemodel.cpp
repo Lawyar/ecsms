@@ -11,7 +11,7 @@ void LineModel::SetBegin(ConnectNodeWidget *begin) {
   if (begin) {
     Notify(std::make_shared<ChangeControllerEvent>(
         ControllerType::drawLineController));
-    _end = begin->coordToParent();
+    _end = begin->getCenterCoordToBlockField();
   }
   else // set start as nullptr means that user click on field and
        // doesn't end connection

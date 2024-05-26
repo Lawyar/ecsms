@@ -30,7 +30,13 @@ void ConnectNodeWidget::makeTransparent(bool is_transparent) {
   }
 }
 
-QPoint ConnectNodeWidget::coordToParent() const {
+QPoint ConnectNodeWidget::coordToBlockField(QPoint pos) const {
+  auto pos_to_parent = mapToParent(pos);
+  auto parent = parentWidget();
+  return parent->mapToParent(pos_to_parent);
+}
+
+QPoint ConnectNodeWidget::getCenterCoordToBlockField() const {
   auto parent = parentWidget();
   return parent->mapToParent(pos()) + QPoint(width() / 2, height() / 2);
 }
@@ -45,6 +51,10 @@ void ConnectNodeWidget::mousePressEvent(QMouseEvent *event) {
 
 void ConnectNodeWidget::keyPressEvent(QKeyEvent *event) {
   _controller->onKeyPressEvent(this, event);
+}
+
+void ConnectNodeWidget::enterEvent(QEvent *event) {
+  _controller->onEnterEvent(this, event);
 }
 
 void ConnectNodeWidget::leaveEvent(QEvent *event) {

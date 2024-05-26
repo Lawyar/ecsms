@@ -54,6 +54,8 @@ ConnectNodeWidget *BlockWidget::GetLeftNode() { return _left_node; }
 
 ConnectNodeWidget *BlockWidget::GetRightNode() { return _right_node; }
 
+QPoint BlockWidget::coordToBlockField(QPoint p) const { return mapToParent(p); }
+
 void BlockWidget::mouseMoveEvent(QMouseEvent *event) {
   _controller->onMouseMoveEvent(this, event);
 }
@@ -64,6 +66,10 @@ void BlockWidget::mousePressEvent(QMouseEvent *event) {
 
 void BlockWidget::keyPressEvent(QKeyEvent *event) {
   _controller->onKeyPressEvent(this, event);
+}
+
+void BlockWidget::enterEvent(QEvent *event) {
+  _controller->onEnterEvent(this, event);
 }
 
 void BlockWidget::leaveEvent(QEvent *event) {

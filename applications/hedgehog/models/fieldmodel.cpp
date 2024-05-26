@@ -6,14 +6,11 @@ FieldModel::GetConnectionMap() const {
 
 void FieldModel::Remove(ConnectNodeWidget *start) {
   _connection_map.remove(start);
-  start->makeTransparent(true);
 }
 
 void FieldModel::AddConnection(ConnectNodeWidget *start,
                                ConnectNodeWidget *end) {
   _connection_map[start].append(end);
-  start->makeTransparent(false);
-  end->makeTransparent(false);
 }
 
 void FieldModel::RemoveConnection(ConnectNodeWidget *start,
@@ -22,10 +19,6 @@ void FieldModel::RemoveConnection(ConnectNodeWidget *start,
                                          _connection_map[start].end(), end));
   if (_connection_map[start].empty())
     _connection_map.remove(start);
-
-  for (auto && node : {start, end})
-    if (!IsNodeUsed(node))
-      node->makeTransparent(true);
 }
 
 bool FieldModel::IsNodeUsed(ConnectNodeWidget *node) const {

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <algorithm>
-#include <memory>
 #include <vector>
 
 #include "../events/event.h"
@@ -9,6 +8,7 @@
 
 class IModel {
 public:
+  virtual ~IModel() = default;
   virtual void Notify(std::shared_ptr<Event> e) {
     for (auto &&o : _observers) {
       o->Update(e);

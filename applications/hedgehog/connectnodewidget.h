@@ -13,17 +13,18 @@ class ConnectNodeWidget : public QLabel {
 public:
   explicit ConnectNodeWidget(std::unique_ptr<IController> &controller,
                              NodeType type, QWidget *parent = nullptr);
+  NodeType getNodeType() const;
+  void makeTransparent(bool value);
+  QPoint coordToBlockField(QPoint pos) const;
+  QPoint getCenterCoordToBlockField() const;
+
+protected:
   void mouseMoveEvent(QMouseEvent *event) override;
   void mousePressEvent(QMouseEvent *event) override;
   void keyPressEvent(QKeyEvent *event) override;
+  void enterEvent(QEvent *event) override;
   void leaveEvent(QEvent *event) override;
   void mouseReleaseEvent(QMouseEvent *event) override;
-  NodeType getNodeType() const;
-  void makeTransparent(bool value);
-  QPoint coordToParent() const;
-
-protected:
-  void mousePressEvent(QMouseEvent *event) override;
 
 private:
   std::unique_ptr<IController> &_controller;

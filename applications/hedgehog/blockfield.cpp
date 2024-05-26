@@ -2,6 +2,7 @@
 #include "connectnodewidget.h"
 #include "controlls/defaultcontroller.h"
 #include "controlls/drawlinecontroller.h"
+#include "events/changeactivenodeevent.h"
 #include "events/changecontrollerevent.h"
 #include "events/drawevent.h"
 #include "events/mypaintevent.h"
@@ -16,11 +17,12 @@
 BlockField::BlockField(QWidget *parent) : QWidget(parent) {
   setMouseTracking(true);
   setFocus(Qt::FocusReason::ActiveWindowFocusReason);
-  _controller.reset(
-      new DefaultController(_field_model, _selection_model, _line_model));
+  _controller.reset(new DefaultController(_field_model, _selection_model,
+                                          _line_model, _active_nodes_model));
   _field_model.Subscribe(this);
   _selection_model.Subscribe(this);
   _line_model.Subscribe(this);
+  _active_nodes_model.Subscribe(this);
 }
 
 void BlockField::Update(std::shared_ptr<Event> e) {
@@ -43,12 +45,13 @@ void BlockField::Update(std::shared_ptr<Event> e) {
     auto &&change_ctr_e = std::static_pointer_cast<ChangeControllerEvent>(e);
     switch (change_ctr_e->GetControllerType()) {
     case drawLineController: {
-      _controller.reset(new DrawLineController(_field_model, _line_model));
+      _controller.reset(new DrawLineController(_field_model, _line_model,
+                                               _active_nodes_model));
       break;
     }
     case defaultController: {
-      _controller.reset(
-          new DefaultController(_field_model, _selection_model, _line_model));
+      _controller.reset(new DefaultController(
+          _field_model, _selection_model, _line_model, _active_nodes_model));
       break;
     }
     default: {
@@ -56,6 +59,12 @@ void BlockField::Update(std::shared_ptr<Event> e) {
       break;
     }
     }
+    break;
+  }
+  case changeActiveNodeEvent: {
+    auto &&change_e = std::static_pointer_cast<ChangeActiveNodeEvent>(e);
+    auto &&node = change_e->GetNode();
+    node->makeTransparent(!change_e->GetActivity());
     break;
   }
   default: {
@@ -81,6 +90,8 @@ void BlockField::keyPressEvent(QKeyEvent *event) {
   _controller->onKeyPressEvent(this, event);
 }
 
+void BlockField::enterEvent(QEvent *event) { _controller->onEnterEvent(this, event); }
+
 void BlockField::leaveEvent(QEvent *event) {
   _controller->onLeaveEvent(this, event);
 }
@@ -102,8 +113,8 @@ void BlockField::paintEvent(QPaintEvent *event) {
          ++end_node_it) {
       auto end = *end_node_it;
 
-      auto start_pos = start->coordToParent();
-      auto end_pos = end->coordToParent();
+      auto start_pos = start->getCenterCoordToBlockField();
+      auto end_pos = end->getCenterCoordToBlockField();
       auto &&connect_vec = _selection_model.GetSelectionMap().value(start);
       if (connect_vec.contains(end)) {
         selected_lines.append({start_pos, end_pos});
@@ -120,8 +131,7 @@ void BlockField::paintEvent(QPaintEvent *event) {
   p.drawLines(unselected_lines.data(), unselected_lines.size());
 
   if (auto &&begin = _line_model.GetBegin()) { // draw connection line
-    begin->makeTransparent(false);
-    auto &&point1 = begin->coordToParent();
+    auto &&point1 = begin->getCenterCoordToBlockField();
     auto &&point2 = _line_model.GetEnd();
     p.setPen(QPen(Qt::red, 1, Qt::SolidLine));
     p.drawLine(point1, point2);

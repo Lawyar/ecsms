@@ -14,14 +14,13 @@ static bool isPointOnLine(QLine line, QPoint point) {
 
 DefaultController::DefaultController(FieldModel &field_model,
                                      SelectionModel &selection_model,
-                                     LineModel &line_model)
+                                     LineModel &line_model,
+                                     ActiveNodesModel &active_nodes)
     : _field_model(field_model), _selection_model(selection_model),
-      _line_model(line_model) {}
+      _line_model(line_model), _active_nodes_model(active_nodes) {}
 
 void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
   if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
-    block_w->GetLeftNode()->makeTransparent(false);
-    block_w->GetRightNode()->makeTransparent(false);
     if (event->buttons() == Qt::LeftButton && _old_block_pos) {
       QPoint delta = event->pos() - *_old_block_pos;
       block_w->move(block_w->pos() + delta);
@@ -41,11 +40,11 @@ void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
     auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
     for (auto it = _connection_map.begin(); it != _connection_map.end(); ++it) {
       auto start = it.key();
-      auto start_pos = start->coordToParent();
+      auto start_pos = start->getCenterCoordToBlockField();
       for (auto end_node_it = it.value().begin();
            end_node_it != it.value().end(); ++end_node_it) {
         auto end = *end_node_it;
-        auto end_pos = end->coordToParent();
+        auto end_pos = end->getCenterCoordToBlockField();
         bool find_line = isPointOnLine(QLine(start_pos, end_pos), event->pos());
         if (find_line) {
           _selection_model.AddSelection(start, end);
@@ -70,9 +69,9 @@ void DefaultController::onKeyPressEvent(QWidget *widget, QKeyEvent *event) {
         for (auto end_node_it = start_node.value().begin();
              end_node_it != start_node.value().end(); ++end_node_it) {
           _field_model.RemoveConnection(start_node.key(), *end_node_it);
+          _active_nodes_model.DecreaseNodeCount(start_node.key());
+          _active_nodes_model.DecreaseNodeCount(*end_node_it);
         }
-        if (start_node.value().empty())
-          _field_model.Remove(start_node.key());
       }
       _selection_model.Clear();
       // repaint();
@@ -80,10 +79,17 @@ void DefaultController::onKeyPressEvent(QWidget *widget, QKeyEvent *event) {
   }
 }
 
+void DefaultController::onEnterEvent(QWidget *widget, QEvent *event) {
+  if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
+    _active_nodes_lock.reset(
+        new ActiveNodesLock(_active_nodes_model,
+                            {block_w->GetLeftNode(), block_w->GetRightNode()}));
+  }
+}
+
 void DefaultController::onLeaveEvent(QWidget *widget, QEvent *event) {
   if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
-    block_w->GetLeftNode()->makeTransparent(true);
-    block_w->GetRightNode()->makeTransparent(true);
+    _active_nodes_lock.reset();
   }
 }
 

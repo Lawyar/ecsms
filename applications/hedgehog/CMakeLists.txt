@@ -5,14 +5,17 @@ set(SOURCE_LIST
     main.cpp
     mainwindow.cpp mainwindow.h mainwindow.ui
     qlineeditdelegate.cpp qlineeditdelegate.h
+    controlls/activenodeslock.h controlls/activenodeslock.cpp
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
     controlls/icontroller.h
+    events/changeactivenodeevent.h  events/changeactivenodeevent.cpp
     events/changecontrollerevent.h events/changecontrollerevent.cpp
     events/drawevent.h events/drawevent.cpp
     events/repaintevent.h events/repaintevent.cpp
     events/event.h
     events/mypaintevent.h events/mypaintevent.cpp
+    models/activeblockmodel.h models/activeblockmodel.cpp
     models/fieldmodel.h models/fieldmodel.cpp
     models/imodel.h
     models/linemodel.h models/linemodel.cpp

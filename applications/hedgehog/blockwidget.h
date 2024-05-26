@@ -17,11 +17,13 @@ public:
                        BlockField *parent = nullptr);
   ConnectNodeWidget *GetLeftNode();
   ConnectNodeWidget *GetRightNode();
+  QPoint coordToBlockField(QPoint p) const;
 
 protected:
   void mouseMoveEvent(QMouseEvent *event) override;
   void mousePressEvent(QMouseEvent *event) override;
   void keyPressEvent(QKeyEvent *event) override;
+  void enterEvent(QEvent *event) override;
   void leaveEvent(QEvent *event) override;
   void mouseReleaseEvent(QMouseEvent *event) override;
 
