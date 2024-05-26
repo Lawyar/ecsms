@@ -30,12 +30,7 @@ void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
 }
 
 void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
-  if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
-    if (event->button() == Qt::LeftButton) {
-      _old_block_pos = event->pos();
-      block_w->parentWidget()->repaint();
-    }
-  } else if (auto &&field_w = qobject_cast<BlockField *>(widget)) {
+  if (auto &&field_w = qobject_cast<BlockField *>(widget)) {
     auto &&_connection_map = _field_model.GetConnectionMap();
     auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
     for (auto it = _connection_map.begin(); it != _connection_map.end(); ++it) {
@@ -53,6 +48,13 @@ void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
       }
     }
     _selection_model.Clear();
+    qDebug() << "remove lines and blocks from selection";
+  } else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
+    if (event->button() == Qt::LeftButton) {
+      _old_block_pos = event->pos();
+      qDebug() << "add block to selection";
+      _selection_model.AddSelection(block_w);
+    }
   } else if (auto &&connect_node_w =
                  qobject_cast<ConnectNodeWidget *>(widget)) {
     _line_model.SetBegin(connect_node_w);
@@ -64,17 +66,22 @@ void DefaultController::onKeyPressEvent(QWidget *widget, QKeyEvent *event) {
     auto &&_connection_map = _field_model.GetConnectionMap();
     auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
     if (event->key() == Qt::Key::Key_Delete) {
-      for (auto start_node = _map_of_selected_nodes.begin();
-           start_node != _map_of_selected_nodes.end(); ++start_node) {
-        for (auto end_node_it = start_node.value().begin();
-             end_node_it != start_node.value().end(); ++end_node_it) {
-          _field_model.RemoveConnection(start_node.key(), *end_node_it);
-          _active_nodes_model.DecreaseNodeCount(start_node.key());
-          _active_nodes_model.DecreaseNodeCount(*end_node_it);
+      qDebug() << "deleting selected connections and blocks";
+      // delete connections with map
+      for (auto &&start_node : _map_of_selected_nodes.keys()) {
+        for (auto &&end_node : _map_of_selected_nodes[start_node]) {
+          if (end_node) {
+            _field_model.RemoveConnection(start_node, end_node);
+            _active_nodes_model.DecreaseNodeCount(start_node);
+            _active_nodes_model.DecreaseNodeCount(end_node);
+          }
         }
       }
+      // delete blocks
+      for (auto &&block : _selection_model.GetSelectedBlocks()) {
+        _field_model.RemoveBlock(block);
+      }
       _selection_model.Clear();
-      // repaint();
     }
   }
 }

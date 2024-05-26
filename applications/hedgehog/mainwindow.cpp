@@ -14,12 +14,6 @@
 #include <QVariant>
 #include <QXmlStreamReader>
 
-static void createDefaultBlock(BlockField *parent) {
-  auto default_block = new BlockWidget(parent->GetController(), parent);
-  default_block->show();
-  default_block->move(parent->rect().center());
-}
-
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
@@ -60,13 +54,9 @@ MainWindow::MainWindow(QWidget *parent)
   ui->listView->setModel(list_model);
   QStandardItem *parent_item = list_model->invisibleRootItem();
   auto block_list_element = new QStandardItem("block_name");
-  QVariant data;
-  data.setValue(reinterpret_cast<void *>(&createDefaultBlock));
-  block_list_element->setData(data);
-
-  parent_item->appendRow(block_list_element);
   block_list_element->setFlags(block_list_element->flags() ^
                                Qt::ItemIsEditable);
+  parent_item->appendRow(block_list_element);
 
   auto w = ui->tab_4->width();
   ui->splitter_4->setSizes({w / 5, w - w / 5});
@@ -334,11 +324,8 @@ void MainWindow::on_pushButton_minus_table_clicked() {
   }
 }
 
-void MainWindow::on_listView_doubleClicked(const QModelIndex &index) {
-  auto data = index.data(Qt::UserRole + 1);
-  auto func = data.value<void *>();
-  auto reallyFunc = reinterpret_cast<decltype(&createDefaultBlock)>(func);
-  reallyFunc(ui->scrollAreaWidgetContents);
+void MainWindow::on_listView_doubleClicked(const QModelIndex &index) { 
+  ui->scrollAreaWidgetContents->AddNewBlock();
 }
 
 void MainWindow::on_pushButton_3_pressed() {

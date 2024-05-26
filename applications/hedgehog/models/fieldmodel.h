@@ -16,8 +16,11 @@ public:
   void RemoveConnection(ConnectNodeWidget *start, ConnectNodeWidget *end);
 
   bool IsNodeUsed(ConnectNodeWidget * node) const;
+  void AddBlock(BlockWidget *block);
+  void RemoveBlock(BlockWidget *block);
 
 private:
   QMap<ConnectNodeWidget *, QVector<ConnectNodeWidget *>>
       _connection_map;
+  QSet<BlockWidget *> _blocks;
 };

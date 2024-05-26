@@ -25,6 +25,13 @@ BlockField::BlockField(QWidget *parent) : QWidget(parent) {
   _active_nodes_model.Subscribe(this);
 }
 
+void BlockField::AddNewBlock() {
+  auto default_block = new BlockWidget(_controller, this);
+  _field_model.AddBlock(default_block);
+  default_block->show();
+  default_block->move(rect().center());
+}
+
 void BlockField::Update(std::shared_ptr<Event> e) {
   switch (e->GetEventType()) {
   case drawEvent: {
@@ -105,6 +112,7 @@ void BlockField::paintEvent(QPaintEvent *event) {
   p.eraseRect(rect());
   p.setBackground(QBrush(Qt::white));
 
+  /*-DRAW SELECTED AND NOT SELECTED LINES-*/
   QVector<QLineF> unselected_lines, selected_lines;
   auto &&_connection_map = _field_model.GetConnectionMap();
   for (auto it = _connection_map.begin(); it != _connection_map.end(); ++it) {
@@ -129,6 +137,17 @@ void BlockField::paintEvent(QPaintEvent *event) {
 
   p.setPen(QPen(Qt::red, 1, Qt::SolidLine));
   p.drawLines(unselected_lines.data(), unselected_lines.size());
+  /*-------------------------------------*/
+
+  /*-DRAW FRAME FOR SELECTED BLOCKS-*/
+  p.setPen(QPen(Qt::green, 1, Qt::SolidLine));
+  for (auto &&selected_block : _selection_model.GetSelectedBlocks()) {
+    auto &&rect = selected_block->rect();
+    auto &&mapped_rect =
+        QRect(selected_block->mapToParent({rect.x(), rect.y()}), QSize({rect.width(), rect.height()}));
+    p.drawRect(mapped_rect);
+  }
+  /*--------------------------------*/
 
   if (auto &&begin = _line_model.GetBegin()) { // draw connection line
     auto &&point1 = begin->getCenterCoordToBlockField();
