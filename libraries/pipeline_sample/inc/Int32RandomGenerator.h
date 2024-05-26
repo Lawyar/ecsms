@@ -4,7 +4,9 @@
 
 class Int32RandomGenerator : public ProducerStage<int32_t> {
 public:
-  Int32RandomGenerator(std::shared_ptr<OutStageConnection<int32_t>> outConnection);
+  using connectionT = OutStageConnection<int32_t>;
+
+  Int32RandomGenerator(std::shared_ptr<connectionT> outConnection);
 
   void produce(std::shared_ptr<int32_t> outData) override;
 

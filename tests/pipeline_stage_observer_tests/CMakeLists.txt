@@ -1,0 +1,3 @@
+add_executable(pipeline_stage_observer_tests pipeline_stage_observer_tests.cpp)
+target_link_libraries(pipeline_stage_observer_tests PRIVATE pipeline_stage_observer gtest_main)
+target_include_directories(pipeline_stage_observer_tests PRIVATE ${CMAKE_SOURCE_DIR}/libraries/pipeline_stage_observer_tests)

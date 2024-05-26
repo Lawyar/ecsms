@@ -5,7 +5,7 @@
 #include <cstdint>
 
 class Int32ToDoubleConverter
-    : public ProducerAndConsumerStage<int32_t, double> {
+    : public ConsumerAndProducerStage<int32_t, double> {
   void function(std::shared_ptr<int32_t> inData,
                 std::shared_ptr<double> outData) override;
 public:

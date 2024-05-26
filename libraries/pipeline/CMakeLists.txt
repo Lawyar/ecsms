@@ -21,4 +21,3 @@ add_library(pipeline
     src/PipelineStage.cpp)
 
 target_include_directories(pipeline PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
-target_link_libraries(pipeline PUBLIC pipeline_stage_observer)

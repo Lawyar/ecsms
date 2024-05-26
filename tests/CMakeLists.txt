@@ -10,3 +10,4 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 add_subdirectory(test_library_tests)
+add_subdirectory(pipeline_stage_observer_tests)

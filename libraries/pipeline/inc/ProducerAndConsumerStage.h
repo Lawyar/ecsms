@@ -3,16 +3,20 @@
 #include "ConnectablePipelineStage.h"
 
 template <typename In, typename Out>
-class ProducerAndConsumerStage : public ConnectablePipelineStage<In, Out> {
+class ConsumerAndProducerStage : public ConnectablePipelineStage<In, Out> {
 public:
-  ProducerAndConsumerStage(
+  ConsumerAndProducerStage(
       const std::string &stageName, TaskRetrieveStrategy consumerStrategy,
       std::shared_ptr<InStageConnection<In>> inConnection,
       std::shared_ptr<OutStageConnection<Out>> outConnection);
+
+private:
+  virtual void consumeAndProduce(std::shared_ptr<In> inData,
+                                 std::shared_ptr<Out> outData) = 0;
 };
 
 template <typename In, typename Out>
-ProducerAndConsumerStage<In, Out>::ProducerAndConsumerStage(
+ConsumerAndProducerStage<In, Out>::ConsumerAndProducerStage(
     const std::string &stageName, TaskRetrieveStrategy consumerStrategy,
     std::shared_ptr<InStageConnection<In>> inConnection,
     std::shared_ptr<OutStageConnection<Out>> outConnection)

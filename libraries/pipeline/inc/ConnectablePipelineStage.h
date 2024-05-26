@@ -6,7 +6,6 @@
 #include "PipelineStage.h"
 #include "SteadyClock.h"
 #include "TaskRetrieveStrategy.h"
-#include "PipelineStageObserver.h"
 
 #include <iostream>
 #include <optional>
