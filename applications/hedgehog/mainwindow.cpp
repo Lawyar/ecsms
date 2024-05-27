@@ -399,7 +399,7 @@ void MainWindow::on_pushButton_minus_table_clicked() {
 }
 
 void MainWindow::on_listView_doubleClicked(const QModelIndex &index) {
-  ui->scrollAreaWidgetContents->AddNewBlock();
+  ui->scrollAreaWidgetContents->AddBlock();
 }
 
 void MainWindow::on_pushButton_pausePipeline_pressed() {

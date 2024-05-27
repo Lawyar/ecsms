@@ -8,6 +8,7 @@ set(SOURCE_LIST
     controlls/activenodeslock.h controlls/activenodeslock.cpp
     controlls/command/deleteblocksandconnectionscommand.h controlls/command/deleteblocksandconnectionscommand.cpp
     controlls/command/icommand.h
+    controlls/controllerprocedure.h
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
     controlls/icontroller.h

@@ -1,5 +1,6 @@
 #include "blockfield.h"
 #include "connectnodewidget.h"
+#include "controlls/controllerprocedure.h"
 #include "controlls/defaultcontroller.h"
 #include "controlls/drawlinecontroller.h"
 #include "events/changeactivenodeevent.h"
@@ -27,26 +28,9 @@ BlockField::BlockField(QWidget *parent) : QWidget(parent) {
   _active_nodes_model.Subscribe(this);
 }
 
-void BlockField::AddNewBlock() {
-  auto default_block =
-      new BlockWidget(_block_name_maker.MakeName(), _controller, this);
-  default_block->show();
-  default_block->move(rect().center());
-  auto &&left_p = default_block->GetLeftNode()->getCenterCoord();
-  auto &&right_p = default_block->GetRightNode()->getCenterCoord();
-  qDebug() << "left node coords: " << left_p;
-  qDebug() << "right node coords: " << right_p;
-
-  FieldModel::BlockData block_data = {
-      default_block->pos(),
-      {
-          {NodeType::Incoming, left_p},
-          {NodeType::Outgoing, right_p},
-      }};
-  QMap<NodeType, FieldModel::NodeData> node_data_map = {
-      {NodeType::Incoming, {NodeType::Incoming}},
-      {NodeType::Outgoing, {NodeType::Outgoing}}};
-  _field_model.AddBlock(default_block->GetId(), block_data, node_data_map);
+void BlockField::AddBlock() {
+  ControllerProcedure::Execute::AddBlock(_block_name_maker, _controller, this,
+                                         _field_model, rect().center());
 }
 
 void BlockField::Update(std::shared_ptr<Event> e) {
@@ -172,7 +156,7 @@ void BlockField::paintEvent(QPaintEvent *event) {
       NodeType start_type = start_data->node_type;
       NodeType end_type = end_data->node_type;
 
-       QPoint start_pos, end_pos;
+      QPoint start_pos, end_pos;
       if (auto &&start_pd = _field_model.GetBlockData(start_id.GetParentId())) {
         start_pos = start_pd->pos + start_pd->offset[start_type];
       }

@@ -15,7 +15,7 @@ class BlockField : public QWidget, public IObserver {
   Q_OBJECT
 public:
   BlockField(QWidget *parent = nullptr);
-  void AddNewBlock();
+  void AddBlock();
   virtual void Update(std::shared_ptr<Event> e) override;
   std::unique_ptr<IController> &GetController();
   QWidget *FindById(Id id);
