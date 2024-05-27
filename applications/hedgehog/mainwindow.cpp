@@ -58,7 +58,7 @@ MainWindow::MainWindow(QWidget *parent)
                                Qt::ItemIsEditable);
   parent_item->appendRow(block_list_element);
 
-  auto w = ui->tab_4->width();
+  auto w = ui->tab_1->width();
   ui->splitter_4->setSizes({w / 5, w - w / 5});
 
   ui->splitter_5->setStretchFactor(1, 1);
@@ -91,7 +91,7 @@ QStandardItem *MainWindow::createTag(QStandardItem *parent_tag,
   return new_tag;
 }
 
-void MainWindow::on_actionNewFile_triggered() {
+void MainWindow::on_actionNewFile_triggered_tab0() {
   delete ui->treeView->model();
   auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
   ui->treeView->setModel(tree_model);
@@ -105,7 +105,7 @@ void MainWindow::on_actionNewFile_triggered() {
   ui->pushButton_minus_table->setDisabled(true);
 }
 
-void MainWindow::on_actionOpen_triggered() {
+void MainWindow::on_actionOpen_triggered_tab0() {
   QString file_name = QFileDialog::getOpenFileName(this, tr("Open file"), "C:/",
                                                    tr("XML files (*.xml)"));
   if (file_name.size() == 0) {
@@ -168,7 +168,7 @@ void MainWindow::on_actionOpen_triggered() {
     }
   }
   ui->treeView->resizeColumnToContents(0);
-  file.close(); // Закрываем файл
+  file.close();
 }
 
 static void writeAttributes(QXmlStreamWriter &xml_writer,
@@ -196,7 +196,7 @@ static void writeTree(QXmlStreamWriter &xml_writer, const QStandardItem *root) {
   xml_writer.writeEndElement();
 }
 
-void MainWindow::on_actionSave_triggered() {
+void MainWindow::on_actionSave_triggered_tab0() {
   QString file_name = QFileDialog::getSaveFileName(this, tr("Save As"), "C:/",
                                                    tr("XML files (*.xml)"));
   if (file_name.size() == 0) {
@@ -221,9 +221,59 @@ void MainWindow::on_actionSave_triggered() {
   file.close();
 }
 
-void MainWindow::on_actionRedo_triggered() {}
+void MainWindow::on_actionRedo_triggered_tab0() {}
 
-void MainWindow::on_actionUndo_triggered() {}
+void MainWindow::on_actionUndo_triggered_tab0() {}
+
+void MainWindow::on_actionNewFile_triggered_tab1() {}
+
+void MainWindow::on_actionOpen_triggered_tab1() {}
+
+void MainWindow::on_actionSave_triggered_tab1() {}
+
+void MainWindow::on_actionRedo_triggered_tab1() {}
+
+void MainWindow::on_actionUndo_triggered_tab1() {}
+
+void MainWindow::on_actionNewFile_triggered() {
+  if (ui->tabWidget->currentIndex() == 0) {
+    on_actionNewFile_triggered_tab0();
+  } else {
+    on_actionNewFile_triggered_tab1();
+  }
+}
+
+void MainWindow::on_actionOpen_triggered() {
+  if (ui->tabWidget->currentIndex() == 0) {
+    on_actionOpen_triggered_tab0();
+  } else {
+    on_actionOpen_triggered_tab1();
+  }
+}
+
+void MainWindow::on_actionSave_triggered() {
+  if (ui->tabWidget->currentIndex() == 0) {
+    on_actionSave_triggered_tab0();
+  } else {
+    on_actionSave_triggered_tab1();
+  }
+}
+
+void MainWindow::on_actionRedo_triggered() {
+  if (ui->tabWidget->currentIndex() == 0) {
+    on_actionRedo_triggered_tab0();
+  } else {
+    on_actionRedo_triggered_tab1();
+  }
+}
+
+void MainWindow::on_actionUndo_triggered() {
+  if (ui->tabWidget->currentIndex() == 0) {
+    on_actionUndo_triggered_tab0();
+  } else {
+    on_actionUndo_triggered_tab1();
+  }
+}
 
 static void setDisableForLayoutElements(QLayout *layout, bool is_disabled) {
   for (int i = 0; i < layout->count(); ++i) {
@@ -352,17 +402,17 @@ void MainWindow::on_listView_doubleClicked(const QModelIndex &index) {
   ui->scrollAreaWidgetContents->AddNewBlock();
 }
 
-void MainWindow::on_pushButton_3_pressed() {
-  auto text = ui->pushButton_3->text();
+void MainWindow::on_pushButton_pausePipeline_pressed() {
+  auto text = ui->pushButton_pausePipeline->text();
   if (text == "||")
-    ui->pushButton_3->setText("▶");
+    ui->pushButton_pausePipeline->setText("▶");
   else {
-    ui->pushButton_3->setText("||");
-    ui->pushButton_4->setEnabled(true);
+    ui->pushButton_pausePipeline->setText("||");
+    ui->pushButton_stopPipeline->setEnabled(true);
   }
 }
 
-void MainWindow::on_pushButton_4_pressed() {
-  ui->pushButton_4->setEnabled(false);
-  ui->pushButton_3->setText("▶");
+void MainWindow::on_pushButton_stopPipeline_pressed() {
+  ui->pushButton_stopPipeline->setEnabled(false);
+  ui->pushButton_pausePipeline->setText("▶");
 }

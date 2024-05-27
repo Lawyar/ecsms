@@ -24,6 +24,17 @@ private:
   QStandardItem *createTag(QStandardItem *parent_tag,
                            QStandardItemModel *attribute_table_view,
                            const QString &text);
+  void on_actionNewFile_triggered_tab0();
+  void on_actionOpen_triggered_tab0();
+  void on_actionSave_triggered_tab0();
+  void on_actionRedo_triggered_tab0();
+  void on_actionUndo_triggered_tab0();
+
+  void on_actionNewFile_triggered_tab1();
+  void on_actionOpen_triggered_tab1();
+  void on_actionSave_triggered_tab1();
+  void on_actionRedo_triggered_tab1();
+  void on_actionUndo_triggered_tab1();
 
 private slots:
   void on_actionNewFile_triggered();
@@ -38,8 +49,8 @@ private slots:
   void on_pushButton_plus_table_clicked();
   void on_pushButton_minus_table_clicked();
   void on_listView_doubleClicked(const QModelIndex &index);
-  void on_pushButton_3_pressed();
-  void on_pushButton_4_pressed();
+  void on_pushButton_pausePipeline_pressed();
+  void on_pushButton_stopPipeline_pressed();
 
 private:
   Ui::MainWindow *ui;

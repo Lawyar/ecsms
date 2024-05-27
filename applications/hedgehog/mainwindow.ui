@@ -43,9 +43,9 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
-      <widget class="QWidget" name="tab_3">
+      <widget class="QWidget" name="tab_0">
        <attribute name="title">
         <string>Main</string>
        </attribute>
@@ -288,7 +288,7 @@
         </item>
        </layout>
       </widget>
-      <widget class="QWidget" name="tab_4">
+      <widget class="QWidget" name="tab_1">
        <attribute name="title">
         <string>Pipeline</string>
        </attribute>
@@ -371,7 +371,7 @@
              <widget class="QTextEdit" name="textEdit_3"/>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_3">
+             <widget class="QPushButton" name="pushButton_pausePipeline">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -384,7 +384,7 @@
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_4">
+             <widget class="QPushButton" name="pushButton_stopPipeline">
               <property name="text">
                <string>STOP</string>
               </property>
