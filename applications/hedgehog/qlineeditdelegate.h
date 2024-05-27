@@ -2,30 +2,32 @@
 #define QLINEEDITDELEGATE_H
 
 #include <QItemDelegate>
-#include <QObject>
-#include <QRegExpValidator>
-#include <QRegExp>
 #include <QLineEdit>
+#include <QObject>
+#include <QRegExp>
+#include <QRegExpValidator>
 
-class QLineEditDelegate : public QItemDelegate
-{
-    Q_OBJECT
+enum class WhatValidate { XMLTag, XMLAttribute };
+
+class QLineEditDelegate : public QItemDelegate {
+  Q_OBJECT
 
 public:
-    QLineEditDelegate(QObject *parent);
+  QLineEditDelegate(QObject *parent, WhatValidate type);
 
-    QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option, const QModelIndex &index) const;
+  QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
+                        const QModelIndex &index) const;
 
-    void setEditorData( QWidget           * Editor ,
-                        const QModelIndex & Index  ) const;
+  void setEditorData(QWidget *Editor, const QModelIndex &Index) const;
 
-    void setModelData( QWidget            * Editor ,
-                       QAbstractItemModel * Model  ,
-                       const QModelIndex  & Index  ) const;
+  void setModelData(QWidget *Editor, QAbstractItemModel *Model,
+                    const QModelIndex &Index) const;
 
-    void updateEditorGeometry( QWidget                    * Editor ,
-                               const QStyleOptionViewItem & Option ,
-                               const QModelIndex          & Index  ) const;
+  void updateEditorGeometry(QWidget *Editor, const QStyleOptionViewItem &Option,
+                            const QModelIndex &Index) const;
+
+private:
+  WhatValidate _type;
 };
 
 #endif // QLINEEDITDELEGATE_H

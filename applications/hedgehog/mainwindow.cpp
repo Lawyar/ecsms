@@ -20,8 +20,8 @@ MainWindow::MainWindow(QWidget *parent)
 
   auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
   ui->treeView->setModel(tree_model);
-  ui->treeView->setItemDelegateForColumn(0,
-                                         new QLineEditDelegate(ui->treeView));
+  ui->treeView->setItemDelegateForColumn(
+      0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLTag));
 
   for (auto i = 0; i < 4; ++i) {
     auto series = new QtCharts::QLineSeries;
@@ -95,8 +95,8 @@ void MainWindow::on_actionNewFile_triggered_tab0() {
   delete ui->treeView->model();
   auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
   ui->treeView->setModel(tree_model);
-  ui->treeView->setItemDelegateForColumn(0,
-                                         new QLineEditDelegate(ui->treeView));
+  ui->treeView->setItemDelegateForColumn(
+      0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLTag));
   delete ui->tableView->model();
   ui->pushButton_plus_tree->setEnabled(true);
   ui->pushButton_minus_tree->setDisabled(true);
@@ -286,6 +286,8 @@ static void setDisableForLayoutElements(QLayout *layout, bool is_disabled) {
 void MainWindow::on_treeView_clicked(const QModelIndex &index) {
   ui->tableView->setModel(
       index.data(Qt::UserRole + 1).value<QStandardItemModel *>());
+  ui->tableView->setItemDelegateForColumn(
+      0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLAttribute));
   setDisableForLayoutElements(ui->horizontalLayout, false);
   setDisableForLayoutElements(ui->horizontalLayout_2, false);
   if (index.parent() == ui->treeView->rootIndex()) {

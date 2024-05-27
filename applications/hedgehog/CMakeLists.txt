@@ -6,6 +6,7 @@ set(SOURCE_LIST
     mainwindow.cpp mainwindow.h mainwindow.ui
     qlineeditdelegate.cpp qlineeditdelegate.h
     controlls/activenodeslock.h controlls/activenodeslock.cpp
+    controlls/command/commandmanager.h controlls/command/commandmanager.cpp
     controlls/command/deleteblocksandconnectionscommand.h controlls/command/deleteblocksandconnectionscommand.cpp
     controlls/command/icommand.h
     controlls/controllerprocedure.h
