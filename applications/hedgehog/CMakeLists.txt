@@ -17,15 +17,14 @@ set(SOURCE_LIST
     events/repaintevent.h events/repaintevent.cpp
     events/event.h
     events/mypaintevent.h events/mypaintevent.cpp
-    models/activeblockmodel.h models/activeblockmodel.cpp
+    models/activenodesmodel.h models/activenodesmodel.cpp
     models/fieldmodel.h models/fieldmodel.cpp
     models/imodel.h
     models/linemodel.h models/linemodel.cpp
+    models/nodetype.h
     models/selectionmodel.h models/selectionmodel.cpp
     namemaker/blocknamemaker.h  namemaker/blocknamemaker.cpp
     namemaker/id.h  namemaker/id.cpp
-    namemaker/blockid.h  namemaker/blockid.cpp
-    namemaker/nodeid.h  namemaker/nodeid.cpp
     observer/iobserver.h
 )
 
