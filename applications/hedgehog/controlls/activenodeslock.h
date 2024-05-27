@@ -1,13 +1,14 @@
 #pragma once
 #include "../connectnodewidget.h"
-#include "../models/activeblockmodel.h"
+#include "../models/activenodesmodel.h"
 
 class ActiveNodesLock {
 public:
-  ActiveNodesLock(ActiveNodesModel &active_nodes_model, const std::vector<ConnectNodeWidget *> & nodes);
+  ActiveNodesLock(ActiveNodesModel &active_nodes_model,
+                  const std::vector<NodeId> &nodes);
   ~ActiveNodesLock();
 
 private:
   ActiveNodesModel &_active_nodes_model;
-  std::vector<ConnectNodeWidget *> _nodes;
+  std::vector<NodeId> _nodes;
 };

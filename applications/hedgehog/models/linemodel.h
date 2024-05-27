@@ -1,28 +1,21 @@
 #pragma once
 
-#include <QObject>
-#include <memory>
-
 #include "../connectnodewidget.h"
 #include "imodel.h"
+
+#include <QObject>
+#include <memory>
+#include <optional>
 
 class LineModel : public QObject, public IModel {
   Q_OBJECT
 public:
   LineModel() = default;
-
-  ConnectNodeWidget *GetBegin();
-
-  void SetBegin(ConnectNodeWidget *begin);
-
-  const QPoint GetEnd() const;
-
+  std::optional<QPoint> GetBegin() const;
+  void SetBegin(std::optional<QPoint> begin);
+  std::optional<QPoint> GetEnd() const;
   void SetEnd(QPoint end);
 
-public slots:
-  void on_start(ConnectNodeWidget *start);
-
 private:
-  ConnectNodeWidget *_selected_node = nullptr;
-  QPoint _end;
+  std::optional<QPoint> _begin, _end;
 };

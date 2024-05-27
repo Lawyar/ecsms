@@ -3,9 +3,11 @@
 
 #include "blockwidget.h"
 #include "controlls/icontroller.h"
+#include "models/nodetype.h"
 
 #include <QLabel>
 
+using NodeId = Id;
 
 class ConnectNodeWidget : public QLabel {
   Q_OBJECT
@@ -18,6 +20,7 @@ public:
   void makeTransparent(bool value);
   QPoint coordToBlockField(QPoint pos) const;
   QPoint getCenterCoordToBlockField() const;
+  QPoint getCenterCoord() const;
 
 protected:
   void mouseMoveEvent(QMouseEvent *event) override;

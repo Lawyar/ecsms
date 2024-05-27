@@ -4,7 +4,7 @@
 #include "observer/iobserver.h"
 #include "controlls/defaultcontroller.h"
 #include "controlls/drawlinecontroller.h"
-#include "models/activeblockmodel.h"
+#include "models/activenodesmodel.h"
 
 #include <QMap>
 #include <QWidget>
@@ -30,7 +30,7 @@ protected:
   void paintEvent(QPaintEvent *event) override;
 
 private:
-  NameMaker _name_maker;
+  NameMaker _block_name_maker;
   std::unique_ptr<IController> _controller;
   QPoint _pos;
   FieldModel _field_model;

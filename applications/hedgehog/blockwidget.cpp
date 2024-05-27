@@ -1,6 +1,7 @@
 #include "blockwidget.h"
 #include "blockfield.h"
 #include "connectnodewidget.h"
+#include "models/nodetype.h"
 
 #include <QDebug>
 #include <QMouseEvent>
@@ -12,11 +13,13 @@ BlockWidget::BlockWidget(const BlockId &id,
     : _id(id), _controller(controller), QWidget(parent),
       _block_name(new QLabel("block name", this)),
 
-      _left_node(new ConnectNodeWidget(id.GetNodeId(Incoming), controller,
-                                       Incoming, this)),
+      _left_node(new ConnectNodeWidget(
+          id.GetChildId(static_cast<PartId>(NodeType::Incoming)), controller,
+          NodeType::Incoming, this)),
 
-      _right_node(new ConnectNodeWidget(id.GetNodeId(Outgoing),
-                                        controller, Outgoing, this)),
+      _right_node(new ConnectNodeWidget(
+          id.GetChildId(static_cast<PartId>(NodeType::Outgoing)), controller,
+          NodeType::Outgoing, this)),
 
       _resume_pause_button(new QPushButton("||", this)) {
   _block_name->setWordWrap(true);
@@ -58,7 +61,7 @@ BlockWidget::BlockWidget(const BlockId &id,
 
 BlockId BlockWidget::GetId() const { return _id; }
 
-QWidget *BlockWidget::FindById(Id id) { 
+QWidget *BlockWidget::FindById(Id id) {
   ConnectNodeWidget *res = nullptr;
   for (auto &&node : {_left_node, _right_node}) {
     if (node->GetId() == id) {
@@ -66,7 +69,7 @@ QWidget *BlockWidget::FindById(Id id) {
       break;
     }
   }
-  return res; 
+  return res;
 }
 
 ConnectNodeWidget *BlockWidget::GetLeftNode() { return _left_node; }

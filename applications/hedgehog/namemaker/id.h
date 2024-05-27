@@ -2,18 +2,23 @@
 
 #include <vector>
 
+using PartId = int;
+
 class Id {
 public:
-  Id(const std::vector<int> & id);
+  Id(const std::vector<PartId> &id);
   virtual ~Id() = default;
-  const std::vector<int> &GetId() const;
-  Id GetChildId(int child_id) const;
+  const std::vector<PartId> &GetId() const;
+  Id GetParentId() const;
+  Id GetChildId(PartId child_id) const;
   bool operator==(const Id &id) const;
+  bool operator!=(const Id &id) const;
+  bool operator<(const Id &id) const;
 
 protected:
-  static std::vector<int> Append(const std::vector<int> &arr1,
-                                 const std::vector<int> &arr2);
+  static std::vector<PartId> Append(const std::vector<PartId> &arr1,
+                                    const std::vector<PartId> &arr2);
 
 protected:
-  std::vector<int> _id;
+  std::vector<PartId> _id;
 };

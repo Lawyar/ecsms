@@ -3,12 +3,12 @@
 
 #include <QDebug>
 
-const QMap<NodeId, QVector<NodeId>> &
+const QMap<NodeId, std::vector<NodeId>> &
 SelectionModel::GetSelectionMap() const {
   return _map_of_selected_nodes;
 }
 
-const QSet<BlockId> &SelectionModel::GetSelectedBlocks() const {
+const std::set<BlockId> &SelectionModel::GetSelectedBlocks() const {
   return _selected_blocks;
 }
 
@@ -20,13 +20,13 @@ void SelectionModel::AddSelection(const BlockId &block) {
 
 void SelectionModel::RemoveSelection(const BlockId &block) {
   qDebug() << "remove block from selection";
-  _selected_blocks.remove(block);
+  _selected_blocks.erase(block);
   Notify(std::make_shared<RepaintEvent>());
 }
 
 void SelectionModel::AddSelection(const NodeId &start,
                                   const NodeId &end) {
-  _map_of_selected_nodes[start].append(end);
+  _map_of_selected_nodes[start].push_back(end);
   Notify(std::make_shared<RepaintEvent>());
 }
 

@@ -2,7 +2,7 @@
 
 #include "activenodeslock.h"
 #include "../connectnodewidget.h"
-#include "../models/activeblockmodel.h"
+#include "../models/activenodesmodel.h"
 #include "../models/fieldmodel.h"
 #include "../models/linemodel.h"
 #include "icontroller.h"
@@ -20,6 +20,10 @@ public:
   virtual void onLeaveEvent(QWidget *widget, QEvent *event) override;
   virtual void onMouseReleaseEvent(QWidget *widget,
                                    QMouseEvent *event) override;
+
+private:
+  void onFieldMousePress();
+  void onConnectNodeMousePress(NodeId node_id);
 
 private:
   FieldModel &_field_model;

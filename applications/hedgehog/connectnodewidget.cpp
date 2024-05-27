@@ -41,7 +41,11 @@ QPoint ConnectNodeWidget::coordToBlockField(QPoint pos) const {
 
 QPoint ConnectNodeWidget::getCenterCoordToBlockField() const {
   auto parent = parentWidget();
-  return parent->mapToParent(pos()) + QPoint(width() / 2, height() / 2);
+  return parent->mapToParent(getCenterCoord());
+}
+
+QPoint ConnectNodeWidget::getCenterCoord() const {
+  return pos() + QPoint(width() / 2, height() / 2);
 }
 
 void ConnectNodeWidget::mouseMoveEvent(QMouseEvent *event) {

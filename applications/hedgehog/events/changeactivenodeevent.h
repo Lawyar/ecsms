@@ -5,12 +5,12 @@
 
 class ChangeActiveNodeEvent : public Event {
 public:
-  ChangeActiveNodeEvent(ConnectNodeWidget *node, bool active);
+  ChangeActiveNodeEvent(NodeId node, bool active);
   virtual EventType GetEventType() const override;
-  ConnectNodeWidget *GetNode();
+  NodeId GetNode();
   bool GetActivity();
 
 private:
-  ConnectNodeWidget *_node;
+  NodeId _node;
   bool _active;
 };

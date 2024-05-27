@@ -24,74 +24,40 @@ void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
     if (event->buttons() == Qt::LeftButton && _old_block_pos) {
       QPoint delta = event->pos() - *_old_block_pos;
       block_w->move(block_w->pos() + delta);
+      FieldModel::BlockData block_data = { block_w->pos()};
+      _field_model.SetBlockData(block_w->GetId(), block_data);
       block_w->parentWidget()->repaint();
     }
   }
 }
 
 void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
-  if (auto &&field_w = qobject_cast<BlockField *>(widget)) {
-    auto &&_connection_map = _field_model.GetConnectionMap();
-    auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
-    for (auto it = _connection_map.begin(); it != _connection_map.end(); ++it) {
-      if (auto &&start = qobject_cast<ConnectNodeWidget*>(field_w->FindById(it.key()))) {
-        auto start_pos = start->getCenterCoordToBlockField();
-        for (auto end_node_it = it.value().begin();
-             end_node_it != it.value().end(); ++end_node_it) {
-          auto end = *end_node_it;
-          auto end_pos = end->getCenterCoordToBlockField();
-          bool find_line = isPointOnLine(QLine(start_pos, end_pos), event->pos());
-          if (find_line) {
-            _selection_model.AddSelection(start, end);
-            return;
-          }
-        }
-      }
-    }
-    _selection_model.Clear();
-    qDebug() << "remove lines and blocks from selection";
+  if (qobject_cast<BlockField *>(widget)) {
+    onFieldMousePress(event);
   } else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
     if (event->button() == Qt::LeftButton) {
       _old_block_pos = event->pos();
-      qDebug() << "add block to selection";
-      _selection_model.AddSelection(block_w);
+      _selection_model.AddSelection(block_w->GetId());
     }
   } else if (auto &&connect_node_w =
                  qobject_cast<ConnectNodeWidget *>(widget)) {
-    _line_model.SetBegin(connect_node_w);
+    _active_nodes_model.SetBeginOfLine(connect_node_w->GetId());
+    auto &&node_center = connect_node_w->getCenterCoordToBlockField();
+    _line_model.SetBegin(node_center);
   }
 }
 
 void DefaultController::onKeyPressEvent(QWidget *widget, QKeyEvent *event) {
-  if (auto &&field_w = qobject_cast<BlockField *>(widget)) {
-    auto &&_connection_map = _field_model.GetConnectionMap();
-    auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
-    if (event->key() == Qt::Key::Key_Delete) {
-      qDebug() << "deleting selected connections and blocks";
-      // delete connections with map
-      for (auto &&start_node : _map_of_selected_nodes.keys()) {
-        for (auto &&end_node : _map_of_selected_nodes[start_node]) {
-          if (end_node) {
-            _field_model.RemoveConnection(start_node, end_node);
-            _active_nodes_model.DecreaseNodeCount(start_node);
-            _active_nodes_model.DecreaseNodeCount(end_node);
-          }
-        }
-      }
-      // delete blocks
-      for (auto &&block : _selection_model.GetSelectedBlocks()) {
-        _field_model.RemoveBlock(block);
-      }
-      _selection_model.Clear();
-    }
+  if (qobject_cast<BlockField *>(widget)) {
+    onFieldKeyPress(event);
   }
 }
 
 void DefaultController::onEnterEvent(QWidget *widget, QEvent *event) {
   if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
-    _active_nodes_lock.reset(
-        new ActiveNodesLock(_active_nodes_model,
-                            {block_w->GetLeftNode(), block_w->GetRightNode()}));
+    _active_nodes_lock.reset(new ActiveNodesLock(
+        _active_nodes_model,
+        {block_w->GetLeftNode()->GetId(), block_w->GetRightNode()->GetId()}));
   }
 }
 
@@ -104,4 +70,70 @@ void DefaultController::onLeaveEvent(QWidget *widget, QEvent *event) {
 void DefaultController::onMouseReleaseEvent(QWidget *widget,
                                             QMouseEvent *event) {
   _old_block_pos = std::nullopt;
+}
+
+void DefaultController::onFieldMousePress(const QMouseEvent *event) {
+  auto &&_connection_map = _field_model.GetConnectionMap();
+  auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
+  for (auto &&start_id : _connection_map.keys()) {
+    QPoint start_pos, end_pos;
+
+    auto &&start_pd = _field_model.GetBlockData(start_id.GetParentId());
+    if (!start_pd) {
+      assert(false);
+      return;
+    }
+
+    auto &&start_data = _field_model.GetNodeData(start_id);
+    if (!start_data) {
+      assert(false);
+      return;
+    }
+    NodeType start_type = start_data->node_type;
+
+    start_pos = start_pd->pos + start_pd->offset[start_type];
+
+    for (auto &&end_id : _connection_map[start_id]) {
+        auto &&end_pd = _field_model.GetBlockData(end_id.GetParentId());
+        if (!end_pd) {
+          assert(false);
+          return;
+        }
+
+        auto &&end_data = _field_model.GetNodeData(end_id);
+        if (!end_data) {
+          assert(false);
+          return;
+        }
+        NodeType end_type = end_data->node_type;
+
+        end_pos = end_pd->pos + end_pd->offset[end_type];
+        bool find_line = isPointOnLine(QLine(start_pos, end_pos), event->pos());
+        if (find_line) {
+          _selection_model.AddSelection(start_id, end_id);
+          return;
+        }
+    }
+  }
+  _selection_model.Clear();
+}
+
+void DefaultController::onFieldKeyPress(const QKeyEvent *event) {
+  auto &&_connection_map = _field_model.GetConnectionMap();
+  auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
+  if (event->key() == Qt::Key::Key_Delete) {
+    // delete connections with map
+    for (auto &&start_id : _map_of_selected_nodes.keys()) {
+      for (auto &&end_id : _map_of_selected_nodes[start_id]) {
+        _field_model.RemoveConnection(start_id, end_id);
+        _active_nodes_model.DecreaseNodeCount(start_id);
+        _active_nodes_model.DecreaseNodeCount(end_id);
+      }
+    }
+    // delete blocks
+    for (auto &&block : _selection_model.GetSelectedBlocks()) {
+      _field_model.RemoveBlock(block);
+    }
+    _selection_model.Clear();
+  }
 }

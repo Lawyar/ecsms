@@ -1,13 +1,40 @@
 #include "fieldmodel.h"
+#include "nodetype.h"
 
-const QMap<NodeId, QVector<NodeId>> &FieldModel::GetConnectionMap() const {
+const QMap<NodeId, std::vector<NodeId>> &FieldModel::GetConnectionMap() const {
   return _connection_map;
+}
+
+const QMap<BlockId, FieldModel::BlockData> &FieldModel::GetBlocks() const {
+  return _blocks;
+}
+
+std::optional<FieldModel::BlockData>
+FieldModel::GetBlockData(const BlockId &block) const {
+  if (_blocks.contains(block))
+    return _blocks[block];
+  return std::nullopt;
+}
+
+void FieldModel::SetBlockData(const BlockId &block, BlockData bd) {
+  _blocks[block].pos = bd.pos;
+}
+
+const QMap<NodeId, FieldModel::NodeData> &FieldModel::GetNodes() const {
+  return _nodes;
+}
+
+std::optional<FieldModel::NodeData>
+FieldModel::GetNodeData(const NodeId &node) const {
+  if (_nodes.contains(node))
+    return _nodes[node];
+  return std::nullopt;
 }
 
 void FieldModel::Remove(const NodeId &start) { _connection_map.remove(start); }
 
 void FieldModel::AddConnection(const NodeId &start, const NodeId &end) {
-  _connection_map[start].append(end);
+  _connection_map[start].push_back(end);
 }
 
 void FieldModel::RemoveConnection(const NodeId &start, const NodeId &end) {
@@ -24,21 +51,31 @@ bool FieldModel::IsNodeUsed(const NodeId &node) const {
     auto &&current_heighbor_nodes = iter.value();
     if (node == current_node)
       return true;
-    if (current_heighbor_nodes.contains(node))
+    if (std::find(current_heighbor_nodes.begin(), current_heighbor_nodes.end(),
+                  node) != current_heighbor_nodes.end())
       return true;
   }
   return false;
 }
 
-void FieldModel::AddBlock(const BlockId &block, const BlockData &bd) {
+void FieldModel::AddBlock(const BlockId &block, const BlockData &bd,
+                          const QMap<NodeType, NodeData> &node_data_map) {
   _blocks[block] = bd;
+  for (auto &&node_type : node_data_map.keys()) {
+    auto &&id = block.GetChildId(static_cast<PartId>(node_type));
+    _nodes[id] = node_data_map[node_type];
+  }
 }
 
 void FieldModel::RemoveBlock(const BlockId &block) {
-  for (auto &&node : {block.GetNodeId(Incoming), block.GetNodeId(Outgoing)}) {
+  for (auto &&node :
+       {block.GetChildId(static_cast<PartId>(NodeType::Incoming)),
+        block.GetChildId(static_cast<PartId>(NodeType::Outgoing))}) {
     _connection_map.remove(node);
     for (auto &&start : _connection_map.keys()) {
-      _connection_map[start].removeAll(node);
+      auto &&connections = _connection_map[start];
+      auto &&iter = std::find(connections.begin(), connections.end(), node);
+      _connection_map[start].erase(iter);
     }
   }
   _blocks.remove(block);

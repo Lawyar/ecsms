@@ -1,7 +1,7 @@
 #pragma once
 
 #include "icontroller.h"
-#include "../models/activeblockmodel.h"
+#include "../models/activenodesmodel.h"
 #include "../models/fieldmodel.h"
 #include "../models/linemodel.h"
 #include "../models/selectionmodel.h"
@@ -20,6 +20,10 @@ public:
   virtual void onLeaveEvent(QWidget *widget, QEvent *event) override;
   virtual void onMouseReleaseEvent(QWidget *widget,
                                    QMouseEvent *event) override;
+
+private: 
+  void onFieldMousePress(const QMouseEvent *event);
+  void onFieldKeyPress(const QKeyEvent *event);
 
 private:
   FieldModel &_field_model;

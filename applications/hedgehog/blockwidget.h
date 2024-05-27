@@ -1,7 +1,7 @@
 #ifndef BLOCKWIDGET_H
 #define BLOCKWIDGET_H
 
-#include "namemaker/blockid.h"
+#include "namemaker/id.h"
 #include "namemaker/blocknamemaker.h"
 
 #include <QLabel>
@@ -12,6 +12,8 @@
 class ConnectNodeWidget;
 class BlockField;
 class IController;
+
+using BlockId = Id;
 
 class BlockWidget : public QWidget {
   Q_OBJECT

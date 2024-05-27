@@ -1,4 +1,4 @@
-#include "activeblockmodel.h"
+#include "activenodesmodel.h"
 #include "../events/changeactivenodeevent.h"
 
 std::map<NodeId, int> ActiveNodesModel::GetActiveNodes() {
@@ -35,4 +35,12 @@ void ActiveNodesModel::DecreaseNodeCount(const NodeId &active_node) {
 
 int ActiveNodesModel::GetNodeCount(const NodeId &active_node) {
   return _active_nodes[active_node];
+}
+
+std::optional<NodeId> ActiveNodesModel::GetBeginOfLine() const {
+  return _begin;
+}
+
+void ActiveNodesModel::SetBeginOfLine(std::optional<NodeId> begin) {
+  _begin = begin;
 }

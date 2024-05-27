@@ -2,9 +2,9 @@
 
 #include "id.h"
 
-class BlockNameMaker {
+class NameMaker {
 public:
-  BlockNameMaker(int counter = 0);
+  NameMaker(int counter = 0);
   Id MakeName();
 
 private:

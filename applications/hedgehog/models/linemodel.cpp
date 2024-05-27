@@ -2,25 +2,25 @@
 #include "../events/changecontrollerevent.h"
 #include "../events/repaintevent.h"
 
-ConnectNodeWidget *LineModel::GetBegin() { return _selected_node; }
+std::optional<QPoint> LineModel::GetBegin() const { return _begin; }
 
-void LineModel::SetBegin(ConnectNodeWidget *begin) {
-  if (_selected_node != begin)
-    _selected_node = begin;
-
+void LineModel::SetBegin(std::optional<QPoint> begin) {
+  if (_begin != begin)
+    _begin = begin;
+  
+  ControllerType type;
   if (begin) {
-    Notify(std::make_shared<ChangeControllerEvent>(
-        ControllerType::drawLineController));
-    _end = begin->getCenterCoordToBlockField();
+    type = ControllerType::drawLineController;
+    _end = std::nullopt;
+  } else // set start as nullptr means that user click on field and doesn't end connection
+  {
+    type = ControllerType::defaultController;
   }
-  else // set start as nullptr means that user click on field and
-       // doesn't end connection
-    Notify(std::make_shared<ChangeControllerEvent>(
-        ControllerType::defaultController));
+  Notify(std::make_shared<ChangeControllerEvent>(type));
   Notify(std::make_shared<RepaintEvent>());
 }
 
-const QPoint LineModel::GetEnd() const { return _end; }
+std::optional<QPoint> LineModel::GetEnd() const { return _end; }
 
 void LineModel::SetEnd(QPoint end) {
   if (end != _end) {
@@ -28,5 +28,3 @@ void LineModel::SetEnd(QPoint end) {
     Notify(std::make_shared<RepaintEvent>());
   }
 }
-
-void LineModel::on_start(ConnectNodeWidget *start) {}
