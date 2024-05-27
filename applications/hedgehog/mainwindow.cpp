@@ -91,10 +91,23 @@ QStandardItem *MainWindow::createTag(QStandardItem *parent_tag,
   return new_tag;
 }
 
+void MainWindow::on_actionNewFile_triggered() {
+  delete ui->treeView->model();
+  auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
+  ui->treeView->setModel(tree_model);
+  ui->treeView->setItemDelegateForColumn(0,
+                                         new QLineEditDelegate(ui->treeView));
+  delete ui->tableView->model();
+  ui->pushButton_plus_tree->setEnabled(true);
+  ui->pushButton_minus_tree->setDisabled(true);
+  ui->pushButton_new_child_row_tree->setDisabled(true);
+  ui->pushButton_plus_table->setDisabled(true);
+  ui->pushButton_minus_table->setDisabled(true);
+}
+
 void MainWindow::on_actionOpen_triggered() {
   QString file_name = QFileDialog::getOpenFileName(this, tr("Open file"), "C:/",
                                                    tr("XML files (*.xml)"));
-  ;
   if (file_name.size() == 0) {
     QMessageBox::warning(this, "Внимание", "Файл не был выбран");
     return;
@@ -208,6 +221,10 @@ void MainWindow::on_actionSave_triggered() {
   file.close();
 }
 
+void MainWindow::on_actionRedo_triggered() {}
+
+void MainWindow::on_actionUndo_triggered() {}
+
 static void setDisableForLayoutElements(QLayout *layout, bool is_disabled) {
   for (int i = 0; i < layout->count(); ++i) {
     if (auto &&button =
@@ -299,10 +316,15 @@ void MainWindow::on_pushButton_new_child_row_tree_clicked() {
 }
 
 void MainWindow::on_pushButton_plus_table_clicked() {
-  QModelIndexList tree_indexes =
-      ui->treeView->selectionModel()->selectedIndexes();
+  auto &&model = ui->treeView->selectionModel();
+  if (!model)
+    return;
+  QModelIndexList tree_indexes = model->selectedIndexes();
   if (tree_indexes.size() == 1) {
-    int row_to_insert = ui->tableView->model()->rowCount();
+    auto &&model = ui->tableView->model();
+    if (!model)
+      return;
+    int row_to_insert = model->rowCount();
     ui->tableView->model()->insertRow(row_to_insert);
     auto &&index_to_insert = ui->tableView->model()->index(row_to_insert, 0);
     ui->tableView->selectionModel()->select(
@@ -312,8 +334,10 @@ void MainWindow::on_pushButton_plus_table_clicked() {
 }
 
 void MainWindow::on_pushButton_minus_table_clicked() {
-  QModelIndexList tree_indexes =
-      ui->treeView->selectionModel()->selectedIndexes();
+  auto &&model = ui->treeView->selectionModel();
+  if (!model)
+    return;
+  QModelIndexList tree_indexes = model->selectedIndexes();
   if (tree_indexes.size() == 1) {
     QModelIndexList table_indexes =
         ui->tableView->selectionModel()->selectedIndexes();
@@ -324,7 +348,7 @@ void MainWindow::on_pushButton_minus_table_clicked() {
   }
 }
 
-void MainWindow::on_listView_doubleClicked(const QModelIndex &index) { 
+void MainWindow::on_listView_doubleClicked(const QModelIndex &index) {
   ui->scrollAreaWidgetContents->AddNewBlock();
 }
 

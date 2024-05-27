@@ -413,29 +413,81 @@
     <property name="title">
      <string>File</string>
     </property>
+    <addaction name="actionNewFile"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
    </widget>
+   <widget class="QMenu" name="menuEdit">
+    <property name="title">
+     <string>Edit</string>
+    </property>
+    <addaction name="actionUndo"/>
+    <addaction name="actionRedo"/>
+   </widget>
    <addaction name="menuFile"/>
+   <addaction name="menuEdit"/>
   </widget>
   <action name="actionOpen">
    <property name="checkable">
-    <bool>false</bool>
+    <bool>true</bool>
    </property>
    <property name="enabled">
     <bool>true</bool>
    </property>
    <property name="icon">
     <iconset resource="resource.qrc">
-     <normaloff>:/hedgehog.ico</normaloff>:/hedgehog.ico</iconset>
+     <normaloff>:/folder.ico</normaloff>:/folder.ico</iconset>
    </property>
    <property name="text">
     <string>Open</string>
    </property>
   </action>
   <action name="actionSave">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/save.ico</normaloff>:/save.ico</iconset>
+   </property>
    <property name="text">
     <string>Save</string>
+   </property>
+  </action>
+  <action name="actionNewFile">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/file.ico</normaloff>:/file.ico</iconset>
+   </property>
+   <property name="text">
+    <string>New file</string>
+   </property>
+  </action>
+  <action name="actionUndo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/left.ico</normaloff>:/left.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Undo</string>
+   </property>
+  </action>
+  <action name="actionRedo">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/right.ico</normaloff>:/right.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Redo</string>
    </property>
   </action>
  </widget>

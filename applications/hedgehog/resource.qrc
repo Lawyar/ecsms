@@ -1,5 +1,10 @@
 <RCC>
-<qresource prefix="/">
-<file>hedgehog.ico</file>
-</qresource>
+	<qresource prefix="/">
+		<file>file.ico</file>
+		<file>folder.ico</file>
+		<file>hedgehog.ico</file>
+		<file>left.ico</file>
+		<file>right.ico</file>
+		<file>save.ico</file>
+	</qresource>
 </RCC>

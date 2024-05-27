@@ -4,13 +4,20 @@
 
 #include <QDebug>
 
+static float distance(QPoint p1, QPoint p2) {
+  float d = sqrt(pow((p1.x() - p2.x()), 2) + pow((p1.y() - p2.y()), 2));
+  return d;
+}
+
 static bool isPointOnLine(QLine line, QPoint point) {
   float x1 = line.p1().x(), y1 = line.p1().y();
   float x2 = line.p2().x(), y2 = line.p2().y();
   float k = (y2 - y1) / (x2 - x1);
   float b = y1 - k * x1;
   float eps = 6;
-  return (abs(point.y() - (k * point.x() + b)) < eps);
+  bool res = (distance(line.p1(), point) + distance(line.p2(), point) -
+              distance(line.p1(), line.p2())) < eps;
+  return res && (abs(point.y() - (k * point.x() + b)) < eps);
 }
 
 DefaultController::DefaultController(FieldModel &field_model,
