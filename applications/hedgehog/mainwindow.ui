@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>Hedgehog</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resource.qrc">
+    <normaloff>:/hedgehog.ico</normaloff>:/hedgehog.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_3">
     <property name="leftMargin">
@@ -348,7 +352,7 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>462</width>
+               <width>234</width>
                <height>213</height>
               </rect>
              </property>
@@ -421,6 +425,10 @@
    <property name="enabled">
     <bool>true</bool>
    </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/hedgehog.ico</normaloff>:/hedgehog.ico</iconset>
+   </property>
    <property name="text">
     <string>Open</string>
    </property>
@@ -439,6 +447,8 @@
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>

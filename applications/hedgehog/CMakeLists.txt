@@ -28,9 +28,13 @@ set(SOURCE_LIST
     observer/iobserver.h
 )
 
+set(ONLY_SOURCE_LIST ${SOURCE_LIST})
+
+qt5_add_resources(SOURCE_LIST resource.qrc)
+
 add_executable(hedgehog WIN32 ${SOURCE_LIST})
 
-source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${SOURCE_LIST})
+source_group(TREE "${CMAKE_CURRENT_SOURCE_DIR}" FILES ${ONLY_SOURCE_LIST})
 
 target_link_libraries(hedgehog PRIVATE
     Qt5::Charts

@@ -1,5 +1,6 @@
 #include "defaultcontroller.h"
 #include "../blockfield.h"
+#include "command/deleteblocksandconnectionscommand.h"
 
 #include <QDebug>
 
@@ -24,7 +25,7 @@ void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
     if (event->buttons() == Qt::LeftButton && _old_block_pos) {
       QPoint delta = event->pos() - *_old_block_pos;
       block_w->move(block_w->pos() + delta);
-      FieldModel::BlockData block_data = { block_w->pos()};
+      FieldModel::BlockData block_data = {block_w->pos()};
       _field_model.SetBlockData(block_w->GetId(), block_data);
       block_w->parentWidget()->repaint();
     }
@@ -94,25 +95,25 @@ void DefaultController::onFieldMousePress(const QMouseEvent *event) {
     start_pos = start_pd->pos + start_pd->offset[start_type];
 
     for (auto &&end_id : _connection_map[start_id]) {
-        auto &&end_pd = _field_model.GetBlockData(end_id.GetParentId());
-        if (!end_pd) {
-          assert(false);
-          return;
-        }
+      auto &&end_pd = _field_model.GetBlockData(end_id.GetParentId());
+      if (!end_pd) {
+        assert(false);
+        return;
+      }
 
-        auto &&end_data = _field_model.GetNodeData(end_id);
-        if (!end_data) {
-          assert(false);
-          return;
-        }
-        NodeType end_type = end_data->node_type;
+      auto &&end_data = _field_model.GetNodeData(end_id);
+      if (!end_data) {
+        assert(false);
+        return;
+      }
+      NodeType end_type = end_data->node_type;
 
-        end_pos = end_pd->pos + end_pd->offset[end_type];
-        bool find_line = isPointOnLine(QLine(start_pos, end_pos), event->pos());
-        if (find_line) {
-          _selection_model.AddSelection(start_id, end_id);
-          return;
-        }
+      end_pos = end_pd->pos + end_pd->offset[end_type];
+      bool find_line = isPointOnLine(QLine(start_pos, end_pos), event->pos());
+      if (find_line) {
+        _selection_model.AddSelection(start_id, end_id);
+        return;
+      }
     }
   }
   _selection_model.Clear();
