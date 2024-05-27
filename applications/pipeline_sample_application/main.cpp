@@ -2,6 +2,7 @@
 #include "PipelineStageObserver.h"
 
 #include <iostream>
+#include <Int32RandomGenerator.h>
 
 using namespace std;
 
@@ -47,3 +48,40 @@ int main() {
 //    InOutStageConnection<stages[i]::>
 //  }
 //}
+
+//bool connectable(const string_view producerName,
+//    const string_view consumerName) {
+//  
+//}
+
+template<typename Producer, typename Consumer>
+bool connectable() {
+  static_assert(Producer::stageType == PipelineStageType::producer ||
+                Producer::stageType == PipelineStageType::producerConsumer);
+
+  static_assert(Consumer::stageType == PipelineStageType::consumer ||
+                Consumer::stageType == PipelineStageType::producerConsumer);
+
+  return is_same_v<Producer::productionT, Consumer::consumptionT>;
+}
+
+void observe() {
+  vector<string> stageNames = { "Int32RandomGenerator, stage2" };
+  cout << "Available stages:\n";
+  for (size_t i = 0; i < stageNames.size(); ++i) {
+    cout << to_string(i + 1) << ". " << stageNames[i] << endl;
+  }
+
+  string selectedStageName = "Int32RandomGenerator";
+
+  if (selectedStageName == "Int32RandomGenerator") {
+    auto connection =
+        make_shared<InOutStageConnection<typename Int32RandomGenerator::productionT>>(32);
+    Int32RandomGenerator stage(connection);
+
+    selectedStageName = "Int32Visualizer";
+    if (selectedStageName == "Int32Visualizer") {
+      
+    }
+  }
+}

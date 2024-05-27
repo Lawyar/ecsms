@@ -32,6 +32,10 @@ public:
   bool consumerTasksAvailable(size_t consumerId,
                               uint64_t leastTimestamp) const override;
 
+  template<typename StageT> static bool connectable() {
+    return is_same_v<StageT, T>;
+  }
+
 private:
   size_t onConsumerConnected() override;
 

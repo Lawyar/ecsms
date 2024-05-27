@@ -16,7 +16,8 @@ public:
   ConnectablePipelineStage(const std::string_view,
                            std::optional<TaskRetrieveStrategy>,
                            std::shared_ptr<InStageConnection<In>>,
-                           std::shared_ptr<OutStageConnection<Out>>);
+                           std::shared_ptr<OutStageConnection<Out>>,
+                           std::optional<std::any> = std::nullopt);
 
   void run() override;
 
@@ -31,7 +32,10 @@ protected:
 
 private:
   virtual void consumeAndProduce(std::shared_ptr<In> inData,
-                        std::shared_ptr<Out> outData) = 0;
+                                 std::shared_ptr<Out> outData) = 0;
+
+protected:
+  std::optional<std::any> m_stageParameters;
 
 private:
   const std::optional<TaskRetrieveStrategy> m_consumerStrategy;
@@ -48,8 +52,10 @@ ConnectablePipelineStage<In, Out>::ConnectablePipelineStage(
     const std::string_view stageName,
     std::optional<TaskRetrieveStrategy> consumerStrategy,
     std::shared_ptr<InStageConnection<In>> inConnection,
-    std::shared_ptr<OutStageConnection<Out>> outConnection)
-    : PipelineStage(stageName), m_consumerStrategy(consumerStrategy),
+    std::shared_ptr<OutStageConnection<Out>> outConnection,
+    std::optional<std::any> stageParameters)
+    : PipelineStage(stageName), m_stageParameters(stageParameters),
+      m_consumerStrategy(consumerStrategy),
       m_consumerId(std::nullopt), m_inConnection(inConnection),
       m_outConnection(outConnection), m_leastTimestamp{0} {
   if (inConnection != nullptr && !consumerStrategy.has_value())
@@ -114,7 +120,8 @@ void ConnectablePipelineStage<In, Out>::run() {
 }
 
 template <typename In, typename Out>
-PipelineStageType ConnectablePipelineStage<In, Out>::getStageType() {
+PipelineStageType
+ConnectablePipelineStage<In, Out>::getStageType() {
   if (!m_inConnection)
     return PipelineStageType::producer;
   else if (!m_outConnection)
@@ -142,7 +149,8 @@ ConnectablePipelineStage<In, Out>::getInConnection() {
 }
 
 template <typename In, typename Out>
-void ConnectablePipelineStage<In, Out>::setConsumerId(size_t consumerId) {
+void ConnectablePipelineStage<In, Out>::setConsumerId(
+    size_t consumerId) {
   if (m_inConnection == nullptr)
     throw PipelineException("m_inConnection is null");
 

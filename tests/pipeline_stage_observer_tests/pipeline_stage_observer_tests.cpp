@@ -5,6 +5,7 @@
 #include "ProducerAndConsumerStage.h"
 #include "PipelineStageFactory.h"
 #include "InOutStageConnection.h"
+#include "PipelineStageObserver.h"
 
 using namespace std;
 
@@ -37,20 +38,23 @@ public:
   using consumptionT = void;
   using productionT = int;
 
+  struct Parameters {
+    string s;
+    int i;
+  };
+
   TestProducerStage(std::shared_ptr<OutStageConnection<int>> outConnection,
-                    string s, int i)
-      : ProducerStage(stageName, outConnection), additionalField_1(move(s)),
-        additionalField_2(i) {}
+                    Parameters parameters)
+      : ProducerStage(stageName, outConnection), parameters_(parameters) {}
 
   TestProducerStage(std::shared_ptr<OutStageConnection<int>> outConnection)
-      : TestProducerStage(outConnection, "", 0) {}
+      : TestProducerStage(outConnection, {"", 0}) {}
 
   void produce(shared_ptr<int> outData) override {
     releaseProducerTask(outData);
   }
 
-  string additionalField_1;
-  int additionalField_2;
+  Parameters parameters_;
 };
 
 class TestConsumerAndProducerStage : public ConsumerAndProducerStage<int, int> {
@@ -86,80 +90,27 @@ public:
   int additionalField_2;
 };
 
-TEST(pipeline_stage_observer_tests,
-     PipelineStageFactory_createConsumerStageWorks) {
-  auto connection = make_shared<InOutStageConnection<int>>(32);
-  shared_ptr<InStageConnection<int>> in = connection;
-
-  PipelineStageFactory<TestConsumerStage> factory;
-  shared_ptr<TestConsumerStage> stage;
-  ASSERT_NO_THROW(stage =
-                      factory.create(TaskRetrieveStrategy::newest, in));
-  ASSERT_NE(stage, nullptr);
+TEST(PipelineRegistry_tests, PipelineRegistry_registerProducerWorks) {
+  PipelineRegistry registry;
+  registry.registerProducer<TestProducerStage>();
 }
 
-TEST(pipeline_stage_observer_tests,
-     PipelineStageFactory_createConsumerStageWithAdditionalArgsWorks) {
-  auto connection = make_shared<InOutStageConnection<int>>(32);
-  shared_ptr<InStageConnection<int>> in = connection;
-
-  PipelineStageFactory<TestConsumerStage> factory;
-  shared_ptr<TestConsumerStage> stage;
-  string s = "64";
-  int i = 128;
-  ASSERT_NO_THROW(stage = factory.create(TaskRetrieveStrategy::newest, in, s, i));
-  ASSERT_EQ(stage->additionalField_1, s);
-  ASSERT_EQ(stage->additionalField_2, i);
+TEST(PipelineRegistry_tests, PipelineRegistry_constructProducerWorks) {
+  PipelineRegistry registry;
+  registry.registerProducer<TestProducerStage>();
+  auto connection = registry.constructProducerConnection("TestProducerStage", 32);
+  auto stage = registry.constructProducer("TestProducerStage", connection);
 }
 
-TEST(pipeline_stage_observer_tests,
-     PipelineStageFactory_createProducerStageWorks) {
-  auto connection = make_shared<InOutStageConnection<int>>(32);
-  shared_ptr<OutStageConnection<int>> out = connection;
+TEST(PipelineRegistry_tests, PipelineRegistry_registerProducerFactoryWorks) {
+  PipelineRegistry registry;
+  registry.registerProducerFactory<TestProducerStage>(
+                           [](shared_ptr<StageConnection> connection) {
+        auto outConnection = dynamic_cast<OutStageConnection<typename TestProducerStage::productionT>*>(connection.get());
+    return make_shared<TestProducerStage>(
+            shared_ptr<
+                OutStageConnection<typename TestProducerStage::productionT>>(
+            outConnection));
+                           });
 
-  PipelineStageFactory<TestProducerStage> factory;
-  shared_ptr<TestProducerStage> stage;
-  ASSERT_NO_THROW(stage = factory.create(out));
-  ASSERT_NE(stage, nullptr);
-}
-
-TEST(pipeline_stage_observer_tests,
-    PipelineStageFactory_createProducerStageWorksWithAdditionalArgs) {
-  auto connection = make_shared<InOutStageConnection<int>>(32);
-  shared_ptr<OutStageConnection<int>> out = connection;
-
-  PipelineStageFactory<TestProducerStage> factory;
-  shared_ptr<TestProducerStage> stage;
-  string s = "64";
-  int i = 128;
-  ASSERT_NO_THROW(stage = factory.create(out, s, i));
-  ASSERT_EQ(stage->additionalField_1, s);
-  ASSERT_EQ(stage->additionalField_2, i);
-}
-
-TEST(pipeline_stage_observer_tests, PipelineStageFactory_createConsumerAndProducerStageWorks) {
-  auto connection = make_shared<InOutStageConnection<int>>(32);
-  shared_ptr<InStageConnection<int>> in = connection;
-  shared_ptr<OutStageConnection<int>> out = connection;
-
-  PipelineStageFactory<TestConsumerAndProducerStage> factory;
-  shared_ptr<TestConsumerAndProducerStage> stage;
-  ASSERT_NO_THROW(stage = factory.create(TaskRetrieveStrategy::newest, in, out));
-  ASSERT_NE(stage, nullptr);
-}
-
-TEST(pipeline_stage_observer_tests,
-    PipelineStageFactory_createConsumerAndProducerStageWithAdditionalArgsWorks) {
-  auto connection = make_shared<InOutStageConnection<int>>(32);
-  shared_ptr<InStageConnection<int>> in = connection;
-  shared_ptr<OutStageConnection<int>> out = connection;
-
-  PipelineStageFactory<TestConsumerAndProducerStage> factory;
-  shared_ptr<TestConsumerAndProducerStage> stage;
-  string s = "64";
-  int i = 128;
-  ASSERT_NO_THROW(stage =
-                      factory.create(TaskRetrieveStrategy::newest, in, out, s, i));
-  ASSERT_EQ(stage->additionalField_1, s);
-  ASSERT_EQ(stage->additionalField_2, i);
 }

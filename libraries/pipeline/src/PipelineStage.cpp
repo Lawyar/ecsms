@@ -17,3 +17,5 @@ void PipelineStage::stop() {
 }
 
 string PipelineStage::getName() { return m_stageName; }
+
+void PipelineStage::set(std::any) {}

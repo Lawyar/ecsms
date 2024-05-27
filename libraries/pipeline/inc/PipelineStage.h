@@ -3,6 +3,7 @@
 #include "StageConnection.h"
 #include "PipelineStageType.h"
 
+#include <any>
 #include <atomic>
 #include <memory>
 #include <string>
@@ -22,9 +23,20 @@ public:
   virtual bool consumerTasksAvailable() = 0;
   virtual std::shared_ptr<StageConnection> getInConnection() = 0;
 
+  template<typename T, typename... TArgs>
+  void setStageParameters(TArgs&&... );
+
+protected:
+  virtual void set(std::any);
+
 protected:
   std::string m_stageName;
 
   std::atomic_bool m_shutdownSignaled;
   std::thread m_thread;
 };
+
+template <typename T, typename... TArgs>
+void PipelineStage::setStageParameters(TArgs &&...args) {
+  set(T{std::forward<Args>(args)...});
+}

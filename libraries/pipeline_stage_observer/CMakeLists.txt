@@ -1,5 +1,6 @@
 add_library(pipeline_stage_observer
     inc/PipelineStageObserver.h
+    inc/IPipelineStageFactory.h
     inc/PipelineStageFactory.h
     inc/PipelineStageObserverException.h
     inc/StageRepresentation.h
