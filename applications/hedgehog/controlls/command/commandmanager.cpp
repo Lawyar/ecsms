@@ -17,15 +17,15 @@ void CommandManager::Do(ICommand *command) {
 }
 
 void CommandManager::Redo() {
-  if (HasCommandsToRedo) {
+  if (HasCommandsToRedo()) {
     ++_ind;
     _commands[_ind]->Execute();
   }
 }
 
 void CommandManager::Undo() {
-  if (HasCommandsToUndo) {
-    --_ind;
+  if (HasCommandsToUndo()) {
     _commands[_ind]->UnExecute();
+    --_ind;   
   }
 }

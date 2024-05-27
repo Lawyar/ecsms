@@ -3,6 +3,7 @@
 #include "controlls/controllerprocedure.h"
 #include "controlls/defaultcontroller.h"
 #include "controlls/drawlinecontroller.h"
+#include "events/addblockevent.h"
 #include "events/changeactivenodeevent.h"
 #include "events/changecontrollerevent.h"
 #include "events/drawevent.h"
@@ -29,8 +30,8 @@ BlockField::BlockField(QWidget *parent) : QWidget(parent) {
 }
 
 void BlockField::AddBlock() {
-  ControllerProcedure::Execute::AddBlock(_block_name_maker, _controller, this,
-                                         _field_model, rect().center());
+  controller::execute::AddBlock(_block_name_maker, _field_model,
+                                rect().center());
 }
 
 void BlockField::Update(std::shared_ptr<Event> e) {
@@ -78,6 +79,13 @@ void BlockField::Update(std::shared_ptr<Event> e) {
       assert(false);
       return;
     }
+    break;
+  }
+  case addBlockEvent: {
+    auto &&add_block_e = std::static_pointer_cast<AddBlockEvent>(e);
+    auto &&block = new BlockWidget(add_block_e->GetId(), _controller, this);
+    block->move(add_block_e->GetPos());
+    block->show();
     break;
   }
   default: {

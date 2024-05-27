@@ -4,19 +4,24 @@
 
 #include <QPoint>
 
-namespace ControllerProcedure {
-namespace Execute {
+namespace controller::execute {
 void AddBlock(NameMaker &block_name_maker,
-              std::unique_ptr<IController> &controller,
-              BlockField *parent, FieldModel &field_model,
-              QPoint pos) {
-  auto b = new BlockWidget(block_name_maker.MakeName(), controller, parent);
-  b->show();
-  b->move(pos);
-  auto &&left_p = b->GetLeftNode()->getCenterCoord();
-  auto &&right_p = b->GetRightNode()->getCenterCoord();
+              FieldModel &field_model,
+              QPoint pos/*, BlockType blockType*/) { // TODO передавать commandmanager
+  std::unique_ptr<BlockWidget> blockWidget;
+  /*switch (blockType) {
+  case xxx: blockWidget = new BlockWidgetXXX();
+    break;
+  case yyy:
+    blockWidget = new BlockWidgetYYY();
+    break;
+  }*/
+  std::unique_ptr<IController> controller;
+  blockWidget.reset(new BlockWidget(block_name_maker.MakeName(), controller));
+  auto &&left_p = blockWidget->GetLeftNode()->getCenterCoord();
+  auto &&right_p = blockWidget->GetRightNode()->getCenterCoord();
 
-  FieldModel::BlockData block_data = {b->pos(),
+  FieldModel::BlockData block_data = {pos,
                                       {
                                           {NodeType::Incoming, left_p},
                                           {NodeType::Outgoing, right_p},
@@ -24,7 +29,6 @@ void AddBlock(NameMaker &block_name_maker,
   QMap<NodeType, FieldModel::NodeData> node_data_map = {
       {NodeType::Incoming, {NodeType::Incoming}},
       {NodeType::Outgoing, {NodeType::Outgoing}}};
-  field_model.AddBlock(b->GetId(), block_data, node_data_map);
+  field_model.AddBlock(blockWidget->GetId(), block_data, node_data_map);
 }
-}; // namespace Execute
-}; // namespace ControllerProcedure
+}

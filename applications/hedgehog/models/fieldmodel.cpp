@@ -1,5 +1,6 @@
 #include "fieldmodel.h"
 #include "nodetype.h"
+#include "../events/addblockevent.h"
 
 const QMap<NodeId, std::vector<NodeId>> &FieldModel::GetConnectionMap() const {
   return _connection_map;
@@ -65,6 +66,7 @@ void FieldModel::AddBlock(const BlockId &block, const BlockData &bd,
     auto &&id = block.GetChildId(static_cast<PartId>(node_type));
     _nodes[id] = node_data_map[node_type];
   }
+  Notify(std::make_shared<AddBlockEvent>(block, bd.pos));
 }
 
 void FieldModel::RemoveBlock(const BlockId &block) {

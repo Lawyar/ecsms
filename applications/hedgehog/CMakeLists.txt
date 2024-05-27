@@ -13,12 +13,13 @@ set(SOURCE_LIST
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
     controlls/icontroller.h
+    events/addblockevent.h events/addblockevent.cpp
     events/changeactivenodeevent.h  events/changeactivenodeevent.cpp
     events/changecontrollerevent.h events/changecontrollerevent.cpp
     events/drawevent.h events/drawevent.cpp
-    events/repaintevent.h events/repaintevent.cpp
     events/event.h
     events/mypaintevent.h events/mypaintevent.cpp
+    events/repaintevent.h events/repaintevent.cpp
     models/activenodesmodel.h models/activenodesmodel.cpp
     models/fieldmodel.h models/fieldmodel.cpp
     models/imodel.h
