@@ -1,9 +1,12 @@
 #include "addblockevent.h"
 
-AddBlockEvent::AddBlockEvent(Id block, QPoint pos) : _block(block), _pos(pos) {}
+AddBlockEvent::AddBlockEvent(BlockId block, FieldModel::BlockData block_data)
+    : _block(block), _block_data(block_data) {}
 
 EventType AddBlockEvent::GetEventType() const { return addBlockEvent; }
 
-Id AddBlockEvent::GetId() const { return _block; }
+BlockId AddBlockEvent::GetId() const { return _block; }
 
-QPoint AddBlockEvent::GetPos() const { return _pos; }
+FieldModel::BlockData AddBlockEvent::GetBlockData() const {
+  return _block_data;
+}

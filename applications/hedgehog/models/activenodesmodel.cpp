@@ -5,13 +5,13 @@ std::map<NodeId, int> ActiveNodesModel::GetActiveNodes() {
   return _active_nodes;
 }
 
-void ActiveNodesModel::IncreaseNodeCount(const NodeId &active_node) {
+void ActiveNodesModel::IncreaseNodeCount(const NodeId &active_node, int count) {
   auto &&it = _active_nodes.find(active_node);
   if (it == _active_nodes.end()) {
     it = _active_nodes.emplace_hint(it, active_node, 0);
   }
   auto &&active_count = it->second;
-  ++active_count;
+  active_count += count;
 
   if (active_count == 1) {
     Notify(std::make_shared<ChangeActiveNodeEvent>(active_node, true));

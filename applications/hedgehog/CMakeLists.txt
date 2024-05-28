@@ -6,9 +6,11 @@ set(SOURCE_LIST
     mainwindow.cpp mainwindow.h mainwindow.ui
     qlineeditdelegate.cpp qlineeditdelegate.h
     controlls/activenodeslock.h controlls/activenodeslock.cpp
+    controlls/command/addblockcommand.h controlls/command/addblockcommand.cpp
     controlls/command/commandmanager.h controlls/command/commandmanager.cpp
     controlls/command/deleteblocksandconnectionscommand.h controlls/command/deleteblocksandconnectionscommand.cpp
     controlls/command/icommand.h
+    controlls/command/removeblockcommand.h  controlls/command/removeblockcommand.cpp
     controlls/controllerprocedure.h
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
@@ -19,6 +21,7 @@ set(SOURCE_LIST
     events/drawevent.h events/drawevent.cpp
     events/event.h
     events/mypaintevent.h events/mypaintevent.cpp
+    events/removeblockevent.h events/removeblockevent.cpp
     events/repaintevent.h events/repaintevent.cpp
     models/activenodesmodel.h models/activenodesmodel.cpp
     models/fieldmodel.h models/fieldmodel.cpp

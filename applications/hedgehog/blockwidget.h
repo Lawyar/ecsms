@@ -13,18 +13,21 @@ class ConnectNodeWidget;
 class BlockField;
 class IController;
 
-using BlockId = Id;
-
 class BlockWidget : public QWidget {
   Q_OBJECT
 public:
-  explicit BlockWidget(const BlockId &id, std::unique_ptr<IController> &controller,
+  explicit BlockWidget(const BlockId &id,
+                       std::unique_ptr<IController> &controller,
+                       const QString &text,
                        BlockField *parent = nullptr);
   BlockId GetId() const;
   QWidget *FindById(Id id);
   ConnectNodeWidget *GetLeftNode();
   ConnectNodeWidget *GetRightNode();
-  QPoint coordToBlockField(QPoint p) const;
+  QPoint CoordToBlockField(QPoint p) const;
+  static QPoint GetLeftNodeOffset(const QString &text);
+  static QPoint GetRightNodeOffset(const QString &text);
+  static int GetNodesRadius();
 
 protected:
   void mouseMoveEvent(QMouseEvent *event) override;
@@ -38,6 +41,12 @@ public slots:
   void on_pushButton_clicked();
 
 private:
+  static QString prepareStringForLabel(const QString & str);
+
+private:
+  static const int _nodes_radius = 5;
+  static const int _spacing1 = 2, _button_height = 20, _spacing2 = 3;
+  static QFont _font;
   BlockId _id;
   std::unique_ptr<IController> &_controller;
   QLabel *_block_name;

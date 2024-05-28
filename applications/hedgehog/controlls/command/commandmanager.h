@@ -14,6 +14,6 @@ public:
   void Undo();
 
 private:
-  int _ind = 0;
+  int _executed_command_count = 0;
   std::vector<ICommand *> _commands;
 };

@@ -13,25 +13,32 @@ const std::set<BlockId> &SelectionModel::GetSelectedBlocks() const {
 }
 
 void SelectionModel::AddSelection(const BlockId &block) {
-  qDebug() << "add block to selection";
   _selected_blocks.insert(block);
   Notify(std::make_shared<RepaintEvent>());
 }
 
 void SelectionModel::RemoveSelection(const BlockId &block) {
-  qDebug() << "remove block from selection";
   _selected_blocks.erase(block);
   Notify(std::make_shared<RepaintEvent>());
 }
 
-void SelectionModel::AddSelection(const NodeId &start,
-                                  const NodeId &end) {
+void SelectionModel::RemoveSelectionWithNode(const NodeId &node) {
+  _map_of_selected_nodes.remove(node);
+  for (auto &&start : _map_of_selected_nodes.keys()) {
+    for (auto &&end : _map_of_selected_nodes[start]) {
+      auto &&connects = _map_of_selected_nodes[start];
+      connects.erase(std::find(connects.begin(), connects.end(), node));
+    }
+  }
+  _selected_blocks.erase(node.GetParentId());
+}
+
+void SelectionModel::AddSelection(const NodeId &start, const NodeId &end) {
   _map_of_selected_nodes[start].push_back(end);
   Notify(std::make_shared<RepaintEvent>());
 }
 
-void SelectionModel::RemoveSelection(const NodeId &start,
-                                     const NodeId &end) {
+void SelectionModel::RemoveSelection(const NodeId &start, const NodeId &end) {
   _map_of_selected_nodes[start].erase(
       std::find(_map_of_selected_nodes[start].begin(),
                 _map_of_selected_nodes[start].end(), end));

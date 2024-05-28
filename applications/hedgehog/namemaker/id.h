@@ -4,6 +4,11 @@
 
 using PartId = int;
 
+class Id;
+
+using BlockId = Id;
+using NodeId = Id;
+
 class Id {
 public:
   Id(const std::vector<PartId> &id);

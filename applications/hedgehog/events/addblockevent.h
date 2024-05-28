@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../models/fieldmodel.h"
 #include "../namemaker/id.h"
 #include "event.h"
 
@@ -7,12 +8,12 @@
 
 class AddBlockEvent : public Event {
 public:
-  AddBlockEvent(Id block, QPoint pos);
+  AddBlockEvent(BlockId block, FieldModel::BlockData block_data);
   virtual EventType GetEventType() const override;
-  Id GetId() const;
-  QPoint GetPos() const;
+  BlockId GetId() const;
+  FieldModel::BlockData GetBlockData() const;
 
 private:
-  Id _block;
-  QPoint _pos;
+  BlockId _block;
+  FieldModel::BlockData _block_data;
 };

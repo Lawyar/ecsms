@@ -10,7 +10,7 @@ class ActiveNodesModel : public IModel {
 public:
   ActiveNodesModel() = default;
   std::map<NodeId, int> GetActiveNodes();
-  void IncreaseNodeCount(const NodeId &active_node);
+  void IncreaseNodeCount(const NodeId &active_node, int count = 1);
   void DecreaseNodeCount(const NodeId &active_node);
   int GetNodeCount(const NodeId &active_node);
   std::optional<NodeId> GetBeginOfLine() const;

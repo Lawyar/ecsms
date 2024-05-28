@@ -1,13 +1,12 @@
 #include "blockfield.h"
 #include "connectnodewidget.h"
 #include "controlls/controllerprocedure.h"
-#include "controlls/defaultcontroller.h"
-#include "controlls/drawlinecontroller.h"
 #include "events/addblockevent.h"
 #include "events/changeactivenodeevent.h"
 #include "events/changecontrollerevent.h"
 #include "events/drawevent.h"
 #include "events/mypaintevent.h"
+#include "events/removeblockevent.h"
 #include "events/repaintevent.h"
 #include "models/nodetype.h"
 #include "namemaker/blocknamemaker.h"
@@ -21,17 +20,21 @@
 BlockField::BlockField(QWidget *parent) : QWidget(parent) {
   setMouseTracking(true);
   setFocus(Qt::FocusReason::ActiveWindowFocusReason);
-  _controller.reset(new DefaultController(_field_model, _selection_model,
-                                          _line_model, _active_nodes_model));
   _field_model.Subscribe(this);
   _selection_model.Subscribe(this);
   _line_model.Subscribe(this);
   _active_nodes_model.Subscribe(this);
 }
 
+void BlockField::SetCommandManager(std::shared_ptr<CommandManager> cm) {
+  _cm = cm;
+  _controller.reset(new DefaultController(
+      _field_model, _selection_model, _line_model, _active_nodes_model, *_cm));
+}
+
 void BlockField::AddBlock() {
   controller::execute::AddBlock(_block_name_maker, _field_model,
-                                rect().center());
+                                _selection_model, rect().center(), _cm);
 }
 
 void BlockField::Update(std::shared_ptr<Event> e) {
@@ -60,7 +63,7 @@ void BlockField::Update(std::shared_ptr<Event> e) {
     }
     case defaultController: {
       _controller.reset(new DefaultController(
-          _field_model, _selection_model, _line_model, _active_nodes_model));
+          _field_model, _selection_model, _line_model, _active_nodes_model, *_cm));
       break;
     }
     default: {
@@ -83,9 +86,17 @@ void BlockField::Update(std::shared_ptr<Event> e) {
   }
   case addBlockEvent: {
     auto &&add_block_e = std::static_pointer_cast<AddBlockEvent>(e);
-    auto &&block = new BlockWidget(add_block_e->GetId(), _controller, this);
-    block->move(add_block_e->GetPos());
+    auto &&block_data = add_block_e->GetBlockData();
+    auto &&block = new BlockWidget(add_block_e->GetId(), _controller,
+                                   block_data.text, this);
+    block->move(block_data.pos);
     block->show();
+    break;
+  }
+  case removeBlockEvent: {
+    auto &&remove_block_e = std::static_pointer_cast<RemoveBlockEvent>(e);
+    delete FindById(remove_block_e->GetBlock());
+    repaint();
     break;
   }
   default: {

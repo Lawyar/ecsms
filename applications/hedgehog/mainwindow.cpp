@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "blockfield.h"
 #include "blockwidget.h"
+#include "controlls/command/addblockcommand.h"
 #include "qlineeditdelegate.h"
 #include "ui_mainwindow.h"
 
@@ -63,6 +64,12 @@ MainWindow::MainWindow(QWidget *parent)
 
   ui->splitter_5->setStretchFactor(1, 1);
   ui->splitter_5->setStretchFactor(0, INT_MAX);
+
+  _comm_managers = std::vector<std::shared_ptr<CommandManager>>(ui->tabWidget->count());
+  for (auto &&cm : _comm_managers) {
+    cm = std::make_shared<CommandManager>();
+  }
+  ui->scrollAreaWidgetContents->SetCommandManager(_comm_managers[1]);
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -236,43 +243,58 @@ void MainWindow::on_actionRedo_triggered_tab1() {}
 void MainWindow::on_actionUndo_triggered_tab1() {}
 
 void MainWindow::on_actionNewFile_triggered() {
-  if (ui->tabWidget->currentIndex() == 0) {
+  auto &&curr_ind = ui->tabWidget->currentIndex();
+  switch (curr_ind) {
+  case 0: {
     on_actionNewFile_triggered_tab0();
-  } else {
+  }
+  case 1: {
     on_actionNewFile_triggered_tab1();
+  }
+  default:
+    assert(false);
+    break;
   }
 }
 
 void MainWindow::on_actionOpen_triggered() {
-  if (ui->tabWidget->currentIndex() == 0) {
+  auto &&curr_ind = ui->tabWidget->currentIndex();
+  switch (curr_ind) {
+  case 0: {
     on_actionOpen_triggered_tab0();
-  } else {
+  }
+  case 1: {
     on_actionOpen_triggered_tab1();
+  }
+  default:
+    assert(false);
+    break;
   }
 }
 
 void MainWindow::on_actionSave_triggered() {
-  if (ui->tabWidget->currentIndex() == 0) {
+  auto &&curr_ind = ui->tabWidget->currentIndex();
+  switch (curr_ind) {
+  case 0: {
     on_actionSave_triggered_tab0();
-  } else {
+  }
+  case 1: {
     on_actionSave_triggered_tab1();
+  }
+  default:
+    assert(false);
+    break;
   }
 }
 
 void MainWindow::on_actionRedo_triggered() {
-  if (ui->tabWidget->currentIndex() == 0) {
-    on_actionRedo_triggered_tab0();
-  } else {
-    on_actionRedo_triggered_tab1();
-  }
+  auto &&curr_ind = ui->tabWidget->currentIndex();
+  _comm_managers[curr_ind]->Redo();
 }
 
 void MainWindow::on_actionUndo_triggered() {
-  if (ui->tabWidget->currentIndex() == 0) {
-    on_actionUndo_triggered_tab0();
-  } else {
-    on_actionUndo_triggered_tab1();
-  }
+  auto &&curr_ind = ui->tabWidget->currentIndex();
+  _comm_managers[curr_ind]->Undo();
 }
 
 static void setDisableForLayoutElements(QLayout *layout, bool is_disabled) {

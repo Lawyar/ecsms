@@ -7,8 +7,6 @@
 
 #include <QLabel>
 
-using NodeId = Id;
-
 class ConnectNodeWidget : public QLabel {
   Q_OBJECT
 public:

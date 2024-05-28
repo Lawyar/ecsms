@@ -1,10 +1,11 @@
 #ifndef BLOCKFIELD_H
 #define BLOCKFIELD_H
 
-#include "observer/iobserver.h"
+#include "controlls/command/commandmanager.h"
 #include "controlls/defaultcontroller.h"
 #include "controlls/drawlinecontroller.h"
 #include "models/activenodesmodel.h"
+#include "observer/iobserver.h"
 
 #include <QMap>
 #include <QWidget>
@@ -15,6 +16,7 @@ class BlockField : public QWidget, public IObserver {
   Q_OBJECT
 public:
   BlockField(QWidget *parent = nullptr);
+  void SetCommandManager(std::shared_ptr<CommandManager> cm);
   void AddBlock();
   virtual void Update(std::shared_ptr<Event> e) override;
   std::unique_ptr<IController> &GetController();
@@ -30,6 +32,7 @@ protected:
   void paintEvent(QPaintEvent *event) override;
 
 private:
+  std::shared_ptr<CommandManager> _cm;
   NameMaker _block_name_maker;
   std::unique_ptr<IController> _controller;
   QPoint _pos;

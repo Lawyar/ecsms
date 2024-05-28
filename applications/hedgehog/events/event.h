@@ -2,7 +2,7 @@
 
 enum EventType
 {
-	drawEvent, changeControllerEvent, changeActiveNodeEvent, addBlockEvent
+	drawEvent, changeControllerEvent, changeActiveNodeEvent, addBlockEvent, removeBlockEvent
 };
 
 class Event

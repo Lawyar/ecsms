@@ -1,6 +1,8 @@
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
+#include "controlls/command/commandmanager.h"
+
 #include <QMainWindow>
 #include <QStandardItemModel>
 
@@ -54,5 +56,6 @@ private slots:
 
 private:
   Ui::MainWindow *ui;
+  std::vector<std::shared_ptr<CommandManager>> _comm_managers;
 };
 #endif // MAINWINDOW_H

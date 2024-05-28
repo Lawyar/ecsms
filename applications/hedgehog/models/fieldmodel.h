@@ -2,6 +2,7 @@
 
 #include "../connectnodewidget.h"
 #include "../namemaker/blocknamemaker.h"
+#include "../namemaker/id.h"
 #include "imodel.h"
 
 #include <QMap>
@@ -12,6 +13,7 @@ public:
   struct BlockData {
     QPoint pos;
     std::map<NodeType, QPoint> offset;
+    QString text;
   };
   struct NodeData {
     NodeType node_type;
@@ -20,6 +22,9 @@ public:
 public:
   FieldModel() = default;
   const QMap<NodeId, std::vector<NodeId>> &GetConnectionMap() const;
+  QMap<NodeId, std::vector<NodeId>> GetNodeConnections(NodeId node) const;
+  QMap<NodeId, QMap<NodeId, std::vector<NodeId>>>
+  GetBlockConnections(BlockId block) const;
   const QMap<BlockId, BlockData> &GetBlocks() const;
   std::optional<BlockData> GetBlockData(const BlockId &block) const;
   void SetBlockData(const BlockId &block, BlockData bd);
@@ -35,7 +40,7 @@ public:
   void RemoveBlock(const BlockId &block);
 
 private:
-  QMap<NodeId, std::vector<NodeId>> _connection_map;
+  QMap<NodeId, std::vector<NodeId>> _connections;
   QMap<BlockId, BlockData> _blocks;
   QMap<NodeId, NodeData> _nodes;
 };

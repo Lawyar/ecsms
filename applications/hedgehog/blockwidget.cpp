@@ -2,16 +2,20 @@
 #include "blockfield.h"
 #include "connectnodewidget.h"
 #include "models/nodetype.h"
+#include <QFontMetrics>
 
 #include <QDebug>
 #include <QMouseEvent>
 #include <QPainter>
 
+QFont BlockWidget::_font("times", 12);
+
 BlockWidget::BlockWidget(const BlockId &id,
                          std::unique_ptr<IController> &controller,
+                         const QString &text,
                          BlockField *parent)
     : _id(id), _controller(controller), QWidget(parent),
-      _block_name(new QLabel("block name", this)),
+      _block_name(new QLabel(text, this)),
 
       _left_node(new ConnectNodeWidget(
           id.GetChildId(static_cast<PartId>(NodeType::Incoming)), controller,
@@ -25,32 +29,32 @@ BlockWidget::BlockWidget(const BlockId &id,
   _block_name->setWordWrap(true);
   _block_name->setAlignment(Qt::AlignCenter);
   _block_name->setFrameStyle(QFrame::Box | QFrame::Plain);
-  auto new_font = _block_name->font();
-  new_font.setPointSize(12);
-  _block_name->setFont(new_font);
-  _resume_pause_button->setFont(new_font);
+  _block_name->setFont(_font);
+  _resume_pause_button->setFont(_font);
 
   _block_name->show();
+  auto &&rect = _resume_pause_button->rect();
+  rect.setHeight(_button_height);
+  _resume_pause_button->setGeometry(rect);
   _resume_pause_button->show();
 
   auto label_width = _block_name->width();
   auto label_height = _block_name->height();
-  auto spacing = 2, spacing2 = 3;
-  auto button_width = _resume_pause_button->width();
-  auto button_height = _resume_pause_button->height();
-  auto radius = 5, diameter = radius * 2;
+  auto _button_width = _resume_pause_button->width();
+  auto diameter = _nodes_radius * 2;
 
-  auto width = 2 * (2 * spacing + diameter) + label_width;
-  auto height = 2 * spacing + button_height + spacing2 + label_height;
+  auto width = 2 * (2 * _spacing1 + diameter) + label_width;
+  auto height = 2 * _spacing1 + _button_height + _spacing2 + label_height;
   setGeometry(0, 0, width, height);
 
-  _resume_pause_button->move((width - button_width) / 2, spacing);
-  _block_name->move(2 * spacing + diameter, spacing + button_height + spacing2);
+  _resume_pause_button->move((width - _button_width) / 2, _spacing1);
+  _block_name->move(2 * _spacing1 + diameter,
+                    _spacing1 + _button_height + _spacing2);
 
-  _left_node->move(spacing, spacing + button_height + spacing2 +
-                                label_height / 2 - diameter / 2);
-  _right_node->move(width - spacing - diameter,
-                    spacing + button_height + spacing2 + label_height / 2 -
+  _left_node->move(_spacing1, _spacing1 + _button_height + _spacing2 +
+                                  label_height / 2 - diameter / 2);
+  _right_node->move(width - _spacing1 - diameter,
+                    _spacing1 + _button_height + _spacing2 + label_height / 2 -
                         diameter / 2);
 
   setMouseTracking(true);
@@ -76,7 +80,28 @@ ConnectNodeWidget *BlockWidget::GetLeftNode() { return _left_node; }
 
 ConnectNodeWidget *BlockWidget::GetRightNode() { return _right_node; }
 
-QPoint BlockWidget::coordToBlockField(QPoint p) const { return mapToParent(p); }
+QPoint BlockWidget::CoordToBlockField(QPoint p) const { return mapToParent(p); }
+
+QPoint BlockWidget::GetLeftNodeOffset(const QString &text) {
+  QString labelText = prepareStringForLabel(text);
+  QFontMetrics metrics(_font);
+  QRect rect = metrics.boundingRect(labelText);
+
+  QPoint res(_spacing1 + _nodes_radius / 2, _spacing1 + _button_height + _spacing2 + rect.height() / 2);
+  return res;
+}
+
+QPoint BlockWidget::GetRightNodeOffset(const QString &text) {
+  QString labelText = prepareStringForLabel(text);
+  QFontMetrics metrics(_font);
+  QRect rect = metrics.boundingRect(labelText);
+
+  QPoint res((_spacing1 + _nodes_radius) * 2 + rect.width() + _spacing1,
+    _spacing1 + _button_height + _spacing2 + rect.height() / 2);
+  return res;
+}
+
+int BlockWidget::GetNodesRadius() { return _nodes_radius; }
 
 void BlockWidget::mouseMoveEvent(QMouseEvent *event) {
   _controller->onMouseMoveEvent(this, event);
@@ -109,3 +134,5 @@ void BlockWidget::on_pushButton_clicked() {
   else
     _resume_pause_button->setText("||");
 }
+
+QString BlockWidget::prepareStringForLabel(const QString &str) { return str; }
