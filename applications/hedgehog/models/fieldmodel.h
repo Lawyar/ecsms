@@ -19,6 +19,23 @@ public:
     NodeType node_type;
   };
 
+  class Memento {
+  public:
+    Memento(const Memento &) = delete;
+    Memento(Memento &&) = default;
+    Memento &operator=(const Memento &) = delete;
+    Memento &operator=(Memento &&) = delete;
+
+  private:
+    Memento(QMap<NodeId, std::vector<NodeId>> connections,
+            QMap<BlockId, BlockData> blocks, QMap<NodeId, NodeData> nodes)
+        : _connections(connections), _blocks(blocks), _nodes(nodes) {}
+    QMap<NodeId, std::vector<NodeId>> _connections;
+    QMap<BlockId, BlockData> _blocks;
+    QMap<NodeId, NodeData> _nodes;
+    friend FieldModel;
+  };
+
 public:
   FieldModel() = default;
   const QMap<NodeId, std::vector<NodeId>> &GetConnectionMap() const;
@@ -33,11 +50,12 @@ public:
   void Remove(const NodeId &start);
   void AddConnection(const NodeId &start, const NodeId &end);
   void RemoveConnection(const NodeId &start, const NodeId &end);
-
   bool IsNodeUsed(const NodeId &node) const;
   void AddBlock(const BlockId &block, const BlockData &bd,
                 const QMap<NodeType, NodeData> &node_data_map);
   void RemoveBlock(const BlockId &block);
+  Memento Save() const;
+  void Load(const Memento & m);
 
 private:
   QMap<NodeId, std::vector<NodeId>> _connections;

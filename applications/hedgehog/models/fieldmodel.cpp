@@ -1,8 +1,9 @@
 #include "fieldmodel.h"
-#include "nodetype.h"
 #include "../events/addblockevent.h"
 #include "../events/removeblockevent.h"
 #include "../events/repaintevent.h"
+#include "nodetype.h"
+#include "../utility/containerutility.h"
 
 const QMap<NodeId, std::vector<NodeId>> &FieldModel::GetConnectionMap() const {
   return _connections;
@@ -65,8 +66,8 @@ void FieldModel::AddConnection(const NodeId &start, const NodeId &end) {
 }
 
 void FieldModel::RemoveConnection(const NodeId &start, const NodeId &end) {
-  _connections[start].erase(std::find(_connections[start].begin(),
-                                         _connections[start].end(), end));
+  _connections[start].erase(
+      std::find(_connections[start].begin(), _connections[start].end(), end));
   if (_connections[start].empty())
     _connections.remove(start);
 }
@@ -76,8 +77,8 @@ bool FieldModel::IsNodeUsed(const NodeId &node) const {
     auto &&connections = _connections[start];
     if (node == start)
       return true;
-    if (std::find(connections.begin(), connections.end(),
-                  node) != connections.end())
+    if (std::find(connections.begin(), connections.end(), node) !=
+        connections.end())
       return true;
   }
   return false;
@@ -97,13 +98,36 @@ void FieldModel::RemoveBlock(const BlockId &block) {
   for (auto &&node :
        {block.GetChildId(static_cast<PartId>(NodeType::Incoming)),
         block.GetChildId(static_cast<PartId>(NodeType::Outgoing))}) {
-    _connections.remove(node);
-    for (auto &&start : _connections.keys()) {
+    _connections.remove(node);                 // delete node from "starts"
+    for (auto &&start : _connections.keys()) { // delete node from "ends"
       auto &&connections = _connections[start];
       auto &&iter = std::find(connections.begin(), connections.end(), node);
-      _connections[start].erase(iter);
+      if (iter != connections.end())
+        _connections[start].erase(iter);
     }
   }
   _blocks.remove(block);
   Notify(std::make_shared<RemoveBlockEvent>(block));
+}
+
+FieldModel::Memento FieldModel::Save() const {
+  Memento res{_connections, _blocks, _nodes};
+  return res;
+}
+
+void FieldModel::Load(const Memento &m) {
+  auto block_ids_to_create = SubstractionKeys(m._blocks, _blocks);
+  auto block_ids_to_delete = SubstractionKeys(_blocks, m._blocks);
+
+  _connections = m._connections;
+  _blocks = m._blocks;
+  _nodes = m._nodes;
+
+  for (auto &&id : block_ids_to_create) {
+    Notify(std::make_shared<AddBlockEvent>(id, _blocks[id]));
+  }
+
+  for (auto &&id : block_ids_to_delete) {
+    Notify(std::make_shared<RemoveBlockEvent>(id));
+  }
 }

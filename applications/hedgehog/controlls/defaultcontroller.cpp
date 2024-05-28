@@ -1,6 +1,6 @@
 #include "defaultcontroller.h"
 #include "../blockfield.h"
-#include "command/removeblockcommand.h"
+#include "command/removecommand.h"
 
 #include <QDebug>
 
@@ -131,21 +131,6 @@ void DefaultController::onFieldKeyPress(const QKeyEvent *event) {
   auto &&_connection_map = _field_model.GetConnectionMap();
   auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
   if (event->key() == Qt::Key::Key_Delete) {
-    // delete connections with map
-    /*for (auto &&start_id : _map_of_selected_nodes.keys()) {
-      for (auto &&end_id : _map_of_selected_nodes[start_id]) {
-        _field_model.RemoveConnection(start_id, end_id);
-        _active_nodes_model.DecreaseNodeCount(start_id);
-        _active_nodes_model.DecreaseNodeCount(end_id);
-      }
-    }*/
-    // delete blocks
-    auto selected_blocks = _selection_model.GetSelectedBlocks();
-    for (auto &&block : selected_blocks) {
-      if (auto &&block_data = _field_model.GetBlockData(block))
-        _cm.Do(new RemoveBlockCommand(block, *block_data, _field_model,
-                                      _selection_model, _active_nodes_model));
-    }
-    _selection_model.Clear();
+    _cm.Do(new RemoveCommand(_field_model, _selection_model, _active_nodes_model));
   }
 }

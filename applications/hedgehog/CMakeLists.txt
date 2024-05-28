@@ -8,9 +8,8 @@ set(SOURCE_LIST
     controlls/activenodeslock.h controlls/activenodeslock.cpp
     controlls/command/addblockcommand.h controlls/command/addblockcommand.cpp
     controlls/command/commandmanager.h controlls/command/commandmanager.cpp
-    controlls/command/deleteblocksandconnectionscommand.h controlls/command/deleteblocksandconnectionscommand.cpp
     controlls/command/icommand.h
-    controlls/command/removeblockcommand.h  controlls/command/removeblockcommand.cpp
+    controlls/command/removecommand.h  controlls/command/removecommand.cpp
     controlls/controllerprocedure.h
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
@@ -32,6 +31,7 @@ set(SOURCE_LIST
     namemaker/blocknamemaker.h  namemaker/blocknamemaker.cpp
     namemaker/id.h  namemaker/id.cpp
     observer/iobserver.h
+    utility/containerutility.h
 )
 
 set(ONLY_SOURCE_LIST ${SOURCE_LIST})

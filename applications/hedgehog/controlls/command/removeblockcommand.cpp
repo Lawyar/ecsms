@@ -1,4 +1,4 @@
-#include "removeblockcommand.h"
+#include "removecommand.h"
 #include "../../blockwidget.h"
 
 RemoveBlockCommand::RemoveBlockCommand(BlockId block,

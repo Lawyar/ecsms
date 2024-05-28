@@ -1,5 +1,7 @@
 #pragma once
 
+#include <qhashfunctions.h>
+#include <QVector>
 #include <vector>
 
 using PartId = int;
@@ -27,3 +29,7 @@ protected:
 protected:
   std::vector<PartId> _id;
 };
+
+inline unsigned int qHash(const Id &id) {
+  return qHash(QVector<PartId>::fromStdVector(id.GetId()));
+}
