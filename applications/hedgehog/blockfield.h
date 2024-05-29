@@ -4,7 +4,6 @@
 #include "controlls/command/commandmanager.h"
 #include "controlls/defaultcontroller.h"
 #include "controlls/drawlinecontroller.h"
-#include "models/activenodesmodel.h"
 #include "observer/iobserver.h"
 
 #include <QMap>
@@ -39,7 +38,6 @@ private:
   FieldModel _field_model;
   SelectionModel _selection_model;
   LineModel _line_model;
-  ActiveNodesModel _active_nodes_model;
 };
 
 #endif // BLOCKFIELD_H

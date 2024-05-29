@@ -22,7 +22,6 @@ set(SOURCE_LIST
     events/mypaintevent.h events/mypaintevent.cpp
     events/removeblockevent.h events/removeblockevent.cpp
     events/repaintevent.h events/repaintevent.cpp
-    models/activenodesmodel.h models/activenodesmodel.cpp
     models/fieldmodel.h models/fieldmodel.cpp
     models/imodel.h
     models/linemodel.h models/linemodel.cpp

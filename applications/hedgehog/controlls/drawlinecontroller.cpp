@@ -1,18 +1,15 @@
 #include "drawlinecontroller.h"
 #include "../blockfield.h"
 
-DrawLineController::DrawLineController(FieldModel &model, LineModel &line_model/*,
-                                       ActiveNodesModel &active_nodes_model*/)
-    : _field_model(model), _line_model(line_model)/*,
-      _active_nodes_model(active_nodes_model)*/ {
-  // auto &&node_id = active_nodes_model.GetBeginOfLine();
+DrawLineController::DrawLineController(FieldModel &model, LineModel &line_model)
+    : _field_model(model), _line_model(line_model) {
   auto &&node_id = _line_model.GetBeginNode();
   assert(node_id);
   _active_because_drawing.reset(new ActiveNodesLock(
       _field_model, {*node_id}, [this](const NodeId &node) -> bool {
         return _field_model.IsNodeUsed(node) ||
                _line_model.GetBeginNode() == node;
-        }));
+      }));
   _active_because_entered.reset(
       new ActiveNodesLock(_field_model, {*node_id}, [this](const NodeId &node) {
         return _field_model.IsNodeUsed(node) ||
@@ -68,7 +65,6 @@ void DrawLineController::onFieldMousePress() {
 }
 
 void DrawLineController::onConnectNodeMousePress(NodeId connect_node_id) {
-  // auto start_id = _active_nodes_model.GetBeginOfLine();
   auto start_id = _line_model.GetBeginNode();
   if (!start_id) {
     assert(false);
@@ -78,8 +74,6 @@ void DrawLineController::onConnectNodeMousePress(NodeId connect_node_id) {
   if (connect_node_id != *start_id &&
       connect_node_id.GetParentId() != start_id->GetParentId()) {
     _field_model.AddConnection(*start_id, connect_node_id);
-    // _active_nodes_model.IncreaseNodeCount(*start_id);
-    // _active_nodes_model.IncreaseNodeCount(connect_node_id);
   }
   _line_model.SetBegin(std::nullopt, std::nullopt);
 }
