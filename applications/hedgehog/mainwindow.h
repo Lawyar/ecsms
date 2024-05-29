@@ -5,6 +5,7 @@
 
 #include <QMainWindow>
 #include <QStandardItemModel>
+#include <QProcess>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -35,6 +36,7 @@ private:
   void on_actionSave_triggered_tab1();
 
 private slots:
+  void on_consoleInput_returnPressed();
   void on_menuEdit_aboutToShow();
   void on_actionNewFile_triggered();
   void on_actionOpen_triggered();
@@ -54,5 +56,6 @@ private slots:
 private:
   Ui::MainWindow *ui;
   std::vector<std::shared_ptr<CommandManager>> _comm_managers;
+  QProcess *myProcess = nullptr;
 };
 #endif // MAINWINDOW_H

@@ -12,6 +12,7 @@
 #include <QLineSeries>
 #include <QMessageBox>
 #include <QStack>
+#include <QTextCodec>
 #include <QVariant>
 #include <QXmlStreamReader>
 
@@ -65,11 +66,29 @@ MainWindow::MainWindow(QWidget *parent)
   ui->splitter_5->setStretchFactor(1, 1);
   ui->splitter_5->setStretchFactor(0, INT_MAX);
 
-  _comm_managers = std::vector<std::shared_ptr<CommandManager>>(ui->tabWidget->count());
+  _comm_managers =
+      std::vector<std::shared_ptr<CommandManager>>(ui->tabWidget->count());
   for (auto &&cm : _comm_managers) {
     cm = std::make_shared<CommandManager>();
   }
   ui->scrollAreaWidgetContents->SetCommandManager(_comm_managers[1]);
+
+  myProcess = new QProcess(this);
+  myProcess->start("cmd.exe", {"/U"});
+
+  connect(myProcess, &QProcess::readyRead, [this]() {
+    QByteArray out = myProcess->readAllStandardOutput();
+    QByteArray error = myProcess->readAllStandardError();
+    for (auto &&arr : {error, out}) {
+      QString output(QString::fromUtf16(
+          reinterpret_cast<const char16_t *>(arr.data()), arr.size() / 2));
+      ui->consoleOutput->setText(
+          ui->consoleOutput->toPlainText().append(output));
+      QTextCursor cursor = ui->consoleOutput->textCursor();
+      cursor.movePosition(QTextCursor::End);
+      ui->consoleOutput->setTextCursor(cursor);
+    }
+  });
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -98,6 +117,14 @@ QStandardItem *MainWindow::createTag(QStandardItem *parent_tag,
   return new_tag;
 }
 
+void MainWindow::on_consoleInput_returnPressed() {
+  auto str = (ui->consoleInput->text() + "\n");
+  QTextCodec *codec = QTextCodec::codecForName("IBM 866");
+  auto data = codec->fromUnicode(str.data(), str.size());
+
+  myProcess->write(data);
+  ui->consoleInput->clear();
+}
 void MainWindow::on_menuEdit_aboutToShow() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
   ui->actionRedo->setEnabled(_comm_managers[curr_ind]->HasCommandsToRedo());

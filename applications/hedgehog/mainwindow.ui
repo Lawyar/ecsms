@@ -24,7 +24,7 @@
     <normaloff>:/hedgehog.ico</normaloff>:/hedgehog.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
-   <layout class="QGridLayout" name="gridLayout_3">
+   <layout class="QGridLayout" name="gridLayout_4">
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -67,20 +67,11 @@
         </property>
         <item row="0" column="0">
          <widget class="QSplitter" name="splitter_3">
-          <property name="sizePolicy">
-           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-            <horstretch>0</horstretch>
-            <verstretch>0</verstretch>
-           </sizepolicy>
-          </property>
           <property name="orientation">
            <enum>Qt::Vertical</enum>
           </property>
           <property name="handleWidth">
            <number>0</number>
-          </property>
-          <property name="childrenCollapsible">
-           <bool>false</bool>
           </property>
           <widget class="QSplitter" name="splitter">
            <property name="sizePolicy">
@@ -91,6 +82,9 @@
            </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="handleWidth">
+            <number>0</number>
            </property>
            <property name="childrenCollapsible">
             <bool>false</bool>
@@ -185,29 +179,11 @@
            </widget>
           </widget>
           <widget class="QSplitter" name="splitter_2">
-           <property name="sizePolicy">
-            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-             <horstretch>0</horstretch>
-             <verstretch>1</verstretch>
-            </sizepolicy>
-           </property>
-           <property name="minimumSize">
-            <size>
-             <width>0</width>
-             <height>0</height>
-            </size>
-           </property>
            <property name="orientation">
             <enum>Qt::Horizontal</enum>
            </property>
-           <property name="opaqueResize">
-            <bool>true</bool>
-           </property>
            <property name="handleWidth">
             <number>0</number>
-           </property>
-           <property name="childrenCollapsible">
-            <bool>false</bool>
            </property>
            <widget class="QWidget" name="layoutWidget">
             <layout class="QVBoxLayout" name="verticalLayout_2" stretch="0,0">
@@ -275,13 +251,25 @@
              </item>
             </layout>
            </widget>
-           <widget class="QTextEdit" name="textEdit">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>1</horstretch>
-              <verstretch>3</verstretch>
-             </sizepolicy>
-            </property>
+           <widget class="QWidget" name="layoutWidget">
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QTextEdit" name="consoleOutput">
+               <property name="enabled">
+                <bool>true</bool>
+               </property>
+               <property name="readOnly">
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="consoleInput"/>
+             </item>
+            </layout>
            </widget>
           </widget>
          </widget>
@@ -292,7 +280,7 @@
        <attribute name="title">
         <string>Pipeline</string>
        </attribute>
-       <layout class="QGridLayout" name="gridLayout_4">
+       <layout class="QGridLayout" name="gridLayout_3">
         <property name="leftMargin">
          <number>0</number>
         </property>
@@ -315,9 +303,6 @@
           </property>
           <property name="handleWidth">
            <number>0</number>
-          </property>
-          <property name="childrenCollapsible">
-           <bool>false</bool>
           </property>
           <widget class="QSplitter" name="splitter_4">
            <property name="orientation">
@@ -353,7 +338,7 @@
                <x>0</x>
                <y>0</y>
                <width>234</width>
-               <height>213</height>
+               <height>198</height>
               </rect>
              </property>
              <property name="sizePolicy">
@@ -366,9 +351,29 @@
            </widget>
           </widget>
           <widget class="QWidget" name="layoutWidget">
-           <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
-             <widget class="QTextEdit" name="textEdit_3"/>
+             <layout class="QVBoxLayout" name="verticalLayout_4">
+              <property name="spacing">
+               <number>0</number>
+              </property>
+              <item>
+               <widget class="QTextEdit" name="consoleOutput_2">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
+                <property name="undoRedoEnabled">
+                 <bool>false</bool>
+                </property>
+                <property name="readOnly">
+                 <bool>true</bool>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="consoleInput_2"/>
+              </item>
+             </layout>
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_pausePipeline">
