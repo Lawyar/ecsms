@@ -29,16 +29,13 @@ private:
   void on_actionNewFile_triggered_tab0();
   void on_actionOpen_triggered_tab0();
   void on_actionSave_triggered_tab0();
-  void on_actionRedo_triggered_tab0();
-  void on_actionUndo_triggered_tab0();
 
   void on_actionNewFile_triggered_tab1();
   void on_actionOpen_triggered_tab1();
   void on_actionSave_triggered_tab1();
-  void on_actionRedo_triggered_tab1();
-  void on_actionUndo_triggered_tab1();
 
 private slots:
+  void on_menuEdit_aboutToShow();
   void on_actionNewFile_triggered();
   void on_actionOpen_triggered();
   void on_actionSave_triggered();

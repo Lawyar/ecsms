@@ -98,6 +98,12 @@ QStandardItem *MainWindow::createTag(QStandardItem *parent_tag,
   return new_tag;
 }
 
+void MainWindow::on_menuEdit_aboutToShow() {
+  auto &&curr_ind = ui->tabWidget->currentIndex();
+  ui->actionRedo->setEnabled(_comm_managers[curr_ind]->HasCommandsToRedo());
+  ui->actionUndo->setEnabled(_comm_managers[curr_ind]->HasCommandsToUndo());
+}
+
 void MainWindow::on_actionNewFile_triggered_tab0() {
   delete ui->treeView->model();
   auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
@@ -228,19 +234,11 @@ void MainWindow::on_actionSave_triggered_tab0() {
   file.close();
 }
 
-void MainWindow::on_actionRedo_triggered_tab0() {}
-
-void MainWindow::on_actionUndo_triggered_tab0() {}
-
 void MainWindow::on_actionNewFile_triggered_tab1() {}
 
 void MainWindow::on_actionOpen_triggered_tab1() {}
 
 void MainWindow::on_actionSave_triggered_tab1() {}
-
-void MainWindow::on_actionRedo_triggered_tab1() {}
-
-void MainWindow::on_actionUndo_triggered_tab1() {}
 
 void MainWindow::on_actionNewFile_triggered() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
