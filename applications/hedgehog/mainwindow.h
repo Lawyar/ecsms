@@ -37,6 +37,7 @@ private:
 
 private slots:
   void on_consoleInput_returnPressed();
+  void on_consoleInput_2_returnPressed();
   void on_menuEdit_aboutToShow();
   void on_actionNewFile_triggered();
   void on_actionOpen_triggered();
@@ -56,6 +57,6 @@ private slots:
 private:
   Ui::MainWindow *ui;
   std::vector<std::shared_ptr<CommandManager>> _comm_managers;
-  QProcess *myProcess = nullptr;
+  std::vector<QProcess *> _processes;
 };
 #endif // MAINWINDOW_H

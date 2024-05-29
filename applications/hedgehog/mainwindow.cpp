@@ -16,6 +16,9 @@
 #include <QVariant>
 #include <QXmlStreamReader>
 
+void createConsoleProcess(QProcess *myProcess, QWidget *parent,
+                          QTextEdit *output);
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
@@ -73,20 +76,27 @@ MainWindow::MainWindow(QWidget *parent)
   }
   ui->scrollAreaWidgetContents->SetCommandManager(_comm_managers[1]);
 
-  myProcess = new QProcess(this);
+  _processes = std::vector<QProcess *>(2);
+  for (auto &&p : _processes) {
+    p = new QProcess(this);
+  }
+  connectConsoleOutputWithWidget(_processes[0], ui->consoleOutput);
+  connectConsoleOutputWithWidget(_processes[1], ui->consoleOutput_2);
+}
+
+static void connectConsoleOutputWithWidget(QProcess *myProcess, QTextEdit *output) {
   myProcess->start("cmd.exe", {"/U"});
 
-  connect(myProcess, &QProcess::readyRead, [this]() {
+  QObject::connect(myProcess, &QProcess::readyRead, [myProcess, output]() {
     QByteArray out = myProcess->readAllStandardOutput();
     QByteArray error = myProcess->readAllStandardError();
     for (auto &&arr : {error, out}) {
-      QString output(QString::fromUtf16(
+      QString output_str(QString::fromUtf16(
           reinterpret_cast<const char16_t *>(arr.data()), arr.size() / 2));
-      ui->consoleOutput->setText(
-          ui->consoleOutput->toPlainText().append(output));
-      QTextCursor cursor = ui->consoleOutput->textCursor();
+      output->setText(output->toPlainText().append(output_str));
+      QTextCursor cursor = output->textCursor();
       cursor.movePosition(QTextCursor::End);
-      ui->consoleOutput->setTextCursor(cursor);
+      output->setTextCursor(cursor);
     }
   });
 }
@@ -122,9 +132,19 @@ void MainWindow::on_consoleInput_returnPressed() {
   QTextCodec *codec = QTextCodec::codecForName("IBM 866");
   auto data = codec->fromUnicode(str.data(), str.size());
 
-  myProcess->write(data);
+  _processes[0]->write(data);
   ui->consoleInput->clear();
 }
+
+void MainWindow::on_consoleInput_2_returnPressed() {
+  auto str = (ui->consoleInput_2->text() + "\n");
+  QTextCodec *codec = QTextCodec::codecForName("IBM 866");
+  auto data = codec->fromUnicode(str.data(), str.size());
+
+  _processes[1]->write(data);
+  ui->consoleInput_2->clear();
+}
+
 void MainWindow::on_menuEdit_aboutToShow() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
   ui->actionRedo->setEnabled(_comm_managers[curr_ind]->HasCommandsToRedo());
