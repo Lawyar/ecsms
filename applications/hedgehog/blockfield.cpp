@@ -5,7 +5,7 @@
 #include "events/changeactivenodeevent.h"
 #include "events/changecontrollerevent.h"
 #include "events/drawevent.h"
-#include "events/mypaintevent.h"
+#include "events/updateblockevent.h"
 #include "events/removeblockevent.h"
 #include "events/repaintevent.h"
 #include "models/nodetype.h"
@@ -93,9 +93,27 @@ void BlockField::Update(std::shared_ptr<Event> e) {
     block->show();
     break;
   }
+  case updateBlockEvent: {
+    auto &&update_block_e = std::static_pointer_cast<UpdateBlockEvent>(e);
+    auto &&block_w = FindById(update_block_e->GetBlock());
+    if (!block_w) {
+      assert(false);
+      return;
+    }
+    auto &&block_data = update_block_e->GetBlockData();
+    block_w->move(block_data.pos);
+    qobject_cast<BlockWidget *>(block_w)->SetText(block_data.text);
+    repaint();
+    break;
+  }
   case removeBlockEvent: {
     auto &&remove_block_e = std::static_pointer_cast<RemoveBlockEvent>(e);
-    delete FindById(remove_block_e->GetBlock());
+    auto &&block_w = FindById(remove_block_e->GetBlock());
+    if (!block_w) {
+      assert(false);
+      return;
+    }
+    delete block_w;
     repaint();
     break;
   }

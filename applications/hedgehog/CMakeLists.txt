@@ -10,6 +10,7 @@ set(SOURCE_LIST
     controlls/command/addconnectioncommand.h controlls/command/addconnectioncommand.cpp
     controlls/command/commandmanager.h controlls/command/commandmanager.cpp
     controlls/command/icommand.h
+    controlls/command/moveblockcommand.h controlls/command/moveblockcommand.cpp
     controlls/command/removecommand.h  controlls/command/removecommand.cpp
     controlls/controllerprocedure.h
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
@@ -21,6 +22,7 @@ set(SOURCE_LIST
     events/drawevent.h events/drawevent.cpp
     events/event.h
     events/mypaintevent.h events/mypaintevent.cpp
+    events/updateblockevent.h events/updateblockevent.cpp
     events/removeblockevent.h events/removeblockevent.cpp
     events/repaintevent.h events/repaintevent.cpp
     models/fieldmodel.h models/fieldmodel.cpp

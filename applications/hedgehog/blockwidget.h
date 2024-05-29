@@ -28,6 +28,7 @@ public:
   static QPoint GetLeftNodeOffset(const QString &text);
   static QPoint GetRightNodeOffset(const QString &text);
   static int GetNodesRadius();
+  void SetText(QString text);
 
 protected:
   void mouseMoveEvent(QMouseEvent *event) override;

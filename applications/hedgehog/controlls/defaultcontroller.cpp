@@ -1,5 +1,6 @@
 #include "defaultcontroller.h"
 #include "../blockfield.h"
+#include "command/moveblockcommand.h"
 #include "command/removecommand.h"
 
 #include <QDebug>
@@ -24,11 +25,18 @@ DefaultController::DefaultController(FieldModel &field_model,
 
 void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
   if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
-    if (event->buttons() == Qt::LeftButton && _old_block_pos) {
-      QPoint delta = event->pos() - *_old_block_pos;
+    if (event->buttons() == Qt::LeftButton && _old_mouse_pos) {
+      QPoint delta = event->pos() - *_old_mouse_pos;
+      /*QPoint pos = block_w->pos() + delta;
+      block_w->move(pos);*/
       block_w->move(block_w->pos() + delta);
-      FieldModel::BlockData block_data = {block_w->pos()};
-      _field_model.SetBlockData(block_w->GetId(), block_data);
+      auto &&block_data = _field_model.GetBlockData(block_w->GetId());
+      if (!block_data) {
+        assert(false);
+        return;
+      }
+      block_data->pos = block_w->pos();
+      _field_model.SetBlockData(block_w->GetId(), *block_data);
       block_w->parentWidget()->repaint();
     }
   }
@@ -39,7 +47,8 @@ void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
     onFieldMousePress(event);
   } else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
     if (event->button() == Qt::LeftButton) {
-      _old_block_pos = event->pos();
+      _old_mouse_pos = event->pos();
+      _old_block_pos = block_w->pos();
       _selection_model.AddSelection(block_w->GetId());
     }
   } else if (auto &&connect_node_w =
@@ -74,7 +83,14 @@ void DefaultController::onLeaveEvent(QWidget *widget, QEvent *event) {
 
 void DefaultController::onMouseReleaseEvent(QWidget *widget,
                                             QMouseEvent *event) {
-  _old_block_pos = std::nullopt;
+  if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
+    if (_old_block_pos) {
+      _cm.Do(new MoveBlockCommand(_field_model, block_w->GetId(),
+                                  *_old_block_pos, block_w->pos()));
+    }
+    _old_block_pos = std::nullopt;
+    _old_mouse_pos = std::nullopt;
+  }
 }
 
 void DefaultController::onFieldMousePress(const QMouseEvent *event) {

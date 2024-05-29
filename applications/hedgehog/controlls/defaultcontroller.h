@@ -30,6 +30,7 @@ private:
   SelectionModel &_selection_model;
   LineModel &_line_model;
   CommandManager &_cm;
+  std::optional<QPoint> _old_mouse_pos;
   std::optional<QPoint> _old_block_pos;
   std::unique_ptr<ActiveNodesLock> _active_nodes_lock;
 };

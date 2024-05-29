@@ -103,6 +103,8 @@ QPoint BlockWidget::GetRightNodeOffset(const QString &text) {
 
 int BlockWidget::GetNodesRadius() { return _nodes_radius; }
 
+void BlockWidget::SetText(QString text) { _block_name->setText(text); }
+
 void BlockWidget::mouseMoveEvent(QMouseEvent *event) {
   _controller->onMouseMoveEvent(this, event);
 }
