@@ -1,14 +1,20 @@
 #pragma once
 #include "../connectnodewidget.h"
-#include "../models/activenodesmodel.h"
+#include "../models/fieldmodel.h"
+
+#include <functional>
 
 class ActiveNodesLock {
 public:
-  ActiveNodesLock(ActiveNodesModel &active_nodes_model,
-                  const std::vector<NodeId> &nodes);
+  using Functor = std::function<bool(const NodeId &)>;
+
+public:
+  ActiveNodesLock(FieldModel &field_model, const std::vector<NodeId> &nodes,
+                  Functor &&is_node_used_func);
   ~ActiveNodesLock();
 
 private:
-  ActiveNodesModel &_active_nodes_model;
+  FieldModel &_field_model;
   std::vector<NodeId> _nodes;
+  Functor _is_node_used_func;
 };

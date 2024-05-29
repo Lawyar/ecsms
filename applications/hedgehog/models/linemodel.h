@@ -12,10 +12,12 @@ class LineModel : public QObject, public IModel {
 public:
   LineModel() = default;
   std::optional<QPoint> GetBegin() const;
-  void SetBegin(std::optional<QPoint> begin);
+  std::optional<NodeId> GetBeginNode() const;
+  void SetBegin(std::optional<NodeId> node, std::optional<QPoint> begin);
   std::optional<QPoint> GetEnd() const;
   void SetEnd(QPoint end);
 
 private:
+  std::optional <NodeId> _begin_node;
   std::optional<QPoint> _begin, _end;
 };

@@ -23,10 +23,10 @@ static bool isPointOnLine(QLine line, QPoint point) {
 DefaultController::DefaultController(FieldModel &field_model,
                                      SelectionModel &selection_model,
                                      LineModel &line_model,
-                                     ActiveNodesModel &active_nodes,
+                                     // ActiveNodesModel &active_nodes,
                                      CommandManager &cm)
     : _field_model(field_model), _selection_model(selection_model),
-      _line_model(line_model), _active_nodes_model(active_nodes), _cm(cm) {}
+      _line_model(line_model), /*_active_nodes_model(active_nodes),*/ _cm(cm) {}
 
 void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
   if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
@@ -50,9 +50,9 @@ void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
     }
   } else if (auto &&connect_node_w =
                  qobject_cast<ConnectNodeWidget *>(widget)) {
-    _active_nodes_model.SetBeginOfLine(connect_node_w->GetId());
+    // _active_nodes_model.SetBeginOfLine(connect_node_w->GetId());
     auto &&node_center = connect_node_w->getCenterCoordToBlockField();
-    _line_model.SetBegin(node_center);
+    _line_model.SetBegin(connect_node_w->GetId(), node_center);
   }
 }
 
@@ -65,8 +65,9 @@ void DefaultController::onKeyPressEvent(QWidget *widget, QKeyEvent *event) {
 void DefaultController::onEnterEvent(QWidget *widget, QEvent *event) {
   if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
     _active_nodes_lock.reset(new ActiveNodesLock(
-        _active_nodes_model,
-        {block_w->GetLeftNode()->GetId(), block_w->GetRightNode()->GetId()}));
+        _field_model,
+        {block_w->GetLeftNode()->GetId(), block_w->GetRightNode()->GetId()},
+        [this](const NodeId &node) { return _field_model.IsNodeUsed(node); }));
   }
 }
 
@@ -131,6 +132,7 @@ void DefaultController::onFieldKeyPress(const QKeyEvent *event) {
   auto &&_connection_map = _field_model.GetConnectionMap();
   auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
   if (event->key() == Qt::Key::Key_Delete) {
-    _cm.Do(new RemoveCommand(_field_model, _selection_model, _active_nodes_model));
+    _cm.Do(new RemoveCommand(_field_model,
+                             _selection_model /*, _active_nodes_model*/));
   }
 }

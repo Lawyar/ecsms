@@ -1,9 +1,10 @@
 #include "fieldmodel.h"
 #include "../events/addblockevent.h"
+#include "../events/changeactivenodeevent.h"
 #include "../events/removeblockevent.h"
 #include "../events/repaintevent.h"
-#include "nodetype.h"
 #include "../utility/containerutility.h"
+#include "nodetype.h"
 
 const QMap<NodeId, std::vector<NodeId>> &FieldModel::GetConnectionMap() const {
   return _connections;
@@ -62,6 +63,8 @@ void FieldModel::Remove(const NodeId &start) { _connections.remove(start); }
 
 void FieldModel::AddConnection(const NodeId &start, const NodeId &end) {
   _connections[start].push_back(end);
+  for (auto && node : {start, end}) 
+    Notify(std::make_shared<ChangeActiveNodeEvent>(node, true));
   Notify(std::make_shared<RepaintEvent>());
 }
 
@@ -70,6 +73,9 @@ void FieldModel::RemoveConnection(const NodeId &start, const NodeId &end) {
       std::find(_connections[start].begin(), _connections[start].end(), end));
   if (_connections[start].empty())
     _connections.remove(start);
+
+  for (auto &&node : {start, end})
+    Notify(std::make_shared<ChangeActiveNodeEvent>(node, IsNodeUsed(node)));
 }
 
 bool FieldModel::IsNodeUsed(const NodeId &node) const {
@@ -95,11 +101,15 @@ void FieldModel::AddBlock(const BlockId &block, const BlockData &bd,
 }
 
 void FieldModel::RemoveBlock(const BlockId &block) {
+  QSet<NodeId> affected_nodes;
+
   for (auto &&node :
        {block.GetChildId(static_cast<PartId>(NodeType::Incoming)),
         block.GetChildId(static_cast<PartId>(NodeType::Outgoing))}) {
     _connections.remove(node);                 // delete node from "starts"
+    affected_nodes.insert(node);
     for (auto &&start : _connections.keys()) { // delete node from "ends"
+      affected_nodes.insert(start);
       auto &&connections = _connections[start];
       auto &&iter = std::find(connections.begin(), connections.end(), node);
       if (iter != connections.end())
@@ -107,6 +117,10 @@ void FieldModel::RemoveBlock(const BlockId &block) {
     }
   }
   _blocks.remove(block);
+
+  for (auto && node : affected_nodes)
+    Notify(std::make_shared<ChangeActiveNodeEvent>(node, IsNodeUsed(node)));
+
   Notify(std::make_shared<RemoveBlockEvent>(block));
 }
 
@@ -130,4 +144,8 @@ void FieldModel::Load(const Memento &m) {
   for (auto &&id : block_ids_to_delete) {
     Notify(std::make_shared<RemoveBlockEvent>(id));
   }
-}
+
+  for (auto &&node : _nodes.keys()) {
+    Notify(std::make_shared<ChangeActiveNodeEvent>(node, IsNodeUsed(node)));
+  }
+};

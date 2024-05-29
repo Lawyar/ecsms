@@ -1,13 +1,17 @@
 #include "activenodeslock.h"
+#include "../events/changeactivenodeevent.h"
 
-ActiveNodesLock::ActiveNodesLock(ActiveNodesModel &active_nodes_model,
-                                 const std::vector<NodeId> &nodes)
-    : _active_nodes_model(active_nodes_model), _nodes(nodes) {
+ActiveNodesLock::ActiveNodesLock(FieldModel &field_model,
+                                 const std::vector<NodeId> &nodes,
+                                 Functor && is_node_used_func)
+    : _field_model(field_model), _nodes(nodes), _is_node_used_func(std::move(is_node_used_func)) {
   for (auto &&node : _nodes)
-    _active_nodes_model.IncreaseNodeCount(node);
+    _field_model.Notify(std::make_shared<ChangeActiveNodeEvent>(node, true));
 }
 
+
 ActiveNodesLock::~ActiveNodesLock() {
-  for (auto && node : _nodes)
-    _active_nodes_model.DecreaseNodeCount(node);
+  for (auto &&node : _nodes)
+    if (!_is_node_used_func(node))
+      _field_model.Notify(std::make_shared<ChangeActiveNodeEvent>(node, false));
 }

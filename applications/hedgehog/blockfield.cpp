@@ -29,7 +29,7 @@ BlockField::BlockField(QWidget *parent) : QWidget(parent) {
 void BlockField::SetCommandManager(std::shared_ptr<CommandManager> cm) {
   _cm = cm;
   _controller.reset(new DefaultController(
-      _field_model, _selection_model, _line_model, _active_nodes_model, *_cm));
+      _field_model, _selection_model, _line_model, /*_active_nodes_model,*/ *_cm));
 }
 
 void BlockField::AddBlock() {
@@ -54,16 +54,18 @@ void BlockField::Update(std::shared_ptr<Event> e) {
     break;
   }
   case changeControllerEvent: {
+    _controller.reset();
+
     auto &&change_ctr_e = std::static_pointer_cast<ChangeControllerEvent>(e);
     switch (change_ctr_e->GetControllerType()) {
     case drawLineController: {
-      _controller.reset(new DrawLineController(_field_model, _line_model,
-                                               _active_nodes_model));
+      _controller.reset(new DrawLineController(_field_model, _line_model/*,
+                                               _active_nodes_model*/));
       break;
     }
     case defaultController: {
       _controller.reset(new DefaultController(
-          _field_model, _selection_model, _line_model, _active_nodes_model, *_cm));
+          _field_model, _selection_model, _line_model, /*_active_nodes_model,*/ *_cm));
       break;
     }
     default: {
