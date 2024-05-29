@@ -2,6 +2,7 @@
 #include "blockfield.h"
 #include "blockwidget.h"
 #include "controlls/command/addblockcommand.h"
+#include "controlls/command/addtagcommand.h"
 #include "qlineeditdelegate.h"
 #include "ui_mainwindow.h"
 
@@ -16,8 +17,23 @@
 #include <QVariant>
 #include <QXmlStreamReader>
 
-void createConsoleProcess(QProcess *myProcess, QWidget *parent,
-                          QTextEdit *output);
+static void connectConsoleOutputWithWidget(QProcess *myProcess,
+                                           QTextEdit *output) {
+  myProcess->start("cmd.exe", {"/U"});
+
+  QObject::connect(myProcess, &QProcess::readyRead, [myProcess, output]() {
+    QByteArray out = myProcess->readAllStandardOutput();
+    QByteArray error = myProcess->readAllStandardError();
+    for (auto &&arr : {error, out}) {
+      QString output_str(QString::fromUtf16(
+          reinterpret_cast<const char16_t *>(arr.data()), arr.size() / 2));
+      output->setText(output->toPlainText().append(output_str));
+      QTextCursor cursor = output->textCursor();
+      cursor.movePosition(QTextCursor::End);
+      output->setTextCursor(cursor);
+    }
+  });
+}
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
@@ -84,47 +100,12 @@ MainWindow::MainWindow(QWidget *parent)
   connectConsoleOutputWithWidget(_processes[1], ui->consoleOutput_2);
 }
 
-static void connectConsoleOutputWithWidget(QProcess *myProcess, QTextEdit *output) {
-  myProcess->start("cmd.exe", {"/U"});
-
-  QObject::connect(myProcess, &QProcess::readyRead, [myProcess, output]() {
-    QByteArray out = myProcess->readAllStandardOutput();
-    QByteArray error = myProcess->readAllStandardError();
-    for (auto &&arr : {error, out}) {
-      QString output_str(QString::fromUtf16(
-          reinterpret_cast<const char16_t *>(arr.data()), arr.size() / 2));
-      output->setText(output->toPlainText().append(output_str));
-      QTextCursor cursor = output->textCursor();
-      cursor.movePosition(QTextCursor::End);
-      output->setTextCursor(cursor);
-    }
-  });
-}
-
 MainWindow::~MainWindow() { delete ui; }
 
 bool MainWindow::event(QEvent *e) {
   if (e->type() == QEvent::KeyPress)
     return qobject_cast<QObject *>(ui->scrollAreaWidgetContents)->event(e);
   return QMainWindow::event(e);
-}
-
-QStandardItem *MainWindow::createTag(QStandardItem *parent_tag,
-                                     QStandardItemModel *attribute_table_view,
-                                     const QString &text) {
-  if (attribute_table_view == nullptr) {
-    attribute_table_view = new QStandardItemModel();
-    attribute_table_view->setHorizontalHeaderLabels(
-        QStringList({"Attribute", "Value"}));
-  }
-
-  auto new_tag = new QStandardItem(text.isEmpty() ? "tag_name" : text);
-  parent_tag->appendRow(new_tag);
-  QVariant table_model_variant;
-  table_model_variant.setValue(attribute_table_view);
-  new_tag->setData(table_model_variant);
-  new_tag->setFlags(new_tag->flags() | Qt::ItemIsEditable);
-  return new_tag;
 }
 
 void MainWindow::on_consoleInput_returnPressed() {
@@ -201,8 +182,11 @@ void MainWindow::on_actionOpen_triggered_tab0() {
       }
       table_model->setHorizontalHeaderLabels(
           QStringList({"Attribute", "Value"}));
-      auto &&new_tag =
-          createTag(tags.top(), table_model, xml_reader.name().toString());
+      auto &&new_tag = nullptr;
+      // createTag(tags.top(), table_model, xml_reader.name().toString());
+      //_comm_managers[0]->Do(new AddTagCommand(
+      //     tags.top(), ui->treeView, xml_reader.name().toString(),
+      //     table_model));
       tags.push(new_tag);
       break;
     }
@@ -363,19 +347,20 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index) {
 }
 
 void MainWindow::on_pushButton_plus_tree_clicked() {
+  auto &&model = qobject_cast<QStandardItemModel *>(ui->treeView->model());
+  if (!model) {
+    qDebug() << "Error: can't cast treeView->model() to QStandardItemModel*";
+    return;
+  }
+
   if (ui->treeView->model()->rowCount() == 0) {
-    QStandardItemModel *model = nullptr;
-    if (!(model = qobject_cast<QStandardItemModel *>(ui->treeView->model()))) {
-      qDebug() << "Error: can't cast treeView->model() to QStandardItemModel*";
-      return;
-    }
-    QStandardItem *parent_item = model->invisibleRootItem();
-    auto new_tag = createTag(parent_item, nullptr, "");
-    ui->treeView->selectionModel()->select(new_tag->index(),
-                                           QItemSelectionModel::ClearAndSelect);
-    ui->treeView->edit(new_tag->index());
+    auto &&parent_tag_index = model->invisibleRootItem()->index();
+    _comm_managers[0]->Do(
+        new AddTagCommand(parent_tag_index, ui->treeView, "", nullptr));
+
     setDisableForLayoutElements(ui->horizontalLayout, false);
     ui->pushButton_plus_tree->setDisabled(true);
+
     return;
   }
 
@@ -385,15 +370,8 @@ void MainWindow::on_pushButton_plus_tree_clicked() {
     if (selected_index.parent() == ui->treeView->rootIndex())
       return;
 
-    if (auto &&model =
-            qobject_cast<const QStandardItemModel *>(ui->treeView->model())) {
-      if (auto &&selected_tag = model->itemFromIndex(selected_index)) {
-        auto child_tag = createTag(selected_tag->parent(), nullptr, "");
-        ui->treeView->selectionModel()->select(
-            child_tag->index(), QItemSelectionModel::ClearAndSelect);
-        ui->treeView->edit(child_tag->index());
-      }
-    }
+    _comm_managers[0]->Do(
+        new AddTagCommand(selected_index.parent(), ui->treeView, "", nullptr));
   }
 }
 
@@ -402,6 +380,7 @@ void MainWindow::on_pushButton_minus_tree_clicked() {
   if (indexes.size() == 1) {
 
     QModelIndex selectedIndex = indexes.at(0);
+    qDebug() << selectedIndex;
     ui->treeView->model()->removeRow(selectedIndex.row(),
                                      selectedIndex.parent());
   }
@@ -416,19 +395,22 @@ void MainWindow::on_pushButton_new_child_row_tree_clicked() {
   QModelIndexList indexes = ui->treeView->selectionModel()->selectedIndexes();
   if (indexes.size() == 1) {
     QModelIndex selected_index = indexes.at(0);
-    if (auto &&model =
-            qobject_cast<const QStandardItemModel *>(ui->treeView->model())) {
-      if (auto &&selected_tag = model->itemFromIndex(selected_index)) {
-        auto &&tag_text = selected_tag->text();
-        auto &&tag_text_vec = tag_text.split(": ");
-        if (tag_text_vec.size() > 1) {
-          selected_tag->setText(tag_text_vec[0]);
-        }
-        auto child_tag = createTag(selected_tag, nullptr, "");
-        ui->treeView->expand(selected_tag->index());
-        ui->treeView->selectionModel()->select(
-            child_tag->index(), QItemSelectionModel::ClearAndSelect);
-        ui->treeView->edit(child_tag->index());
+    auto &&model =
+        qobject_cast<const QStandardItemModel *>(ui->treeView->model());
+    if (!model) {
+      assert(false);
+      return;
+    }
+
+    _comm_managers[0]->Do(
+        new AddTagCommand(selected_index, ui->treeView, "", nullptr));
+    ui->treeView->expand(selected_index);
+
+    if (auto &&selected_tag = model->itemFromIndex(selected_index)) {
+      auto &&tag_text = selected_tag->text();
+      auto &&tag_text_vec = tag_text.split(": ");
+      if (tag_text_vec.size() > 1) {
+        selected_tag->setText(tag_text_vec[0]);
       }
     }
   }

@@ -24,9 +24,6 @@ public:
   bool event(QEvent *event) override;
 
 private:
-  QStandardItem *createTag(QStandardItem *parent_tag,
-                           QStandardItemModel *attribute_table_view,
-                           const QString &text);
   void on_actionNewFile_triggered_tab0();
   void on_actionOpen_triggered_tab0();
   void on_actionSave_triggered_tab0();

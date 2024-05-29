@@ -8,6 +8,7 @@ set(SOURCE_LIST
     controlls/activenodeslock.h controlls/activenodeslock.cpp
     controlls/command/addblockcommand.h controlls/command/addblockcommand.cpp
     controlls/command/addconnectioncommand.h controlls/command/addconnectioncommand.cpp
+    controlls/command/addtagcommand.h controlls/command/addtagcommand.cpp
     controlls/command/commandmanager.h controlls/command/commandmanager.cpp
     controlls/command/icommand.h
     controlls/command/moveblockcommand.h controlls/command/moveblockcommand.cpp
