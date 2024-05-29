@@ -7,6 +7,7 @@ set(SOURCE_LIST
     qlineeditdelegate.cpp qlineeditdelegate.h
     controlls/activenodeslock.h controlls/activenodeslock.cpp
     controlls/command/addblockcommand.h controlls/command/addblockcommand.cpp
+    controlls/command/addconnectioncommand.h controlls/command/addconnectioncommand.cpp
     controlls/command/commandmanager.h controlls/command/commandmanager.cpp
     controlls/command/icommand.h
     controlls/command/removecommand.h  controlls/command/removecommand.cpp

@@ -58,7 +58,7 @@ void BlockField::Update(std::shared_ptr<Event> e) {
     auto &&change_ctr_e = std::static_pointer_cast<ChangeControllerEvent>(e);
     switch (change_ctr_e->GetControllerType()) {
     case drawLineController: {
-      _controller.reset(new DrawLineController(_field_model, _line_model));
+      _controller.reset(new DrawLineController(_field_model, _line_model, *_cm));
       break;
     }
     case defaultController: {

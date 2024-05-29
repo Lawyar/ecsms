@@ -10,14 +10,10 @@ static float distance(QPoint p1, QPoint p2) {
 }
 
 static bool isPointOnLine(QLine line, QPoint point) {
-  float x1 = line.p1().x(), y1 = line.p1().y();
-  float x2 = line.p2().x(), y2 = line.p2().y();
-  float k = (y2 - y1) / (x2 - x1);
-  float b = y1 - k * x1;
-  float eps = 6;
-  bool res = (distance(line.p1(), point) + distance(line.p2(), point) -
-              distance(line.p1(), line.p2())) < eps;
-  return res && (abs(point.y() - (k * point.x() + b)) < eps);
+  float eps = 20;
+  bool res = abs(distance(line.p1(), point) + distance(line.p2(), point) -
+                 distance(line.p1(), line.p2())) < eps;
+  return res;
 }
 
 DefaultController::DefaultController(FieldModel &field_model,
@@ -64,7 +60,9 @@ void DefaultController::onEnterEvent(QWidget *widget, QEvent *event) {
     _active_nodes_lock.reset(new ActiveNodesLock(
         _field_model,
         {block_w->GetLeftNode()->GetId(), block_w->GetRightNode()->GetId()},
-        [this](const NodeId &node) { return _field_model.IsNodeUsed(node); }));
+        [this](const NodeId &node) {
+          return _field_model.IsNodeConnected(node);
+        }));
   }
 }
 
@@ -129,6 +127,36 @@ void DefaultController::onFieldKeyPress(const QKeyEvent *event) {
   auto &&_connection_map = _field_model.GetConnectionMap();
   auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
   if (event->key() == Qt::Key::Key_Delete) {
-    _cm.Do(new RemoveCommand(_field_model, _selection_model));
+    auto selected_connections = _selection_model.GetSelectionMap();
+    auto selected_blocks = _selection_model.GetSelectedBlocks();
+    // вместо копии сохранить две мапы и передать их.
+    // у двух мап проверить причастность селектированных блоков (узлов?)
+    // к текущему активному блоку. И, если эта причастность есть, сделать
+    // предварительно сброс замка.
+    /*if (_active_nodes_lock) {
+      auto &&lock_nodes = _active_nodes_lock->GetLockedNodes();
+      for (auto &&start_node : selected_connections.keys()) {
+        for (auto &&lock_node : lock_nodes) {
+          if (lock_node == start_node) {
+            _active_nodes_lock.reset();
+            break;
+          }
+        }
+      }
+    }*/
+    if (_active_nodes_lock) {
+      auto &&lock_nodes = _active_nodes_lock->GetLockedNodes();
+      for (auto &&block : selected_blocks) {
+        for (auto &&lock_node : lock_nodes) {
+          if (lock_node.GetParentId() == block) {
+            _active_nodes_lock.reset();
+            break;
+          }
+        }
+      }
+    }
+    _selection_model.Clear();
+    _cm.Do(
+        new RemoveCommand(_field_model, selected_connections, selected_blocks));
   }
 }

@@ -12,6 +12,7 @@ public:
   ActiveNodesLock(FieldModel &field_model, const std::vector<NodeId> &nodes,
                   Functor &&is_node_used_func);
   ~ActiveNodesLock();
+  const std::vector<NodeId> &GetLockedNodes() const;
 
 private:
   FieldModel &_field_model;

@@ -75,10 +75,12 @@ void FieldModel::RemoveConnection(const NodeId &start, const NodeId &end) {
     _connections.remove(start);
 
   for (auto &&node : {start, end})
-    Notify(std::make_shared<ChangeActiveNodeEvent>(node, IsNodeUsed(node)));
+    Notify(std::make_shared<ChangeActiveNodeEvent>(node, IsNodeConnected(node)));
+
+  Notify(std::make_shared<RepaintEvent>());
 }
 
-bool FieldModel::IsNodeUsed(const NodeId &node) const {
+bool FieldModel::IsNodeConnected(const NodeId &node) const {
   for (auto &&start : _connections.keys()) {
     auto &&connections = _connections[start];
     if (node == start)
@@ -115,11 +117,12 @@ void FieldModel::RemoveBlock(const BlockId &block) {
       if (iter != connections.end())
         _connections[start].erase(iter);
     }
+    _nodes.remove(node);
   }
   _blocks.remove(block);
 
   for (auto && node : affected_nodes)
-    Notify(std::make_shared<ChangeActiveNodeEvent>(node, IsNodeUsed(node)));
+    Notify(std::make_shared<ChangeActiveNodeEvent>(node, IsNodeConnected(node)));
 
   Notify(std::make_shared<RemoveBlockEvent>(block));
 }
@@ -146,6 +149,8 @@ void FieldModel::Load(const Memento &m) {
   }
 
   for (auto &&node : _nodes.keys()) {
-    Notify(std::make_shared<ChangeActiveNodeEvent>(node, IsNodeUsed(node)));
+    Notify(std::make_shared<ChangeActiveNodeEvent>(node, IsNodeConnected(node)));
   }
+
+  Notify(std::make_shared<RepaintEvent>());
 };

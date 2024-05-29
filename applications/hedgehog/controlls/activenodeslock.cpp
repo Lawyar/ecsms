@@ -15,3 +15,7 @@ ActiveNodesLock::~ActiveNodesLock() {
     if (!_is_node_used_func(node))
       _field_model.Notify(std::make_shared<ChangeActiveNodeEvent>(node, false));
 }
+
+const std::vector<NodeId> &ActiveNodesLock::GetLockedNodes() const {
+  return _nodes;
+}

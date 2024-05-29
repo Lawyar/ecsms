@@ -1,18 +1,21 @@
 #include "drawlinecontroller.h"
 #include "../blockfield.h"
+#include "command/addconnectioncommand.h"
 
-DrawLineController::DrawLineController(FieldModel &model, LineModel &line_model)
-    : _field_model(model), _line_model(line_model) {
+DrawLineController::DrawLineController(FieldModel &field_model,
+                                       LineModel &line_model,
+                                     CommandManager &cm)
+    : _field_model(field_model), _line_model(line_model), _cm(cm) {
   auto &&node_id = _line_model.GetBeginNode();
   assert(node_id);
   _active_because_drawing.reset(new ActiveNodesLock(
       _field_model, {*node_id}, [this](const NodeId &node) -> bool {
-        return _field_model.IsNodeUsed(node) ||
+        return _field_model.IsNodeConnected(node) ||
                _line_model.GetBeginNode() == node;
       }));
   _active_because_entered.reset(
       new ActiveNodesLock(_field_model, {*node_id}, [this](const NodeId &node) {
-        return _field_model.IsNodeUsed(node) ||
+        return _field_model.IsNodeConnected(node) ||
                _line_model.GetBeginNode() == node;
       }));
 }
@@ -45,7 +48,7 @@ void DrawLineController::onEnterEvent(QWidget *widget, QEvent *event) {
   if (auto &&connect_node_w = qobject_cast<ConnectNodeWidget *>(widget)) {
     _active_because_entered.reset(new ActiveNodesLock(
         _field_model, {connect_node_w->GetId()},
-        [this](const NodeId &node) { return _field_model.IsNodeUsed(node); }));
+        [this](const NodeId &node) { return _field_model.IsNodeConnected(node); }));
   }
 }
 
@@ -73,7 +76,8 @@ void DrawLineController::onConnectNodeMousePress(NodeId connect_node_id) {
 
   if (connect_node_id != *start_id &&
       connect_node_id.GetParentId() != start_id->GetParentId()) {
-    _field_model.AddConnection(*start_id, connect_node_id);
+    _cm.Do(new AddConnectionCommand(_field_model, *start_id, connect_node_id));
   }
+  
   _line_model.SetBegin(std::nullopt, std::nullopt);
 }

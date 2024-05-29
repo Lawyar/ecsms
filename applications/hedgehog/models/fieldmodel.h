@@ -50,7 +50,7 @@ public:
   void Remove(const NodeId &start);
   void AddConnection(const NodeId &start, const NodeId &end);
   void RemoveConnection(const NodeId &start, const NodeId &end);
-  bool IsNodeUsed(const NodeId &node) const;
+  bool IsNodeConnected(const NodeId &node) const;
   void AddBlock(const BlockId &block, const BlockData &bd,
                 const QMap<NodeType, NodeData> &node_data_map);
   void RemoveBlock(const BlockId &block);

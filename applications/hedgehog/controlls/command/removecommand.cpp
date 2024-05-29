@@ -1,11 +1,13 @@
 #include "removecommand.h"
 #include "../../blockwidget.h"
 
-RemoveCommand::RemoveCommand(FieldModel &field_model,
-                             SelectionModel &selection_model)
+RemoveCommand::RemoveCommand(
+    FieldModel &field_model,
+    const QMap<NodeId, std::vector<NodeId>> &selected_connections,
+    const std::set<BlockId> &selected_blocks)
     : _field_model(field_model), _field_model_save(field_model.Save()),
-      _selection_model(selection_model),
-      _selection_model_save(selection_model.Save()) {}
+      _selected_connections(selected_connections),
+      _selected_blocks(selected_blocks) {}
 
 void RemoveCommand::Execute() {
   auto removeConnection = [this](const QMap<NodeId, std::vector<NodeId>> &map) {
@@ -16,12 +18,9 @@ void RemoveCommand::Execute() {
     }
   };
 
-  removeConnection(_selection_model.GetSelectionMap());
-  
+  removeConnection(_selected_connections);
 
-  auto selected_blocks = _selection_model.GetSelectedBlocks();
-  _selection_model.Clear();
-  for (auto &&block : selected_blocks) {
+  for (auto &&block : _selected_blocks) {
     auto &&ln_id = block.GetChildId(static_cast<PartId>(NodeType::Incoming));
     auto &&rn_id = block.GetChildId(static_cast<PartId>(NodeType::Outgoing));
 
@@ -32,7 +31,4 @@ void RemoveCommand::Execute() {
   }
 }
 
-void RemoveCommand::UnExecute() {
-  _field_model.Load(_field_model_save);
-  _selection_model.Load(_selection_model_save);
-}
+void RemoveCommand::UnExecute() { _field_model.Load(_field_model_save); }
