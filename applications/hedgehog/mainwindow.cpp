@@ -347,16 +347,17 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index) {
 }
 
 void MainWindow::on_pushButton_plus_tree_clicked() {
-  auto &&model = qobject_cast<QStandardItemModel *>(ui->treeView->model());
-  if (!model) {
-    qDebug() << "Error: can't cast treeView->model() to QStandardItemModel*";
+  auto &&tree_view_model = qobject_cast<QStandardItemModel *>(ui->treeView->model());
+  if (!tree_view_model) {
+    assert(false);
     return;
   }
 
-  if (ui->treeView->model()->rowCount() == 0) {
-    auto &&parent_tag_index = model->invisibleRootItem()->index();
+   auto &&selection_model = ui->treeView->selectionModel();
+  if (tree_view_model->rowCount() == 0) {
+    auto &&parent_tag_index = tree_view_model->invisibleRootItem()->index();
     _comm_managers[0]->Do(
-        new AddTagCommand(parent_tag_index, ui->treeView, "", nullptr));
+        new AddTagCommand(parent_tag_index, 0, tree_view_model, selection_model, ""));
 
     setDisableForLayoutElements(ui->horizontalLayout, false);
     ui->pushButton_plus_tree->setDisabled(true);
@@ -364,23 +365,29 @@ void MainWindow::on_pushButton_plus_tree_clicked() {
     return;
   }
 
-  QModelIndexList indexes = ui->treeView->selectionModel()->selectedIndexes();
+  QModelIndexList indexes = selection_model->selectedIndexes();
   if (indexes.size() == 1) {
     QModelIndex selected_index = indexes.at(0);
     if (selected_index.parent() == ui->treeView->rootIndex())
       return;
 
-    _comm_managers[0]->Do(
-        new AddTagCommand(selected_index.parent(), ui->treeView, "", nullptr));
+    _comm_managers[0]->Do(new AddTagCommand(selected_index.parent(),
+                                            selected_index.row() + 1, tree_view_model,
+                                            selection_model, ""));
   }
 }
 
 void MainWindow::on_pushButton_minus_tree_clicked() {
+  auto &&model = qobject_cast<QStandardItemModel *>(ui->treeView->model());
+  if (!model) {
+    assert(false);
+    return;
+  }
+
   QModelIndexList indexes = ui->treeView->selectionModel()->selectedIndexes();
   if (indexes.size() == 1) {
 
     QModelIndex selectedIndex = indexes.at(0);
-    qDebug() << selectedIndex;
     ui->treeView->model()->removeRow(selectedIndex.row(),
                                      selectedIndex.parent());
   }
@@ -392,27 +399,19 @@ void MainWindow::on_pushButton_minus_tree_clicked() {
 }
 
 void MainWindow::on_pushButton_new_child_row_tree_clicked() {
-  QModelIndexList indexes = ui->treeView->selectionModel()->selectedIndexes();
+  auto &&tree_view_model = qobject_cast<QStandardItemModel *>(ui->treeView->model());
+  if (!tree_view_model) {
+    assert(false);
+    return;
+  }
+
+  auto &&selection_model = ui->treeView->selectionModel();
+  QModelIndexList indexes = selection_model->selectedIndexes();
   if (indexes.size() == 1) {
     QModelIndex selected_index = indexes.at(0);
-    auto &&model =
-        qobject_cast<const QStandardItemModel *>(ui->treeView->model());
-    if (!model) {
-      assert(false);
-      return;
-    }
-
     _comm_managers[0]->Do(
-        new AddTagCommand(selected_index, ui->treeView, "", nullptr));
+        new AddTagCommand(selected_index, 0, tree_view_model, selection_model, ""));
     ui->treeView->expand(selected_index);
-
-    if (auto &&selected_tag = model->itemFromIndex(selected_index)) {
-      auto &&tag_text = selected_tag->text();
-      auto &&tag_text_vec = tag_text.split(": ");
-      if (tag_text_vec.size() > 1) {
-        selected_tag->setText(tag_text_vec[0]);
-      }
-    }
   }
 }
 

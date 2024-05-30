@@ -4,19 +4,20 @@
 
 #include <QModelIndex>
 #include <QStandardItemModel>
-#include <QTreeView>
+#include <QItemSelectionModel>
 
 class AddTagCommand : public ICommand {
 public:
-  AddTagCommand(QModelIndex parent_tag_index,
-                QTreeView *tree_view, QString text,
-                QStandardItemModel *attribute_table_view);
+  AddTagCommand(QModelIndex parent_tag_index, int row_to_insert,
+                QStandardItemModel *tree_view_model,
+                QItemSelectionModel *selection_model, QString text);
   virtual void Execute() override;
   virtual void UnExecute() override;
 
 private:
-  QModelIndex _parent_tag_index;
-  QTreeView *_tree_view;
+  std::vector<int> _rows;
+  int _row_to_insert;
+  QStandardItemModel *_tree_view_model;
+  QItemSelectionModel *_selection_model;
   QString _text;
-  QStandardItemModel *_attribute_table_view;
 };
