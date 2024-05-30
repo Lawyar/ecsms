@@ -34,7 +34,7 @@ void AddTagCommand::Execute() {
     parent_tag = parent_tag->child(row, 0);
   }
 
-  auto new_tag = createEmptyTag(parent_tag, _text);
+  auto new_tag = createTag(nullptr, _text);
   parent_tag->insertRow(_row_to_insert, new_tag);
 
   _selection_model->select(new_tag->index(),

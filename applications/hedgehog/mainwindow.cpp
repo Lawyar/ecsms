@@ -345,6 +345,7 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index) {
       index.data(Qt::UserRole + 1).value<QStandardItemModel *>());
   ui->tableView->setItemDelegateForColumn(
       0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLAttribute));
+  setDisableForLayoutElements(ui->horizontalLayout_2, false);
 }
 
 void MainWindow::on_treeView_selectionModel_selectionChanged(
@@ -353,6 +354,9 @@ void MainWindow::on_treeView_selectionModel_selectionChanged(
   bool contains_root = false;
   if (selection_now.empty()) {
     setDisableForLayoutElements(ui->horizontalLayout, true);
+    setDisableForLayoutElements(ui->horizontalLayout_2, true);
+    ui->pushButton_plus_tree->setDisabled(contains_root);
+    return;
   }
 
   auto &&tree_view_model =
@@ -362,12 +366,19 @@ void MainWindow::on_treeView_selectionModel_selectionChanged(
     return;
   }
 
-  for (auto &&item : selection_now) {
+  for (auto &&item : selection_now.indexes()) {
+    qDebug() << item.data(Qt::UserRole + 1).value<QStandardItemModel *>();
+    ui->tableView->setModel(
+        item.data(Qt::UserRole + 1).value<QStandardItemModel *>());
+    ui->tableView->setItemDelegateForColumn(
+        0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLAttribute));
+    setDisableForLayoutElements(ui->horizontalLayout_2, false);
     if (item.parent() == tree_view_model->invisibleRootItem()->index()) {
       contains_root = true;
       break;
     }
   }
+
   ui->pushButton_plus_tree->setDisabled(contains_root);
   ui->pushButton_minus_tree->setDisabled(false);
   ui->pushButton_new_child_row_tree->setDisabled(false);
@@ -387,45 +398,35 @@ void MainWindow::on_pushButton_plus_tree_clicked() {
 }
 
 void MainWindow::on_pushButton_minus_tree_clicked() {
-  auto &&model = qobject_cast<QStandardItemModel *>(ui->treeView->model());
-  if (!model) {
-    assert(false);
-    return;
-  }
-
-  QModelIndexList indexes = ui->treeView->selectionModel()->selectedIndexes();
-  if (indexes.size() == 1) {
-
-    QModelIndex selectedIndex = indexes.at(0);
-    ui->treeView->model()->removeRow(selectedIndex.row(),
-                                     selectedIndex.parent());
-  }
-  if (ui->treeView->model()->rowCount() == 0) {
-    ui->tableView->setModel(nullptr);
-    setDisableForLayoutElements(ui->horizontalLayout, true);
-    setDisableForLayoutElements(ui->horizontalLayout_2, true);
-    ui->pushButton_plus_tree->setDisabled(false);
-  }
+  _comm_managers[0]->Do(new RemoveTagCommand(ui->treeView, ui->tableView));
+  setDisableForLayoutElements(ui->horizontalLayout_2, true);
+  setDisableForLayoutElements(ui->horizontalLayout,
+                              (ui->treeView->model()->rowCount() == 0));
+  ui->pushButton_plus_tree->setDisabled(false);
 }
 
 void MainWindow::on_pushButton_new_child_row_tree_clicked() {
-  auto &&selection_model = ui->treeView->selectionModel();
-  _comm_managers[0]->Do(
-      new AddChildTagCommand(ui->treeView, ""));
+  _comm_managers[0]->Do(new AddChildTagCommand(ui->treeView, ""));
 }
 
 void MainWindow::on_pushButton_plus_table_clicked() {
-  auto &&model = ui->treeView->selectionModel();
-  if (!model)
+  auto &&selection_model = ui->treeView->selectionModel();
+  if (!selection_model)
     return;
-  QModelIndexList tree_indexes = model->selectedIndexes();
+  QModelIndexList tree_indexes = selection_model->selectedIndexes();
   if (tree_indexes.size() == 1) {
-    auto &&model = ui->tableView->model();
-    if (!model)
+    auto &&table_model =
+        qobject_cast<QStandardItemModel *>(ui->tableView->model());
+    if (!table_model)
       return;
-    int row_to_insert = model->rowCount();
-    ui->tableView->model()->insertRow(row_to_insert);
-    auto &&index_to_insert = ui->tableView->model()->index(row_to_insert, 0);
+
+    QStandardItem *parent_tag = table_model->invisibleRootItem();
+
+    int row_to_insert = table_model->rowCount();
+    parent_tag->insertRow(row_to_insert,
+                          {new QStandardItem("attribute_name"),
+                           new QStandardItem("attribute_value")});
+    auto &&index_to_insert = table_model->index(row_to_insert, 0);
     ui->tableView->selectionModel()->select(
         index_to_insert, QItemSelectionModel::ClearAndSelect);
     ui->tableView->edit(index_to_insert);

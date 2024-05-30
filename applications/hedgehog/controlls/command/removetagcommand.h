@@ -5,18 +5,20 @@
 #include <QItemSelectionModel>
 #include <QModelIndex>
 #include <QStandardItemModel>
+#include <QTreeView>
+#include <QTableView>
 
 class RemoveTagCommand : public ICommand {
 public:
-  RemoveTagCommand(QModelIndex index, QStandardItemModel *tree_view_model,
-                   QItemSelectionModel *selection_model, QString text);
+  RemoveTagCommand(QTreeView *tree_view, QTableView *table_view);
   virtual void Execute() override;
   virtual void UnExecute() override;
 
 private:
   std::vector<int> _rows;
-  QStandardItemModel *_tree_view_model;
-  QItemSelectionModel *_selection_model;
+  int _row_to_remove;
   QString _text;
-  QStandardItemModel *_table_model;
+  QTreeView *_tree_view;
+  QTableView *_table_view;
+  QStandardItem *_item;
 };
