@@ -2,7 +2,9 @@
 #include "blockfield.h"
 #include "blockwidget.h"
 #include "controlls/command/addblockcommand.h"
+#include "controlls/command/addchildtagcommand.h"
 #include "controlls/command/addtagcommand.h"
+#include "controlls/command/removetagcommand.h"
 #include "qlineeditdelegate.h"
 #include "ui_mainwindow.h"
 
@@ -98,6 +100,10 @@ MainWindow::MainWindow(QWidget *parent)
   }
   connectConsoleOutputWithWidget(_processes[0], ui->consoleOutput);
   connectConsoleOutputWithWidget(_processes[1], ui->consoleOutput_2);
+
+  QObject::connect(ui->treeView->selectionModel(),
+                   &QItemSelectionModel::selectionChanged, this,
+                   &MainWindow::on_treeView_selectionModel_selectionChanged);
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -339,42 +345,45 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index) {
       index.data(Qt::UserRole + 1).value<QStandardItemModel *>());
   ui->tableView->setItemDelegateForColumn(
       0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLAttribute));
-  setDisableForLayoutElements(ui->horizontalLayout, false);
-  setDisableForLayoutElements(ui->horizontalLayout_2, false);
-  if (index.parent() == ui->treeView->rootIndex()) {
-    ui->pushButton_plus_tree->setDisabled(true);
-  }
 }
 
-void MainWindow::on_pushButton_plus_tree_clicked() {
-  auto &&tree_view_model = qobject_cast<QStandardItemModel *>(ui->treeView->model());
+void MainWindow::on_treeView_selectionModel_selectionChanged(
+    const QItemSelection &selection_now,
+    const QItemSelection &selection_before) {
+  bool contains_root = false;
+  if (selection_now.empty()) {
+    setDisableForLayoutElements(ui->horizontalLayout, true);
+  }
+
+  auto &&tree_view_model =
+      qobject_cast<QStandardItemModel *>(ui->treeView->model());
   if (!tree_view_model) {
     assert(false);
     return;
   }
 
-   auto &&selection_model = ui->treeView->selectionModel();
-  if (tree_view_model->rowCount() == 0) {
-    auto &&parent_tag_index = tree_view_model->invisibleRootItem()->index();
-    _comm_managers[0]->Do(
-        new AddTagCommand(parent_tag_index, 0, tree_view_model, selection_model, ""));
+  for (auto &&item : selection_now) {
+    if (item.parent() == tree_view_model->invisibleRootItem()->index()) {
+      contains_root = true;
+      break;
+    }
+  }
+  ui->pushButton_plus_tree->setDisabled(contains_root);
+  ui->pushButton_minus_tree->setDisabled(false);
+  ui->pushButton_new_child_row_tree->setDisabled(false);
+}
 
-    setDisableForLayoutElements(ui->horizontalLayout, false);
-    ui->pushButton_plus_tree->setDisabled(true);
-
+void MainWindow::on_pushButton_plus_tree_clicked() {
+  auto &&tree_view_model =
+      qobject_cast<QStandardItemModel *>(ui->treeView->model());
+  if (!tree_view_model) {
+    assert(false);
     return;
   }
 
-  QModelIndexList indexes = selection_model->selectedIndexes();
-  if (indexes.size() == 1) {
-    QModelIndex selected_index = indexes.at(0);
-    if (selected_index.parent() == ui->treeView->rootIndex())
-      return;
-
-    _comm_managers[0]->Do(new AddTagCommand(selected_index.parent(),
-                                            selected_index.row() + 1, tree_view_model,
-                                            selection_model, ""));
-  }
+  auto &&selection_model = ui->treeView->selectionModel();
+  _comm_managers[0]->Do(
+      new AddTagCommand(tree_view_model, selection_model, ""));
 }
 
 void MainWindow::on_pushButton_minus_tree_clicked() {
@@ -394,25 +403,15 @@ void MainWindow::on_pushButton_minus_tree_clicked() {
   if (ui->treeView->model()->rowCount() == 0) {
     ui->tableView->setModel(nullptr);
     setDisableForLayoutElements(ui->horizontalLayout, true);
+    setDisableForLayoutElements(ui->horizontalLayout_2, true);
     ui->pushButton_plus_tree->setDisabled(false);
   }
 }
 
 void MainWindow::on_pushButton_new_child_row_tree_clicked() {
-  auto &&tree_view_model = qobject_cast<QStandardItemModel *>(ui->treeView->model());
-  if (!tree_view_model) {
-    assert(false);
-    return;
-  }
-
   auto &&selection_model = ui->treeView->selectionModel();
-  QModelIndexList indexes = selection_model->selectedIndexes();
-  if (indexes.size() == 1) {
-    QModelIndex selected_index = indexes.at(0);
-    _comm_managers[0]->Do(
-        new AddTagCommand(selected_index, 0, tree_view_model, selection_model, ""));
-    ui->treeView->expand(selected_index);
-  }
+  _comm_managers[0]->Do(
+      new AddChildTagCommand(ui->treeView, ""));
 }
 
 void MainWindow::on_pushButton_plus_table_clicked() {

@@ -3,9 +3,10 @@
 
 #include "controlls/command/commandmanager.h"
 
+#include <QItemSelection>
 #include <QMainWindow>
-#include <QStandardItemModel>
 #include <QProcess>
+#include <QStandardItemModel>
 
 QT_BEGIN_NAMESPACE
 namespace Ui {
@@ -42,6 +43,9 @@ private slots:
   void on_actionRedo_triggered();
   void on_actionUndo_triggered();
   void on_treeView_clicked(const QModelIndex &index);
+  void on_treeView_selectionModel_selectionChanged(
+      const QItemSelection &selection_now,
+      const QItemSelection &selection_before);
   void on_pushButton_plus_tree_clicked();
   void on_pushButton_minus_tree_clicked();
   void on_pushButton_new_child_row_tree_clicked();

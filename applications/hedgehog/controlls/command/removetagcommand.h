@@ -6,17 +6,17 @@
 #include <QModelIndex>
 #include <QStandardItemModel>
 
-class AddTagCommand : public ICommand {
+class RemoveTagCommand : public ICommand {
 public:
-  AddTagCommand(QStandardItemModel *tree_view_model,
-                QItemSelectionModel *selection_model, QString text);
+  RemoveTagCommand(QModelIndex index, QStandardItemModel *tree_view_model,
+                   QItemSelectionModel *selection_model, QString text);
   virtual void Execute() override;
   virtual void UnExecute() override;
 
 private:
   std::vector<int> _rows;
-  int _row_to_insert;
   QStandardItemModel *_tree_view_model;
   QItemSelectionModel *_selection_model;
   QString _text;
+  QStandardItemModel *_table_model;
 };

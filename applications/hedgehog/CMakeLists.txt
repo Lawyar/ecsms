@@ -9,10 +9,12 @@ set(SOURCE_LIST
     controlls/command/addblockcommand.h controlls/command/addblockcommand.cpp
     controlls/command/addconnectioncommand.h controlls/command/addconnectioncommand.cpp
     controlls/command/addtagcommand.h controlls/command/addtagcommand.cpp
+    controlls/command/addchildtagcommand.h controlls/command/addchildtagcommand.cpp
     controlls/command/commandmanager.h controlls/command/commandmanager.cpp
     controlls/command/icommand.h
     controlls/command/moveblockcommand.h controlls/command/moveblockcommand.cpp
-    controlls/command/removecommand.h  controlls/command/removecommand.cpp
+    controlls/command/removecommand.h controlls/command/removecommand.cpp
+    controlls/command/removetagcommand.h controlls/command/removetagcommand.cpp
     controlls/controllerprocedure.h
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
@@ -35,6 +37,7 @@ set(SOURCE_LIST
     namemaker/id.h  namemaker/id.cpp
     observer/iobserver.h
     utility/containerutility.h
+    utility/tagutility.h
 )
 
 set(ONLY_SOURCE_LIST ${SOURCE_LIST})
