@@ -13,3 +13,4 @@ add_library(pipeline_sample
 
 target_include_directories(pipeline_sample PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
 target_link_libraries(pipeline_sample PUBLIC pipeline)
+target_link_libraries(pipeline_sample INTERFACE pipeline_registry)

@@ -1,4 +1,3 @@
 add_executable(pipeline_sample_application main.cpp)
 
 target_link_libraries(pipeline_sample_application PRIVATE pipeline_sample)
-target_link_libraries(pipeline_sample_application PRIVATE pipeline_stage_observer)

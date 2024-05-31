@@ -3,9 +3,8 @@
 #include "ProducerStage.h"
 #include "ConsumerStage.h"
 #include "ProducerAndConsumerStage.h"
-#include "PipelineStageFactory.h"
 #include "InOutStageConnection.h"
-#include "PipelineStageObserver.h"
+#include "PipelineRegistry.h"
 
 using namespace std;
 

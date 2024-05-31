@@ -7,7 +7,7 @@
 #include "InStageConnection.h"
 #include "OutStageConnection.h"
 #include "InOutStageConnection.h"
-#include "PipelineStageObserverException.h"
+#include "PipelineRegistryException.h"
 
 #include <functional>
 #include <memory>
@@ -106,7 +106,7 @@ void Registry<Base, Key, Args...>::registerClass(const Key &key) {
 //void Registry<Base, Key, Args...>::registerFactory(
 //    const Key &key, const ProducerStageFactory factory) {
 //  if (m_producers.find(key) != m_producers.end())
-//    throw PipelineStageObserverException("stage was")
+//    throw PipelineRegistryException("stage was")
 //}
 
 template <typename ProducerT>
@@ -125,7 +125,7 @@ void PipelineRegistry::registerProducerFactory(
   if (m_producers.find(key) != m_producers.end() ||
       m_consumers.find(key) != m_consumers.end() ||
       m_consumersProducers.find(key) != m_consumersProducers.end())
-    throw PipelineStageObserverException("stage has already been added");
+    throw PipelineRegistryException("stage has already been added");
   m_producers[key] = factory;
   registerProducerConnection<ProducerT>();
 }
@@ -137,7 +137,7 @@ void PipelineRegistry::registerProducerConnection() {
       m_consumerConnections.find(key) != m_consumerConnections.end() ||
       m_consumerAndProducerConnections.find(key) !=
           m_consumerAndProducerConnections.end())
-    throw PipelineStageObserverException("connection has already been added");
+    throw PipelineRegistryException("connection has already been added");
 
   m_producerConnections[key] = [](size_t connectionSize) {
     return std::make_shared<

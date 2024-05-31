@@ -1,0 +1,2 @@
+add_executable(pipeline_registry_tests PipelineRegistry_tests.cpp)
+target_link_libraries(pipeline_registry_tests PRIVATE pipeline_registry gtest_main)

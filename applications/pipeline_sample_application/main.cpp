@@ -1,5 +1,5 @@
 #include "Int32RandomGeneratorPipelineFactory.h"
-#include "PipelineStageObserver.h"
+#include "PipelineRegistry.h"
 
 #include <iostream>
 #include <Int32RandomGenerator.h>
