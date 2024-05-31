@@ -15,15 +15,14 @@ class ConnectablePipelineStage : public PipelineStage {
 public:
   ConnectablePipelineStage(const std::string_view,
                            std::optional<TaskRetrieveStrategy>,
-                           std::shared_ptr<InStageConnection<In>>,
-                           std::shared_ptr<OutStageConnection<Out>>,
+                           std::weak_ptr<InStageConnection<In>>,
+                           std::weak_ptr<OutStageConnection<Out>>,
                            std::optional<std::any> = std::nullopt);
 
   void run() override;
 
   PipelineStageType getStageType() override;
   bool consumerTasksAvailable() override;
-  std::shared_ptr<StageConnection> getInConnection() override;
 
 protected:
   void setConsumerId(size_t consumerId);
@@ -41,8 +40,8 @@ private:
   const std::optional<TaskRetrieveStrategy> m_consumerStrategy;
 
   std::optional<size_t> m_consumerId;
-  std::shared_ptr<InStageConnection<In>> m_inConnection;
-  std::shared_ptr<OutStageConnection<Out>> m_outConnection;
+  std::weak_ptr<InStageConnection<In>> m_inConnection;
+  std::weak_ptr<OutStageConnection<Out>> m_outConnection;
 
   uint64_t m_leastTimestamp;
 };
@@ -51,27 +50,27 @@ template <typename In, typename Out>
 ConnectablePipelineStage<In, Out>::ConnectablePipelineStage(
     const std::string_view stageName,
     std::optional<TaskRetrieveStrategy> consumerStrategy,
-    std::shared_ptr<InStageConnection<In>> inConnection,
-    std::shared_ptr<OutStageConnection<Out>> outConnection,
+    std::weak_ptr<InStageConnection<In>> inConnection,
+    std::weak_ptr<OutStageConnection<Out>> outConnection,
     std::optional<std::any> stageParameters)
     : PipelineStage(stageName), m_stageParameters(stageParameters),
       m_consumerStrategy(consumerStrategy),
       m_consumerId(std::nullopt), m_inConnection(inConnection),
       m_outConnection(outConnection), m_leastTimestamp{0} {
-  if (inConnection != nullptr && !consumerStrategy.has_value())
-    throw std::invalid_argument("consumer task retrieve strategy is null");
+  if (!inConnection.expired() && !consumerStrategy.has_value())
+    throw std::invalid_argument("consumerStrategy is null");
 
-  if (inConnection == nullptr && consumerStrategy.has_value())
+  if (inConnection.expired() && consumerStrategy.has_value())
     throw std::invalid_argument(
-        "consumer task retrieve strategy is presented without in connection");
+        "consumerStrategy is presented without inConnection");
 
-  if (inConnection == nullptr && outConnection == nullptr)
-    throw std::invalid_argument("both connections are null");
+  if (inConnection.expired() && outConnection.expired())
+    throw std::invalid_argument("inConnection and outConnection are null");
 }
 
 template <typename In, typename Out>
 void ConnectablePipelineStage<In, Out>::run() {
-  if (m_inConnection != nullptr && !m_consumerId.has_value())
+  if (!m_inConnection.expired() && !m_consumerId.has_value())
     throw PipelineException(std::string("consumerId not set for stage ") +
                             getName());
 
@@ -80,8 +79,8 @@ void ConnectablePipelineStage<In, Out>::run() {
       std::shared_ptr<In> inData;
       std::shared_ptr<Out> outData;
 
-      if (m_inConnection) {
-        auto inTask = m_inConnection->getConsumerTask(
+      if (auto in = m_inConnection.lock(); in != nullptr) {
+        auto inTask = in->getConsumerTask(
             m_consumerId.value(), m_consumerStrategy.value(), m_leastTimestamp);
         if (!inTask)
           break;
@@ -90,12 +89,14 @@ void ConnectablePipelineStage<In, Out>::run() {
         inData = inTask->data;
       }
 
-      if (m_outConnection) {
-        auto outTask = m_outConnection->getProducerTask();
+      if (auto out = m_outConnection.lock(); out != nullptr) {
+        auto outTask = out->getProducerTask();
         if (!outTask)
           break;
 
         outData = outTask->data;
+      } else {
+        throw PipelineException("m_outConnection expired");
       }
 
       try {
@@ -110,10 +111,10 @@ void ConnectablePipelineStage<In, Out>::run() {
                   << "unhandled exception in stage function" << std::endl;
       }
 
-      if (inData && m_inConnection)
+      if (inData && !m_inConnection.expired())
         releaseConsumerTask(inData);
 
-      if (outData && m_outConnection)
+      if (outData && !m_outConnection.expired())
         releaseProducerTask(outData, false);
     }
   });
@@ -122,9 +123,9 @@ void ConnectablePipelineStage<In, Out>::run() {
 template <typename In, typename Out>
 PipelineStageType
 ConnectablePipelineStage<In, Out>::getStageType() {
-  if (!m_inConnection)
+  if (m_inConnection.expired())
     return PipelineStageType::producer;
-  else if (!m_outConnection)
+  else if (m_outConnection.expired())
     return PipelineStageType::consumer;
   else
     return PipelineStageType::producerConsumer;
@@ -132,27 +133,17 @@ ConnectablePipelineStage<In, Out>::getStageType() {
 
 template <typename In, typename Out>
 bool ConnectablePipelineStage<In, Out>::consumerTasksAvailable() {
-  if (!m_inConnection)
-    throw PipelineException("m_inConnection is null");
-
-  return m_inConnection->consumerTasksAvailable(m_consumerId.value(),
-                                                m_leastTimestamp);
-}
-
-template <typename In, typename Out>
-std::shared_ptr<StageConnection>
-ConnectablePipelineStage<In, Out>::getInConnection() {
-  if (!m_inConnection)
-    throw PipelineException("m_inConnection is null");
-
-  return m_inConnection;
+  if (auto in = m_inConnection.lock(); in != nullptr)
+    in->consumerTasksAvailable(m_consumerId.value(), m_leastTimestamp);
+  else
+    throw PipelineException("m_inConnection expired");
 }
 
 template <typename In, typename Out>
 void ConnectablePipelineStage<In, Out>::setConsumerId(
     size_t consumerId) {
-  if (m_inConnection == nullptr)
-    throw PipelineException("m_inConnection is null");
+  if (m_inConnection.expired())
+    throw PipelineException("m_inConnection expired");
 
   m_consumerId = consumerId;
 }
@@ -160,24 +151,25 @@ void ConnectablePipelineStage<In, Out>::setConsumerId(
 template <typename In, typename Out>
 void ConnectablePipelineStage<In, Out>::releaseConsumerTask(
     std::shared_ptr<In> taskData) {
-  if (!m_inConnection)
-    throw std::invalid_argument("m_inConnection is null");
-
   if (!taskData)
     throw std::invalid_argument("taskData is null");
 
-  m_inConnection->releaseConsumerTask(taskData, m_consumerId.value());
+  if (auto in = m_inConnection.lock(); in != nullptr)
+    in->releaseConsumerTask(taskData, m_consumerId.value());
+  else
+    throw PipelineException("m_inConnection expired");
 }
 
 template <typename In, typename Out>
 void ConnectablePipelineStage<In, Out>::releaseProducerTask(
     std::shared_ptr<Out> taskData, bool produced) {
-  if (!m_outConnection)
-    throw std::invalid_argument("m_outConnection is null");
-
   if (!taskData)
     throw std::invalid_argument("taskData is null");
 
   auto time = SteadyClock::nowUs().count();
-  m_outConnection->releaseProducerTask(taskData, time, produced);
+
+  if (auto out = m_outConnection.lock(); out != nullptr)
+    out->releaseProducerTask(taskData, time, produced);
+  else
+    throw PipelineException("m_outConnection expired");
 }

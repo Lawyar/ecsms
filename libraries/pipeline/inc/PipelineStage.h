@@ -21,7 +21,6 @@ public:
 
   virtual PipelineStageType getStageType() = 0;
   virtual bool consumerTasksAvailable() = 0;
-  virtual std::shared_ptr<StageConnection> getInConnection() = 0;
 
   template<typename T, typename... TArgs>
   void setStageParameters(TArgs&&... );

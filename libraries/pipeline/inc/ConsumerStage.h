@@ -6,7 +6,7 @@ template <typename In>
 class ConsumerStage : public ConnectablePipelineStage<In, void> {
 public:
   ConsumerStage(const std::string_view stageName, TaskRetrieveStrategy,
-                std::shared_ptr<InStageConnection<In>>);
+                std::weak_ptr<InStageConnection<In>>);
 
 private:
   virtual void consume(std::shared_ptr<In> inData) = 0;
@@ -19,15 +19,14 @@ private:
 template <typename In>
 ConsumerStage<In>::ConsumerStage(
     const std::string_view stageName, TaskRetrieveStrategy consumerStrategy,
-    std::shared_ptr<InStageConnection<In>> inConnection)
-    : ConnectablePipelineStage<In, void>(stageName, consumerStrategy,
-                                         inConnection, nullptr) {
-  if (!inConnection)
-    throw std::invalid_argument("inConnection is null");
-
-  auto consumer_id = inConnection->connectConsumer();
-
-  setConsumerId(consumer_id);
+    std::weak_ptr<InStageConnection<In>> inConnection)
+    : ConnectablePipelineStage<In, void>(stageName, consumerStrategy, inConnection,
+          std::weak_ptr<OutStageConnection<void>>()) {
+  if (auto in = inConnection.lock(); in != nullptr) {
+    auto consumerId = in->connectConsumer();
+    setConsumerId(consumerId);
+  } else
+    throw PipelineException("inConnection expired");
 }
 
 template <typename In>

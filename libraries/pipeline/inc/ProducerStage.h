@@ -6,7 +6,7 @@ template <typename Out>
 class ProducerStage : public ConnectablePipelineStage<void, Out> {
 public:
   ProducerStage(const std::string_view stageName,
-                std::shared_ptr<OutStageConnection<Out>> outConnection);
+                std::weak_ptr<OutStageConnection<Out>> outConnection);
 
 private:
   virtual void produce(std::shared_ptr<Out> outData) = 0;
@@ -19,13 +19,13 @@ private:
 template <typename Out>
 ProducerStage<Out>::ProducerStage(
     const std::string_view stageName,
-    std::shared_ptr<OutStageConnection<Out>> outConnection)
-    : ConnectablePipelineStage<void, Out>(stageName, nullopt, nullptr,
+    std::weak_ptr<OutStageConnection<Out>> outConnection)
+    : ConnectablePipelineStage<void, Out>(stageName, nullopt, std::weak_ptr<InStageConnection<void>>(),
                                           outConnection) {
-  if (!outConnection)
-    throw std::invalid_argument("outConnection is null");
-
-  outConnection->connectProducer();
+  if (auto out = outConnection.lock(); out != nullptr)
+    out->connectProducer();
+  else
+    throw PipelineException("outConnection expired");
 }
 
 template <typename Out>
