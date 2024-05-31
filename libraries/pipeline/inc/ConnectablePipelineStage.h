@@ -13,7 +13,7 @@
 template <typename In, typename Out>
 class ConnectablePipelineStage : public PipelineStage {
 public:
-  ConnectablePipelineStage(const std::string_view,
+  ConnectablePipelineStage(const std::string_view stageName,
                            std::optional<TaskRetrieveStrategy>,
                            std::weak_ptr<InStageConnection<In>>,
                            std::weak_ptr<OutStageConnection<Out>>,
@@ -95,8 +95,6 @@ void ConnectablePipelineStage<In, Out>::run() {
           break;
 
         outData = outTask->data;
-      } else {
-        throw PipelineException("m_outConnection expired");
       }
 
       try {

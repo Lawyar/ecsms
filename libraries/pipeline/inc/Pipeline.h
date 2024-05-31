@@ -12,7 +12,7 @@ public:
   void addStage(std::shared_ptr<PipelineStage>);
   void addConnection(std::shared_ptr<StageConnection>);
 
-  std::vector<std::shared_ptr<PipelineStage>> &getStages();
+  std::vector<std::shared_ptr<PipelineStage>> getStages();
   std::shared_ptr<PipelineStage> getStage(const std::string &);
 
   void run();

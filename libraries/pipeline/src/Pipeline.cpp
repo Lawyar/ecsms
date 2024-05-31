@@ -20,7 +20,7 @@ void Pipeline::addConnection(std::shared_ptr<StageConnection> connection) {
   m_connections.push_back(connection);
 }
 
-vector<std::shared_ptr<PipelineStage>> &Pipeline::getStages() {
+vector<std::shared_ptr<PipelineStage>> Pipeline::getStages() {
   return m_stages;
 }
 

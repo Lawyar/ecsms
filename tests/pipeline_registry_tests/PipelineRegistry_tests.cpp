@@ -11,9 +11,7 @@ using namespace std;
 class TestConsumerStage : public ConsumerStage<int> {
 public:
   static constexpr auto stageName = "TestConsumerStage";
-  static constexpr auto stageType = PipelineStageType::consumer;
   using consumptionT = int;
-  using productionT = void;
 
   TestConsumerStage(
       TaskRetrieveStrategy consumptionStrategy,
@@ -33,8 +31,6 @@ public:
 class TestProducerStage : public ProducerStage<int> {
 public:
   static constexpr auto stageName = "TestProducerStage";
-  static constexpr auto stageType = PipelineStageType::producer;
-  using consumptionT = void;
   using productionT = int;
 
   TestProducerStage(std::shared_ptr<OutStageConnection<int>> outConnection,
@@ -55,7 +51,6 @@ public:
 class TestConsumerAndProducerStage : public ConsumerAndProducerStage<int, int> {
 public:
   static constexpr auto stageName = "TestConsumerAndProducerStage";
-  static constexpr auto stageType = PipelineStageType::producerConsumer;
   using consumptionT = int;
   using productionT = int;
 
