@@ -1,6 +1,7 @@
 #include "mainwindow.h"
 #include "blockfield.h"
 #include "blockwidget.h"
+#include "controlls/command/addattributecommand.h"
 #include "controlls/command/addblockcommand.h"
 #include "controlls/command/addchildtagcommand.h"
 #include "controlls/command/addtagcommand.h"

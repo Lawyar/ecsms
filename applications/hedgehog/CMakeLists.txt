@@ -6,10 +6,11 @@ set(SOURCE_LIST
     mainwindow.cpp mainwindow.h mainwindow.ui
     qlineeditdelegate.cpp qlineeditdelegate.h
     controlls/activenodeslock.h controlls/activenodeslock.cpp
+    controlls/command/addattributecommand.h controlls/command/addattributecommand.cpp
     controlls/command/addblockcommand.h controlls/command/addblockcommand.cpp
+    controlls/command/addchildtagcommand.h controlls/command/addchildtagcommand.cpp
     controlls/command/addconnectioncommand.h controlls/command/addconnectioncommand.cpp
     controlls/command/addtagcommand.h controlls/command/addtagcommand.cpp
-    controlls/command/addchildtagcommand.h controlls/command/addchildtagcommand.cpp
     controlls/command/commandmanager.h controlls/command/commandmanager.cpp
     controlls/command/icommand.h
     controlls/command/moveblockcommand.h controlls/command/moveblockcommand.cpp
