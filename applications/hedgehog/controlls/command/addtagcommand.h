@@ -8,7 +8,8 @@
 
 class AddTagCommand : public ICommand {
 public:
-  AddTagCommand(QStandardItemModel *tree_view_model,
+  AddTagCommand(QModelIndex index_before_insert,
+                QStandardItemModel *tree_view_model,
                 QItemSelectionModel *selection_model, QString text);
   virtual void Execute() override;
   virtual void UnExecute() override;

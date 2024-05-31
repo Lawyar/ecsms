@@ -14,6 +14,7 @@ set(SOURCE_LIST
     controlls/command/commandmanager.h controlls/command/commandmanager.cpp
     controlls/command/icommand.h
     controlls/command/moveblockcommand.h controlls/command/moveblockcommand.cpp
+    controlls/command/removeattributecommand.h controlls/command/removeattributecommand.cpp
     controlls/command/removecommand.h controlls/command/removecommand.cpp
     controlls/command/removetagcommand.h controlls/command/removetagcommand.cpp
     controlls/controllerprocedure.h
@@ -37,6 +38,7 @@ set(SOURCE_LIST
     namemaker/blocknamemaker.h  namemaker/blocknamemaker.cpp
     namemaker/id.h  namemaker/id.cpp
     observer/iobserver.h
+    utility/mainwindowutility.h
     utility/containerutility.h
     utility/tagutility.h
 )

@@ -3,25 +3,12 @@
 
 #include <QDebug>
 
-AddTagCommand::AddTagCommand(QStandardItemModel *tree_view_model,
+AddTagCommand::AddTagCommand(QModelIndex index_before_insert,
+                             QStandardItemModel *tree_view_model,
                              QItemSelectionModel *selection_model, QString text)
-    : _tree_view_model(tree_view_model), _selection_model(selection_model),
-      _text(text) {
-  QModelIndex parent_tag_index;
-  if (_tree_view_model->rowCount() == 0) { // if there is no elements, add first
-    parent_tag_index = _tree_view_model->invisibleRootItem()->index();
-    _row_to_insert = 0;
-  } else { // else add to row after selection
-    QModelIndexList indexes = _selection_model->selectedIndexes();
-    if (indexes.size() > 1)
-      return;
-    auto &&selected_index = indexes.at(0);
-    parent_tag_index = selected_index.parent();
-    if (parent_tag_index == _tree_view_model->invisibleRootItem()->index())
-      return;
-    _row_to_insert = selected_index.row() + 1;
-  }
-
+    : _row_to_insert(index_before_insert.row() + 1), _tree_view_model(tree_view_model),
+      _selection_model(selection_model), _text(text) {
+  auto &&parent_tag_index = index_before_insert.parent();
   while (parent_tag_index != _tree_view_model->invisibleRootItem()->index()) {
     _rows.insert(_rows.begin(), parent_tag_index.row());
     parent_tag_index = parent_tag_index.parent();

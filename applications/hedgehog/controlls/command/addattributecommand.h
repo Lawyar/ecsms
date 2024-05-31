@@ -7,14 +7,14 @@
 
 class AddAttributeCommand : public ICommand {
 public:
-  AddAttributeCommand(QStandardItemModel *tree_view_model,
-                      QItemSelectionModel *tree_selection_model,
+  AddAttributeCommand(int row_to_insert,
                       QStandardItemModel *table_view_model,
                       QItemSelectionModel *table_selection_model);
   virtual void Execute() override;
   virtual void UnExecute() override;
 
 private:
-  QStandardItemModel *_tree_view_model, *_table_view_model;
-  QItemSelectionModel *_tree_selection_model, *_table_selection_model;
+  int _row_to_insert;
+  QStandardItemModel *_table_view_model;
+  QItemSelectionModel *_table_selection_model;
 };
