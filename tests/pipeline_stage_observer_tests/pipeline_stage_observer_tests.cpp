@@ -38,23 +38,19 @@ public:
   using consumptionT = void;
   using productionT = int;
 
-  struct Parameters {
-    string s;
-    int i;
-  };
-
   TestProducerStage(std::shared_ptr<OutStageConnection<int>> outConnection,
-                    Parameters parameters)
-      : ProducerStage(stageName, outConnection), parameters_(parameters) {}
+                    string s, int i)
+      : ProducerStage(stageName, outConnection), s(s), i(i) {}
 
   TestProducerStage(std::shared_ptr<OutStageConnection<int>> outConnection)
-      : TestProducerStage(outConnection, {"", 0}) {}
+      : TestProducerStage(outConnection, "", 0) {}
 
   void produce(shared_ptr<int> outData) override {
     releaseProducerTask(outData);
   }
 
-  Parameters parameters_;
+  string s;
+  int i;
 };
 
 class TestConsumerAndProducerStage : public ConsumerAndProducerStage<int, int> {
@@ -92,25 +88,47 @@ public:
 
 TEST(PipelineRegistry_tests, PipelineRegistry_registerProducerWorks) {
   PipelineRegistry registry;
-  registry.registerProducer<TestProducerStage>();
+  registry.registerProducer<TestProducerStage>(TestProducerStage::stageName);
 }
 
 TEST(PipelineRegistry_tests, PipelineRegistry_constructProducerWorks) {
   PipelineRegistry registry;
-  registry.registerProducer<TestProducerStage>();
+  registry.registerProducer<TestProducerStage>(TestProducerStage::stageName);
   auto connection = registry.constructProducerConnection("TestProducerStage", 32);
   auto stage = registry.constructProducer("TestProducerStage", connection);
+
+  ASSERT_NE(connection, nullptr);
+  ASSERT_NE(stage, nullptr);
+
+  auto connectionDynamic = dynamic_pointer_cast<
+      InOutStageConnection<typename TestProducerStage::productionT>>(
+      connection);
+
+  auto stageDynamic = dynamic_pointer_cast<TestProducerStage>(stage);
+
+  ASSERT_NE(connectionDynamic, nullptr);
+  ASSERT_NE(stageDynamic, nullptr);
 }
 
 TEST(PipelineRegistry_tests, PipelineRegistry_registerProducerFactoryWorks) {
   PipelineRegistry registry;
-  registry.registerProducerFactory<TestProducerStage>(
-                           [](shared_ptr<StageConnection> connection) {
-        auto outConnection = dynamic_cast<OutStageConnection<typename TestProducerStage::productionT>*>(connection.get());
-    return make_shared<TestProducerStage>(
-            shared_ptr<
-                OutStageConnection<typename TestProducerStage::productionT>>(
-            outConnection));
-                           });
 
+  string s = "abcdef";
+  int i = 128;
+  registry.registerProducerFactory<TestProducerStage>(
+      TestProducerStage::stageName, [s, i](shared_ptr<StageConnection> connection) {
+        auto outConnection = std::dynamic_pointer_cast<
+            OutStageConnection<typename TestProducerStage::productionT>>(
+            connection);
+        return make_shared<TestProducerStage>(outConnection, s, i);
+      });
+
+  auto connection =
+      registry.constructProducerConnection("TestProducerStage", 32);
+  auto stage = registry.constructProducer("TestProducerStage", connection);
+
+  auto stageDynamic = dynamic_pointer_cast<TestProducerStage>(stage);
+
+  ASSERT_EQ(stageDynamic->s, s);
+  ASSERT_EQ(stageDynamic->i, i);
 }

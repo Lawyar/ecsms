@@ -30,12 +30,11 @@ public:
   //template <typename Derived> void registerClass(const Key &key);
 
   template<typename ProducerT>
-  void registerProducer();
+  void registerProducer(const std::string& key);
 
   template <typename ProducerT>
-  void registerProducerFactory(const ProducerStageFactory factory);
-
-  template <typename ProducerT> void registerProducerConnection();
+  void registerProducerFactory(
+      const std::string &key, const ProducerStageFactory factory);
 
   void registerFactory(const std::string &key, const ConsumerStageFactory factory);
   void registerFactory(const std::string &key,
@@ -62,8 +61,9 @@ public:
   //                                                 Args... args) const;
 
 private:
-  //template <typename Derived>
-  //static std::shared_ptr<Base> constructDerived(Args... args);
+  template <typename ProducerT> void registerProducerConnection();
+
+private:
 
   std::unordered_map<std::string, ProducerStageFactory> m_producers;
   std::unordered_map<std::string, ConsumerStageFactory> m_consumers;
@@ -110,21 +110,18 @@ void Registry<Base, Key, Args...>::registerClass(const Key &key) {
 //}
 
 template <typename ProducerT>
-void PipelineRegistry::registerProducer() {
-  registerProducerFactory<ProducerT>([](shared_ptr<StageConnection>
+void PipelineRegistry::registerProducer(const std::string &key) {
+  registerProducerFactory<ProducerT>(key, [](shared_ptr<StageConnection>
                                                     connection) {
-    auto outConnection = dynamic_cast<OutStageConnection<typename ProducerT::productionT> *>(
-        connection.get());
-    return make_shared<ProducerT>(
-        shared_ptr<OutStageConnection<typename ProducerT::productionT>>(
-            outConnection));
+        auto outConnection = std::dynamic_pointer_cast<OutStageConnection<typename ProducerT::productionT>>(connection);
+        return make_shared<ProducerT>(outConnection);
   });
 }
 
 template <typename ProducerT>
 void PipelineRegistry::registerProducerFactory(
+    const std::string &key,
     const ProducerStageFactory factory) {
-  const auto &key = ProducerT::stageName;
   if (m_producers.find(key) != m_producers.end() ||
       m_consumers.find(key) != m_consumers.end() ||
       m_consumersProducers.find(key) != m_consumersProducers.end())
