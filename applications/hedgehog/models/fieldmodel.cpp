@@ -65,8 +65,6 @@ FieldModel::GetNodeData(const NodeId &node) const {
   return std::nullopt;
 }
 
-void FieldModel::Remove(const NodeId &start) { _connections.remove(start); }
-
 void FieldModel::AddConnection(const NodeId &start, const NodeId &end) {
   _connections[start].push_back(end);
   for (auto &&node : {start, end})
@@ -133,6 +131,12 @@ void FieldModel::RemoveBlock(const BlockId &block) {
         std::make_shared<ChangeActiveNodeEvent>(node, IsNodeConnected(node)));
 
   Notify(std::make_shared<RemoveBlockEvent>(block));
+}
+
+void FieldModel::RemoveAll() {
+  for (auto &&block : _blocks.keys()) {
+    this->RemoveBlock(block);
+  }
 }
 
 FieldModel::Memento FieldModel::Save() const {

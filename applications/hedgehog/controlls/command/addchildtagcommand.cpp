@@ -5,9 +5,8 @@
 
 AddChildTagCommand::AddChildTagCommand(QModelIndex parent_index,
                                        QStandardItemModel *tree_view_model,
-                                       QItemSelectionModel *selection_model,
                                        QString text)
-    : _tree_view_model(tree_view_model), _selection_model(selection_model),
+    : _tree_view_model(tree_view_model), 
       _text(text) {
   if (parent_index == _tree_view_model->invisibleRootItem()->index())
     return;
@@ -36,9 +35,6 @@ void AddChildTagCommand::Execute() {
       selected_tag->setText(tag_text_vec[0]);
     }
   }
-
-  _selection_model->select(new_tag->index(),
-                           QItemSelectionModel::ClearAndSelect);
 }
 
 void AddChildTagCommand::UnExecute() {
@@ -47,6 +43,4 @@ void AddChildTagCommand::UnExecute() {
     parent_tag = parent_tag->child(row, 0);
   }
   _tree_view_model->removeRow(_row_to_insert, parent_tag->index());
-  _selection_model->select(parent_tag->index(),
-                           QItemSelectionModel::ClearAndSelect);
 }

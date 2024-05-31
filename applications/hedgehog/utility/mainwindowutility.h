@@ -22,7 +22,7 @@ inline void connectConsoleOutputWithWidget(QProcess *process,
   });
 }
 
-static void writeAttributesFromModel(QXmlStreamWriter &xml_writer,
+static inline void writeAttributesFromModel(QXmlStreamWriter &xml_writer,
                                      const QStandardItemModel *model) {
   for (int r = 0; r < model->rowCount(); ++r) {
     auto &&name = model->item(r, 0)->text();
@@ -31,22 +31,28 @@ static void writeAttributesFromModel(QXmlStreamWriter &xml_writer,
   }
 }
 
-inline void writeTagsFromModel(QXmlStreamWriter &xml_writer,
-                      const QStandardItemModel *model) {
-  auto &&root = model->item(0, 0);
+static inline void writeTags(QXmlStreamWriter &xml_writer,
+                      const QStandardItem *root) {
   auto &&tag_data = root->text().split(": ");
   xml_writer.writeStartElement(tag_data.front());
-  auto &&table_model = root->data(Qt::UserRole + 1).value<QStandardItemModel *>();
+  auto &&table_model =
+      root->data(Qt::UserRole + 1).value<QStandardItemModel *>();
   writeAttributesFromModel(xml_writer, table_model);
   if (tag_data.size() > 1) {
     tag_data.pop_front();
     xml_writer.writeCharacters(tag_data.join(": "));
-  }
-  for (int r = 0; root->hasChildren() && r < root->rowCount(); ++r) {
-    auto &&item = root->child(r)->model();
-    writeTagsFromModel(xml_writer, item);
+  } else {
+    for (int r = 0; root->hasChildren() && r < root->rowCount(); ++r) {
+      auto &&item = root->child(r);
+      writeTags(xml_writer, item);
+    }
   }
   xml_writer.writeEndElement();
+}
+
+inline void writeTagsFromModel(QXmlStreamWriter &xml_writer,
+                               const QStandardItemModel *model) {
+  writeTags(xml_writer, model->item(0, 0));
 }
 
 inline void setDisableForButtonsInLayout(QLayout *layout, bool is_disabled) {

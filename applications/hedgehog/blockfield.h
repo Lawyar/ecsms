@@ -20,6 +20,7 @@ public:
   virtual void Update(std::shared_ptr<Event> e) override;
   std::unique_ptr<IController> &GetController();
   QWidget *FindById(Id id);
+  void Clear();
 
 protected:
   void mouseMoveEvent(QMouseEvent *event) override;

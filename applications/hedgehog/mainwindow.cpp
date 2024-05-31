@@ -130,12 +130,15 @@ void MainWindow::on_actionNewFile_triggered_tab0() {
   ui->treeView->setModel(tree_model);
   ui->treeView->setItemDelegateForColumn(
       0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLTag));
+
   delete ui->tableView->model();
   ui->tableView->setItemDelegateForColumn(
       0, new QLineEditDelegate(ui->tableView, WhatValidate::XMLAttribute));
+
   setDisableForButtonsInLayout(ui->horizontalLayout, true);
-  ui->pushButton_plus_tree->setEnabled(true);
   setDisableForButtonsInLayout(ui->horizontalLayout_2, true);
+  ui->pushButton_plus_tree->setDisabled(false);
+  _comm_managers[0]->ClearCommands();
 }
 
 void MainWindow::on_actionOpen_triggered_tab0() {
@@ -143,15 +146,22 @@ void MainWindow::on_actionOpen_triggered_tab0() {
                                                    tr("XML files (*.xml)"));
   if (file_name.size() == 0) {
     QMessageBox::warning(this, "Внимание", "Файл не был выбран");
+    setDisableForButtonsInLayout(ui->horizontalLayout, true);
+    setDisableForButtonsInLayout(ui->horizontalLayout_2, true);
+    ui->pushButton_plus_tree->setDisabled(false);
     return;
   }
   QFile file(file_name);
   if (!file.open(QIODevice::ReadOnly)) {
     QMessageBox::critical(this, "Ошибка",
                           "Не удалось открыть файл " + file_name);
+    setDisableForButtonsInLayout(ui->horizontalLayout, true);
+    setDisableForButtonsInLayout(ui->horizontalLayout_2, true);
+    ui->pushButton_plus_tree->setDisabled(false);
     return;
   }
 
+  _comm_managers[0]->ClearCommands();
   delete ui->treeView->model();
   delete ui->tableView->model();
   QStandardItemModel *model = new QStandardItemModel(0, 0, ui->treeView);
@@ -203,11 +213,13 @@ void MainWindow::on_actionOpen_triggered_tab0() {
   }
   ui->treeView->resizeColumnToContents(0);
   file.close();
+  setDisableForButtonsInLayout(ui->horizontalLayout, true);
+  setDisableForButtonsInLayout(ui->horizontalLayout_2, true);
 }
 
 void MainWindow::on_actionSave_triggered_tab0() {
-  QString file_name = QFileDialog::getSaveFileName(this, tr("Save As"), "C:/",
-                                                   tr("XML files (*.xml)"));
+  QString file_name = QFileDialog::getSaveFileName(
+      this, tr("Save As"), "C:/*.xml", tr("XML files (*.xml)"));
   if (file_name.size() == 0) {
     QMessageBox::warning(this, "Внимание", "Файл не был выбран");
     return;
@@ -229,20 +241,60 @@ void MainWindow::on_actionSave_triggered_tab0() {
   file.close();
 }
 
-void MainWindow::on_actionNewFile_triggered_tab1() {}
+void MainWindow::on_actionNewFile_triggered_tab1() {
+  _comm_managers[1]->ClearCommands();
+  ui->scrollAreaWidgetContents->Clear();
+}
 
-void MainWindow::on_actionOpen_triggered_tab1() {}
+void MainWindow::on_actionOpen_triggered_tab1() {
+  QString file_name = QFileDialog::getOpenFileName(this, tr("Open file"), "C:/",
+                                                   tr("YAML files (*.yaml)"));
+  if (file_name.size() == 0) {
+    QMessageBox::warning(this, "Внимание", "Файл не был выбран");
+    setDisableForButtonsInLayout(ui->horizontalLayout, true);
+    setDisableForButtonsInLayout(ui->horizontalLayout_2, true);
+    ui->pushButton_plus_tree->setDisabled(false);
+    return;
+  }
+  QFile file(file_name);
+  if (!file.open(QIODevice::ReadOnly)) {
+    QMessageBox::critical(this, "Ошибка",
+                          "Не удалось открыть файл " + file_name);
+    setDisableForButtonsInLayout(ui->horizontalLayout, true);
+    setDisableForButtonsInLayout(ui->horizontalLayout_2, true);
+    ui->pushButton_plus_tree->setDisabled(false);
+    return;
+  }
 
-void MainWindow::on_actionSave_triggered_tab1() {}
+  _comm_managers[1]->ClearCommands();
+  ui->scrollAreaWidgetContents->Clear();
+}
+
+void MainWindow::on_actionSave_triggered_tab1() {
+  QString file_name = QFileDialog::getSaveFileName(
+      this, tr("Save As"), "C:/*.yaml", tr("YAML files (*.yaml)"));
+  if (file_name.size() == 0) {
+    QMessageBox::warning(this, "Внимание", "Файл не был выбран");
+    return;
+  }
+  QFile file(file_name);
+  if (!file.open(QIODevice::WriteOnly)) {
+    QMessageBox::critical(this, "Ошибка",
+                          "Не удалось сохранить в файл " + file_name);
+    return;
+  }
+}
 
 void MainWindow::on_actionNewFile_triggered() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
   switch (curr_ind) {
   case 0: {
     on_actionNewFile_triggered_tab0();
+    break;
   }
   case 1: {
     on_actionNewFile_triggered_tab1();
+    break;
   }
   default:
     assert(false);
@@ -255,9 +307,11 @@ void MainWindow::on_actionOpen_triggered() {
   switch (curr_ind) {
   case 0: {
     on_actionOpen_triggered_tab0();
+    break;
   }
   case 1: {
     on_actionOpen_triggered_tab1();
+    break;
   }
   default:
     assert(false);
@@ -270,9 +324,11 @@ void MainWindow::on_actionSave_triggered() {
   switch (curr_ind) {
   case 0: {
     on_actionSave_triggered_tab0();
+    break;
   }
   case 1: {
     on_actionSave_triggered_tab1();
+    break;
   }
   default:
     assert(false);
@@ -295,14 +351,8 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index) {
       index.data(Qt::UserRole + 1).value<QStandardItemModel *>());
   ui->tableView->setItemDelegateForColumn(
       0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLAttribute));
-  ui->pushButton_plus_table->setDisabled(false);
-  ui->pushButton_minus_table->setDisabled(ui->tableView->model()->rowCount() ==
-                                          0);
-  // set selection to first item for tableView->selectionModel();
-  auto &&selection_model = ui->tableView->selectionModel();
-  auto &&index_to_select = ui->tableView->model()->index(0, 0);
-  selection_model->setCurrentIndex(index_to_select,
-                                   QItemSelectionModel::SelectionFlag::Select);
+  setDisableForButtonsInLayout(ui->horizontalLayout, false);
+  ui->pushButton_plus_tree->setEnabled(index.parent() != QModelIndex());
 }
 
 void MainWindow::on_tableView_clicked(const QModelIndex &index) {
@@ -313,18 +363,19 @@ void MainWindow::on_tableView_clicked(const QModelIndex &index) {
 void MainWindow::on_treeView_selectionModel_selectionChanged(
     const QItemSelection &selection_now,
     const QItemSelection &selection_before) {
-  bool contains_root = false;
-  if (selection_now.empty()) {
-    setDisableForButtonsInLayout(ui->horizontalLayout, true);
-    setDisableForButtonsInLayout(ui->horizontalLayout_2, true);
-    ui->pushButton_plus_tree->setDisabled(contains_root);
-    return;
-  }
-
   auto &&tree_view_model =
       qobject_cast<QStandardItemModel *>(ui->treeView->model());
   if (!tree_view_model) {
     assert(false);
+    return;
+  }
+
+  bool contains_root = false;
+  if (selection_now.empty()) {
+    setDisableForButtonsInLayout(ui->horizontalLayout, true);
+    setDisableForButtonsInLayout(ui->horizontalLayout_2, true);
+    qDebug() << tree_view_model->rowCount();
+    ui->pushButton_plus_tree->setEnabled(tree_view_model->rowCount() == 0);
     return;
   }
 
@@ -343,8 +394,8 @@ void MainWindow::on_treeView_selectionModel_selectionChanged(
   ui->pushButton_minus_tree->setDisabled(false);
   ui->pushButton_new_child_row_tree->setDisabled(false);
   ui->pushButton_plus_table->setDisabled(false);
-  ui->pushButton_minus_table->setDisabled(ui->tableView->model()->rowCount() ==
-                                          0);
+  ui->pushButton_minus_table->setDisabled(
+      ui->tableView->model() && ui->tableView->model()->rowCount() == 0);
 }
 
 void MainWindow::on_pushButton_plus_tree_clicked() {
@@ -367,9 +418,19 @@ void MainWindow::on_pushButton_plus_tree_clicked() {
     index_before_insert = indexes.at(0);
   }
 
-  _comm_managers[0]->Do(new AddTagCommand(index_before_insert, tree_view_model,
-                                          selection_model, ""));
-  ui->pushButton_minus_table->setDisabled(true);
+  _comm_managers[0]->Do(std::make_unique<AddTagCommand>(index_before_insert,
+                                                        tree_view_model, ""));
+
+  QModelIndex index_to_select;
+  if (index_before_insert == QModelIndex())
+    index_to_select = tree_view_model->index(0, 0);
+  else
+    index_to_select =
+        index_before_insert.siblingAtRow(index_before_insert.row() + 1);
+
+  // когда добавляется новый элемент, селектируем его
+  selection_model->setCurrentIndex(index_to_select,
+                                   QItemSelectionModel::ClearAndSelect);
 }
 
 void MainWindow::on_pushButton_minus_tree_clicked() {
@@ -380,21 +441,26 @@ void MainWindow::on_pushButton_minus_tree_clicked() {
     return;
   }
 
-  auto &&_selection_model = ui->treeView->selectionModel();
-  QModelIndexList rows = _selection_model->selectedRows();
+  auto &&selection_model = ui->treeView->selectionModel();
+  QModelIndexList rows = selection_model->selectedRows();
   if (rows.empty())
     return;
+
   auto &&selected_index = rows.at(0);
-  _comm_managers[0]->Do(new RemoveTagCommand(selected_index, tree_view_model));
+  _comm_managers[0]->Do(
+      std::make_unique<RemoveTagCommand>(selected_index, tree_view_model));
 
-  setDisableForButtonsInLayout(ui->horizontalLayout_2, true);
-  setDisableForButtonsInLayout(ui->horizontalLayout,
-                               (ui->treeView->model()->rowCount() == 0));
-
-  ui->tableView->setModel(nullptr);
-  ui->treeView->expand(selected_index.parent());
-
-  ui->pushButton_plus_tree->setDisabled(ui->treeView->model()->rowCount() > 1);
+  if (selected_index.parent() !=
+      QModelIndex()) { // если удалили не первый эелемент
+    ui->treeView->expand(selected_index.parent());
+    // когда удаляем элемент, селектируем его родителя
+    selection_model->setCurrentIndex(selected_index.parent(),
+                                     QItemSelectionModel::ClearAndSelect);
+  } else {
+    setDisableForButtonsInLayout(ui->horizontalLayout, true);
+    ui->pushButton_plus_tree->setEnabled(true);
+    delete ui->tableView->model();
+  }
 }
 
 void MainWindow::on_pushButton_new_child_row_tree_clicked() {
@@ -413,9 +479,13 @@ void MainWindow::on_pushButton_new_child_row_tree_clicked() {
   if (parent_tag_index == tree_view_model->invisibleRootItem()->index())
     return;
 
-  _comm_managers[0]->Do(new AddChildTagCommand(
-      parent_tag_index, tree_view_model, selection_model, ""));
+  _comm_managers[0]->Do(std::make_unique<AddChildTagCommand>(
+      parent_tag_index, tree_view_model, ""));
   ui->treeView->expand(parent_tag_index);
+
+  // когда добавляется новый элемент, селектируем его
+  selection_model->setCurrentIndex(parent_tag_index.child(0, 0),
+                                   QItemSelectionModel::ClearAndSelect);
 }
 
 void MainWindow::on_pushButton_plus_table_clicked() {
@@ -425,16 +495,20 @@ void MainWindow::on_pushButton_plus_table_clicked() {
   auto &&table_selection_model = ui->tableView->selectionModel();
 
   QModelIndexList tree_indexes = tree_selection_model->selectedIndexes();
-  if (tree_indexes.empty() || tree_indexes.size() > 1) {
+  if (tree_indexes.empty()) {
     return;
   }
 
   auto &&row_to_insert = table_model->rowCount();
+  _comm_managers[0]->Do(
+      std::make_unique<AddAttributeCommand>(row_to_insert, table_model));
 
-  _comm_managers[0]->Do(new AddAttributeCommand(row_to_insert, table_model,
-                                                table_selection_model));
-  ui->pushButton_minus_table->setDisabled(
-      table_selection_model->selectedRows().empty());
+  // когда добавляется новый элемент, селектируем его
+  table_selection_model->select(table_model->index(0, 0),
+                                QItemSelectionModel::Select |
+                                    QItemSelectionModel::Rows);
+
+  ui->pushButton_minus_table->setEnabled(true);
 }
 
 void MainWindow::on_pushButton_minus_table_clicked() {
@@ -443,13 +517,16 @@ void MainWindow::on_pushButton_minus_table_clicked() {
   auto &&table_selection_model = ui->tableView->selectionModel();
 
   QModelIndexList table_rows = table_selection_model->selectedRows();
-  if (table_rows.empty() || table_rows.size() > 1)
+  if (table_rows.empty())
     return;
+
   auto &&index_to_remove = table_rows.at(0);
 
-  _comm_managers[0]->Do(new RemoveAttributeCommand(index_to_remove, table_model,
-                                                   table_selection_model));
-  ui->pushButton_minus_table->setDisabled(table_selection_model->selectedRows().empty());
+  _comm_managers[0]->Do(
+      std::make_unique<RemoveAttributeCommand>(index_to_remove, table_model));
+
+  ui->pushButton_minus_table->setDisabled(ui->tableView->model()->rowCount() ==
+                                          0);
 }
 
 void MainWindow::on_listView_doubleClicked(const QModelIndex &index) {

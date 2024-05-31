@@ -5,9 +5,9 @@
 #include "events/changeactivenodeevent.h"
 #include "events/changecontrollerevent.h"
 #include "events/drawevent.h"
-#include "events/updateblockevent.h"
 #include "events/removeblockevent.h"
 #include "events/repaintevent.h"
+#include "events/updateblockevent.h"
 #include "models/nodetype.h"
 #include "namemaker/blocknamemaker.h"
 
@@ -58,7 +58,8 @@ void BlockField::Update(std::shared_ptr<Event> e) {
     auto &&change_ctr_e = std::static_pointer_cast<ChangeControllerEvent>(e);
     switch (change_ctr_e->GetControllerType()) {
     case drawLineController: {
-      _controller.reset(new DrawLineController(_field_model, _line_model, *_cm));
+      _controller.reset(
+          new DrawLineController(_field_model, _line_model, *_cm));
       break;
     }
     case defaultController: {
@@ -142,6 +143,11 @@ QWidget *BlockField::FindById(Id id) {
     }
   }
   return res;
+}
+
+void BlockField::Clear() {
+  _selection_model.Clear();
+  _field_model.RemoveAll();  
 }
 
 void BlockField::mouseMoveEvent(QMouseEvent *event) {

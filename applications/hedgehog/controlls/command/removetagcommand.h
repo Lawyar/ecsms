@@ -2,11 +2,8 @@
 
 #include "icommand.h"
 
-#include <QItemSelectionModel>
 #include <QModelIndex>
 #include <QStandardItemModel>
-#include <QTableView>
-#include <QTreeView>
 
 class RemoveTagCommand : public ICommand {
 public:

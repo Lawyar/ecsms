@@ -1,5 +1,10 @@
 #include "commandmanager.h"
 
+void CommandManager::ClearCommands() { 
+  _commands.clear();
+  _executed_command_count = 0;
+}
+
 bool CommandManager::HasCommandsToRedo() const {
   return _executed_command_count < _commands.size();
 }
@@ -8,13 +13,13 @@ bool CommandManager::HasCommandsToUndo() const {
   return _executed_command_count > 0;
 }
 
-void CommandManager::Do(ICommand *command) {
+void CommandManager::Do(std::unique_ptr<ICommand> command) {
   if (HasCommandsToRedo()) {
     _commands.erase(_commands.begin() + _executed_command_count,
                     _commands.end());
   }
   command->Execute();
-  _commands.push_back(command);
+  _commands.push_back(std::move(command));
   ++_executed_command_count;
 }
 

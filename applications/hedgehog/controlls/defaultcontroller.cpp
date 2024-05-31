@@ -85,8 +85,8 @@ void DefaultController::onMouseReleaseEvent(QWidget *widget,
                                             QMouseEvent *event) {
   if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
     if (_old_block_pos) {
-      _cm.Do(new MoveBlockCommand(_field_model, block_w->GetId(),
-                                  *_old_block_pos, block_w->pos()));
+      _cm.Do(std::make_unique<MoveBlockCommand>(
+          _field_model, block_w->GetId(), *_old_block_pos, block_w->pos()));
     }
     _old_block_pos = std::nullopt;
     _old_mouse_pos = std::nullopt;
@@ -172,7 +172,7 @@ void DefaultController::onFieldKeyPress(const QKeyEvent *event) {
       }
     }
     _selection_model.Clear();
-    _cm.Do(
-        new RemoveCommand(_field_model, selected_connections, selected_blocks));
+    _cm.Do(std::make_unique<RemoveCommand>(_field_model, selected_connections,
+                                           selected_blocks));
   }
 }
