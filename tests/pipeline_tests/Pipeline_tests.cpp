@@ -14,14 +14,14 @@ class TestConsumerStage : public ConsumerStage<int> {
   static constexpr auto stageName = "TestConsumerStage";
   using consumptionT = int;
 
-  TestConsumerStage(TaskRetrieveStrategy consumptionStrategy,
+  TestConsumerStage(ConsumerStrategy consumptionStrategy,
                     std::weak_ptr<InStageConnection<int>> inConnection)
       : ConsumerStage(stageName, consumptionStrategy, inConnection) {}
 
   MOCK_METHOD(void, consume, (shared_ptr<int> inData), (override));
 
   void consumeImpl(shared_ptr<int> outData) {
-    releaseConsumerTask(outData);
+    releaseConsumptionData(outData);
   }
 };
 
@@ -37,13 +37,13 @@ class TestProducerStage : public ProducerStage<int> {
 
   void produceImpl(shared_ptr<int> outData, int outValue, bool produced) {
     *outData = outValue;
-    releaseProducerTask(outData, produced);
+    releaseProductionData(outData, produced);
   }
 };
 
 TEST(Pipeline_tests, getStagesWorksOnEmpty) {
   Pipeline p;
-  vector<shared_ptr<PipelineStage>> stages;
+  vector<shared_ptr<IPipelineStage>> stages;
 
   ASSERT_NO_THROW(stages = p.getStages());
   ASSERT_TRUE(stages.empty());
@@ -54,7 +54,7 @@ TEST(Pipeline_tests, addStageWorks) {
 
   auto connection = make_shared<
       InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
-  auto stage = make_shared<TestConsumerStage>(TaskRetrieveStrategy::newest, connection);
+  auto stage = make_shared<TestConsumerStage>(ConsumerStrategy::consumeNewest, connection);
 
   p.addConnection(connection);
   p.addStage(stage);
@@ -72,12 +72,12 @@ TEST(Pipeline_tests, getStageWorks) {
   auto connection = make_shared<
       InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto stage =
-      make_shared<TestConsumerStage>(TaskRetrieveStrategy::newest, connection);
+      make_shared<TestConsumerStage>(ConsumerStrategy::consumeNewest, connection);
 
   p.addConnection(connection);
   p.addStage(stage);
 
-  shared_ptr<PipelineStage> stageFromPipeline;
+  shared_ptr<IPipelineStage> stageFromPipeline;
   ASSERT_NO_THROW(stageFromPipeline = p.getStage(TestConsumerStage::stageName));
   ASSERT_EQ(stageFromPipeline, stage);
 }
@@ -88,7 +88,7 @@ TEST(Pipeline_tests, getStageThrowsOnUnexisting) {
   auto connection = make_shared<
       InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto stage =
-      make_shared<TestConsumerStage>(TaskRetrieveStrategy::newest, connection);
+      make_shared<TestConsumerStage>(ConsumerStrategy::consumeNewest, connection);
 
   p.addConnection(connection);
   p.addStage(stage);
@@ -103,7 +103,7 @@ TEST(Pipeline_tests, singleConsumerConsumes) {
       InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto producer = make_shared<TestProducerStage>(connection);
   auto consumer =
-      make_shared<TestConsumerStage>(TaskRetrieveStrategy::oldest, connection);
+      make_shared<TestConsumerStage>(ConsumerStrategy::consumeOldest, connection);
 
   p.addConnection(connection);
   p.addStage(producer);
@@ -139,13 +139,13 @@ TEST(Pipeline_tests, multipleConsumersConsume) {
       InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto producer = make_shared<TestProducerStage>(connection);
   auto consumer1 =
-      make_shared<TestConsumerStage>(TaskRetrieveStrategy::oldest, connection);
+      make_shared<TestConsumerStage>(ConsumerStrategy::consumeOldest, connection);
   auto consumer2 =
-      make_shared<TestConsumerStage>(TaskRetrieveStrategy::oldest, connection);
+      make_shared<TestConsumerStage>(ConsumerStrategy::consumeOldest, connection);
   auto consumer3 =
-      make_shared<TestConsumerStage>(TaskRetrieveStrategy::oldest, connection);
+      make_shared<TestConsumerStage>(ConsumerStrategy::consumeOldest, connection);
   auto consumer4 =
-      make_shared<TestConsumerStage>(TaskRetrieveStrategy::oldest, connection);
+      make_shared<TestConsumerStage>(ConsumerStrategy::consumeOldest, connection);
 
   p.addConnection(connection);
   p.addStage(producer);

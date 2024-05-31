@@ -22,7 +22,7 @@ void SteadyClock::waitForMs(unsigned t) {
   waitForUs(chrono::milliseconds(t));
 }
 
-void SteadyClock::waitForUs(const chrono::microseconds &t) {
+void SteadyClock::waitForUs(const chrono::microseconds& t) {
   this_thread::sleep_for(t);
 }
 

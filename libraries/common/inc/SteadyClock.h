@@ -4,7 +4,7 @@
 #include <cstdint>
 
 class SteadyClock {
-public:
+ public:
   static std::chrono::microseconds nowUs();
   static std::chrono::milliseconds nowMs();
 

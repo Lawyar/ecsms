@@ -5,20 +5,10 @@
 
 template <typename T>
 class OutStageConnection : public virtual StageConnection {
-public:
-  ~OutStageConnection() override = default;
-
-  void connectProducer();
-
+ public:
   virtual std::shared_ptr<StageTask<T>> getProducerTask() = 0;
 
-  virtual void releaseProducerTask(std::shared_ptr<T>, uint64_t timestamp,
+  virtual void releaseProducerTask(std::shared_ptr<T> taskData,
+                                   size_t newTaskId,
                                    bool produced) = 0;
-
-private:
-  virtual void onProducerConnected() = 0;
 };
-
-template <typename T> void OutStageConnection<T>::connectProducer() {
-  onProducerConnected();
-}

@@ -1,26 +1,22 @@
 #pragma once
 
-#include "ConnectablePipelineStage.h"
+#include "GenericPipelineStage.h"
 
 template <typename In, typename Out>
-class ConsumerAndProducerStage : public ConnectablePipelineStage<In, Out> {
+class ConsumerAndProducerStage : public GenericPipelineStage<In, Out> {
 public:
   ConsumerAndProducerStage(
-      const std::string &stageName, TaskRetrieveStrategy consumerStrategy,
+      const std::string &stageName, ConsumerStrategy consumerStrategy,
       std::shared_ptr<InStageConnection<In>> inConnection,
       std::shared_ptr<OutStageConnection<Out>> outConnection);
-
-private:
-  virtual void consumeAndProduce(std::shared_ptr<In> inData,
-                                 std::shared_ptr<Out> outData) = 0;
 };
 
 template <typename In, typename Out>
 ConsumerAndProducerStage<In, Out>::ConsumerAndProducerStage(
-    const std::string &stageName, TaskRetrieveStrategy consumerStrategy,
+    const std::string &stageName, ConsumerStrategy consumerStrategy,
     std::shared_ptr<InStageConnection<In>> inConnection,
     std::shared_ptr<OutStageConnection<Out>> outConnection)
-    : ConnectablePipelineStage<In, Out>(stageName, consumerStrategy,
+    : GenericPipelineStage<In, Out>(stageName, consumerStrategy,
                                         inConnection, outConnection) {
   if (!inConnection)
     throw std::invalid_argument("inConnection is null");
@@ -28,8 +24,6 @@ ConsumerAndProducerStage<In, Out>::ConsumerAndProducerStage(
   if (!outConnection)
     throw std::invalid_argument("outConnection is null");
 
-  outConnection->connectProducer();
   auto consumerId = inConnection->connectConsumer();
-
   setConsumerId(consumerId);
 }

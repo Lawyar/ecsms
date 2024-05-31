@@ -1,3 +1,3 @@
 #pragma once
 
-enum class TaskRetrieveStrategy { newest, oldest };
+enum class ConsumerStrategy { consumeOldest, consumeNewest };
