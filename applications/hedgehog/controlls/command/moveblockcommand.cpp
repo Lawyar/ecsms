@@ -2,8 +2,7 @@
 
 MoveBlockCommand::MoveBlockCommand(FieldModel &field_model, BlockId block,
                                    QPoint old_pos, QPoint new_pos)
-    : _field_model(field_model), _block(block), _old_pos(old_pos),
-      _new_pos(new_pos) {}
+    : _field_model(field_model), _block(block), _old_pos(old_pos), _new_pos(new_pos) {}
 
 void MoveBlockCommand::Execute() {
   auto &&block_data = _field_model.GetBlockData(_block);

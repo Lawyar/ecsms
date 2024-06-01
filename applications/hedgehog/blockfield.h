@@ -39,7 +39,6 @@ private:
   FieldModel _field_model;
   SelectionModel _selection_model;
   LineModel _line_model;
-  VisualizationModel _vis_model;
 };
 
 #endif // BLOCKFIELD_H
