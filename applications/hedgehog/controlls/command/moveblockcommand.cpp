@@ -1,10 +1,9 @@
 #include "moveblockcommand.h"
 
-MoveBlockCommand::MoveBlockCommand(FieldModel &field_model,
-                                   VisualizationModel &vis_model, BlockId block,
+MoveBlockCommand::MoveBlockCommand(FieldModel &field_model, BlockId block,
                                    QPoint old_pos, QPoint new_pos)
-    : _field_model(field_model), _vis_model(vis_model), _block(block),
-      _old_pos(old_pos), _new_pos(new_pos) {}
+    : _field_model(field_model), _block(block), _old_pos(old_pos),
+      _new_pos(new_pos) {}
 
 void MoveBlockCommand::Execute() {
   auto &&block_data = _field_model.GetBlockData(_block);
@@ -12,8 +11,7 @@ void MoveBlockCommand::Execute() {
     assert(false);
     return;
   }
-  FieldModel::BlockData new_block_data = {_vis_model.MapToVisualization(_new_pos),
-                                          block_data->offset,
+  FieldModel::BlockData new_block_data = {_new_pos, block_data->offset,
                                           block_data->text};
   _field_model.SetBlockData(_block, new_block_data);
 }
@@ -24,6 +22,6 @@ void MoveBlockCommand::UnExecute() {
     assert(false);
     return;
   }
-  new_block_data->pos = _vis_model.MapToVisualization(_old_pos);
+  new_block_data->pos = _old_pos;
   _field_model.SetBlockData(_block, *new_block_data);
 }

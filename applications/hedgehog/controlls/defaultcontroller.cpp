@@ -29,7 +29,6 @@ void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
   if (qobject_cast<BlockField *>(widget)) {
     if (event->buttons() == Qt::LeftButton && _old_mouse_pos) {
       QPoint delta = event->pos() - *_old_mouse_pos;
-      qDebug() << "mouse move delta: " << _vis_model.GetCenterCoord() + delta;
       _vis_model.SetNewCoordCenter(_vis_model.GetCenterCoord() + delta);
     }
   }
@@ -96,8 +95,6 @@ void DefaultController::onMouseReleaseEvent(QWidget *widget,
                                             QMouseEvent *event) {
   if (qobject_cast<BlockField *>(widget)) {
     if (_old_field_pos) {
-      qDebug() << "mouse release old_field_pos: " << *_old_field_pos;
-      qDebug() << "mouse release current center coord: " << _vis_model.GetCenterCoord();
       _vis_model.SetNewCoordCenter(*_old_field_pos);
     }
     _old_field_pos = std::nullopt;
@@ -106,9 +103,8 @@ void DefaultController::onMouseReleaseEvent(QWidget *widget,
   
   else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
     if (_old_block_pos && *_old_block_pos != block_w->pos()) {
-      qDebug() << _vis_model.GetCenterCoord();
       _cm.Do(std::make_unique<MoveBlockCommand>(
-          _field_model, _vis_model, block_w->GetId(), *_old_block_pos, block_w->pos()));
+          _field_model, block_w->GetId(), *_old_block_pos, block_w->pos()));
     }
     _old_block_pos = std::nullopt;
     _old_mouse_pos = std::nullopt;
@@ -162,8 +158,6 @@ void DefaultController::onFieldMousePress(const QMouseEvent *event) {
   if (event->button() == Qt::LeftButton) {
     _old_field_pos = _vis_model.GetCenterCoord();
     _old_mouse_pos = event->pos();
-    qDebug() << "mouse pressed _old_field_pos: " << *_old_field_pos;
-    qDebug() << "mouse pressed _old_mouse_pos: " << *_old_mouse_pos;
   }
 
   _selection_model.Clear();

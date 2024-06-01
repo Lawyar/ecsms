@@ -43,18 +43,6 @@ void BlockField::Update(std::shared_ptr<Event> e) {
     auto &&draw_e = std::static_pointer_cast<DrawEvent>(e);
     switch (draw_e->GetDrawEventType()) {
     case repaintEvent: {
-      // move all blocks to their curr pos + center coord
-      auto &&blocks_map = _field_model.GetBlocks();
-      for (auto &&pair_iter = blocks_map.begin();
-           pair_iter != blocks_map.end(); ++pair_iter) {
-        FieldModel::BlockData new_bd = pair_iter.value();
-        qDebug() << "curr center coord: " << _vis_model.GetCenterCoord();
-        qDebug() << "block_id: " << pair_iter.key().GetId()
-                 << " old_pos: " << new_bd.pos
-                 << " new_pos: " << _vis_model.MapToVisualization(new_bd.pos);
-        new_bd.pos = _vis_model.MapToVisualization(new_bd.pos);
-        _field_model.SetBlockData(pair_iter.key(), new_bd);
-      }
       repaint();
       break;
     }
@@ -191,6 +179,15 @@ void BlockField::paintEvent(QPaintEvent *event) {
   QPainter p(this);
   p.eraseRect(rect());
   p.setBackground(QBrush(Qt::white));
+
+  // move all blocks to their curr pos + center coord
+  auto &&blocks_map = _field_model.GetBlocks();
+  for (auto &&pair_iter = blocks_map.begin(); pair_iter != blocks_map.end();
+       ++pair_iter) {
+    FieldModel::BlockData new_bd = pair_iter.value();
+    new_bd.pos = _vis_model.MapToVisualization(new_bd.pos);
+    _field_model.SetBlockData(pair_iter.key(), new_bd);
+  }
 
   /*-DRAW SELECTED AND NOT SELECTED LINES-*/
   std::vector<QLineF> unselected_lines, selected_lines;
