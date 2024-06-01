@@ -11,14 +11,13 @@ set(SOURCE_LIST
     controlls/command/addchildtagcommand.h controlls/command/addchildtagcommand.cpp
     controlls/command/addconnectioncommand.h controlls/command/addconnectioncommand.cpp
     controlls/command/addtagcommand.h controlls/command/addtagcommand.cpp
-    controlls/command/attrtextchangedcommand.h controlls/command/attrtextchangedcommand.cpp
     controlls/command/commandmanager.h controlls/command/commandmanager.cpp
     controlls/command/icommand.h
     controlls/command/moveblockcommand.h controlls/command/moveblockcommand.cpp
     controlls/command/removeattributecommand.h controlls/command/removeattributecommand.cpp
     controlls/command/removecommand.h controlls/command/removecommand.cpp
     controlls/command/removetagcommand.h controlls/command/removetagcommand.cpp
-    controlls/command/tagtextchangedcommand.h controlls/command/tagtextchangedcommand.cpp
+    controlls/command/textchangedcommand.h controlls/command/textchangedcommand.cpp
     controlls/controllerprocedure.h
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
@@ -37,6 +36,7 @@ set(SOURCE_LIST
     models/linemodel.h models/linemodel.cpp
     models/nodetype.h
     models/selectionmodel.h models/selectionmodel.cpp
+    models/visualizationmodel.h models/visualizationmodel.cpp
     namemaker/blocknamemaker.h  namemaker/blocknamemaker.cpp
     namemaker/id.h  namemaker/id.cpp
     observer/iobserver.h

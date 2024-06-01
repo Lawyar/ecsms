@@ -1,4 +1,5 @@
 #include "qlineeditdelegate.h"
+#include "controlls/command/textchangedcommand.h"
 
 #include <QDebug>
 #include <QToolTip>
@@ -94,13 +95,14 @@ private:
   QModelIndex _index;
 };
 
-QLineEditDelegate::QLineEditDelegate(QObject *parent, WhatValidate type)
-    : QItemDelegate(parent), _type(type) {}
+QLineEditDelegate::QLineEditDelegate(QObject *parent, WhatValidate type,
+                                     std::shared_ptr<CommandManager> cm)
+    : QItemDelegate(parent), _type(type), _cm(cm) {}
 
 QWidget *QLineEditDelegate::createEditor(QWidget *parent,
                                          const QStyleOptionViewItem &option,
                                          const QModelIndex &index) const {
-  QValidator *validator;
+  QValidator *validator = nullptr;
   switch (_type) {
   case WhatValidate::XMLTag: {
     validator = new XMLTagValidator(index);
@@ -108,6 +110,9 @@ QWidget *QLineEditDelegate::createEditor(QWidget *parent,
   }
   case WhatValidate::XMLAttribute: {
     validator = new XMLAttributeValidator(index);
+    break;
+  }
+  case WhatValidate::Nothing: {
     break;
   }
   default: {
@@ -134,6 +139,9 @@ QWidget *QLineEditDelegate::createEditor(QWidget *parent,
           }
           break;
         }
+        case WhatValidate::Nothing: {
+          break;
+        }
         default: {
           assert(false);
           return;
@@ -141,6 +149,19 @@ QWidget *QLineEditDelegate::createEditor(QWidget *parent,
         }
       });
   editor->setValidator(validator);
+  qDebug() << "Create and connect editor";
+  connect(editor, &QLineEdit::editingFinished,
+          [type = _type, &cm = _cm, editor, index,
+           prev_text = index.model()->data(index, Qt::EditRole).toString(),
+           already_calls = false]() mutable {
+            if (already_calls)
+              return;
+
+            auto &&curr_text = editor->text();
+            if (prev_text != curr_text)
+              cm->Do(std::make_unique<TextChangedCommand>(index, prev_text, curr_text));
+            already_calls = true;
+          });
 
   return editor;
 }

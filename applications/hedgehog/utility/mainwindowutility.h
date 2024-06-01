@@ -33,6 +33,8 @@ static inline void writeAttributesFromModel(QXmlStreamWriter &xml_writer,
 
 static inline void writeTags(QXmlStreamWriter &xml_writer,
                       const QStandardItem *root) {
+  if (!root)
+    return;
   auto &&tag_data = root->text().split(": ");
   xml_writer.writeStartElement(tag_data.front());
   auto &&table_model =

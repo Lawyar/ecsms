@@ -27,10 +27,17 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 
+  _comm_managers =
+      std::vector<std::shared_ptr<CommandManager>>(ui->tabWidget->count());
+  for (auto &&cm : _comm_managers) {
+    cm = std::make_shared<CommandManager>();
+  }
+
   auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
   ui->treeView->setModel(tree_model);
   ui->treeView->setItemDelegateForColumn(
-      0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLTag));
+      0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLTag,
+                               _comm_managers[0]));
 
   for (auto i = 0; i < 4; ++i) {
     auto series = new QtCharts::QLineSeries;
@@ -73,11 +80,6 @@ MainWindow::MainWindow(QWidget *parent)
   ui->splitter_5->setStretchFactor(1, 1);
   ui->splitter_5->setStretchFactor(0, INT_MAX);
 
-  _comm_managers =
-      std::vector<std::shared_ptr<CommandManager>>(ui->tabWidget->count());
-  for (auto &&cm : _comm_managers) {
-    cm = std::make_shared<CommandManager>();
-  }
   ui->scrollAreaWidgetContents->SetCommandManager(_comm_managers[1]);
 
   _processes = std::vector<QProcess *>(2);
@@ -124,16 +126,23 @@ void MainWindow::on_menuEdit_aboutToShow() {
   ui->actionUndo->setEnabled(_comm_managers[curr_ind]->HasCommandsToUndo());
 }
 
+void MainWindow::updateAllButtons() {}
+
 void MainWindow::on_actionNewFile_triggered_tab0() {
   delete ui->treeView->model();
   auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
   ui->treeView->setModel(tree_model);
   ui->treeView->setItemDelegateForColumn(
-      0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLTag));
+      0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLTag,
+                               _comm_managers[0]));
 
   delete ui->tableView->model();
   ui->tableView->setItemDelegateForColumn(
-      0, new QLineEditDelegate(ui->tableView, WhatValidate::XMLAttribute));
+      0, new QLineEditDelegate(ui->tableView, WhatValidate::XMLAttribute,
+                               _comm_managers[0]));
+  ui->tableView->setItemDelegateForColumn(
+      1, new QLineEditDelegate(ui->treeView, WhatValidate::Nothing,
+                               _comm_managers[0]));
 
   setDisableForButtonsInLayout(ui->horizontalLayout, true);
   setDisableForButtonsInLayout(ui->horizontalLayout_2, true);
@@ -350,7 +359,11 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index) {
   ui->tableView->setModel(
       index.data(Qt::UserRole + 1).value<QStandardItemModel *>());
   ui->tableView->setItemDelegateForColumn(
-      0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLAttribute));
+      0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLAttribute,
+                               _comm_managers[0]));
+  ui->tableView->setItemDelegateForColumn(
+      1, new QLineEditDelegate(ui->treeView, WhatValidate::Nothing,
+                               _comm_managers[0]));
   setDisableForButtonsInLayout(ui->horizontalLayout, false);
   ui->pushButton_plus_tree->setEnabled(index.parent() != QModelIndex());
 }
@@ -374,8 +387,9 @@ void MainWindow::on_treeView_selectionModel_selectionChanged(
   if (selection_now.empty()) {
     setDisableForButtonsInLayout(ui->horizontalLayout, true);
     setDisableForButtonsInLayout(ui->horizontalLayout_2, true);
-    qDebug() << tree_view_model->rowCount();
-    ui->pushButton_plus_tree->setEnabled(tree_view_model->rowCount() == 0);
+    // TODO must be enabled if tree is empty
+    ui->pushButton_plus_tree->setEnabled(tree_view_model->item(0, 0) ==
+                                         nullptr);
     return;
   }
 
@@ -383,7 +397,11 @@ void MainWindow::on_treeView_selectionModel_selectionChanged(
     ui->tableView->setModel(
         item.data(Qt::UserRole + 1).value<QStandardItemModel *>());
     ui->tableView->setItemDelegateForColumn(
-        0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLAttribute));
+        0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLAttribute,
+                                 _comm_managers[0]));
+    ui->tableView->setItemDelegateForColumn(
+        1, new QLineEditDelegate(ui->treeView, WhatValidate::Nothing,
+                                 _comm_managers[0]));
     if (item.parent() == tree_view_model->invisibleRootItem()->index()) {
       contains_root = true;
       break;

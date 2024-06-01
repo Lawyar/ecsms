@@ -1,22 +1,26 @@
 #ifndef QLINEEDITDELEGATE_H
 #define QLINEEDITDELEGATE_H
 
+#include "controlls/command/commandmanager.h"
+
 #include <QItemDelegate>
 #include <QLineEdit>
 #include <QObject>
 #include <QRegExp>
 #include <QRegExpValidator>
+#include <memory>
 
-enum class WhatValidate { XMLTag, XMLAttribute };
+enum class WhatValidate { XMLTag, XMLAttribute, Nothing };
 
 class QLineEditDelegate : public QItemDelegate {
   Q_OBJECT
 
 public:
-  QLineEditDelegate(QObject *parent, WhatValidate type);
+  QLineEditDelegate(QObject *parent, WhatValidate type,
+                    std::shared_ptr<CommandManager> cm);
 
   QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
-                        const QModelIndex &index) const;
+                        const QModelIndex &index) const override;
 
   void setEditorData(QWidget *Editor, const QModelIndex &Index) const;
 
@@ -27,6 +31,7 @@ public:
                             const QModelIndex &Index) const;
 
 private:
+  std::shared_ptr<CommandManager> _cm;
   WhatValidate _type;
 };
 

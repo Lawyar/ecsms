@@ -25,6 +25,8 @@ public:
   bool event(QEvent *event) override;
 
 private:
+  void updateAllButtons();
+
   void on_actionNewFile_triggered_tab0();
   void on_actionOpen_triggered_tab0();
   void on_actionSave_triggered_tab0();
