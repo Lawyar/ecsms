@@ -8,7 +8,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Интерфейс SQL-типа данных "integer"
+  \brief Интерфейс SQL-типа данных "integer"
 */
 //---
 class ISQLTypeInteger : public ISQLType {
@@ -24,6 +24,8 @@ public:
 
 public:
   /// Получить значение
+  /// \return Значение, содержащееся в переменной, если она непустая,
+  ///         иначе \c std::nullopt.
   virtual std::optional<int> GetValue() const = 0;
   /// Установить значение
   virtual void SetValue(int value) = 0;

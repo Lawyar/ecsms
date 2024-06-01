@@ -7,7 +7,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Режим открытия файла
+  \brief Режим открытия файла
 */
 //---
 enum class FileOpenMode {
@@ -25,8 +25,9 @@ enum class FileOpenMode {
 
 //------------------------------------------------------------------------------
 /**
-  Интерфейс файла.
-  ПРЕДУПРЕЖДЕНИЕ: Все неконстантные методы интерфейса должны вызываться в рамках
+  \brief Интерфейс для взаимодействия с удаленным файлом.
+
+  \warning Все неконстантные методы интерфейса должны вызываться в рамках
   транзакции, иначе будут возвращать признак ошибки.
 */
 //---
@@ -39,11 +40,11 @@ public:
   virtual std::string GetFileName() const = 0;
   /// Открыть файл
   /// \param openMode Режим открытия
-  /// \return Статус выполнения операции
+  /// \return \c true, если удалось открыть файл, иначе \c false.
   virtual bool Open(FileOpenMode openMode) = 0;
-  /// Закрыть файл
-  /// Файл, оставшийся открытым в конце транзакции, будет закрыт автоматически
-  /// \return Статус выполнения операции
+  /// Закрыть файл.
+  /// Файл, оставшийся открытым в конце транзакции, будет закрыт автоматически.
+  /// \return \c true, если удалось закрыть файл, иначе \c false.
   virtual bool Close() = 0;
 
   /// Попытаться прочесть байты
@@ -54,7 +55,7 @@ public:
   ///                             прочитано менее, чем bytesCount байтов, это
   ///                             может свидельствовать о том, что файл
   ///                             закончился, или о том, что произошла ошибка.
-  /// \return Статус выполнения операции.
+  /// \return \c true, если удалось прочесть байты, иначе \c false.
   virtual bool ReadBytes(char *buffer, size_t bytesCount,
                          size_t *numberOfBytesReadPtr = nullptr) = 0;
   /// Попытаться прочесть объекты
@@ -76,7 +77,7 @@ public:
   ///                                может свидельствовать о том, что файл
   ///                                закончился, или о том, что произошла
   ///                                ошибка.
-  /// \return Статус выполнения операции.
+  /// \return \c true, если удалось прочесть объекты, иначе \c false.
   template <class T>
   bool ReadBytes(size_t elementsCount, std::vector<T> &arr,
                  size_t *numberOfElementsReadPtr = nullptr) {
@@ -102,7 +103,7 @@ public:
   /// \param len Длина этого массива
   /// \param numberOfBytesWrittenPtr Переменная, в которую запишется количество
   ///                                успешно записанных байтов.
-  /// \return Статус выполнения операции.
+  /// \return \c true, если удалось запись байты, иначе \c false.
   virtual bool WriteBytes(const char *data, size_t len,
                           size_t *numberOfBytesWrittenPtr = nullptr) = 0;
   /// Попытаться записать данные.
@@ -115,7 +116,7 @@ public:
   /// \param len Длина этого массива
   /// \param numberOfBytesWrittenPtr Переменная, в которую запишется количество
   ///                                успешно записанных байтов.
-  /// \return Статус выполнения операции.
+  /// \return \c true, если удалось запись данные, иначе \c false.
   template <class T>
   bool WriteBytes(const std::vector<T> &data,
                   size_t *numberOfElementsWrittenPtr = nullptr) {

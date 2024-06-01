@@ -14,7 +14,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Интерфейс конвертера в SQL-тип данных
+  \brief Интерфейс конвертера в SQL-тип данных
 */
 //---
 class ISQLTypeConverter {
@@ -24,6 +24,7 @@ public:
 
 public: // Получение SQL-переменных
   /// Получить пустую SQL-переменную
+  /// \type Тип данных SQL-переменной
   virtual ISQLTypePtr GetSQLVariable(SQLDataType type) const = 0;
 
   /// Получить SQL-Integer переменную
@@ -47,7 +48,7 @@ public: // Получение SQL-переменных
 
   /// Получить SQL-RemoteFileId переменную
   virtual ISQLTypeRemoteFileIdPtr GetSQLTypeRemoteFileId() const = 0;
-  /// Получить SQL-RemoteFileId переменную
+  /// Получить SQL-RemoteFileId переменную по идентификатору удаленного файла
   virtual ISQLTypeRemoteFileIdPtr
   GetSQLTypeRemoteFileId(const std::string &id) const = 0;
 };

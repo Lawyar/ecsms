@@ -7,7 +7,7 @@
 
 //------------------------------------------------------------------------------
 /**
-  Интерфейс SQL-типа данных "bytea".
+  \brief Интерфейс SQL-типа данных "bytea".
 */
 //---
 class ISQLTypeByteArray : public ISQLType {
@@ -23,6 +23,8 @@ public:
 
 public:
   /// Получить значение
+  /// \return Значение, содержащееся в переменной, если она непустая,
+  ///         иначе \c std::nullopt.
   virtual const std::optional<std::vector<char>> &GetValue() const = 0;
   /// Установить значение
   /// \param value Массив, из которого нужно установить значение.
