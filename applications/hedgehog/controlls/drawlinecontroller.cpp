@@ -23,13 +23,16 @@ DrawLineController::DrawLineController(FieldModel &field_model,
 }
 
 void DrawLineController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
+  const QPoint vis_point = event->pos();
+  const QPoint model_point = _vis_model.MapToModel(vis_point);
+
   if (auto &&field_w = qobject_cast<BlockField *>(widget)) {
-    _line_model.SetEnd(event->pos());
+    _line_model.SetEnd(model_point);
   } else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
-    _line_model.SetEnd(block_w->CoordToBlockField(event->pos()));
+    _line_model.SetEnd(block_w->CoordToBlockField(model_point));
   } else if (auto &&connect_node_w =
                  qobject_cast<ConnectNodeWidget *>(widget)) {
-    _line_model.SetEnd(connect_node_w->coordToBlockField(event->pos()));
+    _line_model.SetEnd(connect_node_w->coordToBlockField(model_point));
   }
 }
 

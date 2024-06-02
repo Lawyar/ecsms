@@ -3,6 +3,7 @@
 #include "../connectnodewidget.h"
 #include "../models/fieldmodel.h"
 #include "../models/linemodel.h"
+#include "../models/visualizationmodel.h"
 #include "activenodeslock.h"
 #include "command/commandmanager.h"
 #include "icontroller.h"

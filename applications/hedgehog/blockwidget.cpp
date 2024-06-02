@@ -87,7 +87,7 @@ QPoint BlockWidget::GetLeftNodeOffset(const QString &text) {
   QFontMetrics metrics(_font);
   QRect rect = metrics.boundingRect(labelText);
 
-  QPoint res(_spacing1 + _nodes_radius / 2, _spacing1 + _button_height + _spacing2 + rect.height() / 2);
+  QPoint res(_spacing1 + _nodes_radius, _spacing1 + _button_height + _spacing2 + rect.height() / 2);
   return res;
 }
 
@@ -96,7 +96,7 @@ QPoint BlockWidget::GetRightNodeOffset(const QString &text) {
   QFontMetrics metrics(_font);
   QRect rect = metrics.boundingRect(labelText);
 
-  QPoint res((_spacing1 + _nodes_radius) * 2 + rect.width() + _spacing1,
+  QPoint res((_spacing1 + _nodes_radius) * 3 + rect.width(),
     _spacing1 + _button_height + _spacing2 + rect.height() / 2);
   return res;
 }

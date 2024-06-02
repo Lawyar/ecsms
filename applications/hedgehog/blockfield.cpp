@@ -9,6 +9,7 @@
 #include "events/repaintevent.h"
 #include "events/updateblockevent.h"
 #include "models/nodetype.h"
+#include "models/visualizationmodel.h"
 #include "namemaker/namemaker.h"
 
 #include <QCoreApplication>
@@ -60,7 +61,7 @@ void BlockField::Update(std::shared_ptr<Event> e) {
     switch (change_ctr_e->GetControllerType()) {
     case drawLineController: {
       _controller.reset(
-          new DrawLineController(_field_model, _line_model, *_cm));
+          new DrawLineController(_field_model, _line_model, _vis_model, *_cm));
       break;
     }
     case defaultController: {
@@ -215,20 +216,22 @@ void BlockField::paintEvent(QPaintEvent *event) {
       NodeType start_type = start_data->node_type;
       NodeType end_type = end_data->node_type;
 
-      QPoint start_pos, end_pos;
+      QPoint model_start_pos, model_end_pos;
       if (auto &&start_pd = _field_model.GetBlockData(start_id.GetParentId())) {
-        start_pos = start_pd->pos + start_pd->offset[start_type];
+        model_start_pos = start_pd->pos + start_pd->offset[start_type];
       }
 
       if (auto &&end_pd = _field_model.GetBlockData(end_id.GetParentId())) {
-        end_pos = end_pd->pos + end_pd->offset[end_type];
+        model_end_pos = end_pd->pos + end_pd->offset[end_type];
       }
 
       auto &&connects_with_start = _selection_model.GetSelectionMap()[start_id];
       auto &&iter = std::find(connects_with_start.begin(),
                               connects_with_start.end(), end_id);
 
-      QLine line(start_pos, end_pos);
+      QPoint vis_start_pos = _vis_model.MapToVisualization(model_start_pos);
+      QPoint vis_end_pos = _vis_model.MapToVisualization(model_end_pos);
+      QLine line(vis_start_pos, vis_end_pos);
       if (iter != connects_with_start.end()) {
         selected_lines.push_back(line);
       } else {
@@ -237,10 +240,10 @@ void BlockField::paintEvent(QPaintEvent *event) {
     }
   }
 
-  p.setPen(QPen(Qt::green, 5, Qt::SolidLine));
+  p.setPen(QPen(Qt::green, 3, Qt::SolidLine));
   p.drawLines(selected_lines.data(), selected_lines.size());
 
-  p.setPen(QPen(Qt::red, 5, Qt::SolidLine));
+  p.setPen(QPen(Qt::red, 3, Qt::SolidLine));
   p.drawLines(unselected_lines.data(), unselected_lines.size());
   /*-------------------------------------*/
 
@@ -260,11 +263,11 @@ void BlockField::paintEvent(QPaintEvent *event) {
   /*--------------------------------*/
 
   // draw connection phantom line
-  auto &&begin = _line_model.GetBegin();
-  auto &&end = _line_model.GetEnd();
-  if (begin && end) {
-    p.setPen(QPen(Qt::red, 5, Qt::SolidLine));
-    p.drawLine(_vis_model.MapToVisualization(*begin),
-               _vis_model.MapToVisualization(*end));
+  auto &&model_begin = _line_model.GetBegin();
+  auto &&model_end = _line_model.GetEnd();
+  if (model_begin && model_end) {
+    p.setPen(QPen(Qt::red, 3, Qt::SolidLine));
+    p.drawLine(_vis_model.MapToVisualization(*model_begin),
+               _vis_model.MapToVisualization(*model_end));
   }
 }

@@ -11,7 +11,7 @@ static float distance(QPoint p1, QPoint p2) {
 }
 
 static bool isPointOnLine(QLine line, QPoint point) {
-  float eps = 20;
+  float eps = 10;
   bool res = abs(distance(line.p1(), point) + distance(line.p2(), point) -
                  distance(line.p1(), line.p2())) < eps;
   return res;
@@ -71,7 +71,7 @@ void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
   }
 
   else if (auto &&connect_node_w = qobject_cast<ConnectNodeWidget *>(widget)) {
-    auto &&node_center = connect_node_w->getCenterCoordToBlockField();
+    auto &&node_center = _vis_model.MapToModel(connect_node_w->getCenterCoordToBlockField());
     _line_model.SetBegin(connect_node_w->GetId(), node_center);
   }
 }
