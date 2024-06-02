@@ -27,7 +27,6 @@ set(SOURCE_LIST
     events/changecontrollerevent.h events/changecontrollerevent.cpp
     events/drawevent.h events/drawevent.cpp
     events/event.h
-    events/mypaintevent.h events/mypaintevent.cpp
     events/updateblockevent.h events/updateblockevent.cpp
     events/removeblockevent.h events/removeblockevent.cpp
     events/repaintevent.h events/repaintevent.cpp
@@ -36,8 +35,7 @@ set(SOURCE_LIST
     models/linemodel.h models/linemodel.cpp
     models/nodetype.h
     models/selectionmodel.h models/selectionmodel.cpp
-    models/visualizationmodel.h models/visualizationmodel.cpp
-    namemaker/blocknamemaker.h  namemaker/blocknamemaker.cpp
+    namemaker/namemaker.h  namemaker/namemaker.cpp
     namemaker/id.h  namemaker/id.cpp
     observer/iobserver.h
     utility/mainwindowutility.h
