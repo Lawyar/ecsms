@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../connectnodewidget.h"
-#include "../namemaker/blocknamemaker.h"
+#include "../namemaker/namemaker.h"
 #include "../namemaker/id.h"
 #include "imodel.h"
 

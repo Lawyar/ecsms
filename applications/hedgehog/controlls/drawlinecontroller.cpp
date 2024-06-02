@@ -4,8 +4,10 @@
 
 DrawLineController::DrawLineController(FieldModel &field_model,
                                        LineModel &line_model,
+                                       const VisualizationModel &vis_model,
                                        CommandManager &cm)
-    : _field_model(field_model), _line_model(line_model), _cm(cm) {
+    : _field_model(field_model), _line_model(line_model), _vis_model(vis_model),
+      _cm(cm) {
   auto &&node_id = _line_model.GetBeginNode();
   assert(node_id);
   _active_because_drawing.reset(new ActiveNodesLock(

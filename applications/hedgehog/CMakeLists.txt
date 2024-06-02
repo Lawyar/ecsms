@@ -35,6 +35,7 @@ set(SOURCE_LIST
     models/linemodel.h models/linemodel.cpp
     models/nodetype.h
     models/selectionmodel.h models/selectionmodel.cpp
+    models/visualizationmodel.h models/visualizationmodel.cpp
     namemaker/namemaker.h  namemaker/namemaker.cpp
     namemaker/id.h  namemaker/id.cpp
     observer/iobserver.h

@@ -2,7 +2,7 @@
 #define BLOCKWIDGET_H
 
 #include "namemaker/id.h"
-#include "namemaker/blocknamemaker.h"
+#include "namemaker/namemaker.h"
 
 #include <QLabel>
 #include <QObject>

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "command/commandmanager.h"
 #include "../connectnodewidget.h"
 #include "../models/fieldmodel.h"
 #include "../models/linemodel.h"
 #include "activenodeslock.h"
+#include "command/commandmanager.h"
 #include "icontroller.h"
 
 #include <memory>
@@ -12,7 +12,7 @@
 class DrawLineController : public IController {
 public:
   DrawLineController(FieldModel &field_model, LineModel &line_model,
-                     CommandManager &cm);
+                     const VisualizationModel &vis_model, CommandManager &cm);
   virtual void onMouseMoveEvent(QWidget *widget, QMouseEvent *event) override;
   virtual void onMousePressEvent(QWidget *widget, QMouseEvent *event) override;
   virtual void onKeyPressEvent(QWidget *widget, QKeyEvent *event) override;
@@ -28,6 +28,7 @@ private:
 private:
   FieldModel &_field_model;
   LineModel &_line_model;
+  const VisualizationModel &_vis_model;
   CommandManager &_cm;
   std::unique_ptr<ActiveNodesLock> _active_because_drawing,
       _active_because_entered;

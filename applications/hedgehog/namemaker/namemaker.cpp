@@ -1,4 +1,4 @@
-#include "blocknamemaker.h"
+#include "namemaker.h"
 
 NameMaker::NameMaker(int counter) : counter(counter) {}
 

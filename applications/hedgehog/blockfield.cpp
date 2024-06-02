@@ -9,7 +9,7 @@
 #include "events/repaintevent.h"
 #include "events/updateblockevent.h"
 #include "models/nodetype.h"
-#include "namemaker/blocknamemaker.h"
+#include "namemaker/namemaker.h"
 
 #include <QCoreApplication>
 #include <QDebug>
@@ -23,12 +23,13 @@ BlockField::BlockField(QWidget *parent) : QWidget(parent) {
   _field_model.Subscribe(this);
   _selection_model.Subscribe(this);
   _line_model.Subscribe(this);
+  _vis_model.Subscribe(this);
 }
 
 void BlockField::SetCommandManager(std::shared_ptr<CommandManager> cm) {
   _cm = cm;
-  _controller.reset(
-      new DefaultController(_field_model, _selection_model, _line_model, *_cm));
+  _controller.reset(new DefaultController(_field_model, _selection_model,
+                                          _line_model, _vis_model, *_cm));
 }
 
 void BlockField::AddBlock() {
@@ -64,7 +65,7 @@ void BlockField::Update(std::shared_ptr<Event> e) {
     }
     case defaultController: {
       _controller.reset(new DefaultController(_field_model, _selection_model,
-                                              _line_model, *_cm));
+                                              _line_model, _vis_model, *_cm));
       break;
     }
     default: {
@@ -96,14 +97,14 @@ void BlockField::Update(std::shared_ptr<Event> e) {
   }
   case updateBlockEvent: {
     auto &&update_block_e = std::static_pointer_cast<UpdateBlockEvent>(e);
-    auto &&block_w = FindById(update_block_e->GetBlock());
-    if (!block_w) {
+    auto &&block = FindById(update_block_e->GetBlock());
+    if (!block) {
       assert(false);
       return;
     }
     auto &&block_data = update_block_e->GetBlockData();
-    block_w->move(block_data.pos);
-    qobject_cast<BlockWidget *>(block_w)->SetText(block_data.text);
+    block->move(block_data.pos);
+    qobject_cast<BlockWidget *>(block)->SetText(block_data.text);
     repaint();
     break;
   }
@@ -147,7 +148,7 @@ QWidget *BlockField::FindById(Id id) {
 
 void BlockField::Clear() {
   _selection_model.Clear();
-  _field_model.RemoveAll();  
+  _field_model.RemoveAll();
 }
 
 void BlockField::mouseMoveEvent(QMouseEvent *event) {
@@ -178,6 +179,21 @@ void BlockField::paintEvent(QPaintEvent *event) {
   QPainter p(this);
   p.eraseRect(rect());
   p.setBackground(QBrush(Qt::white));
+
+  // move all blocks to their curr pos + center coord
+  // todo : cysch otsyuda
+  auto &&blocks_map = _field_model.GetBlocks();
+  for (auto &&pair_iter = blocks_map.begin(); pair_iter != blocks_map.end();
+       ++pair_iter) {
+    auto &&blockId = pair_iter.key();
+    auto &&blockData = pair_iter.value();
+    if (auto && widget = FindById(blockId))
+    {
+      auto &&newPos = _vis_model.MapToVisualization(blockData.pos);
+      widget->move(newPos);
+    } else
+      assert(false);
+  }
 
   /*-DRAW SELECTED AND NOT SELECTED LINES-*/
   std::vector<QLineF> unselected_lines, selected_lines;
@@ -211,18 +227,20 @@ void BlockField::paintEvent(QPaintEvent *event) {
       auto &&connects_with_start = _selection_model.GetSelectionMap()[start_id];
       auto &&iter = std::find(connects_with_start.begin(),
                               connects_with_start.end(), end_id);
+
+      QLine line(start_pos, end_pos);
       if (iter != connects_with_start.end()) {
-        selected_lines.push_back({start_pos, end_pos});
+        selected_lines.push_back(line);
       } else {
-        unselected_lines.push_back({start_pos, end_pos});
+        unselected_lines.push_back(line);
       }
     }
   }
 
-  p.setPen(QPen(Qt::green, 1, Qt::SolidLine));
+  p.setPen(QPen(Qt::green, 5, Qt::SolidLine));
   p.drawLines(selected_lines.data(), selected_lines.size());
 
-  p.setPen(QPen(Qt::red, 1, Qt::SolidLine));
+  p.setPen(QPen(Qt::red, 5, Qt::SolidLine));
   p.drawLines(unselected_lines.data(), unselected_lines.size());
   /*-------------------------------------*/
 
@@ -241,10 +259,12 @@ void BlockField::paintEvent(QPaintEvent *event) {
   }
   /*--------------------------------*/
 
+  // draw connection phantom line
   auto &&begin = _line_model.GetBegin();
   auto &&end = _line_model.GetEnd();
-  if (begin && end) { // draw connection line
-    p.setPen(QPen(Qt::red, 1, Qt::SolidLine));
-    p.drawLine(*begin, *end);
+  if (begin && end) {
+    p.setPen(QPen(Qt::red, 5, Qt::SolidLine));
+    p.drawLine(_vis_model.MapToVisualization(*begin),
+               _vis_model.MapToVisualization(*end));
   }
 }
