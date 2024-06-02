@@ -1,10 +1,6 @@
 set(SOURCE_LIST
-    blockfield.cpp blockfield.h
-    blockwidget.cpp blockwidget.h
-    connectnodewidget.cpp connectnodewidget.h
     main.cpp
     mainwindow.cpp mainwindow.h mainwindow.ui
-    qlineeditdelegate.cpp qlineeditdelegate.h
     controlls/activenodeslock.h controlls/activenodeslock.cpp
     controlls/command/addattributecommand.h controlls/command/addattributecommand.cpp
     controlls/command/addblockcommand.h controlls/command/addblockcommand.cpp
@@ -22,6 +18,7 @@ set(SOURCE_LIST
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
     controlls/icontroller.h
+    delegate/qlineeditdelegate.cpp delegate/qlineeditdelegate.h
     events/addblockevent.h events/addblockevent.cpp
     events/changeactivenodeevent.h  events/changeactivenodeevent.cpp
     events/changecontrollerevent.h events/changecontrollerevent.cpp
@@ -42,6 +39,9 @@ set(SOURCE_LIST
     utility/mainwindowutility.h
     utility/containerutility.h
     utility/tagutility.h
+    widgets/blockfieldwidget.cpp widgets/blockfieldwidget.h
+    widgets/blockwidget.cpp widgets/blockwidget.h
+    widgets/connectnodewidget.cpp widgets/connectnodewidget.h
 )
 
 set(ONLY_SOURCE_LIST ${SOURCE_LIST})

@@ -1,5 +1,5 @@
 #include "qlineeditdelegate.h"
-#include "controlls/command/textchangedcommand.h"
+#include "../controlls/command/textchangedcommand.h"
 
 #include <QDebug>
 #include <QToolTip>

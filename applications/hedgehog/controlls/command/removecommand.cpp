@@ -1,5 +1,5 @@
 #include "removecommand.h"
-#include "../../blockwidget.h"
+#include "../../widgets/blockwidget.h"
 
 RemoveCommand::RemoveCommand(
     FieldModel &field_model,

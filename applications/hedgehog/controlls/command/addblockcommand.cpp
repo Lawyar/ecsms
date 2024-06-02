@@ -1,5 +1,5 @@
 #include "addblockcommand.h"
-#include "../../blockwidget.h"
+#include "../../widgets/blockwidget.h"
 
 AddBlockCommand::AddBlockCommand(BlockId block, QPoint pos, const QString &text,
                                  FieldModel &field_model,

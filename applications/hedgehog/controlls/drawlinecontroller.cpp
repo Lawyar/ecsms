@@ -1,5 +1,5 @@
 #include "drawlinecontroller.h"
-#include "../blockfield.h"
+#include "../widgets/blockfieldwidget.h"
 #include "command/addconnectioncommand.h"
 
 DrawLineController::DrawLineController(FieldModel &field_model,

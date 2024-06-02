@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../connectnodewidget.h"
+#include "../widgets/connectnodewidget.h"
 #include "../namemaker/namemaker.h"
 #include "../namemaker/id.h"
 #include "imodel.h"

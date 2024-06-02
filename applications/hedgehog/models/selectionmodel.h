@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../blockwidget.h"
-#include "../connectnodewidget.h"
+#include "../widgets/blockwidget.h"
+#include "../widgets/connectnodewidget.h"
 #include "imodel.h"
 
 #include <QMap>

@@ -2,8 +2,8 @@
 #define CONNECTNODEWIDGET_H
 
 #include "blockwidget.h"
-#include "controlls/icontroller.h"
-#include "models/nodetype.h"
+#include "../controlls/icontroller.h"
+#include "../models/nodetype.h"
 
 #include <QLabel>
 

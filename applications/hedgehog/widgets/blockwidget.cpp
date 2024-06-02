@@ -1,7 +1,7 @@
 #include "blockwidget.h"
-#include "blockfield.h"
+#include "blockfieldwidget.h"
 #include "connectnodewidget.h"
-#include "models/nodetype.h"
+#include "../models/nodetype.h"
 #include <QFontMetrics>
 
 #include <QDebug>

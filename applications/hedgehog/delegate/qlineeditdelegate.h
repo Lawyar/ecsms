@@ -1,7 +1,7 @@
 #ifndef QLINEEDITDELEGATE_H
 #define QLINEEDITDELEGATE_H
 
-#include "controlls/command/commandmanager.h"
+#include "../controlls/command/commandmanager.h"
 
 #include <QItemDelegate>
 #include <QLineEdit>

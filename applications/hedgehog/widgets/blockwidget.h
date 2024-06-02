@@ -1,8 +1,8 @@
 #ifndef BLOCKWIDGET_H
 #define BLOCKWIDGET_H
 
-#include "namemaker/id.h"
-#include "namemaker/namemaker.h"
+#include "../namemaker/id.h"
+#include "../namemaker/namemaker.h"
 
 #include <QLabel>
 #include <QObject>

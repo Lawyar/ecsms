@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../connectnodewidget.h"
+#include "../widgets/connectnodewidget.h"
 #include "../models/fieldmodel.h"
 #include "../models/linemodel.h"
 #include "../models/visualizationmodel.h"

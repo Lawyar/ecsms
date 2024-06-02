@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../connectnodewidget.h"
+#include "../widgets/connectnodewidget.h"
 #include "event.h"
 
 class ChangeActiveNodeEvent : public Event {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../connectnodewidget.h"
+#include "../widgets/connectnodewidget.h"
 #include "imodel.h"
 
 #include <QObject>

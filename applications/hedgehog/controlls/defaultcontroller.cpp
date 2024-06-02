@@ -1,5 +1,5 @@
 #include "defaultcontroller.h"
-#include "../blockfield.h"
+#include "../widgets/blockfieldwidget.h"
 #include "command/moveblockcommand.h"
 #include "command/removecommand.h"
 

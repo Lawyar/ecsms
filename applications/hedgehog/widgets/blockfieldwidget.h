@@ -1,10 +1,10 @@
 #ifndef BLOCKFIELD_H
 #define BLOCKFIELD_H
 
-#include "controlls/command/commandmanager.h"
-#include "controlls/defaultcontroller.h"
-#include "controlls/drawlinecontroller.h"
-#include "observer/iobserver.h"
+#include "../controlls/command/commandmanager.h"
+#include "../controlls/defaultcontroller.h"
+#include "../controlls/drawlinecontroller.h"
+#include "../observer/iobserver.h"
 
 #include <QMap>
 #include <QWidget>

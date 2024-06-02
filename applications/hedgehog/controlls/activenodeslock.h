@@ -1,5 +1,5 @@
 #pragma once
-#include "../connectnodewidget.h"
+#include "../widgets/connectnodewidget.h"
 #include "../models/fieldmodel.h"
 
 #include <functional>
