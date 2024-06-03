@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+
 #include "blockfieldwidget.h"
 #include "connectnodewidget.h"
 #include "../controlls/controllerprocedure.h"
@@ -12,11 +14,33 @@
 #include "../models/visualizationmodel.h"
 #include "../namemaker/namemaker.h"
 
+#include <cmath>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QMouseEvent>
 #include <QPainter>
+#include <QVector>
 #include <set>
+
+static void drawArrow(QPainter &p, QLine line, float arrow_head_length,
+                      float arrow_head_angle) {
+  auto b = arrow_head_length, alpha = arrow_head_angle / 2;
+  auto c = b / cos(alpha);
+  auto a = c * sin(alpha);
+  auto &&begin = line.p1(), &&end = line.p2();
+  auto len = sqrt(pow(end.y() - begin.y(), 2) + pow(end.x() - begin.x(), 2));
+  auto beta = acos((end.x() - begin.x()) / len);
+  auto h = end.y() > begin.y() ? 1 : (end.y() == begin.y() ? 0 : -1);
+  auto p1 = QPointF{end.x() - b * cos(beta), end.y() - h * b * sin(beta)};
+  auto k_segm = float(end.y() - begin.y()) / (end.x() - begin.x());
+  auto g = k_segm == 0 ? M_PI / 2 : atan(-1 / k_segm); //(tan(atan(k_segm));
+  auto p2 =
+      QPointF{p1.x() - a * cos(g), p1.y() - a * sin(g)}; // конец первого плеча
+  auto p3 = QPointF{p2.x() + 2 * a * cos(g),
+                    p2.y() + 2 * a * sin(g)}; // конец второго плеча
+  p.drawLine(end, p2);
+  p.drawLine(end, p3);
+}
 
 BlockField::BlockField(QWidget *parent) : QWidget(parent) {
   setMouseTracking(true);
@@ -234,8 +258,12 @@ void BlockField::paintEvent(QPaintEvent *event) {
       QLine line(vis_start_pos, vis_end_pos);
       if (iter != connects_with_start.end()) {
         selected_lines.push_back(line);
+        p.setPen(QPen(Qt::green, 3, Qt::SolidLine));
+        drawArrow(p, line, 10, M_PI / 3);
       } else {
         unselected_lines.push_back(line);
+        p.setPen(QPen(Qt::red, 3, Qt::SolidLine));
+        drawArrow(p, line, 10, M_PI / 3);
       }
     }
   }
@@ -267,7 +295,10 @@ void BlockField::paintEvent(QPaintEvent *event) {
   auto &&model_end = _line_model.GetEnd();
   if (model_begin && model_end) {
     p.setPen(QPen(Qt::red, 3, Qt::SolidLine));
-    p.drawLine(_vis_model.MapToVisualization(*model_begin),
-               _vis_model.MapToVisualization(*model_end));
+    QLine line = {_vis_model.MapToVisualization(*model_begin),
+                  _vis_model.MapToVisualization(*model_end)};
+    p.drawLine(line);
+    drawArrow(p, line, 10, M_PI / 3);
   }
 }
+
