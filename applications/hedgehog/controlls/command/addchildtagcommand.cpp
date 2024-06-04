@@ -9,6 +9,7 @@ AddChildTagCommand::AddChildTagCommand(QModelIndex parent_index,
   if (parent_index == QModelIndex()) // to prevent adding child to invisible root item
     return;
 
+  _rows.insert(_rows.begin(), parent_index.row());
   for (auto &&parent_tag_index = parent_index.parent();
        parent_tag_index != QModelIndex();
        parent_tag_index = parent_tag_index.parent()) {
