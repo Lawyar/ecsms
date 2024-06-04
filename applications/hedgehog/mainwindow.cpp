@@ -70,7 +70,7 @@ MainWindow::MainWindow(QWidget *parent)
   auto list_model = new QStandardItemModel(0, 0, ui->listView);
   ui->listView->setModel(list_model);
   QStandardItem *parent_item = list_model->invisibleRootItem();
-  auto block_list_item = new QStandardItem("block_name");
+  auto block_list_item = new QStandardItem("default_block");
   block_list_item->setFlags(block_list_item->flags() ^ Qt::ItemIsEditable);
   parent_item->appendRow(block_list_item);
 

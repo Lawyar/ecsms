@@ -17,11 +17,11 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>Hedgehog</string>
+   <string>ECSMS</string>
   </property>
   <property name="windowIcon">
    <iconset resource="resource.qrc">
-    <normaloff>:/hedgehog.ico</normaloff>:/hedgehog.ico</iconset>
+    <normaloff>:/e.ico</normaloff>:/e.ico</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QGridLayout" name="gridLayout_4">
