@@ -4,9 +4,10 @@
 #include <QPushButton>
 #include <QXmlStreamWriter>
 
-inline void connectConsoleOutputWithWidget(QProcess *process,
+inline void connectProcessOutputWithWidget(QProcess *process,
                                            QTextEdit *output) {
-  process->start("cmd.exe", {"/U"});
+  auto start = [](QProcess *process) { process->start("cmd.exe", {"/U"}); };
+  start(process);
 
   QObject::connect(process, &QProcess::readyRead, [process, output]() {
     QByteArray out = process->readAllStandardOutput();
@@ -20,10 +21,22 @@ inline void connectConsoleOutputWithWidget(QProcess *process,
       output->setTextCursor(cursor);
     }
   });
+
+  QObject::connect(process,
+                   static_cast<void (QProcess::*)(int, QProcess::ExitStatus)>(
+                       &QProcess::finished),
+                   [start, process, output](int, QProcess::ExitStatus) {
+                     output->clear();
+                     start(process);
+                   });
+}
+
+inline static void disconectProcessFromAll(QProcess *process) {
+  process->disconnect();
 }
 
 static inline void writeAttributesFromModel(QXmlStreamWriter &xml_writer,
-                                     const QStandardItemModel *model) {
+                                            const QStandardItemModel *model) {
   for (int r = 0; r < model->rowCount(); ++r) {
     auto &&name = model->item(r, 0)->text();
     auto &&value = model->item(r, 1)->text();
@@ -32,7 +45,7 @@ static inline void writeAttributesFromModel(QXmlStreamWriter &xml_writer,
 }
 
 static inline void writeTags(QXmlStreamWriter &xml_writer,
-                      const QStandardItem *root) {
+                             const QStandardItem *root) {
   if (!root)
     return;
   auto &&tag_data = root->text().split(": ");

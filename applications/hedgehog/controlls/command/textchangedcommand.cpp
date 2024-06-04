@@ -1,4 +1,4 @@
-#include "textchangedcommand.h"
+#include "tagtextchangedcommand.h"
 
 #include <QDebug>
 #include <qabstractitemmodel.h>
@@ -8,16 +8,17 @@ TextChangedCommand::TextChangedCommand(QModelIndex tag, QString old_text,
     : _old_text(old_text), _new_text(new_text) {
   _row = tag.row();
   _col = tag.column();
-  _tree_model = qobject_cast<const QStandardItemModel *>(tag.model());
+  _model = qobject_cast<const QStandardItemModel *>(tag.model());
+  _rows.insert(_rows.begin(), tag.row());
   auto &&parent_tag_index = tag.parent();
-  while (parent_tag_index != _tree_model->invisibleRootItem()->index()) {
+  while (parent_tag_index != _model->invisibleRootItem()->index()) {
     _rows.insert(_rows.begin(), parent_tag_index.row());
     parent_tag_index = parent_tag_index.parent();
   }
 }
 
 void TextChangedCommand::Execute() {
-  QStandardItem *parent_tag = _tree_model->invisibleRootItem();
+  QStandardItem *parent_tag = _model->invisibleRootItem();
   for (int row : _rows) {
     parent_tag = parent_tag->child(row, _col);
   }
@@ -25,7 +26,7 @@ void TextChangedCommand::Execute() {
 }
 
 void TextChangedCommand::UnExecute() {
-  QStandardItem *parent_tag = _tree_model->invisibleRootItem();
+  QStandardItem *parent_tag = _model->invisibleRootItem();
   for (int row : _rows) {
     parent_tag = parent_tag->child(row, _col);
   }

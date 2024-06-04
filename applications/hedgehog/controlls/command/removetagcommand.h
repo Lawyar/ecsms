@@ -16,6 +16,6 @@ private:
   std::vector<int> _rows;
   int _row_to_remove;
   QString _text;
-  QStandardItemModel *_tree_view_model;
+  QStandardItemModel *_tree_view_model, *_table_view_model;
   QStandardItem *_item;
 };

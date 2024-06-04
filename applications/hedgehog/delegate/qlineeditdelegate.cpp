@@ -1,5 +1,6 @@
 #include "qlineeditdelegate.h"
-#include "../controlls/command/textchangedcommand.h"
+#include "../controlls/command/attrtextchangedcommand.h"
+#include "../controlls/command/tagtextchangedcommand.h"
 
 #include <QDebug>
 #include <QToolTip>
@@ -96,8 +97,9 @@ private:
 };
 
 QLineEditDelegate::QLineEditDelegate(QObject *parent, WhatValidate type,
-                                     std::shared_ptr<CommandManager> cm)
-    : QItemDelegate(parent), _type(type), _cm(cm) {}
+                                     std::shared_ptr<CommandManager> cm,
+                                     QTreeView *tree_view)
+    : QItemDelegate(parent), _type(type), _cm(cm), _tree_view(tree_view) {}
 
 QWidget *QLineEditDelegate::createEditor(QWidget *parent,
                                          const QStyleOptionViewItem &option,
@@ -149,19 +151,43 @@ QWidget *QLineEditDelegate::createEditor(QWidget *parent,
         }
       });
   editor->setValidator(validator);
-  qDebug() << "Create and connect editor";
   connect(editor, &QLineEdit::editingFinished,
-          [type = _type, &cm = _cm, editor, index,
-           prev_text = index.model()->data(index, Qt::EditRole).toString(),
-           already_calls = false]() mutable {
-            if (already_calls)
-              return;
+      [type = _type, &cm = _cm, &_tree_view = _tree_view, editor, index,
+       prev_text = index.model()->data(index, Qt::EditRole).toString(),
+       already_calls = false]() mutable {
+        if (already_calls)
+          return;
 
-            auto &&curr_text = editor->text();
-            if (prev_text != curr_text)
-              cm->Do(std::make_unique<TextChangedCommand>(index, prev_text, curr_text));
-            already_calls = true;
-          });
+        auto &&curr_text = editor->text();
+        if (prev_text == curr_text)
+          return;
+
+        switch (type) {
+        case WhatValidate::XMLTag: {
+          if (auto &&model = qobject_cast<const QStandardItemModel *>(index.model()))
+            cm->Do(std::make_unique<TagTextChangedCommand>(index, prev_text,
+                                                           curr_text, model));
+          else
+            assert(false);
+          break;
+        }
+        case WhatValidate::XMLAttribute:
+        case WhatValidate::Nothing: {
+          if (auto &&tree_model = qobject_cast<QStandardItemModel *>(_tree_view->model())) {
+            auto &&tag_index = _tree_view->selectionModel()->currentIndex();
+            cm->Do(std::make_unique<AttrTextChangedCommand>(
+                tag_index, index.row(), index.column(), prev_text, curr_text,
+                tree_model));
+          } else
+            assert(false);
+          break;
+        }
+        default: {
+          assert(false);
+        }
+        }
+        already_calls = true;
+      });
 
   return editor;
 }

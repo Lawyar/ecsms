@@ -301,4 +301,3 @@ void BlockField::paintEvent(QPaintEvent *event) {
     drawArrow(p, line, 10, M_PI / 3);
   }
 }
-

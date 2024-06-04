@@ -6,11 +6,13 @@
 
 class AddAttributeCommand : public ICommand {
 public:
-  AddAttributeCommand(int row_to_insert, QStandardItemModel *table_view_model);
+  AddAttributeCommand(int table_row_to_insert, QModelIndex tag_index,
+                      QStandardItemModel *tree_view_model);
   virtual void Execute() override;
   virtual void UnExecute() override;
 
 private:
-  int _row_to_insert;
-  QStandardItemModel *_table_view_model;
+  int _table_row_to_insert;
+  std::vector<int> _tree_rows;
+  QStandardItemModel *_tree_view_model;
 };

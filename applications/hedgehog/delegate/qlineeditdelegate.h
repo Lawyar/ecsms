@@ -3,6 +3,7 @@
 
 #include "../controlls/command/commandmanager.h"
 
+#include <QTreeView>
 #include <QItemDelegate>
 #include <QLineEdit>
 #include <QObject>
@@ -17,7 +18,7 @@ class QLineEditDelegate : public QItemDelegate {
 
 public:
   QLineEditDelegate(QObject *parent, WhatValidate type,
-                    std::shared_ptr<CommandManager> cm);
+                    std::shared_ptr<CommandManager> cm, QTreeView *tree_view);
 
   QWidget *createEditor(QWidget *parent, const QStyleOptionViewItem &option,
                         const QModelIndex &index) const override;
@@ -33,6 +34,7 @@ public:
 private:
   std::shared_ptr<CommandManager> _cm;
   WhatValidate _type;
+  QTreeView *_tree_view;
 };
 
 #endif // QLINEEDITDELEGATE_H

@@ -4,15 +4,14 @@
 #include <QDebug>
 
 AddChildTagCommand::AddChildTagCommand(QModelIndex parent_index,
-                                       QStandardItemModel *tree_view_model,
-                                       QString text)
-    : _tree_view_model(tree_view_model), 
-      _text(text) {
-  if (parent_index == _tree_view_model->invisibleRootItem()->index())
+                                       QStandardItemModel *tree_view_model)
+    : _tree_view_model(tree_view_model) {
+  if (parent_index == QModelIndex()) // to prevent adding child to invisible root item
     return;
-  _row_to_insert = 0;
 
-  while (parent_index != _tree_view_model->invisibleRootItem()->index()) {
+  for (auto &&parent_tag_index = parent_index.parent();
+       parent_tag_index != QModelIndex();
+       parent_tag_index = parent_tag_index.parent()) {
     _rows.insert(_rows.begin(), parent_index.row());
     parent_index = parent_index.parent();
   }
@@ -24,17 +23,8 @@ void AddChildTagCommand::Execute() {
     parent_tag = parent_tag->child(row, 0);
   }
 
-  auto new_tag = createTag(nullptr, _text);
-  parent_tag->insertRow(_row_to_insert, new_tag);
-
-  if (auto &&selected_tag =
-          _tree_view_model->itemFromIndex(parent_tag->index())) {
-    auto &&tag_text = selected_tag->text();
-    auto &&tag_text_vec = tag_text.split(": ");
-    if (tag_text_vec.size() > 1) {
-      selected_tag->setText(tag_text_vec[0]);
-    }
-  }
+  auto new_tag = createTag(nullptr, "");
+  parent_tag->insertRow(0, new_tag);
 }
 
 void AddChildTagCommand::UnExecute() {
@@ -42,5 +32,5 @@ void AddChildTagCommand::UnExecute() {
   for (int row : _rows) {
     parent_tag = parent_tag->child(row, 0);
   }
-  _tree_view_model->removeRow(_row_to_insert, parent_tag->index());
+  _tree_view_model->removeRow(0, parent_tag->index());
 }
