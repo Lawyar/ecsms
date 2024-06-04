@@ -11,6 +11,7 @@ ConnectNodeWidget::ConnectNodeWidget(const NodeId &id,
   setPixmap(pixmap);
   makeTransparent(true);
   setMouseTracking(true);
+  setCursor(Qt::CursorShape::ArrowCursor);
 }
 
 NodeId ConnectNodeWidget::GetId() const { return _id; }

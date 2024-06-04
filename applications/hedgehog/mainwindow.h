@@ -40,6 +40,7 @@ private slots:
   void on_consoleInput_returnPressed();
   void on_consoleInput_2_returnPressed();
   void on_menuEdit_aboutToShow();
+  void on_menuView_aboutToShow();
   void on_actionNewFile_triggered();
   void on_actionOpen_triggered();
   void on_actionSave_triggered();

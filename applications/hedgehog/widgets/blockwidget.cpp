@@ -106,10 +106,14 @@ int BlockWidget::GetNodesRadius() { return _nodes_radius; }
 void BlockWidget::SetText(QString text) { _block_name->setText(text); }
 
 void BlockWidget::mouseMoveEvent(QMouseEvent *event) {
+  if (event->button() == Qt::LeftButton)
+    setCursor(Qt::CursorShape::ClosedHandCursor);
   _controller->onMouseMoveEvent(this, event);
 }
 
 void BlockWidget::mousePressEvent(QMouseEvent *event) {
+  if (event->button() == Qt::LeftButton)
+    setCursor(Qt::CursorShape::ClosedHandCursor);
   _controller->onMousePressEvent(this, event);
 }
 
@@ -126,6 +130,8 @@ void BlockWidget::leaveEvent(QEvent *event) {
 }
 
 void BlockWidget::mouseReleaseEvent(QMouseEvent *event) {
+  if (event->button() == Qt::LeftButton)
+    setCursor(Qt::CursorShape::OpenHandCursor);
   _controller->onMouseReleaseEvent(this, event);
 }
 

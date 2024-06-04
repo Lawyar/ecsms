@@ -135,6 +135,10 @@ void MainWindow::on_menuEdit_aboutToShow() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
   ui->actionRedo->setEnabled(_comm_managers[curr_ind]->HasCommandsToRedo());
   ui->actionUndo->setEnabled(_comm_managers[curr_ind]->HasCommandsToUndo());
+}
+
+void MainWindow::on_menuView_aboutToShow() {
+  auto &&curr_ind = ui->tabWidget->currentIndex();
   ui->actionGoToFirstBlock->setEnabled(curr_ind == 1);
   ui->actionGoToNextBlock->setEnabled(curr_ind == 1);
 }
