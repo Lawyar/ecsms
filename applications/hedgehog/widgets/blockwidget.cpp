@@ -13,7 +13,7 @@ QFont BlockWidget::_font("times", 12);
 BlockWidget::BlockWidget(const BlockId &id,
                          std::unique_ptr<IController> &controller,
                          const QString &text,
-                         BlockField *parent)
+                         BlockFieldWidget *parent)
     : _id(id), _controller(controller), QWidget(parent),
       _block_name(new QLabel(text, this)),
 

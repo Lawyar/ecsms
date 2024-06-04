@@ -28,7 +28,7 @@ DefaultController::DefaultController(FieldModel &field_model,
 void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
   const QPoint vis_point = event->pos();
 
-  if (qobject_cast<BlockField *>(widget)) {
+  if (qobject_cast<BlockFieldWidget *>(widget)) {
     if (event->buttons() == Qt::LeftButton && _old_mouse_pos) {
       QPoint delta = vis_point - *_old_mouse_pos;
       _vis_model.SetNewCoordCenter(*_old_field_pos + delta);
@@ -52,7 +52,7 @@ void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
 void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
   const QPoint vis_point = event->pos();
 
-  if (qobject_cast<BlockField *>(widget)) {
+  if (qobject_cast<BlockFieldWidget *>(widget)) {
     onFieldMousePress(event);
   }
 
@@ -77,7 +77,7 @@ void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
 }
 
 void DefaultController::onKeyPressEvent(QWidget *widget, QKeyEvent *event) {
-  if (qobject_cast<BlockField *>(widget)) {
+  if (qobject_cast<BlockFieldWidget *>(widget)) {
     onFieldKeyPress(event);
   }
 }
@@ -101,7 +101,7 @@ void DefaultController::onLeaveEvent(QWidget *widget, QEvent *event) {
 
 void DefaultController::onMouseReleaseEvent(QWidget *widget,
                                             QMouseEvent *event) {
-  if (qobject_cast<BlockField *>(widget)) {
+  if (qobject_cast<BlockFieldWidget *>(widget)) {
     _old_field_pos = std::nullopt;
     _old_mouse_pos = std::nullopt;
   }

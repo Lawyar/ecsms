@@ -343,8 +343,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>234</width>
+               <height>201</height>
               </rect>
              </property>
              <property name="sizePolicy">
@@ -435,8 +435,16 @@
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
    </widget>
+   <widget class="QMenu" name="menuView">
+    <property name="title">
+     <string>View</string>
+    </property>
+    <addaction name="actionGoToFirstBlock"/>
+    <addaction name="actionGoToNextBlock"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menuEdit"/>
+   <addaction name="menuView"/>
   </widget>
   <action name="actionOpen">
    <property name="checkable">
@@ -499,6 +507,25 @@
    </property>
    <property name="text">
     <string>Redo</string>
+   </property>
+  </action>
+  <action name="actionGoToFirstBlock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Go to first block</string>
+   </property>
+   <property name="toolTip">
+    <string>Go to blocks</string>
+   </property>
+  </action>
+  <action name="actionGoToNextBlock">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Go to next block</string>
    </property>
   </action>
  </widget>

@@ -45,6 +45,8 @@ private slots:
   void on_actionSave_triggered();
   void on_actionRedo_triggered();
   void on_actionUndo_triggered();
+  void on_actionGoToFirstBlock_triggered();
+  void on_actionGoToNextBlock_triggered();
   void on_treeView_clicked(const QModelIndex &index);
   void on_tableView_clicked(const QModelIndex &index);
   void on_treeView_selectionModel_selectionChanged(

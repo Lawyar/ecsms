@@ -135,6 +135,8 @@ void MainWindow::on_menuEdit_aboutToShow() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
   ui->actionRedo->setEnabled(_comm_managers[curr_ind]->HasCommandsToRedo());
   ui->actionUndo->setEnabled(_comm_managers[curr_ind]->HasCommandsToUndo());
+  ui->actionGoToFirstBlock->setEnabled(curr_ind == 1);
+  ui->actionGoToNextBlock->setEnabled(curr_ind == 1);
 }
 
 void MainWindow::updateAllButtons() {
@@ -411,6 +413,14 @@ void MainWindow::on_actionUndo_triggered() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
   _comm_managers[curr_ind]->Undo();
   updateMainPage();
+}
+
+void MainWindow::on_actionGoToFirstBlock_triggered() {
+  ui->scrollAreaWidgetContents->GoToFirstBlock();
+}
+
+void MainWindow::on_actionGoToNextBlock_triggered() {
+  ui->scrollAreaWidgetContents->GoToNextBlock();
 }
 
 void MainWindow::on_treeView_clicked(const QModelIndex &index) {

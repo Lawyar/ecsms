@@ -26,7 +26,7 @@ void DrawLineController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
   const QPoint vis_point = event->pos();
   const QPoint model_point = _vis_model.MapToModel(vis_point);
 
-  if (auto &&field_w = qobject_cast<BlockField *>(widget)) {
+  if (auto &&field_w = qobject_cast<BlockFieldWidget *>(widget)) {
     _line_model.SetEnd(model_point);
   } else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
     _line_model.SetEnd(block_w->CoordToBlockField(model_point));
@@ -38,7 +38,7 @@ void DrawLineController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
 
 void DrawLineController::onMousePressEvent(QWidget *widget,
                                            QMouseEvent *event) {
-  if (qobject_cast<BlockField *>(widget)) {
+  if (qobject_cast<BlockFieldWidget *>(widget)) {
     onFieldMousePress();
   } else if (auto &&connect_node_w =
                  qobject_cast<ConnectNodeWidget *>(widget)) {

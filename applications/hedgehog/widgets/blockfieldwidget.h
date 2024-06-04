@@ -11,16 +11,18 @@
 
 class ConnectNodeWidget;
 
-class BlockField : public QWidget, public IObserver {
+class BlockFieldWidget : public QWidget, public IObserver {
   Q_OBJECT
 public:
-  BlockField(QWidget *parent = nullptr);
+  BlockFieldWidget(QWidget *parent = nullptr);
   void SetCommandManager(std::shared_ptr<CommandManager> cm);
   void AddBlock();
   virtual void Update(std::shared_ptr<Event> e) override;
   std::unique_ptr<IController> &GetController();
   QWidget *FindById(Id id);
   void Clear();
+  void GoToFirstBlock();
+  void GoToNextBlock();
 
 protected:
   void mouseMoveEvent(QMouseEvent *event) override;
@@ -35,7 +37,7 @@ private:
   std::shared_ptr<CommandManager> _cm;
   NameMaker _block_name_maker;
   std::unique_ptr<IController> _controller;
-  QPoint _pos;
+  int _current_block = -1;
   FieldModel _field_model;
   SelectionModel _selection_model;
   LineModel _line_model;

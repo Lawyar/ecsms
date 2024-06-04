@@ -10,7 +10,7 @@
 #include <QWidget>
 
 class ConnectNodeWidget;
-class BlockField;
+class BlockFieldWidget;
 class IController;
 
 class BlockWidget : public QWidget {
@@ -19,7 +19,7 @@ public:
   explicit BlockWidget(const BlockId &id,
                        std::unique_ptr<IController> &controller,
                        const QString &text,
-                       BlockField *parent = nullptr);
+                       BlockFieldWidget *parent = nullptr);
   BlockId GetId() const;
   QWidget *FindById(Id id);
   ConnectNodeWidget *GetLeftNode();

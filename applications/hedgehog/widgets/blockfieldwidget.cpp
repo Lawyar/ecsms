@@ -1,7 +1,6 @@
 #define _USE_MATH_DEFINES
 
 #include "blockfieldwidget.h"
-#include "connectnodewidget.h"
 #include "../controlls/controllerprocedure.h"
 #include "../events/addblockevent.h"
 #include "../events/changeactivenodeevent.h"
@@ -13,13 +12,14 @@
 #include "../models/nodetype.h"
 #include "../models/visualizationmodel.h"
 #include "../namemaker/namemaker.h"
+#include "connectnodewidget.h"
 
-#include <cmath>
 #include <QCoreApplication>
 #include <QDebug>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QVector>
+#include <cmath>
 #include <set>
 
 static void drawArrow(QPainter &p, QLine line, float arrow_head_length,
@@ -42,7 +42,7 @@ static void drawArrow(QPainter &p, QLine line, float arrow_head_length,
   p.drawLine(end, p3);
 }
 
-BlockField::BlockField(QWidget *parent) : QWidget(parent) {
+BlockFieldWidget::BlockFieldWidget(QWidget *parent) : QWidget(parent) {
   setMouseTracking(true);
   setFocus(Qt::FocusReason::ActiveWindowFocusReason);
   _field_model.Subscribe(this);
@@ -51,18 +51,19 @@ BlockField::BlockField(QWidget *parent) : QWidget(parent) {
   _vis_model.Subscribe(this);
 }
 
-void BlockField::SetCommandManager(std::shared_ptr<CommandManager> cm) {
+void BlockFieldWidget::SetCommandManager(std::shared_ptr<CommandManager> cm) {
   _cm = cm;
   _controller.reset(new DefaultController(_field_model, _selection_model,
                                           _line_model, _vis_model, *_cm));
 }
 
-void BlockField::AddBlock() {
+void BlockFieldWidget::AddBlock() {
   controller::execute::AddBlock(_block_name_maker, _field_model,
-                                _selection_model, rect().center(), _cm);
+                                _selection_model,
+                                _vis_model.MapToModel(rect().center()), _cm);
 }
 
-void BlockField::Update(std::shared_ptr<Event> e) {
+void BlockFieldWidget::Update(std::shared_ptr<Event> e) {
   switch (e->GetEventType()) {
   case drawEvent: {
     auto &&draw_e = std::static_pointer_cast<DrawEvent>(e);
@@ -118,6 +119,7 @@ void BlockField::Update(std::shared_ptr<Event> e) {
                                    block_data.text, this);
     block->move(block_data.pos);
     block->show();
+    repaint();
     break;
   }
   case updateBlockEvent: {
@@ -151,11 +153,11 @@ void BlockField::Update(std::shared_ptr<Event> e) {
   }
 }
 
-std::unique_ptr<IController> &BlockField::GetController() {
+std::unique_ptr<IController> &BlockFieldWidget::GetController() {
   return _controller;
 }
 
-QWidget *BlockField::FindById(Id id) {
+QWidget *BlockFieldWidget::FindById(Id id) {
   QWidget *res = nullptr;
   for (auto &&child : children()) {
     if (auto &&block = qobject_cast<BlockWidget *>(child)) {
@@ -171,36 +173,60 @@ QWidget *BlockField::FindById(Id id) {
   return res;
 }
 
-void BlockField::Clear() {
+void BlockFieldWidget::Clear() {
   _selection_model.Clear();
   _field_model.RemoveAll();
 }
 
-void BlockField::mouseMoveEvent(QMouseEvent *event) {
+void BlockFieldWidget::GoToFirstBlock() {
+  const QMap<BlockId, FieldModel::BlockData> &blocks_map =
+      _field_model.GetBlocks();
+  if (!blocks_map.empty()) {
+    _current_block = 0;
+    auto &&blocks_ids = blocks_map.keys();
+    auto &&any_block = blocks_ids.at(_current_block);
+    _vis_model.SetNewCoordCenter(-_field_model.GetBlockData(any_block)->pos +
+                                 QPoint(width() / 2, height() / 2));
+  }
+}
+
+void BlockFieldWidget::GoToNextBlock() {
+  const QMap<BlockId, FieldModel::BlockData> &blocks_map =
+      _field_model.GetBlocks();
+  if (!blocks_map.empty()) {
+    auto &&blocks_ids = blocks_map.keys();
+    _current_block = (_current_block + 1) % blocks_ids.size();
+    auto &&any_block = blocks_ids.at(_current_block);
+    _vis_model.SetNewCoordCenter(-_field_model.GetBlockData(any_block)->pos +
+                                 QPoint(width() / 2, height() / 2));
+  }
+}
+
+void BlockFieldWidget::mouseMoveEvent(QMouseEvent *event) {
   _controller->onMouseMoveEvent(this, event);
 }
 
-void BlockField::mousePressEvent(QMouseEvent *event) {
+void BlockFieldWidget::mousePressEvent(QMouseEvent *event) {
   _controller->onMousePressEvent(this, event);
 }
 
-void BlockField::keyPressEvent(QKeyEvent *event) {
+void BlockFieldWidget::keyPressEvent(QKeyEvent *event) {
   _controller->onKeyPressEvent(this, event);
 }
 
-void BlockField::enterEvent(QEvent *event) {
+void BlockFieldWidget::enterEvent(QEvent *event) {
   _controller->onEnterEvent(this, event);
 }
 
-void BlockField::leaveEvent(QEvent *event) {
+void BlockFieldWidget::leaveEvent(QEvent *event) {
   _controller->onLeaveEvent(this, event);
 }
 
-void BlockField::mouseReleaseEvent(QMouseEvent *event) {
+void BlockFieldWidget::mouseReleaseEvent(QMouseEvent *event) {
   _controller->onMouseReleaseEvent(this, event);
 }
 
-void BlockField::paintEvent(QPaintEvent *event) {
+void BlockFieldWidget::paintEvent(QPaintEvent *event) {
   QPainter p(this);
   p.eraseRect(rect());
   p.setBackground(QBrush(Qt::white));
@@ -212,8 +238,7 @@ void BlockField::paintEvent(QPaintEvent *event) {
        ++pair_iter) {
     auto &&blockId = pair_iter.key();
     auto &&blockData = pair_iter.value();
-    if (auto && widget = FindById(blockId))
-    {
+    if (auto &&widget = FindById(blockId)) {
       auto &&newPos = _vis_model.MapToVisualization(blockData.pos);
       widget->move(newPos);
     } else
