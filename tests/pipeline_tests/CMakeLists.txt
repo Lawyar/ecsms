@@ -1,2 +1,2 @@
-add_executable(pipeline_tests Pipeline_tests.cpp)
+add_executable(pipeline_tests Pipeline_tests.cpp PipelineRegistry_tests.cpp)
 target_link_libraries(pipeline_tests PRIVATE pipeline gtest_main gmock_main)

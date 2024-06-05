@@ -4,7 +4,8 @@
 
 class Int32Visualizer : public ConsumerStage<int32_t> {
 public:
-  Int32Visualizer(std::shared_ptr<InStageConnection<int32_t>>);
+  Int32Visualizer(ConsumerStrategy strategy,
+                  std::shared_ptr<InStageConnection<int32_t>>);
 
   void consume(std::shared_ptr<int32_t> inData) override;
 

@@ -6,9 +6,9 @@
 #include "InStageConnection.h"
 #include "OutStageConnection.h"
 #include "PipelineRegistryException.h"
+#include "PipelineStageType.h"
 #include "ProducerAndConsumerStage.h"
 #include "ProducerStage.h"
-#include "PipelineStageType.h"
 
 #include <functional>
 #include <memory>
@@ -38,6 +38,10 @@ class PipelineRegistry {
   using ConsumerAndProducerConnectionFactory =
       std::function<ConsumerAndProducerConnection(size_t)>;
 
+  static PipelineRegistry& Instance();
+
+  void reset();
+
   template <typename ProducerT>
   void registerProducer(const std::string& key);
 
@@ -56,8 +60,9 @@ class PipelineRegistry {
   void registerConsumerAndProducer(const std::string& key);
 
   template <typename ConsumerAndProducerT>
-  void registerConsumerAndProducerFactory(const std::string& key,
-                                          const ConsumerAndProducerStageFactory factory);
+  void registerConsumerAndProducerFactory(
+      const std::string& key,
+      const ConsumerAndProducerStageFactory factory);
 
   PipelineStageType getStageType(const std::string& key);
 
@@ -72,7 +77,6 @@ class PipelineRegistry {
   std::shared_ptr<IPipelineStage> constructProducer(
       const std::string& key,
       std::shared_ptr<StageConnection> outConnection);
-
 
   std::shared_ptr<IPipelineStage> constructConsumer(
       const std::string& key,
@@ -89,10 +93,10 @@ class PipelineRegistry {
   PipelineRegistry();
 
   template <typename ProducerT>
-  void registerProducerConnection();
+  void registerProducerConnection(const std::string& key);
 
   template <typename ConsumerT>
-  void registerConsumerConnection();
+  void registerConsumerConnection(const std::string& key);
 
  private:
   std::unordered_map<std::string, ProducerStageFactory> m_producers;
@@ -127,16 +131,65 @@ void PipelineRegistry::registerProducerFactory(
       m_consumersProducers.find(key) != m_consumersProducers.end())
     throw PipelineRegistryException("stage has already been added");
   m_producers[key] = factory;
-  registerProducerConnection<ProducerT>();
+  registerProducerConnection<ProducerT>(key);
+}
+
+template <typename ConsumerT>
+void PipelineRegistry::registerConsumer(const std::string& key) {
+  registerConsumerFactory<ConsumerT>(
+      key,
+      [](ConsumerStrategy strategy, shared_ptr<StageConnection> connection) {
+        auto inConnection = std::dynamic_pointer_cast<
+            InStageConnection<typename ConsumerT::consumptionT>>(connection);
+        return make_shared<ConsumerT>(strategy, inConnection);
+      });
+}
+
+template <typename ConsumerT>
+void PipelineRegistry::registerConsumerFactory(
+    const std::string& key,
+    const ConsumerStageFactory factory) {
+  if (m_producers.find(key) != m_producers.end() ||
+      m_consumers.find(key) != m_consumers.end() ||
+      m_consumersProducers.find(key) != m_consumersProducers.end())
+    throw PipelineRegistryException("stage has already been added");
+  m_consumers[key] = factory;
+  registerConsumerConnection<ConsumerT>(key);
+}
+
+template <typename ConsumerAndProducerT>
+void PipelineRegistry::registerConsumerAndProducer(const std::string& key) {
+  registerConsumerAndProducerFactory<ConsumerAndProducerT>(
+      key, [](ConsumerStrategy strategy,
+              std::shared_ptr<StageConnection> inConnection,
+              std::shared_ptr<StageConnection> outConnection) {
+        auto in = std::dynamic_pointer_cast<
+            InStageConnection<typename ConsumerAndProducerT::consumptionT>>(
+            inConnection);
+        auto out = std::dynamic_pointer_cast<
+            OutStageConnection<typename ConsumerAndProducerT::productionT>>(
+            outConnection);
+        return std::make_shared<ConsumerAndProducerT>(strategy, in, out);
+      });
+}
+
+template <typename ConsumerAndProducerT>
+void PipelineRegistry::registerConsumerAndProducerFactory(
+    const std::string& key,
+    const ConsumerAndProducerStageFactory factory) {
+  if (m_producers.find(key) != m_producers.end() ||
+      m_consumers.find(key) != m_consumers.end() ||
+      m_consumersProducers.find(key) != m_consumersProducers.end())
+    throw PipelineRegistryException("stage has already been added");
+  m_consumersProducers[key] = factory;
+  registerConsumerConnection<ConsumerAndProducerT>(key);
+  registerProducerConnection<ConsumerAndProducerT>(key);
 }
 
 template <typename ProducerT>
-void PipelineRegistry::registerProducerConnection() {
-  const auto& key = ProducerT::stageName;
+void PipelineRegistry::registerProducerConnection(const std::string& key) {
   if (m_producerConnections.find(key) != m_producerConnections.end() ||
-      m_consumerConnections.find(key) != m_consumerConnections.end() ||
-      m_consumerAndProducerConnections.find(key) !=
-          m_consumerAndProducerConnections.end())
+      m_consumerConnections.find(key) != m_consumerConnections.end())
     throw PipelineRegistryException("connection has already been added");
 
   m_producerConnections[key] = [](size_t connectionSize) {
@@ -145,64 +198,14 @@ void PipelineRegistry::registerProducerConnection() {
   };
 }
 
-std::shared_ptr<IPipelineStage> PipelineRegistry::constructProducer(
-    const std::string& key,
-    std::shared_ptr<StageConnection> connection) {
-  auto producersFactory = m_producers.find(key);
-  if (producersFactory != m_producers.end()) {
-    return producersFactory->second(connection);
-  }
+template <typename ConsumerT>
+void PipelineRegistry::registerConsumerConnection(const std::string& key) {
+  if (m_producerConnections.find(key) != m_producerConnections.end() ||
+      m_consumerConnections.find(key) != m_consumerConnections.end())
+    throw PipelineRegistryException("connection has already been added");
 
-  auto consumersFactory = m_consumers.find(key);
-  if (consumersFactory != m_consumers.end()) {
-    return consumersFactory->second(connection);
-  }
-
-  auto consumersFactory = m_consumers.find(key);
-  if (consumersFactory != m_consumers.end()) {
-    return consumersFactory->second(connection);
-  }
-}
-
-PipelineStageType PipelineRegistry::getStageType(const std::string& key) {
-  if (m_producers.find(key) != m_producers.end())
-    return PipelineStageType::producer;
-  else if (m_consumers.find(key) != m_consumers.end())
-    return PipelineStageType::consumer;
-  else if (m_consumersProducers.find(key) != m_consumersProducers.end()) {
-    return PipelineStageType::producerConsumer;
-  }
-  
-  throw PipelineRegistryException(std::string("key ") + key + " was not presented in registry");
-}
-
-std::shared_ptr<StageConnection> PipelineRegistry::constructProducerConnection(
-    const std::string& key,
-    size_t connectionSize) {
-  if (auto factory = m_producerConnections.find(key);
-      factory != m_producerConnections.end())
-    return factory->second(connectionSize);
-
-  throw PipelineRegistryException(std::string("key ") + key + " was not presented in producer connections registry");
-}
-
-std::shared_ptr<StageConnection> PipelineRegistry::constructConsumerConnection(
-    const std::string& key,
-    size_t connectionSize) {
-  if (auto factory = m_consumerConnections.find(key);
-      factory != m_consumerConnections.end())
-    return factory->second(connectionSize);
-
-  throw PipelineRegistryException(std::string("key ") + key + " was not presented in consumer connections registry");
-}
-
-ConsumerAndProducerConnection
-PipelineRegistry::constructConsumerAndProducerConnection(
-    const std::string& key,
-    size_t connectionSize) {
-  if (auto factory = m_consumerAndProducerConnections.find(key);
-      factory != m_consumerAndProducerConnections.end())
-    return factory->second(connectionSize);
-
-  throw PipelineRegistryException(std::string("key ") + key + " was not presented in consumer and producer connections registry");
+  m_producerConnections[key] = [](size_t connectionSize) {
+    return std::make_shared<
+        InOutStageConnection<typename ConsumerT::consumptionT>>(connectionSize);
+  };
 }

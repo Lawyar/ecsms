@@ -92,13 +92,14 @@ class TestConsumerAndProducerStage : public ConsumerAndProducerStage<int, int> {
 };
 
 TEST(PipelineRegistry_tests, PipelineRegistry_registerProducerWorks) {
-  PipelineRegistry registry;
-  registry.registerProducer<TestProducerStage>(TestProducerStage::stageName);
+  PipelineRegistry::Instance().registerProducer<TestProducerStage>(
+      TestProducerStage::stageName);
 }
 
 TEST(PipelineRegistry_tests, PipelineRegistry_constructProducerWorks) {
-  PipelineRegistry registry;
-  registry.registerProducer<TestProducerStage>(TestProducerStage::stageName);
+  auto& registry = PipelineRegistry::Instance();
+  registry.registerProducer<TestProducerStage>(
+      TestProducerStage::stageName);
   auto connection =
       registry.constructProducerConnection("TestProducerStage", 32);
   auto stage = registry.constructProducer("TestProducerStage", connection);
@@ -117,7 +118,7 @@ TEST(PipelineRegistry_tests, PipelineRegistry_constructProducerWorks) {
 }
 
 TEST(PipelineRegistry_tests, PipelineRegistry_registerProducerFactoryWorks) {
-  PipelineRegistry registry;
+  auto& registry = PipelineRegistry::Instance();
 
   string s = "abcdef";
   int i = 128;

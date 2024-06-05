@@ -18,7 +18,8 @@ add_library(pipeline
     inc/PipelineRegistryException.h
     
     src/Pipeline.cpp
-    src/IPipelineStage.cpp)
+    src/IPipelineStage.cpp
+    src/PipelineRegistry.cpp)
 
 target_link_libraries(pipeline PUBLIC common)
 target_include_directories(pipeline PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
