@@ -1,2 +1,2 @@
 add_subdirectory(test_application)
-add_subdirectory(hedgehog)
+add_subdirectory(ecsms)
