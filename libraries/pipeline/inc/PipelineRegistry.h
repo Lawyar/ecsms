@@ -8,6 +8,7 @@
 #include "PipelineRegistryException.h"
 #include "ProducerAndConsumerStage.h"
 #include "ProducerStage.h"
+#include "PipelineStageType.h"
 
 #include <functional>
 #include <memory>
@@ -37,8 +38,6 @@ class PipelineRegistry {
   using ConsumerAndProducerConnectionFactory =
       std::function<ConsumerAndProducerConnection(size_t)>;
 
-  // template <typename Derived> void registerClass(const Key &key);
-
   template <typename ProducerT>
   void registerProducer(const std::string& key);
 
@@ -46,16 +45,22 @@ class PipelineRegistry {
   void registerProducerFactory(const std::string& key,
                                const ProducerStageFactory factory);
 
-  void registerFactory(const std::string& key,
-                       const ConsumerStageFactory factory);
-  void registerFactory(const std::string& key,
-                       const ConsumerAndProducerStageFactory factory);
+  template <typename ConsumerT>
+  void registerConsumer(const std::string& key);
 
-  std::shared_ptr<IPipelineStage> constructProducer(
-      const std::string& key,
-      std::shared_ptr<StageConnection> connection);
+  template <typename ConsumerT>
+  void registerConsumerFactory(const std::string& key,
+                               const ConsumerStageFactory factory);
 
-  //
+  template <typename ConsumerAndProducerT>
+  void registerConsumerAndProducer(const std::string& key);
+
+  template <typename ConsumerAndProducerT>
+  void registerConsumerAndProducerFactory(const std::string& key,
+                                          const ConsumerAndProducerStageFactory factory);
+
+  PipelineStageType getStageType(const std::string& key);
+
   std::shared_ptr<StageConnection> constructProducerConnection(
       const std::string& key,
       size_t connectionSize);
@@ -64,21 +69,30 @@ class PipelineRegistry {
       const std::string& key,
       size_t connectionSize);
 
-  ConsumerAndProducerConnection constructConsumerAndProducerConnection(
+  std::shared_ptr<IPipelineStage> constructProducer(
       const std::string& key,
-      size_t connectionSize);
+      std::shared_ptr<StageConnection> outConnection);
 
-  // std::shared_ptr<PipelineStage> constructProducerStage(const Key &key,
-  //                                                  Args... args) const;
-  // std::shared_ptr<PipelineStage> constructConsumerStage(const Key &key,
-  //                                                  Args... args) const;
-  // std::shared_ptr<PipelineStage> constructConsumerAndProducerStage(const Key
-  // &key,
-  //                                                  Args... args) const;
+
+  std::shared_ptr<IPipelineStage> constructConsumer(
+      const std::string& key,
+      ConsumerStrategy strategy,
+      std::shared_ptr<StageConnection> inConnection);
+
+  std::shared_ptr<IPipelineStage> constructConsumerAndProducer(
+      const std::string& key,
+      ConsumerStrategy strategy,
+      std::shared_ptr<StageConnection> inConnection,
+      std::shared_ptr<StageConnection> outConnection);
 
  private:
+  PipelineRegistry();
+
   template <typename ProducerT>
   void registerProducerConnection();
+
+  template <typename ConsumerT>
+  void registerConsumerConnection();
 
  private:
   std::unordered_map<std::string, ProducerStageFactory> m_producers;
@@ -93,39 +107,6 @@ class PipelineRegistry {
   std::unordered_map<std::string, ConsumerAndProducerConnectionFactory>
       m_consumerAndProducerConnections;
 };
-
-/*template <typename Base, typename Key, typename... Args>
-template <typename Derived>
-void Registry<Base, Key, Args...>::registerClass(const Key &key) {
-  m_map[key] = &constructDerived<Derived>;
-}*/
-
-// template <typename Base, typename Key, typename... Args>
-// void Registry<Base, Key, Args...>::registerFactory(const Key &key,
-//                                                    const FactoryFunc factory)
-//                                                    {
-//   m_map[key] = factory;
-// }
-//
-// template <typename Base, typename Key, typename... Args>
-// std::shared_ptr<Base>
-// Registry<Base, Key, Args...>::construct(const Key &key, Args... args) const {
-//   return m_map.at(key)(std::forward<Args>(args)...);
-// }
-//
-// template <typename Base, typename Key, typename... Args>
-// template <typename Derived>
-// std::shared_ptr<Base>
-// Registry<Base, Key, Args...>::constructDerived(Args... args) {
-//   return std::make_unique<Derived>(std::forward<Args>(args)...);
-// }
-//
-// template <typename Base, typename Key, typename... Args>
-// void Registry<Base, Key, Args...>::registerFactory(
-//     const Key &key, const ProducerStageFactory factory) {
-//   if (m_producers.find(key) != m_producers.end())
-//     throw PipelineRegistryException("stage was")
-// }
 
 template <typename ProducerT>
 void PipelineRegistry::registerProducer(const std::string& key) {
@@ -167,10 +148,32 @@ void PipelineRegistry::registerProducerConnection() {
 std::shared_ptr<IPipelineStage> PipelineRegistry::constructProducer(
     const std::string& key,
     std::shared_ptr<StageConnection> connection) {
-  auto factory = m_producers.find(key);
-  if (factory != m_producers.end()) {
-    return factory->second(connection);
+  auto producersFactory = m_producers.find(key);
+  if (producersFactory != m_producers.end()) {
+    return producersFactory->second(connection);
   }
+
+  auto consumersFactory = m_consumers.find(key);
+  if (consumersFactory != m_consumers.end()) {
+    return consumersFactory->second(connection);
+  }
+
+  auto consumersFactory = m_consumers.find(key);
+  if (consumersFactory != m_consumers.end()) {
+    return consumersFactory->second(connection);
+  }
+}
+
+PipelineStageType PipelineRegistry::getStageType(const std::string& key) {
+  if (m_producers.find(key) != m_producers.end())
+    return PipelineStageType::producer;
+  else if (m_consumers.find(key) != m_consumers.end())
+    return PipelineStageType::consumer;
+  else if (m_consumersProducers.find(key) != m_consumersProducers.end()) {
+    return PipelineStageType::producerConsumer;
+  }
+  
+  throw PipelineRegistryException(std::string("key ") + key + " was not presented in registry");
 }
 
 std::shared_ptr<StageConnection> PipelineRegistry::constructProducerConnection(
@@ -179,6 +182,8 @@ std::shared_ptr<StageConnection> PipelineRegistry::constructProducerConnection(
   if (auto factory = m_producerConnections.find(key);
       factory != m_producerConnections.end())
     return factory->second(connectionSize);
+
+  throw PipelineRegistryException(std::string("key ") + key + " was not presented in producer connections registry");
 }
 
 std::shared_ptr<StageConnection> PipelineRegistry::constructConsumerConnection(
@@ -187,6 +192,8 @@ std::shared_ptr<StageConnection> PipelineRegistry::constructConsumerConnection(
   if (auto factory = m_consumerConnections.find(key);
       factory != m_consumerConnections.end())
     return factory->second(connectionSize);
+
+  throw PipelineRegistryException(std::string("key ") + key + " was not presented in consumer connections registry");
 }
 
 ConsumerAndProducerConnection
@@ -196,4 +203,6 @@ PipelineRegistry::constructConsumerAndProducerConnection(
   if (auto factory = m_consumerAndProducerConnections.find(key);
       factory != m_consumerAndProducerConnections.end())
     return factory->second(connectionSize);
+
+  throw PipelineRegistryException(std::string("key ") + key + " was not presented in consumer and producer connections registry");
 }
