@@ -1,17 +1,17 @@
-#include "linemodel.h"
+#include "phantomlinemodel.h"
 #include "../events/changecontrollerevent.h"
 #include "../events/repaintevent.h"
 
-std::optional<QPoint> LineModel::GetBegin() const { return _begin; }
+std::optional<QPoint> PhantomLineModel::GetBegin() const { return _begin; }
 
-std::optional<NodeId> LineModel::GetBeginNode() const {
+std::optional<NodeId> PhantomLineModel::GetBeginNode() const {
   if (_begin) {
     return _begin_node;
   }
   return std::nullopt;
 }
 
-void LineModel::SetBegin(std::optional<NodeId> node,
+void PhantomLineModel::SetBegin(std::optional<NodeId> node,
                          std::optional<QPoint> begin) {
   if (_begin_node != node) {
     _begin = begin;
@@ -31,9 +31,9 @@ void LineModel::SetBegin(std::optional<NodeId> node,
   Notify(std::make_shared<RepaintEvent>());
 }
 
-std::optional<QPoint> LineModel::GetEnd() const { return _end; }
+std::optional<QPoint> PhantomLineModel::GetEnd() const { return _end; }
 
-void LineModel::SetEnd(QPoint end) {
+void PhantomLineModel::SetEnd(QPoint end) {
   if (end != _end) {
     _end = end;
     Notify(std::make_shared<RepaintEvent>());

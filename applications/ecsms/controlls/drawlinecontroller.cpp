@@ -3,7 +3,7 @@
 #include "command/addconnectioncommand.h"
 
 DrawLineController::DrawLineController(FieldModel &field_model,
-                                       LineModel &line_model,
+                                       PhantomLineModel &line_model,
                                        const VisualizationModel &vis_model,
                                        CommandManager &cm)
     : _field_model(field_model), _line_model(line_model), _vis_model(vis_model),

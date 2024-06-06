@@ -40,7 +40,8 @@ private:
   int _current_block = -1;
   FieldModel _field_model;
   SelectionModel _selection_model;
-  LineModel _line_model;
+  PhantomLineModel _line_model;
+  PhantomRectangleModel _rect_model;
   VisualizationModel _vis_model;
 };
 

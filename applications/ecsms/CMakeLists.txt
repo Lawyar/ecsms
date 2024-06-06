@@ -18,6 +18,7 @@ set(SOURCE_LIST
     controlls/controllerprocedure.h
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
+    controlls/drawrectanglecontroller.h controlls/drawrectanglecontroller.cpp
     controlls/icontroller.h
     delegate/qlineeditdelegate.cpp delegate/qlineeditdelegate.h
     events/addblockevent.h events/addblockevent.cpp
@@ -30,7 +31,8 @@ set(SOURCE_LIST
     events/repaintevent.h events/repaintevent.cpp
     models/fieldmodel.h models/fieldmodel.cpp
     models/imodel.h
-    models/linemodel.h models/linemodel.cpp
+    models/phantomlinemodel.h models/phantomlinemodel.cpp
+    models/phantomrectanglemodel.h models/phantomrectanglemodel.cpp
     models/nodetype.h
     models/selectionmodel.h models/selectionmodel.cpp
     models/visualizationmodel.h models/visualizationmodel.cpp

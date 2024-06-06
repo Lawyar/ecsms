@@ -1,7 +1,9 @@
 #define _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
 
 #include "blockfieldwidget.h"
 #include "../controlls/controllerprocedure.h"
+#include "../controlls/drawrectanglecontroller.h"
 #include "../events/addblockevent.h"
 #include "../events/changeactivenodeevent.h"
 #include "../events/changecontrollerevent.h"
@@ -48,6 +50,7 @@ BlockFieldWidget::BlockFieldWidget(QWidget *parent) : QWidget(parent) {
   _field_model.Subscribe(this);
   _selection_model.Subscribe(this);
   _line_model.Subscribe(this);
+  _rect_model.Subscribe(this);
   _vis_model.Subscribe(this);
   setCursor(Qt::CursorShape::OpenHandCursor);
 }
@@ -55,7 +58,7 @@ BlockFieldWidget::BlockFieldWidget(QWidget *parent) : QWidget(parent) {
 void BlockFieldWidget::SetCommandManager(std::shared_ptr<CommandManager> cm) {
   _cm = cm;
   _controller.reset(new DefaultController(_field_model, _selection_model,
-                                          _line_model, _vis_model, *_cm));
+                                          _line_model, _rect_model, _vis_model, *_cm));
 }
 
 void BlockFieldWidget::AddBlock() {
@@ -92,7 +95,11 @@ void BlockFieldWidget::Update(std::shared_ptr<Event> e) {
     }
     case defaultController: {
       _controller.reset(new DefaultController(_field_model, _selection_model,
-                                              _line_model, _vis_model, *_cm));
+                                              _line_model, _rect_model, _vis_model, *_cm));
+      break;
+    }
+    case drawRectangleController: {
+      _controller.reset(new DrawRectangleController(_rect_model, _selection_model, _vis_model));
       break;
     }
     default: {

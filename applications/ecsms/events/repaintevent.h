@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../models/linemodel.h"
+#include "../models/phantomlinemodel.h"
 #include "drawevent.h"
 
 class RepaintEvent : public DrawEvent {

@@ -7,10 +7,10 @@
 #include <memory>
 #include <optional>
 
-class LineModel : public QObject, public IModel {
+class PhantomLineModel : public QObject, public IModel {
   Q_OBJECT
 public:
-  LineModel() = default;
+  PhantomLineModel() = default;
   std::optional<QPoint> GetBegin() const;
   std::optional<NodeId> GetBeginNode() const;
   void SetBegin(std::optional<NodeId> node, std::optional<QPoint> begin);

@@ -17,13 +17,15 @@ static bool isPointOnLine(QLine line, QPoint point) {
   return res;
 }
 
-DefaultController::DefaultController(FieldModel &field_model,
-                                     SelectionModel &selection_model,
-                                     LineModel &line_model,
-                                     VisualizationModel &vis_model,
-                                     CommandManager &cm)
+DefaultController::DefaultController(
+    FieldModel &field_model, SelectionModel &selection_model,
+    PhantomLineModel &phantom_line_model,
+    PhantomRectangleModel &phantom_rectangle_model,
+    VisualizationModel &vis_model, CommandManager &cm)
     : _field_model(field_model), _selection_model(selection_model),
-      _line_model(line_model), _vis_model(vis_model), _cm(cm) {}
+      _phantom_line_model(phantom_line_model),
+      _phantom_rectangle_model(phantom_rectangle_model), _vis_model(vis_model),
+      _cm(cm) {}
 
 void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
   const QPoint vis_point = event->pos();
@@ -51,7 +53,6 @@ void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
 
 void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
   const QPoint vis_point = event->pos();
-  
 
   if (qobject_cast<BlockFieldWidget *>(widget)) {
     onFieldMousePress(event);
@@ -72,8 +73,9 @@ void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
   }
 
   else if (auto &&connect_node_w = qobject_cast<ConnectNodeWidget *>(widget)) {
-    auto &&node_center = _vis_model.MapToModel(connect_node_w->getCenterCoordToBlockField());
-    _line_model.SetBegin(connect_node_w->GetId(), node_center);
+    auto &&node_center =
+        _vis_model.MapToModel(connect_node_w->getCenterCoordToBlockField());
+    _phantom_line_model.SetBegin(connect_node_w->GetId(), node_center);
   }
 }
 
@@ -118,13 +120,11 @@ void DefaultController::onMouseReleaseEvent(QWidget *widget,
   }
 }
 
-void DefaultController::onFieldMousePress(const QMouseEvent *event) {
-  const QPoint vis_point = event->pos();
-  const QPoint model_point = _vis_model.MapToModel(vis_point);
-
-  auto &&_connection_map = _field_model.GetConnectionMap();
-  auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
-  for (auto &&start_id : _connection_map.keys()) {
+static void CheckLine(FieldModel &_field_model,
+                      SelectionModel &_selection_model, QPoint model_point) {
+  auto &&connection_map = _field_model.GetConnectionMap();
+  auto &&map_of_selected_nodes = _selection_model.GetSelectionMap();
+  for (auto &&start_id : connection_map.keys()) {
     QPoint start_pos, end_pos;
 
     auto &&start_pd = _field_model.GetBlockData(start_id.GetParentId());
@@ -142,7 +142,7 @@ void DefaultController::onFieldMousePress(const QMouseEvent *event) {
 
     start_pos = start_pd->pos + start_pd->offset[start_type];
 
-    for (auto &&end_id : _connection_map[start_id]) {
+    for (auto &&end_id : connection_map[start_id]) {
       auto &&end_pd = _field_model.GetBlockData(end_id.GetParentId());
       if (!end_pd) {
         assert(false);
@@ -164,11 +164,21 @@ void DefaultController::onFieldMousePress(const QMouseEvent *event) {
       }
     }
   }
+}
+
+void DefaultController::onFieldMousePress(const QMouseEvent *event) {
+  const QPoint vis_point = event->pos();
+  const QPoint model_point = _vis_model.MapToModel(vis_point);
+
 
   if (event->button() == Qt::MiddleButton) {
     _old_field_pos = _vis_model.GetCenterCoord();
     _old_mouse_pos = vis_point;
+  } else if (event->button() == Qt::LeftButton) {
+    _phantom_rectangle_model.SetP1(vis_point);
   }
+
+  CheckLine(_field_model, _selection_model, model_point);
 
   _selection_model.Clear();
 }

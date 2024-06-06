@@ -2,7 +2,7 @@
 
 #include "../widgets/connectnodewidget.h"
 #include "../models/fieldmodel.h"
-#include "../models/linemodel.h"
+#include "../models/phantomlinemodel.h"
 #include "../models/visualizationmodel.h"
 #include "activenodeslock.h"
 #include "command/commandmanager.h"
@@ -12,7 +12,7 @@
 
 class DrawLineController : public IController {
 public:
-  DrawLineController(FieldModel &field_model, LineModel &line_model,
+  DrawLineController(FieldModel &field_model, PhantomLineModel &line_model,
                      const VisualizationModel &vis_model, CommandManager &cm);
   virtual void onMouseMoveEvent(QWidget *widget, QMouseEvent *event) override;
   virtual void onMousePressEvent(QWidget *widget, QMouseEvent *event) override;
@@ -28,7 +28,7 @@ private:
 
 private:
   FieldModel &_field_model;
-  LineModel &_line_model;
+  PhantomLineModel &_line_model;
   const VisualizationModel &_vis_model;
   CommandManager &_cm;
   std::unique_ptr<ActiveNodesLock> _active_because_drawing,
