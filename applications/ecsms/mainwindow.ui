@@ -427,6 +427,7 @@
     <addaction name="actionNewFile"/>
     <addaction name="actionOpen"/>
     <addaction name="actionSave"/>
+    <addaction name="actionSaveAs"/>
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
@@ -534,6 +535,18 @@
    </property>
    <property name="text">
     <string>Go to next block</string>
+   </property>
+  </action>
+  <action name="actionSaveAs">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="icon">
+    <iconset resource="resource.qrc">
+     <normaloff>:/save.ico</normaloff>:/save.ico</iconset>
+   </property>
+   <property name="text">
+    <string>Save as</string>
    </property>
   </action>
  </widget>

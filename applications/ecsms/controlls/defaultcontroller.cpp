@@ -1,21 +1,10 @@
 #include "defaultcontroller.h"
+#include "../utility/selectionutility.h"
 #include "../widgets/blockfieldwidget.h"
 #include "command/moveblockcommand.h"
 #include "command/removecommand.h"
 
 #include <QDebug>
-
-static float distance(QPoint p1, QPoint p2) {
-  float d = sqrt(pow((p1.x() - p2.x()), 2) + pow((p1.y() - p2.y()), 2));
-  return d;
-}
-
-static bool isPointOnLine(QLine line, QPoint point) {
-  float eps = 10;
-  bool res = abs(distance(line.p1(), point) + distance(line.p2(), point) -
-                 distance(line.p1(), line.p2())) < eps;
-  return res;
-}
 
 DefaultController::DefaultController(
     FieldModel &field_model, SelectionModel &selection_model,
@@ -120,74 +109,30 @@ void DefaultController::onMouseReleaseEvent(QWidget *widget,
   }
 }
 
-static void CheckLine(FieldModel &_field_model,
-                      SelectionModel &_selection_model, QPoint model_point) {
-  auto &&connection_map = _field_model.GetConnectionMap();
-  auto &&map_of_selected_nodes = _selection_model.GetSelectionMap();
-  for (auto &&start_id : connection_map.keys()) {
-    QPoint start_pos, end_pos;
-
-    auto &&start_pd = _field_model.GetBlockData(start_id.GetParentId());
-    if (!start_pd) {
-      assert(false);
-      return;
-    }
-
-    auto &&start_data = _field_model.GetNodeData(start_id);
-    if (!start_data) {
-      assert(false);
-      return;
-    }
-    NodeType start_type = start_data->node_type;
-
-    start_pos = start_pd->pos + start_pd->offset[start_type];
-
-    for (auto &&end_id : connection_map[start_id]) {
-      auto &&end_pd = _field_model.GetBlockData(end_id.GetParentId());
-      if (!end_pd) {
-        assert(false);
-        return;
-      }
-
-      auto &&end_data = _field_model.GetNodeData(end_id);
-      if (!end_data) {
-        assert(false);
-        return;
-      }
-      NodeType end_type = end_data->node_type;
-
-      end_pos = end_pd->pos + end_pd->offset[end_type];
-      bool find_line = isPointOnLine(QLine(start_pos, end_pos), model_point);
-      if (find_line) {
-        _selection_model.AddSelection(start_id, end_id);
-        return;
-      }
-    }
-  }
-}
-
 void DefaultController::onFieldMousePress(const QMouseEvent *event) {
   const QPoint vis_point = event->pos();
   const QPoint model_point = _vis_model.MapToModel(vis_point);
 
-
   if (event->button() == Qt::MiddleButton) {
+    _selection_model.Clear();
     _old_field_pos = _vis_model.GetCenterCoord();
     _old_mouse_pos = vis_point;
   } else if (event->button() == Qt::LeftButton) {
+    _selection_model.Clear();
     _phantom_rectangle_model.SetP1(vis_point);
+    return;
   }
 
-  CheckLine(_field_model, _selection_model, model_point);
+  checkLine(_field_model, _selection_model, model_point);
 
   _selection_model.Clear();
 }
 
 void DefaultController::onFieldKeyPress(const QKeyEvent *event) {
   auto &&_connection_map = _field_model.GetConnectionMap();
-  auto &&_map_of_selected_nodes = _selection_model.GetSelectionMap();
+  auto &&_map_of_selected_nodes = _selection_model.GetSelectedConnections();
   if (event->key() == Qt::Key::Key_Delete) {
-    auto selected_connections = _selection_model.GetSelectionMap();
+    auto selected_connections = _selection_model.GetSelectedConnections();
     auto selected_blocks = _selection_model.GetSelectedBlocks();
     if (_active_nodes_lock) {
       auto &&lock_nodes = _active_nodes_lock->GetLockedNodes();

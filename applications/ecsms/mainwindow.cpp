@@ -356,6 +356,34 @@ void MainWindow::on_actionSave_triggered_tab1() {
   }
 }
 
+bool eventFilter(QObject *object, QEvent *event) {
+  if (event->type() == QEvent::Close) {
+    event->ignore();
+    return true;
+  }
+  if (event->type() == QEvent::Hide) {
+    event->accept();
+    return true;
+  }
+  if (event->type() == QEvent::HideToParent) {
+    event->accept();
+    return true;
+  }
+  if (event->type() == QEvent::Destroy) {
+    event->ignore();
+    return true;
+  }
+  if (event->type() == QEvent::DeferredDelete) {
+    event->ignore();
+    return true;
+  }
+  if (event->type() == QEvent::ChildRemoved) {
+    event->accept();
+    return true;
+  }
+  return false;
+}
+
 void MainWindow::on_actionNewFile_triggered() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
   switch (curr_ind) {

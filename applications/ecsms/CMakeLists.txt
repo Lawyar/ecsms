@@ -41,6 +41,7 @@ set(SOURCE_LIST
     observer/iobserver.h
     utility/mainwindowutility.h
     utility/containerutility.h
+    utility/selectionutility.h
     utility/tagutility.h
     widgets/blockfieldwidget.cpp widgets/blockfieldwidget.h
     widgets/blockwidget.cpp widgets/blockwidget.h

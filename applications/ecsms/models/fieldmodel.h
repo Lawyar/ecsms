@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../widgets/connectnodewidget.h"
-#include "../namemaker/namemaker.h"
 #include "../namemaker/id.h"
+#include "../namemaker/namemaker.h"
+#include "../widgets/connectnodewidget.h"
 #include "imodel.h"
 
 #include <QMap>
@@ -50,7 +50,7 @@ public:
 
   const QMap<NodeId, NodeData> &GetNodes() const;
   std::optional<NodeData> GetNodeData(const NodeId &node) const;
-  
+
   void AddConnection(const NodeId &start, const NodeId &end);
   void RemoveConnection(const NodeId &start, const NodeId &end);
   bool IsNodeConnected(const NodeId &node) const;
@@ -60,7 +60,7 @@ public:
   void RemoveAll();
 
   Memento Save() const;
-  void Load(const Memento & m);
+  void Load(const Memento &m);
 
 private:
   QMap<NodeId, std::vector<NodeId>> _connections;

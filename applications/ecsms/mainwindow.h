@@ -36,6 +36,8 @@ private:
   void on_actionOpen_triggered_tab1();
   void on_actionSave_triggered_tab1();
 
+  void destroyed(QObject *obj = Q_NULLPTR);
+
 private slots:
   void on_consoleInput_returnPressed();
   void on_consoleInput_2_returnPressed();

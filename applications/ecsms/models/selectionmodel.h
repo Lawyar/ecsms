@@ -10,7 +10,7 @@
 class SelectionModel : public IModel {
 public:
   SelectionModel() = default;
-  const QMap<NodeId, std::vector<NodeId>> &GetSelectionMap() const;
+  const QMap<NodeId, std::vector<NodeId>> &GetSelectedConnections() const;
   const std::set<BlockId> &GetSelectedBlocks() const;
   void AddSelection(const BlockId &block);
   void RemoveSelection(const BlockId &block);

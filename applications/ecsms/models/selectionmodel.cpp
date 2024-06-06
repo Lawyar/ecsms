@@ -4,7 +4,7 @@
 #include <QDebug>
 
 const QMap<NodeId, std::vector<NodeId>> &
-SelectionModel::GetSelectionMap() const {
+SelectionModel::GetSelectedConnections() const {
   return _map_of_selected_nodes;
 }
 
