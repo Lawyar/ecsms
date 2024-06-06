@@ -66,3 +66,30 @@ std::shared_ptr<IPipelineStage> PipelineRegistry::constructProducer(
   throw PipelineRegistryException(std::string("key ") + key +
                                   " was not presented in producers registry");
 }
+
+std::shared_ptr<IPipelineStage> PipelineRegistry::constructConsumer(
+    const std::string& key,
+    ConsumerStrategy strategy,
+    std::shared_ptr<StageConnection> inConnection) {
+  auto consumerFactory = m_consumers.find(key);
+  if (consumerFactory != m_consumers.end()) {
+    return consumerFactory->second(strategy, inConnection);
+  }
+
+  throw PipelineRegistryException(std::string("key ") + key +
+                                  " was not presented in producers registry");
+}
+
+std::shared_ptr<IPipelineStage> PipelineRegistry::constructConsumerAndProducer(
+    const std::string& key,
+    ConsumerStrategy strategy,
+    std::shared_ptr<StageConnection> inConnection,
+    std::shared_ptr<StageConnection> outConnection) {
+  auto factory = m_consumersProducers.find(key);
+  if (factory != m_consumersProducers.end()) {
+    return factory->second(strategy, inConnection, outConnection);
+  }
+
+  throw PipelineRegistryException(std::string("key ") + key +
+                                  " was not presented in producers registry");
+}
