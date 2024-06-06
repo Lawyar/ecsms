@@ -18,6 +18,19 @@ void PipelineRegistry::reset() {
   m_consumerAndProducerConnections.clear();
 }
 
+std::vector<std::string> PipelineRegistry::getStageNames() {
+  vector<string> names;
+
+  for (const auto& it : m_producers)
+    names.push_back(it.first);
+  for (const auto& it : m_consumers)
+    names.push_back(it.first);
+  for (const auto& it : m_consumersProducers)
+    names.push_back(it.first);
+
+  return names;
+}
+
 PipelineStageType PipelineRegistry::getStageType(const std::string& key) {
   if (m_producers.find(key) != m_producers.end())
     return PipelineStageType::producer;

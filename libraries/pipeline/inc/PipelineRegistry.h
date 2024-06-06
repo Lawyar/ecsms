@@ -42,6 +42,8 @@ class PipelineRegistry {
 
   void reset();
 
+  std::vector<std::string> getStageNames();
+
   template <typename ProducerT>
   void registerProducer(const std::string& key);
 
