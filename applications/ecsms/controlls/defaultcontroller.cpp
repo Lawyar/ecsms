@@ -52,10 +52,10 @@ void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
       _old_mouse_pos = vis_point;
 
       if (auto block_data = _field_model.GetBlockData(block_w->GetId()))
-        _old_block_pos = block_data->pos;
+        _old_block_model_pos = block_data->pos;
       else {
         assert(false);
-        _old_block_pos = std::nullopt;
+        _old_block_model_pos = std::nullopt;
       }
       _selection_model.AddSelection(block_w->GetId());
     }
@@ -100,11 +100,11 @@ void DefaultController::onMouseReleaseEvent(QWidget *widget,
 
   else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
     if (auto block_data = _field_model.GetBlockData(block_w->GetId());
-        block_data && _old_block_pos && *_old_block_pos != block_data->pos) {
+        block_data && _old_block_model_pos && *_old_block_model_pos != block_data->pos) {
       _cm.Do(std::make_unique<MoveBlockCommand>(
-          _field_model, block_w->GetId(), *_old_block_pos, block_data->pos));
+          _field_model, block_w->GetId(), *_old_block_model_pos, block_data->pos));
     }
-    _old_block_pos = std::nullopt;
+    _old_block_model_pos = std::nullopt;
     _old_mouse_pos = std::nullopt;
   }
 }

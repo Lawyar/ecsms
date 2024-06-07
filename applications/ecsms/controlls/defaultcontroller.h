@@ -36,6 +36,6 @@ private:
   PhantomRectangleModel &_phantom_rectangle_model;
   VisualizationModel &_vis_model;
   CommandManager &_cm;
-  std::optional<QPoint> _old_mouse_pos, _old_block_pos, _old_field_pos;
+  std::optional<QPoint> _old_mouse_pos, _old_block_model_pos, _old_field_pos;
   std::unique_ptr<ActiveNodesLock> _active_nodes_lock;
 };
