@@ -45,3 +45,8 @@ void CommandManager::AddExecuted(std::unique_ptr<ICommand> command) {
   _commands.push_back(std::move(command));
   ++_executed_command_count;
 }
+
+CommandManager::State CommandManager::GetState() const {
+  State res{_executed_command_count, _commands};
+  return res;
+}

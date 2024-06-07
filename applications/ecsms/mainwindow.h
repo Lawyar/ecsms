@@ -22,8 +22,6 @@ public:
 
   ~MainWindow();
 
-  bool event(QEvent *event) override;
-
 private:
   void updateAllButtons();
   void updateMainPage();
@@ -31,21 +29,26 @@ private:
   void on_actionNewFile_triggered_tab0();
   void on_actionOpen_triggered_tab0();
   void on_actionSave_triggered_tab0();
+  void on_actionSaveAs_triggered_tab0();
 
   void on_actionNewFile_triggered_tab1();
   void on_actionOpen_triggered_tab1();
   void on_actionSave_triggered_tab1();
-
-  void destroyed(QObject *obj = Q_NULLPTR);
+  void on_actionSaveAs_triggered_tab1();
+  
+  bool event(QEvent *event) override;
+  void closeEvent(QCloseEvent *event) override;
 
 private slots:
   void on_consoleInput_returnPressed();
   void on_consoleInput_2_returnPressed();
+  void on_menuFile_aboutToShow();
   void on_menuEdit_aboutToShow();
   void on_menuView_aboutToShow();
   void on_actionNewFile_triggered();
   void on_actionOpen_triggered();
   void on_actionSave_triggered();
+  void on_actionSaveAs_triggered();
   void on_actionRedo_triggered();
   void on_actionUndo_triggered();
   void on_actionGoToFirstBlock_triggered();
@@ -66,7 +69,9 @@ private slots:
 
 private:
   Ui::MainWindow *ui;
-  std::vector<std::shared_ptr<CommandManager>> _comm_managers;
+  std::vector<std::unique_ptr<CommandManager::State>> _com_mgrs_states;
+  std::vector<std::shared_ptr<CommandManager>> _com_mgrs;
   std::vector<QProcess *> _processes;
+  std::vector<QString> _file_names;
 };
 #endif // MAINWINDOW_H

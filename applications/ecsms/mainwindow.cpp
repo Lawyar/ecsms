@@ -16,7 +16,6 @@
 #include <QChart>
 #include <QChartView>
 #include <QDebug>
-#include <QFileDialog>
 #include <QLineSeries>
 #include <QMessageBox>
 #include <QStack>
@@ -28,17 +27,26 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
 
-  _comm_managers =
+  _com_mgrs =
       std::vector<std::shared_ptr<CommandManager>>(ui->tabWidget->count());
-  for (auto &&cm : _comm_managers) {
+  for (auto &&cm : _com_mgrs) {
     cm = std::make_shared<CommandManager>();
   }
+
+  _com_mgrs_states =
+      std::vector<std::unique_ptr<CommandManager::State>>(_com_mgrs.size());
+  for (auto i = 0; i < _com_mgrs_states.size(); ++i) {
+    _com_mgrs_states[i].reset(
+        new CommandManager::State(_com_mgrs[i]->GetState()));
+  }
+
+  _file_names = std::vector<QString>(ui->tabWidget->count());
 
   auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
   ui->treeView->setModel(tree_model);
   ui->treeView->setItemDelegateForColumn(
-      0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLTag,
-                               _comm_managers[0], ui->treeView));
+      0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLTag, _com_mgrs[0],
+                               ui->treeView));
 
   for (auto i = 0; i < 4; ++i) {
     auto series = new QtCharts::QLineSeries;
@@ -80,7 +88,7 @@ MainWindow::MainWindow(QWidget *parent)
   ui->splitter_5->setStretchFactor(1, 1);
   ui->splitter_5->setStretchFactor(0, INT_MAX);
 
-  ui->scrollAreaWidgetContents->SetCommandManager(_comm_managers[1]);
+  ui->scrollAreaWidgetContents->SetCommandManager(_com_mgrs[1]);
 
   _processes = std::vector<QProcess *>(2);
   for (auto &&p : _processes) {
@@ -95,22 +103,16 @@ MainWindow::MainWindow(QWidget *parent)
 
   ui->tableView->setItemDelegateForColumn(
       0, new QLineEditDelegate(ui->treeView, WhatValidate::XMLAttribute,
-                               _comm_managers[0], ui->treeView));
+                               _com_mgrs[0], ui->treeView));
   ui->tableView->setItemDelegateForColumn(
       1, new QLineEditDelegate(ui->treeView, WhatValidate::Nothing,
-                               _comm_managers[0], ui->treeView));
+                               _com_mgrs[0], ui->treeView));
 }
 
 MainWindow::~MainWindow() {
   for (auto &&process : _processes)
     disconectProcessFromAll(process);
   delete ui;
-}
-
-bool MainWindow::event(QEvent *e) {
-  if (e->type() == QEvent::KeyPress)
-    return qobject_cast<QObject *>(ui->scrollAreaWidgetContents)->event(e);
-  return QMainWindow::event(e);
 }
 
 void MainWindow::on_consoleInput_returnPressed() {
@@ -131,10 +133,16 @@ void MainWindow::on_consoleInput_2_returnPressed() {
   ui->consoleInput_2->clear();
 }
 
+void MainWindow::on_menuFile_aboutToShow() {
+  auto &&curr_ind = ui->tabWidget->currentIndex();
+  ui->actionSave->setDisabled(*_com_mgrs_states[curr_ind] ==
+                              _com_mgrs[curr_ind]->GetState());
+}
+
 void MainWindow::on_menuEdit_aboutToShow() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
-  ui->actionRedo->setEnabled(_comm_managers[curr_ind]->HasCommandsToRedo());
-  ui->actionUndo->setEnabled(_comm_managers[curr_ind]->HasCommandsToUndo());
+  ui->actionRedo->setEnabled(_com_mgrs[curr_ind]->HasCommandsToRedo());
+  ui->actionUndo->setEnabled(_com_mgrs[curr_ind]->HasCommandsToUndo());
 }
 
 void MainWindow::on_menuView_aboutToShow() {
@@ -207,182 +215,182 @@ void MainWindow::updateMainPage() {
 }
 
 void MainWindow::on_actionNewFile_triggered_tab0() {
+  _file_names[0].clear();
+
+  auto &&vec = windowTitle().split(": ");
+  if (vec.size() > 1)
+    setWindowTitle(vec[1]);
+
+  _com_mgrs[0]->ClearCommands();
   if (ui->treeView->model())
     delete ui->treeView->model();
   auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
   ui->treeView->setModel(tree_model);
 
   updateMainPage();
-  _comm_managers[0]->ClearCommands();
 }
 
 void MainWindow::on_actionOpen_triggered_tab0() {
-  QString file_name = QFileDialog::getOpenFileName(this, tr("Open file"), "C:/",
-                                                   tr("XML files (*.xml)"));
-  if (file_name.size() == 0) {
-    QMessageBox::warning(this, "Внимание", "Файл не был выбран");
-    updateMainPage();
-    return;
-  }
-  QFile file(file_name);
-  if (!file.open(QIODevice::ReadOnly)) {
-    QMessageBox::critical(this, "Ошибка",
-                          "Не удалось открыть файл " + file_name);
+  auto &&file_name = _file_names[0];
+  file_name = getOpenFileName(this, "C:/", "XML files (*.xml)");
+  if (file_name.isEmpty()) {
     updateMainPage();
     return;
   }
 
-  _comm_managers[0]->ClearCommands();
+  _com_mgrs[0]->ClearCommands();
+  _com_mgrs_states[0].reset(
+      new CommandManager::State(_com_mgrs[0]->GetState()));
   if (ui->tableView->model())
     delete ui->tableView->model();
   if (ui->treeView->model())
     delete ui->treeView->model();
-  QStandardItemModel *model = new QStandardItemModel(0, 0, ui->treeView);
-  ui->treeView->setModel(model);
-  QStandardItem *parent_item = model->invisibleRootItem();
 
-  QXmlStreamReader xml_reader(&file);
-  QStack<QStandardItem *> tags;
-  tags.push(parent_item);
-  while (!xml_reader.atEnd()) {
-    xml_reader.readNext();
-    switch (xml_reader.tokenType()) {
-    case QXmlStreamReader::StartElement: { // открывающий тэг
-      auto table_model = new QStandardItemModel();
-      for (auto &attr : xml_reader.attributes()) {
-        auto attr_name_item = new QStandardItem(attr.name().toString());
-        auto attr_value_item = new QStandardItem(attr.value().toString());
-        table_model->appendRow(
-            QList<QStandardItem *>({attr_name_item, attr_value_item}));
-      }
-      table_model->setHorizontalHeaderLabels(
-          QStringList({"Attribute", "Value"}));
-      auto &&new_tag = createTag(table_model, xml_reader.name().toString());
-      auto &&parent_tag = tags.top();
-      parent_tag->appendRow(new_tag);
-      tags.push(new_tag);
-      break;
-    }
-    case QXmlStreamReader::Characters: { // текст внутри тэга
-      QString str = xml_reader.text().toString().trimmed();
-      if (!str.isEmpty()) {
-        auto tag = tags.top();
-        tag->setText(tag->text() + ": " + str);
-      }
-      break;
-    }
-    case QXmlStreamReader::EndElement: {
-      tags.pop();
-      break;
-    }
-    case QXmlStreamReader::StartDocument:
-    case QXmlStreamReader::EndDocument:
-      break;
-    default: {
-      qDebug() << "error: unexpected token type " << xml_reader.tokenType();
-      break;
-    }
-    }
+  bool success = getXMLFromFile(this, file_name, ui->treeView);
+  if (!success) {
+    _file_names[0].clear();
+
+    auto &&vec = windowTitle().split(": ");
+    if (vec.size() > 1)
+      setWindowTitle(vec[1]);
+    return;
   }
-  file.close();
   updateMainPage();
 }
 
 void MainWindow::on_actionSave_triggered_tab0() {
-  QString file_name = QFileDialog::getSaveFileName(
-      this, tr("Save As"), "C:/*.xml", tr("XML files (*.xml)"));
-  if (file_name.size() == 0) {
-    QMessageBox::warning(this, "Внимание", "Файл не был выбран");
-    updateMainPage();
+  auto &&file_name = _file_names[0];
+  if (file_name.isEmpty()) {
+    file_name = getSaveFileName(this, "C:/*.xml", "XML files (*.xml)");
+    if (file_name.isEmpty()) {
+      updateMainPage();
+      return;
+    }
+  }
+
+  auto model = dynamic_cast<QStandardItemModel *>(ui->treeView->model());
+  bool success = saveXMLToFile(this, file_name, model);
+  if (!success) {
+    _file_names[0].clear();
+
+    auto &&vec = windowTitle().split(": ");
+    if (vec.size() > 1)
+      setWindowTitle(vec[1]);
     return;
   }
-  QFile file(file_name);
-  if (!file.open(QIODevice::WriteOnly)) {
-    QMessageBox::critical(this, "Ошибка",
-                          "Не удалось сохранить в файл " + file_name);
+  updateMainPage();
+  _com_mgrs_states[0].reset(
+      new CommandManager::State(_com_mgrs[0]->GetState()));
+}
+
+void MainWindow::on_actionSaveAs_triggered_tab0() {
+  auto &&file_name = _file_names[0];
+  file_name = getSaveFileName(this, "C:/*.xml", "XML files (*.xml)");
+  if (file_name.isEmpty()) {
     updateMainPage();
     return;
   }
 
-  QXmlStreamWriter xml_writer(&file);
-  xml_writer.setAutoFormatting(true); // Устанавливаем автоформатирование текста
+  auto model = dynamic_cast<QStandardItemModel *>(ui->treeView->model());
+  bool success = saveXMLToFile(this, file_name, model);
+  if (!success) {
+    _file_names[0].clear();
 
-  auto &&model = dynamic_cast<QStandardItemModel *>(ui->treeView->model());
-  xml_writer.writeStartDocument();
-  writeTagsFromModel(xml_writer, model);
-  xml_writer.writeEndDocument();
-  file.close();
+    auto &&vec = windowTitle().split(": ");
+    if (vec.size() > 1)
+      setWindowTitle(vec[1]);
+    return;
+  }
+  updateMainPage();
+  _com_mgrs_states[0].reset(
+      new CommandManager::State(_com_mgrs[0]->GetState()));
 }
 
 void MainWindow::on_actionNewFile_triggered_tab1() {
-  _comm_managers[1]->ClearCommands();
+  _file_names[1].clear();
+
+  auto &&vec = windowTitle().split(": ");
+  if (vec.size() > 1)
+    setWindowTitle(vec[1]);
+
+  _com_mgrs[1]->ClearCommands();
+  _com_mgrs_states[1].reset(
+      new CommandManager::State(_com_mgrs[1]->GetState()));
   ui->scrollAreaWidgetContents->Clear();
 }
 
 void MainWindow::on_actionOpen_triggered_tab1() {
-  QString file_name = QFileDialog::getOpenFileName(this, tr("Open file"), "C:/",
-                                                   tr("YAML files (*.yaml)"));
-  if (file_name.size() == 0) {
-    QMessageBox::warning(this, "Внимание", "Файл не был выбран");
-    updateMainPage();
-    return;
-  }
-  QFile file(file_name);
-  if (!file.open(QIODevice::ReadOnly)) {
-    QMessageBox::critical(this, "Ошибка",
-                          "Не удалось открыть файл " + file_name);
+  auto &&file_name = _file_names[1];
+  file_name = getOpenFileName(this, "C:/", "YAML files (*.yaml)");
+  if (file_name.isEmpty()) {
     updateMainPage();
     return;
   }
 
-  _comm_managers[1]->ClearCommands();
   ui->scrollAreaWidgetContents->Clear();
+  bool success = getYAMLFromFile(this, file_name, ui->scrollAreaWidgetContents);
+  if (!success) {
+    _file_names[1].clear();
+
+    auto &&vec = windowTitle().split(": ");
+    if (vec.size() > 1)
+      setWindowTitle(vec[1]);
+    return;
+  }
+  _com_mgrs[1]->ClearCommands();
+  _com_mgrs_states[1].reset(
+      new CommandManager::State(_com_mgrs[1]->GetState()));
 }
 
 void MainWindow::on_actionSave_triggered_tab1() {
-  QString file_name = QFileDialog::getSaveFileName(
-      this, tr("Save As"), "C:/*.yaml", tr("YAML files (*.yaml)"));
-  if (file_name.size() == 0) {
-    QMessageBox::warning(this, "Внимание", "Файл не был выбран");
+  auto &&file_name = _file_names[0];
+  file_name = getSaveFileName(this, "C:/*.yaml", "YAML files (*.yaml)");
+  if (file_name.isEmpty()) {
     updateMainPage();
     return;
   }
-  QFile file(file_name);
-  if (!file.open(QIODevice::WriteOnly)) {
-    QMessageBox::critical(this, "Ошибка",
-                          "Не удалось сохранить в файл " + file_name);
-    updateMainPage();
+
+  bool success = saveYAMLToFile(this, file_name);
+  if (!success) {
+    _file_names[0].clear();
+
+    auto &&vec = windowTitle().split(": ");
+    if (vec.size() > 1)
+      setWindowTitle(vec[1]);
     return;
   }
+  _com_mgrs_states[1].reset(
+      new CommandManager::State(_com_mgrs[1]->GetState()));
 }
 
-bool eventFilter(QObject *object, QEvent *event) {
-  if (event->type() == QEvent::Close) {
-    event->ignore();
-    return true;
+void MainWindow::on_actionSaveAs_triggered_tab1() {
+  auto &&file_name = _file_names[0];
+  file_name = getSaveFileName(this, "C:/*.yaml", "YAML files (*.yaml)");
+  if (file_name.isEmpty()) {
+    updateMainPage();
+    return;
   }
-  if (event->type() == QEvent::Hide) {
-    event->accept();
-    return true;
+
+  bool success = saveYAMLToFile(this, file_name);
+  if (!success) {
+    _file_names[1].clear();
+
+    auto &&vec = windowTitle().split(": ");
+    if (vec.size() > 1)
+      setWindowTitle(vec[1]);
+    return;
   }
-  if (event->type() == QEvent::HideToParent) {
-    event->accept();
-    return true;
-  }
-  if (event->type() == QEvent::Destroy) {
-    event->ignore();
-    return true;
-  }
-  if (event->type() == QEvent::DeferredDelete) {
-    event->ignore();
-    return true;
-  }
-  if (event->type() == QEvent::ChildRemoved) {
-    event->accept();
-    return true;
-  }
-  return false;
+  _com_mgrs_states[1].reset(
+      new CommandManager::State(_com_mgrs[1]->GetState()));
 }
+
+bool MainWindow::event(QEvent *e) {
+  if (e->type() == QEvent::KeyPress)
+    return qobject_cast<QObject *>(ui->scrollAreaWidgetContents)->event(e);
+  return QMainWindow::event(e);
+}
+
+void MainWindow::closeEvent(QCloseEvent *event) { event->ignore(); }
 
 void MainWindow::on_actionNewFile_triggered() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
@@ -435,15 +443,32 @@ void MainWindow::on_actionSave_triggered() {
   }
 }
 
+void MainWindow::on_actionSaveAs_triggered() {
+  auto &&curr_ind = ui->tabWidget->currentIndex();
+  switch (curr_ind) {
+  case 0: {
+    on_actionSaveAs_triggered_tab0();
+    break;
+  }
+  case 1: {
+    on_actionSaveAs_triggered_tab1();
+    break;
+  }
+  default:
+    assert(false);
+    break;
+  }
+}
+
 void MainWindow::on_actionRedo_triggered() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
-  _comm_managers[curr_ind]->Redo();
+  _com_mgrs[curr_ind]->Redo();
   updateMainPage();
 }
 
 void MainWindow::on_actionUndo_triggered() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
-  _comm_managers[curr_ind]->Undo();
+  _com_mgrs[curr_ind]->Undo();
   updateMainPage();
 }
 
@@ -482,7 +507,7 @@ void MainWindow::on_pushButton_plus_tree_clicked() {
     index_before_insert = selection_model->currentIndex();
   }
 
-  _comm_managers[0]->Do(
+  _com_mgrs[0]->Do(
       std::make_unique<AddTagCommand>(index_before_insert, tree_view_model));
 
   // select new item
@@ -508,7 +533,7 @@ void MainWindow::on_pushButton_minus_tree_clicked() {
       QModelIndex()) // prevent error from deleting invalid item
     return;
 
-  _comm_managers[0]->Do(
+  _com_mgrs[0]->Do(
       std::make_unique<RemoveTagCommand>(index_to_remove, tree_view_model));
 
   // if its' not a root item when expand and select it's parent
@@ -538,11 +563,11 @@ void MainWindow::on_pushButton_new_child_row_tree_clicked() {
   auto tag_text = parent_tag->text();
   auto &&tag_text_vec = tag_text.split(": ");
   if (tag_text_vec.size() > 1) {
-    _comm_managers[0]->Do(std::make_unique<TagTextChangedCommand>(
+    _com_mgrs[0]->Do(std::make_unique<TagTextChangedCommand>(
         parent_index, tag_text, tag_text_vec[0], tree_view_model));
   }
 
-  _comm_managers[0]->Do(
+  _com_mgrs[0]->Do(
       std::make_unique<AddChildTagCommand>(parent_index, tree_view_model));
 
   ui->treeView->expand(parent_index);                        // expand parent
@@ -562,7 +587,7 @@ void MainWindow::on_pushButton_plus_table_clicked() {
 
   auto tree_view_model =
       qobject_cast<QStandardItemModel *>(ui->treeView->model());
-  _comm_managers[0]->Do(std::make_unique<AddAttributeCommand>(
+  _com_mgrs[0]->Do(std::make_unique<AddAttributeCommand>(
       row_to_insert, tag_index, tree_view_model));
 
   // select new item
@@ -586,7 +611,7 @@ void MainWindow::on_pushButton_minus_table_clicked() {
   auto table_selection_model = ui->tableView->selectionModel();
   auto index_to_remove = table_selection_model->currentIndex();
 
-  _comm_managers[0]->Do(std::make_unique<RemoveAttributeCommand>(
+  _com_mgrs[0]->Do(std::make_unique<RemoveAttributeCommand>(
       index_to_remove.row(), tag_index, tree_view_model));
 
   updateMainPage();
