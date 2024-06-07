@@ -14,6 +14,7 @@
 #include "../models/nodetype.h"
 #include "../models/visualizationmodel.h"
 #include "../namemaker/namemaker.h"
+#include "../utility/selectionutility.h"
 #include "connectnodewidget.h"
 
 #include <QCoreApplication>
@@ -157,6 +158,22 @@ void BlockFieldWidget::Update(std::shared_ptr<Event> e) {
     repaint();
     break;
   }
+  case visualModelUpdateEvent: {
+    // move all blocks to their curr pos + center coord
+    auto &&blocks_map = _field_model.GetBlocks();
+    for (auto &&pair_iter = blocks_map.begin(); pair_iter != blocks_map.end();
+         ++pair_iter) {
+      auto &&blockId = pair_iter.key();
+      auto &&blockData = pair_iter.value();
+      if (auto &&widget = FindById(blockId)) {
+        auto &&newPos = _vis_model.MapToVisualization(blockData.pos);
+        widget->move(newPos);
+      } else
+        assert(false);
+    }
+    repaint();
+    break;
+  }
   default: {
     assert(false);
     break;
@@ -243,40 +260,6 @@ void BlockFieldWidget::mouseReleaseEvent(QMouseEvent *event) {
   _controller->onMouseReleaseEvent(this, event);
 }
 
-template <class Functor>
-void ForEachConnection(const FieldModel &_field_model, Functor &&func) {
-  auto &&_connection_map = _field_model.GetConnectionMap();
-  for (auto &&start_id : _connection_map.keys()) {
-    for (auto &&end_id : _connection_map[start_id]) {
-      auto &&start_data = _field_model.GetNodeData(start_id);
-      if (!start_data) {
-        assert(false);
-        return;
-      }
-
-      auto &&end_data = _field_model.GetNodeData(end_id);
-      if (!end_data) {
-        assert(false);
-        return;
-      }
-
-      NodeType start_type = start_data->node_type;
-      NodeType end_type = end_data->node_type;
-
-      QPoint model_start_pos, model_end_pos;
-      if (auto &&start_pd = _field_model.GetBlockData(start_id.GetParentId())) {
-        model_start_pos = start_pd->pos + start_pd->offset[start_type];
-      }
-
-      if (auto &&end_pd = _field_model.GetBlockData(end_id.GetParentId())) {
-        model_end_pos = end_pd->pos + end_pd->offset[end_type];
-      }
-
-      func(model_start_pos, start_id, model_end_pos, end_id);
-    }
-  }
-}
-
 void BlockFieldWidget::paintEvent(QPaintEvent *event) {
   QPainter p(this);
   p.eraseRect(rect());
@@ -292,21 +275,6 @@ void BlockFieldWidget::paintEvent(QPaintEvent *event) {
     p.drawRect(rect);
   } else {
     p.eraseRect(rect());
-    p.setBackground(QBrush(Qt::white));
-  }
-
-  // move all blocks to their curr pos + center coord
-  // todo : cysch otsyuda
-  auto &&blocks_map = _field_model.GetBlocks();
-  for (auto &&pair_iter = blocks_map.begin(); pair_iter != blocks_map.end();
-       ++pair_iter) {
-    auto &&blockId = pair_iter.key();
-    auto &&blockData = pair_iter.value();
-    if (auto &&widget = FindById(blockId)) {
-      auto &&newPos = _vis_model.MapToVisualization(blockData.pos);
-      widget->move(newPos);
-    } else
-      assert(false);
   }
 
   /*-DRAW SELECTED AND NOT SELECTED LINES-*/
@@ -329,9 +297,10 @@ void BlockFieldWidget::paintEvent(QPaintEvent *event) {
     }
   };
 
-  ForEachConnection(_field_model, func);
+  forEachConnection(_field_model, func);
 
-  for (auto &&[brush, lines] : std::vector<std::pair<QBrush, std::vector<QLineF>>>(
+  for (auto &&[brush, lines] :
+       std::vector<std::pair<QBrush, std::vector<QLineF>>>(
            {{Qt::green, selected_lines}, {Qt::red, unselected_lines}})) {
     p.setPen(QPen(brush, 3, Qt::SolidLine));
     p.drawLines(lines.data(), lines.size());

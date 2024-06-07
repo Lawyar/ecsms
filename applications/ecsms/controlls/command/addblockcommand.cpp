@@ -1,12 +1,14 @@
 #include "addblockcommand.h"
 #include "../../widgets/blockwidget.h"
 
-AddBlockCommand::AddBlockCommand(BlockId block, QPoint pos, const QString &text,
+AddBlockCommand::AddBlockCommand(BlockId block, QPoint pos,
+                                 const QString &text,
                                  FieldModel &field_model,
                                  SelectionModel &selection_model)
     : _block(block), _field_model(field_model),
       _selection_model(selection_model) {
   _block_data.pos = pos;
+  _block_data.size = BlockWidget::GetSize(text);
   _block_data.text = text;
 }
 

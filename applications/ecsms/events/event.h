@@ -6,7 +6,8 @@ enum EventType {
   changeActiveNodeEvent,
   addBlockEvent,
   updateBlockEvent,
-  removeBlockEvent
+  removeBlockEvent,
+  visualModelUpdateEvent
 };
 
 class Event {

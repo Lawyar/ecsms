@@ -50,6 +50,7 @@ void FieldModel::SetBlockData(const BlockId &block, BlockData bd) {
     _blocks[block].pos = bd.pos;
     Notify(std ::make_shared<UpdateBlockEvent>(block, _blocks[block]));
   }
+  _blocks[block].size = bd.size;
   _blocks[block].offset = bd.offset;
   _blocks[block].text = bd.text;
 }
@@ -133,11 +134,7 @@ void FieldModel::RemoveBlock(const BlockId &block) {
   Notify(std::make_shared<RemoveBlockEvent>(block));
 }
 
-void FieldModel::RemoveAll() {
-  for (auto &&block : _blocks.keys()) {
-    this->RemoveBlock(block);
-  }
-}
+void FieldModel::RemoveAll() { _blocks.clear(); }
 
 FieldModel::Memento FieldModel::Save() const {
   Memento res{_connections, _blocks, _nodes};

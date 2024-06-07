@@ -12,6 +12,7 @@ class FieldModel : public IModel {
 public:
   struct BlockData {
     QPoint pos;
+    QSize size;
     std::map<NodeType, QPoint> offset;
     QString text;
   };

@@ -61,47 +61,64 @@ inline void checkLine(FieldModel &_field_model,
   }
 }
 
-inline void selectAllInRect(const FieldModel &_field_model,
-                            SelectionModel &_select_model,
-                            const PhantomRectangleModel &_rect_model) {
-  auto &&blocks = _field_model.GetBlocks();
+template <class Functor>
+void forEachConnection(const FieldModel &_field_model, Functor &&func) {
+  auto &&_connection_map = _field_model.GetConnectionMap();
+  for (auto &&start_id : _connection_map.keys()) {
+    for (auto &&end_id : _connection_map[start_id]) {
+      auto &&start_data = _field_model.GetNodeData(start_id);
+      if (!start_data) {
+        assert(false);
+        return;
+      }
+
+      auto &&end_data = _field_model.GetNodeData(end_id);
+      if (!end_data) {
+        assert(false);
+        return;
+      }
+
+      NodeType start_type = start_data->node_type;
+      NodeType end_type = end_data->node_type;
+
+      QPoint model_start_pos, model_end_pos;
+      if (auto &&start_pd = _field_model.GetBlockData(start_id.GetParentId())) {
+        model_start_pos = start_pd->pos + start_pd->offset[start_type];
+      }
+
+      if (auto &&end_pd = _field_model.GetBlockData(end_id.GetParentId())) {
+        model_end_pos = end_pd->pos + end_pd->offset[end_type];
+      }
+
+      func(model_start_pos, start_id, model_end_pos, end_id);
+    }
+  }
+}
+
+inline void selectAllInRect(const FieldModel &field_model,
+                            SelectionModel &select_model,
+                            const VisualizationModel &vis_model,
+                            const PhantomRectangleModel &rect_model) {
+  auto &&blocks = field_model.GetBlocks();
   for (auto &&pair_iter = blocks.begin(); pair_iter != blocks.end();
        ++pair_iter) {
     auto &&block_id = pair_iter.key();
     auto &&block_data = pair_iter.value();
-    if (_rect_model.ContainsRect(QRect(block_data.pos, block_data.pos))) {
-      _select_model.AddSelection(block_id);
+    if (rect_model.ContainsRect(QRect(block_data.pos, block_data.size))) {
+      select_model.AddSelection(block_id);
     } else {
-      _select_model.RemoveSelection(block_id);
-    }
-
-    auto &&node_id =
-        block_id.GetChildId(static_cast<PartId>(NodeType::Incoming));
-    if (_rect_model.ContainsRect(QRect(block_data.offset.at(NodeType::Incoming), block_data.offset.at(NodeType::Incoming)))) {
-
-      auto &&node_connects = _field_model.GetNodeConnections(node_id);
-      for (auto &&pair = node_connects.begin(); pair != node_connects.end();
-           ++pair) {
-        auto &&start_node = pair.key();
-        for (auto &&end_node : pair.value())
-          
-          _select_model.AddSelection(start_node, end_node);
-      }
-    } else {
-      _select_model.RemoveSelection(node_id);
-    }
-
-    node_id = block_id.GetChildId(static_cast<PartId>(NodeType::Outgoing));
-    if (_rect_model.ContainsRect(QRect(block_data.offset.at(NodeType::Outgoing), block_data.offset.at(NodeType::Outgoing)))) {
-      auto &&node_connects = _field_model.GetNodeConnections(node_id);
-      for (auto &&pair = node_connects.begin(); pair != node_connects.end();
-           ++pair) {
-        auto &&start_node = pair.key();
-        for (auto &&end_node : pair.value())
-          _select_model.AddSelection(start_node, end_node);
-      }
-    } else {
-      _select_model.RemoveSelection(node_id);
+      select_model.RemoveSelection(block_id);
     }
   }
+
+  auto &&func = [&select_model, &vis_model,
+                 &rect_model](QPoint model_start_pos, NodeId start_id,
+                               QPoint model_end_pos, NodeId end_id) {
+    QPoint vis_start_pos = vis_model.MapToVisualization(model_start_pos);
+    QPoint vis_end_pos = vis_model.MapToVisualization(model_end_pos);
+    if (rect_model.ContainsRect(QRect{vis_start_pos, vis_end_pos}))
+      select_model.AddSelection(start_id, end_id);
+  };
+
+  forEachConnection(field_model, func);
 }

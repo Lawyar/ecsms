@@ -11,20 +11,20 @@ DrawRectangleController::DrawRectangleController(
 void DrawRectangleController::onMouseMoveEvent(QWidget *widget,
                                                QMouseEvent *event) {
   // upd select_model
-  selectAllInRect(_field_model, _select_model, _rect_model);
+  selectAllInRect(_field_model, _select_model, _vis_model, _rect_model);
 
   const QPoint model_point = _vis_model.MapToModel(event->pos());
   if (event->buttons() == Qt::LeftButton) {
     if (auto &&field_w = qobject_cast<BlockFieldWidget *>(widget)) {
-      _rect_model.SetP2(model_point);
+      _rect_model.SetP1(model_point);
     } else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
-      _rect_model.SetP2(block_w->CoordToBlockField(model_point));
+      _rect_model.SetP1(block_w->CoordToBlockField(model_point));
     } else if (auto &&connect_node_w =
                    qobject_cast<ConnectNodeWidget *>(widget)) {
-      _rect_model.SetP2(connect_node_w->coordToBlockField(model_point));
+      _rect_model.SetP1(connect_node_w->coordToBlockField(model_point));
     }
   } else {
-    _rect_model.SetP2(std::nullopt);
+    _rect_model.SetP1(std::nullopt);
   }
 }
 
@@ -40,5 +40,5 @@ void DrawRectangleController::onLeaveEvent(QWidget *widget, QEvent *event) {}
 
 void DrawRectangleController::onMouseReleaseEvent(QWidget *widget,
                                                   QMouseEvent *event) {
-  _rect_model.SetP2(std::nullopt);
+  _rect_model.SetP1(std::nullopt);
 }

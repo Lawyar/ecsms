@@ -26,9 +26,10 @@ set(SOURCE_LIST
     events/changecontrollerevent.h events/changecontrollerevent.cpp
     events/drawevent.h events/drawevent.cpp
     events/event.h
-    events/updateblockevent.h events/updateblockevent.cpp
     events/removeblockevent.h events/removeblockevent.cpp
     events/repaintevent.h events/repaintevent.cpp
+    events/visualmodelupdateevent.h events/visualmodelupdateevent.cpp
+    events/updateblockevent.h events/updateblockevent.cpp
     models/fieldmodel.h models/fieldmodel.cpp
     models/imodel.h
     models/phantomlinemodel.h models/phantomlinemodel.cpp

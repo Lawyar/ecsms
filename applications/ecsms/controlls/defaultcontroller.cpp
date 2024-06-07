@@ -119,7 +119,7 @@ void DefaultController::onFieldMousePress(const QMouseEvent *event) {
     _old_mouse_pos = vis_point;
   } else if (event->button() == Qt::LeftButton) {
     _selection_model.Clear();
-    _phantom_rectangle_model.SetP1(vis_point);
+    _phantom_rectangle_model.SetP2(model_point);
     return;
   }
 
