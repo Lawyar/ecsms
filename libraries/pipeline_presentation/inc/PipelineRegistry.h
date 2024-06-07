@@ -24,11 +24,11 @@ class PipelineRegistry {
   using ProducerStageFactory = std::function<std::shared_ptr<IPipelineStage>(
       std::shared_ptr<StageConnection>)>;
   using ConsumerStageFactory = std::function<std::shared_ptr<IPipelineStage>(
-      ConsumerStrategy,
+      ConsumptionStrategy,
       std::shared_ptr<StageConnection>)>;
   using ConsumerAndProducerStageFactory =
       std::function<std::shared_ptr<IPipelineStage>(
-          ConsumerStrategy,
+          ConsumptionStrategy,
           std::shared_ptr<StageConnection>,
           std::shared_ptr<StageConnection>)>;
   using ProducerConnectionFactory =
@@ -44,7 +44,7 @@ class PipelineRegistry {
 
   void reset();
 
-  std::vector<std::string> getStageNames();
+  std::vector<std::string> getStageNames() const;
 
   template <typename ProducerT>
   void registerProducer(const std::string& key);
@@ -68,30 +68,30 @@ class PipelineRegistry {
       const std::string& key,
       const ConsumerAndProducerStageFactory factory);
 
-  PipelineStageType getStageType(const std::string& key);
+  PipelineStageType getStageType(const std::string& key) const;
 
   std::shared_ptr<StageConnection> constructProducerConnection(
       const std::string& key,
-      size_t connectionSize);
+      size_t connectionSize) const;
 
   std::shared_ptr<StageConnection> constructConsumerConnection(
       const std::string& key,
-      size_t connectionSize);
+      size_t connectionSize) const;
 
   std::shared_ptr<IPipelineStage> constructProducer(
       const std::string& key,
-      std::shared_ptr<StageConnection> outConnection);
+      std::shared_ptr<StageConnection> outConnection) const;
 
   std::shared_ptr<IPipelineStage> constructConsumer(
       const std::string& key,
-      ConsumerStrategy strategy,
-      std::shared_ptr<StageConnection> inConnection);
+      ConsumptionStrategy strategy,
+      std::shared_ptr<StageConnection> inConnection) const;
 
   std::shared_ptr<IPipelineStage> constructConsumerAndProducer(
       const std::string& key,
-      ConsumerStrategy strategy,
+      ConsumptionStrategy strategy,
       std::shared_ptr<StageConnection> inConnection,
-      std::shared_ptr<StageConnection> outConnection);
+      std::shared_ptr<StageConnection> outConnection) const;
 
  private:
   PipelineRegistry();
@@ -146,7 +146,7 @@ template <typename ConsumerT>
 void PipelineRegistry::registerConsumer(const std::string& key) {
   registerConsumerFactory<ConsumerT>(
       key,
-      [](ConsumerStrategy strategy, shared_ptr<StageConnection> connection) {
+      [](ConsumptionStrategy strategy, shared_ptr<StageConnection> connection) {
         auto inConnection = std::dynamic_pointer_cast<
             InStageConnection<typename ConsumerT::consumptionT>>(connection);
         return make_shared<ConsumerT>(strategy, inConnection);
@@ -168,7 +168,7 @@ void PipelineRegistry::registerConsumerFactory(
 template <typename ConsumerAndProducerT>
 void PipelineRegistry::registerConsumerAndProducer(const std::string& key) {
   registerConsumerAndProducerFactory<ConsumerAndProducerT>(
-      key, [](ConsumerStrategy strategy,
+      key, [](ConsumptionStrategy strategy,
               std::shared_ptr<StageConnection> inConnection,
               std::shared_ptr<StageConnection> outConnection) {
         auto in = std::dynamic_pointer_cast<

@@ -6,14 +6,14 @@ template <typename In, typename Out>
 class ConsumerAndProducerStage : public GenericPipelineStage<In, Out> {
 public:
   ConsumerAndProducerStage(
-      const std::string &stageName, ConsumerStrategy consumerStrategy,
+      const std::string &stageName, ConsumptionStrategy consumerStrategy,
       std::shared_ptr<InStageConnection<In>> inConnection,
       std::shared_ptr<OutStageConnection<Out>> outConnection);
 };
 
 template <typename In, typename Out>
 ConsumerAndProducerStage<In, Out>::ConsumerAndProducerStage(
-    const std::string &stageName, ConsumerStrategy consumerStrategy,
+    const std::string &stageName, ConsumptionStrategy consumerStrategy,
     std::shared_ptr<InStageConnection<In>> inConnection,
     std::shared_ptr<OutStageConnection<Out>> outConnection)
     : GenericPipelineStage<In, Out>(stageName, consumerStrategy,

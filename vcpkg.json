@@ -1,5 +1,6 @@
 {
   "dependencies": [
-    "libpq"
+    "libpq",
+    "yaml-cpp"
   ]
 }

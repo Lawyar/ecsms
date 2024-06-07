@@ -44,7 +44,7 @@ void PipelineRegistry::reset() {
   m_consumerAndProducerConnections.clear();
 }
 
-std::vector<std::string> PipelineRegistry::getStageNames() {
+std::vector<std::string> PipelineRegistry::getStageNames() const {
   vector<string> names;
 
   for (const auto& it : m_producers)
@@ -57,7 +57,7 @@ std::vector<std::string> PipelineRegistry::getStageNames() {
   return names;
 }
 
-PipelineStageType PipelineRegistry::getStageType(const std::string& key) {
+PipelineStageType PipelineRegistry::getStageType(const std::string& key) const {
   if (m_producers.find(key) != m_producers.end())
     return PipelineStageType::producer;
   else if (m_consumers.find(key) != m_consumers.end())
@@ -72,7 +72,7 @@ PipelineStageType PipelineRegistry::getStageType(const std::string& key) {
 
 std::shared_ptr<StageConnection> PipelineRegistry::constructProducerConnection(
     const std::string& key,
-    size_t connectionSize) {
+    size_t connectionSize) const {
   if (auto factory = m_producerConnections.find(key);
       factory != m_producerConnections.end())
     return factory->second(connectionSize);
@@ -84,7 +84,7 @@ std::shared_ptr<StageConnection> PipelineRegistry::constructProducerConnection(
 
 std::shared_ptr<StageConnection> PipelineRegistry::constructConsumerConnection(
     const std::string& key,
-    size_t connectionSize) {
+    size_t connectionSize) const {
   if (auto factory = m_consumerConnections.find(key);
       factory != m_consumerConnections.end())
     return factory->second(connectionSize);
@@ -96,7 +96,7 @@ std::shared_ptr<StageConnection> PipelineRegistry::constructConsumerConnection(
 
 std::shared_ptr<IPipelineStage> PipelineRegistry::constructProducer(
     const std::string& key,
-    std::shared_ptr<StageConnection> connection) {
+    std::shared_ptr<StageConnection> connection) const {
   auto producersFactory = m_producers.find(key);
   if (producersFactory != m_producers.end()) {
     return producersFactory->second(connection);
@@ -108,8 +108,8 @@ std::shared_ptr<IPipelineStage> PipelineRegistry::constructProducer(
 
 std::shared_ptr<IPipelineStage> PipelineRegistry::constructConsumer(
     const std::string& key,
-    ConsumerStrategy strategy,
-    std::shared_ptr<StageConnection> inConnection) {
+    ConsumptionStrategy strategy,
+    std::shared_ptr<StageConnection> inConnection) const {
   auto consumerFactory = m_consumers.find(key);
   if (consumerFactory != m_consumers.end()) {
     return consumerFactory->second(strategy, inConnection);
@@ -121,9 +121,9 @@ std::shared_ptr<IPipelineStage> PipelineRegistry::constructConsumer(
 
 std::shared_ptr<IPipelineStage> PipelineRegistry::constructConsumerAndProducer(
     const std::string& key,
-    ConsumerStrategy strategy,
+    ConsumptionStrategy strategy,
     std::shared_ptr<StageConnection> inConnection,
-    std::shared_ptr<StageConnection> outConnection) {
+    std::shared_ptr<StageConnection> outConnection) const {
   auto factory = m_consumersProducers.find(key);
   if (factory != m_consumersProducers.end()) {
     return factory->second(strategy, inConnection, outConnection);

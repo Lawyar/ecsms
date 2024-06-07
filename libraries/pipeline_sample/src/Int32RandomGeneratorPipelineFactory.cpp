@@ -10,7 +10,7 @@ shared_ptr<Pipeline> Int32RandomGeneratorPipelineFactory::create() {
 
   auto producer =
       make_shared<Int32RandomGenerator>(connection);
-  auto consumer = make_shared<Int32Visualizer>(ConsumerStrategy::consumeNewest, connection);
+  auto consumer = make_shared<Int32Visualizer>(ConsumptionStrategy::lifo, connection);
 
   pipeline->addConnection(connection);
   pipeline->addStage(producer);

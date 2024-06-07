@@ -33,7 +33,7 @@ class InOutStageConnection : public InStageConnection<T>,
 
   std::shared_ptr<StageTask<T>> getConsumerTask(
       size_t consumerId,
-      ConsumerStrategy strategy,
+      ConsumptionStrategy strategy,
       size_t minTaskId) override;
 
   void releaseConsumerTask(std::shared_ptr<T> taskData,
@@ -49,7 +49,7 @@ class InOutStageConnection : public InStageConnection<T>,
   std::optional<size_t> findTaskIndexToConsume(
       std::unique_lock<std::mutex>& lock,
       size_t consumerId,
-      ConsumerStrategy strategy,
+      ConsumptionStrategy strategy,
       size_t minTaskId);
 
   bool taskLocked(size_t taskId);
@@ -169,7 +169,7 @@ void InOutStageConnection<T>::releaseProducerTask(std::shared_ptr<T> taskData,
 template <typename T>
 std::shared_ptr<StageTask<T>> InOutStageConnection<T>::getConsumerTask(
     size_t consumerId,
-    ConsumerStrategy strategy,
+    ConsumptionStrategy strategy,
     size_t minTaskId) {
   std::unique_lock lock{m_mutex};
 
@@ -262,12 +262,12 @@ template <typename T>
 std::optional<size_t> InOutStageConnection<T>::findTaskIndexToConsume(
     std::unique_lock<std::mutex>& lock,
     size_t consumerId,
-    ConsumerStrategy strategy,
+    ConsumptionStrategy strategy,
     size_t minTaskId) {
   uint64_t taskId;
-  if (strategy == ConsumerStrategy::consumeOldest)
+  if (strategy == ConsumptionStrategy::fifo)
     taskId = 0;
-  else if (strategy == ConsumerStrategy::consumeNewest)
+  else if (strategy == ConsumptionStrategy::lifo)
     taskId = std::numeric_limits<uint64_t>::max();
 
   std::optional<size_t> taskIndex = std::nullopt;
@@ -276,9 +276,9 @@ std::optional<size_t> InOutStageConnection<T>::findTaskIndexToConsume(
     for (size_t i = 0; i < m_tasks.size(); ++i) {
       if (m_tasksConsumingStates[i][consumerId] == StageTaskState::producing &&
           m_tasks[i]->taskId > minTaskId) {
-        if ((strategy == ConsumerStrategy::consumeNewest &&
+        if ((strategy == ConsumptionStrategy::lifo &&
              m_tasks[i]->taskId > taskId) ||
-            (strategy == ConsumerStrategy::consumeOldest &&
+            (strategy == ConsumptionStrategy::fifo &&
              m_tasks[i]->taskId < taskId)) {
           taskIndex = int(i);
           taskId = m_tasks[i]->taskId;

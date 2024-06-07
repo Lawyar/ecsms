@@ -4,7 +4,7 @@
 
 using namespace std;
 
-Int32Visualizer::Int32Visualizer(ConsumerStrategy strategy,
+Int32Visualizer::Int32Visualizer(ConsumptionStrategy strategy,
     std::shared_ptr<InStageConnection<int32_t>> connection)
     : ConsumerStage(stageName, strategy, connection) {
 }

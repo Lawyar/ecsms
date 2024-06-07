@@ -5,7 +5,7 @@
 using namespace std;
 
 DoubleVisualizer::DoubleVisualizer(
-    ConsumerStrategy strategy,
+    ConsumptionStrategy strategy,
     std::shared_ptr<InStageConnection<double>> connection)
     : ConsumerStage(stageName, strategy, connection) {
 }

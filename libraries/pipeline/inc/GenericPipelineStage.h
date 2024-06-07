@@ -5,7 +5,7 @@
 #include "OutStageConnection.h"
 #include "PipelineException.h"
 #include "SteadyClock.h"
-#include "TaskRetrieveStrategy.h"
+#include "ConsumptionStrategy.h"
 
 #include <iostream>
 #include <optional>
@@ -14,7 +14,7 @@ template <typename In, typename Out>
 class GenericPipelineStage : public IPipelineStage {
  public:
   GenericPipelineStage(const std::string_view stageName,
-                       std::optional<ConsumerStrategy>,
+                       std::optional<ConsumptionStrategy>,
                        std::weak_ptr<InStageConnection<In>>,
                        std::weak_ptr<OutStageConnection<Out>>);
 
@@ -48,7 +48,7 @@ class GenericPipelineStage : public IPipelineStage {
   std::atomic_bool m_shutdownSignaled;
   std::thread m_thread;
 
-  const std::optional<ConsumerStrategy> m_consumerStrategy;
+  const std::optional<ConsumptionStrategy> m_consumerStrategy;
   std::optional<size_t> m_consumerId;
   size_t m_lastConusmedTaskId;
 
@@ -59,7 +59,7 @@ class GenericPipelineStage : public IPipelineStage {
 template <typename In, typename Out>
 GenericPipelineStage<In, Out>::GenericPipelineStage(
     const std::string_view stageName,
-    std::optional<ConsumerStrategy> consumerStrategy,
+    std::optional<ConsumptionStrategy> consumerStrategy,
     std::weak_ptr<InStageConnection<In>> inConnection,
     std::weak_ptr<OutStageConnection<Out>> outConnection)
     : IPipelineStage(stageName),
