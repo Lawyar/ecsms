@@ -6,13 +6,12 @@
 
 class MoveBlockCommand : public ICommand {
 public:
-  MoveBlockCommand(FieldModel &field_model, BlockId block, QPoint old_pos,
-                   QPoint new_pos);
+  MoveBlockCommand(FieldModel &field_model, BlockId block, QPoint delta);
   virtual void Execute() override;
   virtual void UnExecute() override;
 
 private:
   FieldModel &_field_model;
   BlockId _block;
-  QPoint _old_pos, _new_pos;
+  QPoint _delta;
 };

@@ -10,6 +10,7 @@ set(SOURCE_LIST
     controlls/command/attrtextchangedcommand.h controlls/command/attrtextchangedcommand.cpp
     controlls/command/commandmanager.h controlls/command/commandmanager.cpp
     controlls/command/icommand.h
+    controlls/command/macrocommand.h controlls/command/macrocommand.cpp
     controlls/command/moveblockcommand.h controlls/command/moveblockcommand.cpp
     controlls/command/removeattributecommand.h controlls/command/removeattributecommand.cpp
     controlls/command/removecommand.h controlls/command/removecommand.cpp

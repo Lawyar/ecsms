@@ -14,6 +14,7 @@ public:
   void Do(std::unique_ptr<ICommand> command);
   void Redo();
   void Undo();
+  void AddExecuted(std::unique_ptr<ICommand> command);
 
 private:
   int _executed_command_count = 0;

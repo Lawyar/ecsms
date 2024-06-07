@@ -1,6 +1,7 @@
 #include "defaultcontroller.h"
 #include "../utility/selectionutility.h"
 #include "../widgets/blockfieldwidget.h"
+#include "command/macrocommand.h"
 #include "command/moveblockcommand.h"
 #include "command/removecommand.h"
 
@@ -29,13 +30,17 @@ void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
   else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
     if (event->buttons() == Qt::LeftButton && _old_mouse_pos) {
       QPoint delta = vis_point - *_old_mouse_pos;
-      auto &&block_data = _field_model.GetBlockData(block_w->GetId());
-      if (!block_data) {
-        assert(false);
-        return;
+
+      auto &&selected_blocks = _selection_model.GetSelectedBlocks();
+      for (auto &&selected_block_id : selected_blocks) {
+        auto &&block_data = _field_model.GetBlockData(selected_block_id);
+        if (!block_data) {
+          assert(false);
+          return;
+        }
+        block_data->pos += delta;
+        _field_model.SetBlockData(selected_block_id, *block_data);
       }
-      block_data->pos += delta;
-      _field_model.SetBlockData(block_w->GetId(), *block_data);
     }
   }
 }
@@ -99,13 +104,19 @@ void DefaultController::onMouseReleaseEvent(QWidget *widget,
   }
 
   else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
-    if (auto block_data = _field_model.GetBlockData(block_w->GetId());
-        block_data && _old_block_model_pos &&
-        *_old_block_model_pos != block_data->pos) {
-      _cm.Do(std::make_unique<MoveBlockCommand>(_field_model, block_w->GetId(),
-                                                *_old_block_model_pos,
-                                                block_data->pos));
+    auto delta = _vis_model.MapToModel(block_w->pos()) - * _old_block_model_pos;
+    std::vector<std::unique_ptr<ICommand>> move_coms_vec;
+    auto &&selected_blocks = _selection_model.GetSelectedBlocks();
+    for (auto &&selected_block_id : selected_blocks) {
+      auto block_data = _field_model.GetBlockData(selected_block_id);
+      if (block_data && _old_block_model_pos &&
+          *_old_block_model_pos != block_data->pos) {
+        move_coms_vec.push_back(std::make_unique<MoveBlockCommand>(
+            _field_model, selected_block_id, delta));
+      }
     }
+    if (!move_coms_vec.empty())
+      _cm.AddExecuted(std::make_unique<MacroCommand>(std::move(move_coms_vec)));
     _old_block_model_pos = std::nullopt;
     _old_mouse_pos = std::nullopt;
   }
