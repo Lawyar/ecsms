@@ -3,12 +3,10 @@
 #include "../widgets/connectnodewidget.h"
 #include "imodel.h"
 
-#include <QObject>
 #include <memory>
 #include <optional>
 
-class PhantomLineModel : public QObject, public IModel {
-  Q_OBJECT
+class PhantomLineModel : public IModel {
 public:
   PhantomLineModel() = default;
   std::optional<QPoint> GetBegin() const;

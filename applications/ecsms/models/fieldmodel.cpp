@@ -137,7 +137,10 @@ void FieldModel::RemoveBlock(const BlockId &block) {
   Notify(std::make_shared<RemoveBlockEvent>(block));
 }
 
-void FieldModel::RemoveAll() { _blocks.clear(); }
+void FieldModel::RemoveAll() { 
+  _blocks.clear(); 
+  _nodes.clear();
+}
 
 FieldModel::Memento FieldModel::Save() const {
   Memento res{_connections, _blocks, _nodes};

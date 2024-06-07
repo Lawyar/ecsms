@@ -186,9 +186,19 @@ QWidget *BlockFieldWidget::FindById(Id id) {
   return res;
 }
 
-void BlockFieldWidget::Clear() {
-  _selection_model.Clear();
-  _field_model.RemoveAll();
+void BlockFieldWidget::Clear() { 
+  _cm->ClearCommands();
+  _field_model = FieldModel();
+  _selection_model = SelectionModel();
+  _line_model = PhantomLineModel();
+  _rect_model = PhantomRectangleModel();
+  _vis_model = VisualizationModel();
+
+  _field_model.Subscribe(this);
+  _selection_model.Subscribe(this);
+  _line_model.Subscribe(this);
+  _rect_model.Subscribe(this);
+  _vis_model.Subscribe(this);
 }
 
 void BlockFieldWidget::GoToFirstBlock() {
