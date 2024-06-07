@@ -1,2 +1,2 @@
-add_subdirectory(test_application)
 add_subdirectory(ecsms)
+add_subdirectory(pipeline_sample_application)
