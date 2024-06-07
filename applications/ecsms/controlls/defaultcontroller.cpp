@@ -100,9 +100,11 @@ void DefaultController::onMouseReleaseEvent(QWidget *widget,
 
   else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
     if (auto block_data = _field_model.GetBlockData(block_w->GetId());
-        block_data && _old_block_model_pos && *_old_block_model_pos != block_data->pos) {
-      _cm.Do(std::make_unique<MoveBlockCommand>(
-          _field_model, block_w->GetId(), *_old_block_model_pos, block_data->pos));
+        block_data && _old_block_model_pos &&
+        *_old_block_model_pos != block_data->pos) {
+      _cm.Do(std::make_unique<MoveBlockCommand>(_field_model, block_w->GetId(),
+                                                *_old_block_model_pos,
+                                                block_data->pos));
     }
     _old_block_model_pos = std::nullopt;
     _old_mouse_pos = std::nullopt;
@@ -118,14 +120,13 @@ void DefaultController::onFieldMousePress(const QMouseEvent *event) {
     _old_field_pos = _vis_model.GetCenterCoord();
     _old_mouse_pos = vis_point;
   } else if (event->button() == Qt::LeftButton) {
-    _selection_model.Clear();
-    _phantom_rectangle_model.SetP2(model_point);
+    bool point_on_line = checkLine(_field_model, _selection_model, model_point);
+    if (!point_on_line) {
+      _selection_model.Clear();
+      _phantom_rectangle_model.SetP2(model_point);
+    }
     return;
   }
-
-  checkLine(_field_model, _selection_model, model_point);
-
-  _selection_model.Clear();
 }
 
 void DefaultController::onFieldKeyPress(const QKeyEvent *event) {

@@ -41,9 +41,10 @@ void SelectionModel::AddSelection(const NodeId &start, const NodeId &end) {
 }
 
 void SelectionModel::RemoveSelection(const NodeId &start, const NodeId &end) {
-  _map_of_selected_nodes[start].erase(
-      std::find(_map_of_selected_nodes[start].begin(),
-                _map_of_selected_nodes[start].end(), end));
+  auto &&iter_to_remove = std::find(_map_of_selected_nodes[start].begin(),
+                                  _map_of_selected_nodes[start].end(), end);
+  if (iter_to_remove != _map_of_selected_nodes[start].end())
+    _map_of_selected_nodes[start].erase(iter_to_remove);
   if (_map_of_selected_nodes[start].empty())
     _map_of_selected_nodes.remove(start);
 

@@ -74,8 +74,11 @@ void FieldModel::AddConnection(const NodeId &start, const NodeId &end) {
 }
 
 void FieldModel::RemoveConnection(const NodeId &start, const NodeId &end) {
-  _connections[start].erase(
-      std::find(_connections[start].begin(), _connections[start].end(), end));
+  auto &&vec = _connections[start];
+  auto &&iter_to_remove = std::find(vec.begin(), vec.end(), end);
+  if (iter_to_remove != vec.end())
+    vec.erase(iter_to_remove);
+
   if (_connections[start].empty())
     _connections.remove(start);
 

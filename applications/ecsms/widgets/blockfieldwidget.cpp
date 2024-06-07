@@ -53,7 +53,6 @@ BlockFieldWidget::BlockFieldWidget(QWidget *parent) : QWidget(parent) {
   _line_model.Subscribe(this);
   _rect_model.Subscribe(this);
   _vis_model.Subscribe(this);
-  setCursor(Qt::CursorShape::OpenHandCursor);
 }
 
 void BlockFieldWidget::SetCommandManager(std::shared_ptr<CommandManager> cm) {
@@ -242,7 +241,7 @@ void BlockFieldWidget::leaveEvent(QEvent *event) {
 
 void BlockFieldWidget::mouseReleaseEvent(QMouseEvent *event) {
   if (event->button() == Qt::LeftButton || event->button() == Qt::MiddleButton)
-    setCursor(Qt::CursorShape::OpenHandCursor);
+    setCursor(Qt::CursorShape::ArrowCursor);
   _controller->onMouseReleaseEvent(this, event);
 }
 

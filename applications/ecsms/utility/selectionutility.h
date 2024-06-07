@@ -15,8 +15,9 @@ static bool isPointOnLine(QLine line, QPoint point) {
   return res;
 }
 
-inline void checkLine(FieldModel &_field_model,
+inline bool checkLine(FieldModel &_field_model,
                       SelectionModel &_selection_model, QPoint model_point) {
+  bool point_on_line = false;
   auto &&connection_map = _field_model.GetConnectionMap();
   auto &&map_of_selected_nodes = _selection_model.GetSelectedConnections();
   for (auto &&start_id : connection_map.keys()) {
@@ -25,13 +26,13 @@ inline void checkLine(FieldModel &_field_model,
     auto &&start_pd = _field_model.GetBlockData(start_id.GetParentId());
     if (!start_pd) {
       assert(false);
-      return;
+      return false;
     }
 
     auto &&start_data = _field_model.GetNodeData(start_id);
     if (!start_data) {
       assert(false);
-      return;
+      return false;
     }
     NodeType start_type = start_data->node_type;
 
@@ -41,13 +42,13 @@ inline void checkLine(FieldModel &_field_model,
       auto &&end_pd = _field_model.GetBlockData(end_id.GetParentId());
       if (!end_pd) {
         assert(false);
-        return;
+        return false;
       }
 
       auto &&end_data = _field_model.GetNodeData(end_id);
       if (!end_data) {
         assert(false);
-        return;
+        return false;
       }
       NodeType end_type = end_data->node_type;
 
@@ -55,10 +56,12 @@ inline void checkLine(FieldModel &_field_model,
       bool find_line = isPointOnLine(QLine(start_pos, end_pos), model_point);
       if (find_line) {
         _selection_model.AddSelection(start_id, end_id);
-        return;
+        point_on_line = true;
+        break;
       }
     }
   }
+  return point_on_line;
 }
 
 template <class Functor>
@@ -116,8 +119,10 @@ inline void selectAllInRect(const FieldModel &field_model,
                                QPoint model_end_pos, NodeId end_id) {
     QPoint vis_start_pos = vis_model.MapToVisualization(model_start_pos);
     QPoint vis_end_pos = vis_model.MapToVisualization(model_end_pos);
-    if (rect_model.ContainsRect(QRect{vis_start_pos, vis_end_pos}))
+    if (rect_model.ContainsRect(QRect{model_start_pos, model_end_pos}))
       select_model.AddSelection(start_id, end_id);
+    else 
+      select_model.RemoveSelection(start_id, end_id);
   };
 
   forEachConnection(field_model, func);
