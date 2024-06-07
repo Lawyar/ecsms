@@ -13,6 +13,7 @@ public:
       return other._executed_command_count == _executed_command_count &&
              other._commands == _commands;
     }
+    bool operator!=(const State &other) { return !(*this == other); }
 
   private:
     State(int executed_command_count,

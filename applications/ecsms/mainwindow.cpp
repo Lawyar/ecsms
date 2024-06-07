@@ -133,6 +133,12 @@ void MainWindow::on_consoleInput_2_returnPressed() {
   ui->consoleInput_2->clear();
 }
 
+void MainWindow::on_tabWidget_currentChanged(int index) {
+  auto &&fn = _file_names[index];
+  auto &&title = fn.isEmpty() ? _app_name : fn + ": " + _app_name;
+  setWindowTitle(title);
+}
+
 void MainWindow::on_menuFile_aboutToShow() {
   auto &&curr_ind = ui->tabWidget->currentIndex();
   ui->actionSave->setDisabled(*_com_mgrs_states[curr_ind] ==
@@ -215,19 +221,52 @@ void MainWindow::updateMainPage() {
 }
 
 void MainWindow::on_actionNewFile_triggered_tab0() {
-  _file_names[0].clear();
+  QMessageBox msg_box;
+  msg_box.setWindowTitle("Внимание");
+  msg_box.setText("Сохранить изменения?");
+  msg_box.addButton("Сохранить", QMessageBox::YesRole);
+  msg_box.addButton("Не сохранять", QMessageBox::NoRole);
+  msg_box.addButton("Отменить", QMessageBox::RejectRole);
+  msg_box.setIcon(QMessageBox::Warning);
+  switch (msg_box.exec()) {
+  case 0: {
+    // save and new file
+    if (*_com_mgrs_states[0] != _com_mgrs[0]->GetState())
+      on_actionSave_triggered_tab0();
 
-  auto &&vec = windowTitle().split(": ");
-  if (vec.size() > 1)
-    setWindowTitle(vec[1]);
-
-  _com_mgrs[0]->ClearCommands();
-  if (ui->treeView->model())
-    delete ui->treeView->model();
-  auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
-  ui->treeView->setModel(tree_model);
-
-  updateMainPage();
+    _file_names[0].clear();
+    setWindowTitle(_app_name);
+    _com_mgrs[0]->ClearCommands();
+    _com_mgrs_states[0].reset(
+        new CommandManager::State(_com_mgrs[0]->GetState()));
+    if (ui->treeView->model())
+      delete ui->treeView->model();
+    auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
+    ui->treeView->setModel(tree_model);
+    updateMainPage();
+    break;
+  }
+  case 1: {
+    _file_names[0].clear();
+    setWindowTitle(_app_name);
+    _com_mgrs[0]->ClearCommands();
+    _com_mgrs_states[0].reset(
+        new CommandManager::State(_com_mgrs[0]->GetState()));
+    if (ui->treeView->model())
+      delete ui->treeView->model();
+    auto tree_model = new QStandardItemModel(0, 0, ui->treeView);
+    ui->treeView->setModel(tree_model);
+    updateMainPage();
+    break;
+  }
+  case 2: {
+    break;
+  }
+  default: {
+    assert(false);
+    return;
+  }
+  }
 }
 
 void MainWindow::on_actionOpen_triggered_tab0() {
@@ -306,9 +345,7 @@ void MainWindow::on_actionSaveAs_triggered_tab0() {
 void MainWindow::on_actionNewFile_triggered_tab1() {
   _file_names[1].clear();
 
-  auto &&vec = windowTitle().split(": ");
-  if (vec.size() > 1)
-    setWindowTitle(vec[1]);
+  setWindowTitle(_app_name);
 
   _com_mgrs[1]->ClearCommands();
   _com_mgrs_states[1].reset(
@@ -359,7 +396,7 @@ void MainWindow::on_actionSave_triggered_tab1() {
 }
 
 void MainWindow::on_actionSaveAs_triggered_tab1() {
-  auto &&file_name = _file_names[0];
+  auto &&file_name = _file_names[1];
   file_name = getSaveFileName(this, "C:/*.yaml", "YAML files (*.yaml)");
   if (file_name.isEmpty()) {
     updateMainPage();
@@ -368,7 +405,7 @@ void MainWindow::on_actionSaveAs_triggered_tab1() {
 
   bool success = saveYAMLToFile(this, file_name);
   if (!success) {
-    _file_names[0].clear();
+    _file_names[1].clear();
     setWindowTitle(_app_name);
     return;
   } else {
