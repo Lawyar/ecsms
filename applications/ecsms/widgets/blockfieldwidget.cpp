@@ -129,23 +129,13 @@ void BlockFieldWidget::Update(std::shared_ptr<Event> e) {
     auto &&block_data = add_block_e->GetBlockData();
     auto &&block = new BlockWidget(add_block_e->GetId(), _controller,
                                    block_data.text, this);
-    block->move(block_data.pos);
     block->show();
-    repaint();
+    actualizeBlock(add_block_e->GetId());
     break;
   }
   case updateBlockEvent: {
     auto &&update_block_e = std::static_pointer_cast<UpdateBlockEvent>(e);
-    auto &&block = FindById(update_block_e->GetBlock());
-    if (!block) {
-      assert(false);
-      return;
-    }
-    auto &&block_data = update_block_e->GetBlockData();
-    auto &&newPos = _vis_model.MapToVisualization(block_data.pos);
-    block->move(newPos);
-    qobject_cast<BlockWidget *>(block)->SetText(block_data.text);
-    repaint();
+    actualizeBlock(update_block_e->GetBlock());
     break;
   }
   case removeBlockEvent: {
@@ -165,12 +155,7 @@ void BlockFieldWidget::Update(std::shared_ptr<Event> e) {
     for (auto &&pair_iter = blocks_map.begin(); pair_iter != blocks_map.end();
          ++pair_iter) {
       auto &&block_id = pair_iter.key();
-      auto &&block_data = pair_iter.value();
-      if (auto &&widget = FindById(block_id)) {
-        auto &&new_pos = _vis_model.MapToVisualization(block_data.pos);
-        widget->move(new_pos);
-      } else
-        assert(false);
+      actualizeBlock(block_id);
     }
     repaint();
     break;
@@ -356,4 +341,6 @@ void BlockFieldWidget::actualizeBlock(BlockId id) {
     blockWidget->SetText(block_data->text);
   else
     assert(false);
+
+  repaint();
 }
