@@ -142,7 +142,8 @@ void BlockFieldWidget::Update(std::shared_ptr<Event> e) {
       return;
     }
     auto &&block_data = update_block_e->GetBlockData();
-    block->move(block_data.pos);
+    auto &&newPos = _vis_model.MapToVisualization(block_data.pos);
+    block->move(newPos);
     qobject_cast<BlockWidget *>(block)->SetText(block_data.text);
     repaint();
     break;
@@ -163,11 +164,11 @@ void BlockFieldWidget::Update(std::shared_ptr<Event> e) {
     auto &&blocks_map = _field_model.GetBlocks();
     for (auto &&pair_iter = blocks_map.begin(); pair_iter != blocks_map.end();
          ++pair_iter) {
-      auto &&blockId = pair_iter.key();
-      auto &&blockData = pair_iter.value();
-      if (auto &&widget = FindById(blockId)) {
-        auto &&newPos = _vis_model.MapToVisualization(blockData.pos);
-        widget->move(newPos);
+      auto &&block_id = pair_iter.key();
+      auto &&block_data = pair_iter.value();
+      if (auto &&widget = FindById(block_id)) {
+        auto &&new_pos = _vis_model.MapToVisualization(block_data.pos);
+        widget->move(new_pos);
       } else
         assert(false);
     }
@@ -335,4 +336,24 @@ void BlockFieldWidget::paintEvent(QPaintEvent *event) {
     p.drawLine(line);
     drawArrow(p, line, 10, M_PI / 3);
   }
+}
+
+void BlockFieldWidget::actualizeBlock(BlockId id) {
+  auto &&block = FindById(id);
+  if (!block) {
+    assert(false);
+    return;
+  }
+  auto &&block_data = _field_model.GetBlockData(id);
+  if (!block_data) {
+    assert(false);
+    return;
+  }
+  auto &&newPos = _vis_model.MapToVisualization(block_data->pos);
+  block->move(newPos);
+
+  if (auto blockWidget = qobject_cast<BlockWidget *>(block))
+    blockWidget->SetText(block_data->text);
+  else
+    assert(false);
 }

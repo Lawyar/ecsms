@@ -34,6 +34,9 @@ protected:
   void paintEvent(QPaintEvent *event) override;
 
 private:
+  void actualizeBlock(BlockId id);
+
+private:
   std::shared_ptr<CommandManager> _cm;
   NameMaker _block_name_maker;
   std::unique_ptr<IController> _controller;
