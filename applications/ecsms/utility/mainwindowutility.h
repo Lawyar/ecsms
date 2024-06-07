@@ -44,27 +44,25 @@ inline static void disconectProcessFromAll(QProcess *process) {
 
 inline QString getSaveFileName(QWidget *parent, const QString &filter,
                                const QString &selected_filter) {
-  auto &&file_name =
-      QFileDialog::getSaveFileName(parent, QObject::tr("Save As"), filter, selected_filter);
+  auto &&file_name = QFileDialog::getSaveFileName(parent, "РЎРѕС…СЂР°РЅРёС‚СЊ РєР°Рє",
+                                                  filter, selected_filter);
   if (file_name.isEmpty()) {
-    QMessageBox::warning(parent, "Внимание", "Файл не был выбран");
+    QMessageBox::warning(parent, "Р’РЅРёРјР°РЅРёРµ", "Р¤Р°Р№Р» РЅРµ Р±С‹Р» РІС‹Р±СЂР°РЅ");
     file_name.clear();
     return file_name;
   }
-  parent->setWindowTitle(file_name + ": " + parent->windowTitle());
   return file_name;
 }
 
 inline QString getOpenFileName(QWidget *parent, const QString &filter,
                                const QString &selected_filter) {
-  auto &&file_name = QFileDialog::getOpenFileName(parent, "Открыть файл",
+  auto &&file_name = QFileDialog::getOpenFileName(parent, "РћС‚РєСЂС‹С‚СЊ С„Р°Р№Р»",
                                                   filter, selected_filter);
   if (file_name.size() == 0) {
-    QMessageBox::warning(parent, "Внимание", "Файл не был выбран");
+    QMessageBox::warning(parent, "Р’РЅРёРјР°РЅРёРµ", "Р¤Р°Р№Р» РЅРµ Р±С‹Р» РІС‹Р±СЂР°РЅ");
     file_name.clear();
     return file_name;
   }
-  parent->setWindowTitle(file_name + ": " + parent->windowTitle());
   return file_name;
 }
 
@@ -72,8 +70,8 @@ inline bool getXMLFromFile(QWidget *parent, const QString &file_name,
                            QTreeView *tree_view) {
   QFile file(file_name);
   if (!file.open(QIODevice::ReadOnly)) {
-    QMessageBox::critical(parent, "Ошибка",
-                          "Не удалось открыть файл " + file_name);
+    QMessageBox::critical(parent, "РћС€РёР±РєР°",
+                          "РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» " + file_name);
     return false;
   }
 
@@ -87,7 +85,7 @@ inline bool getXMLFromFile(QWidget *parent, const QString &file_name,
   while (!xml_reader.atEnd()) {
     xml_reader.readNext();
     switch (xml_reader.tokenType()) {
-    case QXmlStreamReader::StartElement: { // открывающий тэг
+    case QXmlStreamReader::StartElement: { // РѕС‚РєСЂС‹РІР°СЋС‰РёР№ С‚СЌРі
       auto table_model = new QStandardItemModel();
       for (auto &attr : xml_reader.attributes()) {
         auto attr_name_item = new QStandardItem(attr.name().toString());
@@ -103,7 +101,7 @@ inline bool getXMLFromFile(QWidget *parent, const QString &file_name,
       tags.push(new_tag);
       break;
     }
-    case QXmlStreamReader::Characters: { // текст внутри тэга
+    case QXmlStreamReader::Characters: { // С‚РµРєСЃС‚ РІРЅСѓС‚СЂРё С‚СЌРіР°
       QString str = xml_reader.text().toString().trimmed();
       if (!str.isEmpty()) {
         auto tag = tags.top();
@@ -135,9 +133,8 @@ inline bool saveXMLToFile(QWidget *parent, const QString &file_name,
                           const QStandardItemModel *model) {
   QFile file(file_name);
   if (!file.open(QIODevice::WriteOnly)) {
-    QMessageBox::critical(
-        parent, QObject::tr("Ошибка"),
-        QObject::tr("Не удалось сохранить в файл ") + file_name);
+    QMessageBox::critical(parent, "РћС€РёР±РєР°",
+                          "РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ РІ С„Р°Р№Р» " + file_name);
     return false;
   }
 
@@ -148,8 +145,7 @@ inline bool saveXMLToFile(QWidget *parent, const QString &file_name,
   writeTagsFromModel(xml_writer, model);
   xml_writer.writeEndDocument();
   file.close();
-  QMessageBox::information(parent, QObject::tr("Сохранение"),
-                           QObject::tr("Файл успешно сохранён в ") + file_name);
+  QMessageBox::information(parent,"РЎРѕС…СЂР°РЅРµРЅРёРµ", "Р¤Р°Р№Р» СѓСЃРїРµС€РЅРѕ СЃРѕС…СЂР°РЅС‘РЅ РІ " + file_name);
   return true;
 }
 
@@ -157,8 +153,8 @@ inline bool getYAMLFromFile(QWidget *parent, const QString &file_name,
                             BlockFieldWidget *field_widget) {
   QFile file(file_name);
   if (!file.open(QIODevice::ReadOnly)) {
-    QMessageBox::critical(parent, "Ошибка",
-                          "Не удалось открыть файл " + file_name);
+    QMessageBox::critical(parent, "РћС€РёР±РєР°",
+                          "РќРµ СѓРґР°Р»РѕСЃСЊ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» " + file_name);
     return false;
   }
 
@@ -169,14 +165,14 @@ inline bool getYAMLFromFile(QWidget *parent, const QString &file_name,
 inline bool saveYAMLToFile(QWidget *parent, const QString &file_name) {
   QFile file(file_name);
   if (!file.open(QIODevice::WriteOnly)) {
-    QMessageBox::critical(parent, "Ошибка",
-                          "Не удалось сохранить в файл " + file_name);
+    QMessageBox::critical(parent, "РћС€РёР±РєР°",
+                          "РќРµ СѓРґР°Р»РѕСЃСЊ СЃРѕС…СЂР°РЅРёС‚СЊ РІ С„Р°Р№Р» " + file_name);
     return false;
   }
 
   file.close();
-  QMessageBox::information(parent, "Сохранение",
-                           "Файл успешно сохранён в " + file_name);
+  QMessageBox::information(parent, "РЎРѕС…СЂР°РЅРµРЅРёРµ",
+                           "Р¤Р°Р№Р» СѓСЃРїРµС€РЅРѕ СЃРѕС…СЂР°РЅС‘РЅ РІ " + file_name);
   return true;
 }
 

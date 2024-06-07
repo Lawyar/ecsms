@@ -249,11 +249,10 @@ void MainWindow::on_actionOpen_triggered_tab0() {
   bool success = getXMLFromFile(this, file_name, ui->treeView);
   if (!success) {
     _file_names[0].clear();
-
-    auto &&vec = windowTitle().split(": ");
-    if (vec.size() > 1)
-      setWindowTitle(vec[1]);
+    setWindowTitle(_app_name);
     return;
+  } else {
+    setWindowTitle(file_name + ": " + _app_name);
   }
   updateMainPage();
 }
@@ -272,11 +271,10 @@ void MainWindow::on_actionSave_triggered_tab0() {
   bool success = saveXMLToFile(this, file_name, model);
   if (!success) {
     _file_names[0].clear();
-
-    auto &&vec = windowTitle().split(": ");
-    if (vec.size() > 1)
-      setWindowTitle(vec[1]);
+    setWindowTitle(_app_name);
     return;
+  } else {
+    setWindowTitle(file_name + ": " + _app_name);
   }
   updateMainPage();
   _com_mgrs_states[0].reset(
@@ -295,11 +293,10 @@ void MainWindow::on_actionSaveAs_triggered_tab0() {
   bool success = saveXMLToFile(this, file_name, model);
   if (!success) {
     _file_names[0].clear();
-
-    auto &&vec = windowTitle().split(": ");
-    if (vec.size() > 1)
-      setWindowTitle(vec[1]);
+    setWindowTitle(_app_name);
     return;
+  } else {
+    setWindowTitle(file_name + ": " + _app_name);
   }
   updateMainPage();
   _com_mgrs_states[0].reset(
@@ -330,12 +327,11 @@ void MainWindow::on_actionOpen_triggered_tab1() {
   ui->scrollAreaWidgetContents->Clear();
   bool success = getYAMLFromFile(this, file_name, ui->scrollAreaWidgetContents);
   if (!success) {
-    _file_names[1].clear();
-
-    auto &&vec = windowTitle().split(": ");
-    if (vec.size() > 1)
-      setWindowTitle(vec[1]);
+    _file_names[0].clear();
+    setWindowTitle(_app_name);
     return;
+  } else {
+    setWindowTitle(file_name + ": " + _app_name);
   }
   _com_mgrs[1]->ClearCommands();
   _com_mgrs_states[1].reset(
@@ -353,11 +349,10 @@ void MainWindow::on_actionSave_triggered_tab1() {
   bool success = saveYAMLToFile(this, file_name);
   if (!success) {
     _file_names[0].clear();
-
-    auto &&vec = windowTitle().split(": ");
-    if (vec.size() > 1)
-      setWindowTitle(vec[1]);
+    setWindowTitle(_app_name);
     return;
+  } else {
+    setWindowTitle(file_name + ": " + _app_name);
   }
   _com_mgrs_states[1].reset(
       new CommandManager::State(_com_mgrs[1]->GetState()));
@@ -373,12 +368,11 @@ void MainWindow::on_actionSaveAs_triggered_tab1() {
 
   bool success = saveYAMLToFile(this, file_name);
   if (!success) {
-    _file_names[1].clear();
-
-    auto &&vec = windowTitle().split(": ");
-    if (vec.size() > 1)
-      setWindowTitle(vec[1]);
+    _file_names[0].clear();
+    setWindowTitle(_app_name);
     return;
+  } else {
+    setWindowTitle(file_name + ": " + _app_name);
   }
   _com_mgrs_states[1].reset(
       new CommandManager::State(_com_mgrs[1]->GetState()));

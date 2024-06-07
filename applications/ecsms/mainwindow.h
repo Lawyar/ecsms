@@ -35,7 +35,7 @@ private:
   void on_actionOpen_triggered_tab1();
   void on_actionSave_triggered_tab1();
   void on_actionSaveAs_triggered_tab1();
-  
+
   bool event(QEvent *event) override;
   void closeEvent(QCloseEvent *event) override;
 
@@ -68,6 +68,7 @@ private slots:
   void on_pushButton_stopPipeline_pressed();
 
 private:
+  QString _app_name = "ECSMS";
   Ui::MainWindow *ui;
   std::vector<std::unique_ptr<CommandManager::State>> _com_mgrs_states;
   std::vector<std::shared_ptr<CommandManager>> _com_mgrs;
