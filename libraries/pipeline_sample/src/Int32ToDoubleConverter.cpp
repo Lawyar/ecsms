@@ -1,5 +1,4 @@
 #include "Int32ToDoubleConverter.h"
-#include "PipelineRegistry.h"
 
 Int32ToDoubleConverter::Int32ToDoubleConverter(
     ConsumerStrategy strategy,
@@ -9,8 +8,6 @@ Int32ToDoubleConverter::Int32ToDoubleConverter(
                                strategy,
                                inConnection,
                                outConnection) {
-  PipelineRegistry::Instance()
-      .registerConsumerAndProducer<Int32ToDoubleConverter>(stageName);
 }
 
 void Int32ToDoubleConverter::consumeAndProduce(

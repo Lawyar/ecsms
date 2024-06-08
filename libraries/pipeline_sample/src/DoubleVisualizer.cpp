@@ -1,5 +1,4 @@
 #include "DoubleVisualizer.h"
-#include "PipelineRegistry.h"
 
 #include <iostream>
 
@@ -9,7 +8,6 @@ DoubleVisualizer::DoubleVisualizer(
     ConsumerStrategy strategy,
     std::shared_ptr<InStageConnection<double>> connection)
     : ConsumerStage(stageName, strategy, connection) {
-  PipelineRegistry::Instance().registerConsumer<DoubleVisualizer>(stageName);
 }
 
 void DoubleVisualizer::consume(std::shared_ptr<double> inData) {

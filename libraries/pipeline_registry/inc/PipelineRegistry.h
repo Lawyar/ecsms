@@ -38,6 +38,8 @@ class PipelineRegistry {
   using ConsumerAndProducerConnectionFactory =
       std::function<ConsumerAndProducerConnection(size_t)>;
 
+  static void Init();
+
   static PipelineRegistry& Instance();
 
   void reset();
@@ -112,6 +114,10 @@ class PipelineRegistry {
       m_consumerConnections;
   std::unordered_map<std::string, ConsumerAndProducerConnectionFactory>
       m_consumerAndProducerConnections;
+
+private:
+  static std::atomic_bool initialized;
+  static PipelineRegistry globalRegistry;
 };
 
 template <typename ProducerT>

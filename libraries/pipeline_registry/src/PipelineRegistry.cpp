@@ -1,12 +1,38 @@
 #include "PipelineRegistry.h"
 
+#include "DoubleVisualizer.h"
+#include "Int32RandomGenerator.h"
+#include "Int32ToDoubleConverter.h"
+#include "Int32Visualizer.h"
+
 using namespace std;
+
+decltype(PipelineRegistry::initialized) PipelineRegistry::initialized = false;
+decltype(PipelineRegistry::globalRegistry) PipelineRegistry::globalRegistry;
 
 PipelineRegistry::PipelineRegistry() {}
 
+void PipelineRegistry::Init() {
+  if (initialized)
+    throw PipelineRegistryException(
+        "pipeline registry has already been initialized");
+
+  initialized = true;
+
+  globalRegistry.registerConsumer<DoubleVisualizer>(
+      DoubleVisualizer::stageName);
+  globalRegistry.registerProducer<Int32RandomGenerator>(
+      Int32RandomGenerator::stageName);
+  globalRegistry.registerConsumer<Int32Visualizer>(Int32Visualizer::stageName);
+  globalRegistry.registerConsumerAndProducer<Int32ToDoubleConverter>(
+      Int32ToDoubleConverter::stageName);
+}
+
 PipelineRegistry& PipelineRegistry::Instance() {
-  static PipelineRegistry registry;
-  return registry;
+  if (!initialized)
+    throw PipelineRegistryException(
+        "pipeline registry should be initialized before calling PipelineRegistry::Instance");
+  return globalRegistry;
 }
 
 void PipelineRegistry::reset() {
