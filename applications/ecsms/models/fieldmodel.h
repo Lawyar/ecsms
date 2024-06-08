@@ -40,6 +40,8 @@ public:
 public:
   FieldModel() = default;
 
+  FieldModel &operator=(const FieldModel &other);
+
   const QMap<NodeId, std::vector<NodeId>> &GetConnectionMap() const;
   QMap<NodeId, std::vector<NodeId>> GetNodeConnections(NodeId node) const;
 
@@ -58,7 +60,8 @@ public:
   void AddBlock(const BlockId &block, const BlockData &bd,
                 const QMap<NodeType, NodeData> &node_data_map);
   void RemoveBlock(const BlockId &block);
-  void RemoveAll();
+  
+  void Clear();
 
   Memento Save() const;
   void Load(const Memento &m);

@@ -7,6 +7,17 @@
 #include "../utility/containerutility.h"
 #include "nodetype.h"
 
+FieldModel &FieldModel::operator=(const FieldModel &other) {
+  if (&other == this)
+    return *this;
+
+  Clear();
+
+  _blocks = other._blocks;
+  _connections = other._connections;
+  _nodes = other._nodes;
+}
+
 const QMap<NodeId, std::vector<NodeId>> &FieldModel::GetConnectionMap() const {
   return _connections;
 }
@@ -137,9 +148,12 @@ void FieldModel::RemoveBlock(const BlockId &block) {
   Notify(std::make_shared<RemoveBlockEvent>(block));
 }
 
-void FieldModel::RemoveAll() { 
-  _blocks.clear(); 
-  _nodes.clear();
+void FieldModel::Clear() { 
+  for (auto &&block_id : _blocks.keys())
+    RemoveBlock(block_id);
+  assert(_blocks.empty());
+  assert(_nodes.empty());
+  assert(_connections.empty());
 }
 
 FieldModel::Memento FieldModel::Save() const {

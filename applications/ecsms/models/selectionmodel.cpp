@@ -3,6 +3,16 @@
 
 #include <QDebug>
 
+SelectionModel &SelectionModel::operator=(const SelectionModel &other) {
+  if (&other == this)
+    return *this;
+
+  Clear();
+
+  _map_of_selected_nodes = other._map_of_selected_nodes;
+  _selected_blocks = other._selected_blocks;
+}
+
 const QMap<NodeId, std::vector<NodeId>> &
 SelectionModel::GetSelectedConnections() const {
   return _map_of_selected_nodes;

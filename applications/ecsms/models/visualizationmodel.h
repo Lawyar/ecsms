@@ -7,10 +7,15 @@
 class VisualizationModel : public IModel {
 public:
 	VisualizationModel() = default;
+
+  VisualizationModel &operator=(const VisualizationModel &other);
+
   QPoint MapToVisualization(QPoint model_point) const;
   QPoint MapToModel(QPoint vis_point) const;
   QPoint GetCenterCoord() const;
   void SetNewCoordCenter(QPoint new_center_coord);
+
+  void Clear();
 
 private:
   QPoint _center_coord = {0, 0};

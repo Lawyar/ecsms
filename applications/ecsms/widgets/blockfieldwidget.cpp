@@ -188,11 +188,11 @@ QWidget *BlockFieldWidget::FindById(Id id) {
 
 void BlockFieldWidget::Clear() { 
   _cm->ClearCommands();
-  _field_model = FieldModel();
   _selection_model = SelectionModel();
   _line_model = PhantomLineModel();
   _rect_model = PhantomRectangleModel();
   _vis_model = VisualizationModel();
+  _field_model = FieldModel();
 
   _field_model.Subscribe(this);
   _selection_model.Subscribe(this);
