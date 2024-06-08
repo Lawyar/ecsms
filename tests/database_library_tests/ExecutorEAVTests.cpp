@@ -3361,3 +3361,351 @@ TEST_F(ExecutorEAVWithFilledEnvironment,
   EXPECT_EQ(attrValuesByType.at(SQLDataType::RemoteFileId).at(0).value,
             nullptr);
 }
+
+/// Пример кода по записи в БД
+TEST(ExecutorEAV, ExampleToDatabase) {
+  // строка соединения
+  const std::string connectionInfo =
+      "postgresql://postgres:password@localhost:5432/testdb";
+
+  // Получим менеджер базы данных
+  auto &&databaseManager = GetDatabaseManager();
+
+  // Получим соединение по строке соединения
+  auto connection = databaseManager.GetConnection(connectionInfo);
+  if (!connection || !connection->IsValid()) {
+    std::cout << "Bad connection" << std::endl;
+    return;
+  }
+
+  // Получим исполнитель EAV-запросов
+  auto &&executorEAV = databaseManager.GetExecutorEAV(connection);
+  if (!executorEAV) {
+    std::cout << "Can't get IExecutorEAV" << std::endl;
+    return;
+  }
+
+  // Получим конвертер SQL-типов
+  auto &&sqlTypeConverter = databaseManager.GetSQLTypeConverter();
+  if (!sqlTypeConverter) {
+    std::cout << "Can't get ISQLTypeConverter" << std::endl;
+    return;
+  }
+
+  auto isStatusBad = [](IExecuteResultStatusPtr status) {
+    // (Завожу лямбду, чтобы не дублировать везде этот код)
+    // Функция возвращает true, если переданный статус ошибочный.
+    if (!status || status->HasError()) {
+      std::cout << "Bad status: "
+                << (status ? status->GetErrorMessage() : std::string("<empty>"))
+                << std::endl;
+      return true;
+    }
+    return false;
+  };
+
+  IExecuteResultStatusPtr status;
+  // Откроем транзакцию
+  status = connection->BeginTransaction();
+  if (isStatusBad(status))
+    return;
+
+  // Создать контейнер с сущностями и типами атрибутов, которые они будут
+  // использовать
+  IExecutorEAV::EAVRegisterEntries entries;
+  // Название сущности - Experiment - Эксперимент.
+  // Название сущности должно быть валидным SQL-идентификатором: не содержать
+  // пробелов, не начинаться с числа, не включать в себя знаки препинания и т.п.
+  const std::string experimentEntity = "Experiment";
+  // Сущность "Эксперимент" будет использовать атрибут типа TEXT и
+  // атрибут типа "идентификатор большого бинарного объекта"
+  // (большой бинарный объект представляет собой объект, похожий на файл,
+  // поэтому он называется RemoteFile - удаленный файл)
+  entries[experimentEntity] = {SQLDataType::Text, SQLDataType::RemoteFileId};
+
+  // Зарегистрируем сущности, передав контейнер.
+  // Метод также создает таблицы для сущностей, атрибутов и значений
+  // (поскольку передали флаг createTables = true)
+  status = executorEAV->SetRegisteredEntities(entries, true);
+  if (isStatusBad(status))
+    return;
+
+  IExecutorEAV::EntityId entityId1;
+  // Создадим первый экземпляр данной сущности
+  status = executorEAV->CreateNewEntity(experimentEntity, entityId1);
+  if (isStatusBad(status))
+    return;
+
+  IExecutorEAV::EntityId entityId2;
+  // Создадим второй экземпляр данной сущности
+  status = executorEAV->CreateNewEntity(experimentEntity, entityId2);
+  if (isStatusBad(status))
+    return;
+
+  // Для первого экземляра сущности "Experiment" зададим текстовый атрибут
+  // "Name", который имеет значение "Experiment #1"
+  status = executorEAV->Insert(
+      experimentEntity, entityId1, sqlTypeConverter->GetSQLTypeText("Name"),
+      sqlTypeConverter->GetSQLTypeText("Experiment #1"));
+
+  // Для второго экземляра сущности "Experiment" зададим текстовый атрибут
+  // "Name", который имеет значение "Experiment #1"
+  status = executorEAV->Insert(
+      experimentEntity, entityId2, sqlTypeConverter->GetSQLTypeText("Name"),
+      sqlTypeConverter->GetSQLTypeText("Experiment #2"));
+
+  auto isBoolStatusBad = [](bool status, const std::string &msg) {
+    // Завожу лямбду, которая проверяет значение булевой переменной
+    // И если оно false, то печатает сообщение.
+    if (status == false)
+      std::cout << msg << std::endl;
+
+    return status == false;
+  };
+
+  auto generateBytes = [](size_t size) {
+    // Сгенерировать массив байтов
+    std::vector<char> bytes(size);
+    for (size_t i = 0; i < size; ++i)
+      bytes[i] = rand();
+    return bytes;
+  };
+
+  // Для каждой из экспериментов зададим его "Результат"
+  for (auto &&entityId : {entityId1, entityId2}) {
+    bool boolStatus = false;
+
+    // Создадим большой бинарный объект
+    auto file = connection->CreateRemoteFile();
+    boolStatus = !!file;
+    if (isBoolStatusBad(!!file, "Can't create file"))
+      return;
+
+    // Откроем его как файл
+    boolStatus = file->Open(FileOpenMode::Write);
+    if (isBoolStatusBad(boolStatus, "Can't open file"))
+      return;
+
+    // Сгенерируем 100 байтов результата
+    auto bytes = generateBytes(100);
+    // Запишем байты результата
+    // (Если тебе нужно записать какие-то другие байты, запиши свои
+    // Функцию WriteBytes можно вызвать сколько угодно раз, записывая байты
+    // частями)
+    boolStatus = file->WriteBytes(bytes);
+    if (isBoolStatusBad(boolStatus, "Can't write to file"))
+      return;
+
+    boolStatus = file->Close();
+    if (isBoolStatusBad(boolStatus, "Can't close file"))
+      return;
+
+    // Теперь запишем идентификатор этого файла в качестве значения
+    // файлового атрибута "Result Data"
+    status = executorEAV->Insert(
+        experimentEntity, entityId,
+        sqlTypeConverter->GetSQLTypeText("Result Data"),
+        sqlTypeConverter->GetSQLTypeRemoteFileId(file->GetFileName()));
+    if (isStatusBad(status))
+      return;
+  }
+
+  // Зафиксируем транзакцию
+  status = connection->CommitTransaction();
+  if (isStatusBad(status))
+    return;
+}
+
+/// Пример кода по чтению из БД
+TEST(ExecutorEAV, ExampleFromDatabase) {
+  // строка соединения
+  const std::string connectionInfo =
+      "postgresql://postgres:password@localhost:5432/testdb";
+
+  // Получим менеджер базы данных
+  auto &&databaseManager = GetDatabaseManager();
+
+  // Получим соединение по строке соединения
+  auto connection = databaseManager.GetConnection(connectionInfo);
+  if (!connection || !connection->IsValid()) {
+    std::cout << "Bad connection" << std::endl;
+    return;
+  }
+
+  // Получим исполнитель EAV-запросов
+  auto &&executorEAV = databaseManager.GetExecutorEAV(connection);
+  if (!executorEAV) {
+    std::cout << "Can't get IExecutorEAV" << std::endl;
+    return;
+  }
+
+  // Получим конвертер SQL-типов
+  auto &&sqlTypeConverter = databaseManager.GetSQLTypeConverter();
+  if (!sqlTypeConverter) {
+    std::cout << "Can't get ISQLTypeConverter" << std::endl;
+    return;
+  }
+
+  auto isStatusBad = [](IExecuteResultStatusPtr status) {
+    // (Завожу лямбду, чтобы не дублировать везде этот код)
+    // Функция возвращает true, если переданный статус ошибочный.
+    if (!status || status->HasError()) {
+      std::cout << "Bad status: "
+                << (status ? status->GetErrorMessage() : std::string("<empty>"))
+                << std::endl;
+      return true;
+    }
+    return false;
+  };
+
+  IExecuteResultStatusPtr status;
+  // Откроем транзакцию
+  status = connection->BeginTransaction();
+  if (isStatusBad(status))
+    return;
+
+  // Создать контейнер с сущностями и типами атрибутов, которые они будут
+  // использовать
+  IExecutorEAV::EAVRegisterEntries entries;
+  // Название сущности - Experiment - Эксперимент.
+  // Название сущности должно быть валидным SQL-идентификатором: не содержать
+  // пробелов, не начинаться с числа, не включать в себя знаки препинания и т.п.
+  const std::string experimentEntity = "Experiment";
+  // Сущность "Эксперимент" будет использовать атрибут типа TEXT и
+  // атрибут типа "идентификатор большого бинарного объекта"
+  // (большой бинарный объект представляет собой объект, похожий на файл,
+  // поэтому он называется RemoteFile - удаленный файл)
+  entries[experimentEntity] = {SQLDataType::Text, SQLDataType::RemoteFileId};
+
+  // Зарегистрируем сущности, передав контейнер.
+  // Метод теперь НЕ создает таблицы для сущностей, атрибутов и значений
+  // (поскольку передали флаг createTables = false)
+  status = executorEAV->SetRegisteredEntities(entries, false);
+  if (isStatusBad(status))
+    return;
+
+  // Получим идентификаторы экземпляров сущности "Experiment"
+  std::vector<IExecutorEAV::EntityId> entityIds;
+  status = executorEAV->GetEntityIds(experimentEntity, entityIds);
+  if (isStatusBad(status))
+    return;
+
+  auto isBoolStatusBad = [](bool status, const std::string &msg) {
+    // Завожу лямбду, которая проверяет значение булевой переменной
+    // И если оно false, то печатает сообщение.
+    if (status == false)
+      std::cout << msg << std::endl;
+
+    return status == false;
+  };
+
+  for (auto &&entityId : entityIds) {
+    // Получим атрибуты со значениями для данного идентификатора сущности
+    std::map<SQLDataType, std::vector<IExecutorEAV::AttrValue>>
+        dataTypeToAttrValues;
+    status = executorEAV->GetAttributeValues(experimentEntity, entityId,
+                                             dataTypeToAttrValues);
+    if (isStatusBad(status))
+      return;
+
+    std::cout << "Entity: " << experimentEntity << std::endl;
+    std::cout << "Entity id: " << entityId << std::endl;
+
+    // Выведем текстовые атрибуты со значениями
+    {
+      auto &&textAttrValues = dataTypeToAttrValues[SQLDataType::Text];
+      for (auto &&textAttrValue : textAttrValues) {
+        // Получим название атрибута
+        if (isBoolStatusBad(textAttrValue.attrName != nullptr,
+                            "Bad attributeName ptr"))
+          return;
+
+        auto attributeName = textAttrValue.attrName->GetValue();
+        if (isBoolStatusBad(attributeName.has_value(),
+                            "Bad attributeName value"))
+          return;
+
+        // Напечатаем название атрибута
+        std::cout << "Text attribute \"" << *attributeName << "\" ";
+
+        // Получим значение атрибута
+        auto valuePtr =
+            std::dynamic_pointer_cast<ISQLTypeText>(textAttrValue.value);
+        if (isBoolStatusBad(valuePtr != nullptr, "Bad attributeValue ptr"))
+          return;
+
+        auto value = valuePtr->GetValue();
+        if (isBoolStatusBad(value.has_value(), "Bad attributeValue value"))
+          return;
+
+        // Напечатаем значение атрибута
+        std::cout << "has value \"" << *value << "\"" << std::endl;
+      }
+    }
+
+    // Выведем файловые атрибуты со значениями
+    {
+      auto &&fileAttrValues = dataTypeToAttrValues[SQLDataType::RemoteFileId];
+      for (auto &&fileAttrValue : fileAttrValues) {
+        // Получим название атрибута
+        if (isBoolStatusBad(fileAttrValue.attrName != nullptr,
+                            "Bad attributeName ptr"))
+          return;
+
+        auto attributeName = fileAttrValue.attrName->GetValue();
+        if (isBoolStatusBad(attributeName.has_value(),
+                            "Bad attributeName value"))
+          return;
+
+        // Напечатаем название атрибута
+        std::cout << "File attribute \"" << *attributeName << "\" "
+                  << std::endl;
+
+        // Получим значение атрибута
+        auto valuePtr = std::dynamic_pointer_cast<ISQLTypeRemoteFileId>(
+            fileAttrValue.value);
+        if (isBoolStatusBad(valuePtr != nullptr, "Bad attributeValue ptr"))
+          return;
+
+        auto fileId = valuePtr->GetValue();
+        if (isBoolStatusBad(fileId.has_value(), "Bad attributeValue value"))
+          return;
+
+        // Напечатаем значение атрибута
+        std::cout << "has value \"" << *fileId << "\"" << std::endl;
+
+        // Получим сами данные файла
+        auto file = connection->GetRemoteFile(*fileId);
+        if (isBoolStatusBad(!!file, "Can't get file"))
+          return;
+
+        // Откроем файл на чтение
+        bool boolStatus = file->Open(FileOpenMode::Read);
+        if (isBoolStatusBad(boolStatus, "Can't open file"))
+          return;
+
+        std::vector<char> bytes;
+        size_t numberOfBytesRead = 0; ///< Количество прочитанных байтов
+        const size_t numberOfBytesToRead =
+            40; ///< Количество байтов, которые надо прочитать
+        do {
+          boolStatus =
+              file->ReadBytes(numberOfBytesToRead, bytes, &numberOfBytesRead);
+          if (isBoolStatusBad(boolStatus, "Can't read bytes"))
+            return;
+        } while (numberOfBytesToRead == numberOfBytesRead);
+
+        // Выведем сами данные
+        std::cout << "Data:" << std::endl;
+        for (auto &&byte : bytes)
+          std::cout << (int)byte << ' ';
+        std::cout << std::endl;
+      }
+    }
+  }
+
+  // Зафиксируем транзакцию
+  status = connection->CommitTransaction();
+  if (isStatusBad(status))
+    return;
+}
