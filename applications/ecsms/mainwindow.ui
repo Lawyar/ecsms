@@ -43,11 +43,11 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab_0">
        <attribute name="title">
-        <string>Main</string>
+        <string>Главная</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout">
         <property name="leftMargin">
@@ -284,7 +284,7 @@
       </widget>
       <widget class="QWidget" name="tab_1">
        <attribute name="title">
-        <string>Pipeline</string>
+        <string>Пайплайн</string>
        </attribute>
        <layout class="QGridLayout" name="gridLayout_3">
         <property name="leftMargin">
@@ -422,7 +422,7 @@
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="title">
-     <string>File</string>
+     <string>Файл</string>
     </property>
     <addaction name="actionNewFile"/>
     <addaction name="actionOpen"/>
@@ -431,14 +431,14 @@
    </widget>
    <widget class="QMenu" name="menuEdit">
     <property name="title">
-     <string>Edit</string>
+     <string>Правка</string>
     </property>
     <addaction name="actionUndo"/>
     <addaction name="actionRedo"/>
    </widget>
    <widget class="QMenu" name="menuView">
     <property name="title">
-     <string>View</string>
+     <string>Форма</string>
     </property>
     <addaction name="actionGoToFirstBlock"/>
     <addaction name="actionGoToNextBlock"/>
@@ -459,7 +459,7 @@
      <normaloff>:/folder.ico</normaloff>:/folder.ico</iconset>
    </property>
    <property name="text">
-    <string>Open</string>
+    <string>Открыть файл</string>
    </property>
   </action>
   <action name="actionSave">
@@ -471,7 +471,7 @@
      <normaloff>:/save.ico</normaloff>:/save.ico</iconset>
    </property>
    <property name="text">
-    <string>Save</string>
+    <string>Сохранить файл</string>
    </property>
   </action>
   <action name="actionNewFile">
@@ -483,7 +483,7 @@
      <normaloff>:/file.ico</normaloff>:/file.ico</iconset>
    </property>
    <property name="text">
-    <string>New file</string>
+    <string>Новый файл</string>
    </property>
   </action>
   <action name="actionUndo">
@@ -495,7 +495,7 @@
      <normaloff>:/left.ico</normaloff>:/left.ico</iconset>
    </property>
    <property name="text">
-    <string>Undo</string>
+    <string>Отменить</string>
    </property>
   </action>
   <action name="actionRedo">
@@ -507,7 +507,7 @@
      <normaloff>:/right.ico</normaloff>:/right.ico</iconset>
    </property>
    <property name="text">
-    <string>Redo</string>
+    <string>Повторить</string>
    </property>
   </action>
   <action name="actionGoToFirstBlock">
@@ -519,7 +519,7 @@
      <normaloff>:/magnifier.ico</normaloff>:/magnifier.ico</iconset>
    </property>
    <property name="text">
-    <string>Go to first block</string>
+    <string>Перейти к первому блоку</string>
    </property>
    <property name="toolTip">
     <string>Go to blocks</string>
@@ -534,7 +534,7 @@
      <normaloff>:/magnifier.ico</normaloff>:/magnifier.ico</iconset>
    </property>
    <property name="text">
-    <string>Go to next block</string>
+    <string>Перейти к следующему блоку</string>
    </property>
   </action>
   <action name="actionSaveAs">
@@ -546,7 +546,7 @@
      <normaloff>:/save.ico</normaloff>:/save.ico</iconset>
    </property>
    <property name="text">
-    <string>Save as</string>
+    <string>Сохранить файл как</string>
    </property>
   </action>
  </widget>
