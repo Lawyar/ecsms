@@ -9,6 +9,10 @@ VisualizationModel::operator=(const VisualizationModel &other) {
   Clear();
 
   _center_coord = other._center_coord;
+
+  IModel::operator=(other);
+
+  return *this;
 }
 
 QPoint VisualizationModel::MapToVisualization(QPoint model_point) const {
@@ -29,4 +33,5 @@ void VisualizationModel::SetNewCoordCenter(QPoint new_center_coord) {
 void VisualizationModel::Clear() { 
   _center_coord = {0, 0}; 
   Notify(std::make_shared<VisualModelUpdateEvent>());
+  IModel::Clear();
 }

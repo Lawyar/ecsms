@@ -11,6 +11,10 @@ PhantomRectangleModel::operator=(const PhantomRectangleModel &other) {
 
   _p1 = other._p1;
   _p2 = other._p2;
+
+  IModel::operator=(other);
+
+  return *this;
 }
 
 std::optional<QPoint> PhantomRectangleModel::GetP1() const { return _p1; }
@@ -46,4 +50,5 @@ void PhantomRectangleModel::Clear() {
   _p2.reset();
   _p2 = std::nullopt;
   Notify(std::make_shared<RepaintEvent>());
+  IModel::Clear();
 }

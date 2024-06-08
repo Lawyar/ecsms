@@ -11,6 +11,36 @@
 #include <QStandardItem>
 #include <QXmlStreamWriter>
 
+template <class SaveFunc, class DontSaveFunc, class CancelFunc>
+void openSavingMessageBox(SaveFunc save_func, DontSaveFunc dont_save_func,
+                          CancelFunc cancel_func) {
+  QMessageBox msg_box;
+  msg_box.setWindowTitle("Внимание");
+  msg_box.setText("Сохранить изменения?");
+  msg_box.addButton("Сохранить", QMessageBox::YesRole);
+  msg_box.addButton("Не сохранять", QMessageBox::NoRole);
+  msg_box.addButton("Отменить", QMessageBox::RejectRole);
+  msg_box.setIcon(QMessageBox::Warning);
+  switch (msg_box.exec()) {
+  case 0: {
+    save_func();
+    break;
+  }
+  case 1: {
+    dont_save_func();
+    break;
+  }
+  case 2: {
+    cancel_func();
+    break;
+  }
+  default: {
+    assert(false);
+    return;
+  }
+  }
+}
+
 inline void connectProcessOutputWithWidget(QProcess *process,
                                            QTextEdit *output) {
   auto start = [](QProcess *process) { process->start("cmd.exe", {"/U"}); };
@@ -44,7 +74,7 @@ inline static void disconectProcessFromAll(QProcess *process) {
 
 inline QString getSaveFileName(QWidget *parent, const QString &filter,
                                const QString &selected_filter) {
-  auto &&file_name = QFileDialog::getSaveFileName(parent, "Сохранить как",
+  auto &&file_name = QFileDialog::getSaveFileName(parent, "Сохранение",
                                                   filter, selected_filter);
   if (file_name.isEmpty()) {
     QMessageBox::warning(parent, "Внимание", "Файл не был выбран");
@@ -56,7 +86,7 @@ inline QString getSaveFileName(QWidget *parent, const QString &filter,
 
 inline QString getOpenFileName(QWidget *parent, const QString &filter,
                                const QString &selected_filter) {
-  auto &&file_name = QFileDialog::getOpenFileName(parent, "Открыть файл",
+  auto &&file_name = QFileDialog::getOpenFileName(parent, "Открытие",
                                                   filter, selected_filter);
   if (file_name.size() == 0) {
     QMessageBox::warning(parent, "Внимание", "Файл не был выбран");

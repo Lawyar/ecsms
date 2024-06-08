@@ -24,6 +24,7 @@ public:
   public:
     Memento(const Memento &) = delete;
     Memento(Memento &&) = default;
+
     Memento &operator=(const Memento &) = delete;
     Memento &operator=(Memento &&) = delete;
 

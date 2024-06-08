@@ -11,6 +11,10 @@ SelectionModel &SelectionModel::operator=(const SelectionModel &other) {
 
   _map_of_selected_nodes = other._map_of_selected_nodes;
   _selected_blocks = other._selected_blocks;
+
+  IModel::operator=(other);
+  
+  return *this;
 }
 
 const QMap<NodeId, std::vector<NodeId>> &
@@ -65,6 +69,7 @@ void SelectionModel::Clear() {
   _map_of_selected_nodes.clear();
   _selected_blocks.clear();
   Notify(std::make_shared<RepaintEvent>());
+  IModel::Clear();
 }
 
 SelectionModel::Memento SelectionModel::Save() const {

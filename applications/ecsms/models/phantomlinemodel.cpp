@@ -11,6 +11,10 @@ PhantomLineModel &PhantomLineModel::operator=(const PhantomLineModel &other) {
   _begin_node = other._begin_node;
   _begin = other._begin;
   _end = other._end;
+
+  IModel::operator=(other);
+
+  return *this;
 }
 
 std::optional<QPoint> PhantomLineModel::GetBegin() const { return _begin; }
@@ -59,4 +63,5 @@ void PhantomLineModel::Clear() {
   _end.reset();
   _end = std::nullopt;
   Notify(std::make_shared<RepaintEvent>());
+  IModel::Clear();
 }

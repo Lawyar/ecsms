@@ -220,36 +220,6 @@ void MainWindow::updateMainPage() {
   updateAllButtons();
 }
 
-template <class SaveFunc, class DontSaveFunc, class CancelFunc>
-void openSavingMessageBox(SaveFunc save_func, DontSaveFunc dont_save_func,
-                          CancelFunc cancel_func) {
-  QMessageBox msg_box;
-  msg_box.setWindowTitle("Внимание");
-  msg_box.setText("Сохранить изменения?");
-  msg_box.addButton("Сохранить", QMessageBox::YesRole);
-  msg_box.addButton("Не сохранять", QMessageBox::NoRole);
-  msg_box.addButton("Отменить", QMessageBox::RejectRole);
-  msg_box.setIcon(QMessageBox::Warning);
-  switch (msg_box.exec()) {
-  case 0: {
-    save_func();
-    break;
-  }
-  case 1: {
-    dont_save_func();
-    break;
-  }
-  case 2: {
-    cancel_func();
-    break;
-  }
-  default: {
-    assert(false);
-    return;
-  }
-  }
-}
-
 void MainWindow::on_actionNewFile_triggered_tab0() {
   auto &&create_new_file = [this]() {
     _file_names[0].clear();
@@ -263,7 +233,9 @@ void MainWindow::on_actionNewFile_triggered_tab0() {
     ui->treeView->setModel(tree_model);
     updateMainPage();
   };
-  if (*_com_mgrs_states[0] != _com_mgrs[0]->GetState()) {
+
+  if (*_com_mgrs_states[0] !=
+      _com_mgrs[0]->GetState()) { // there's unsaved changes
     auto old_file_name = _file_names[0];
     auto &&save_func = [this, &old_file_name, &create_new_file]() {
       on_actionSave_triggered_tab0();
@@ -278,16 +250,14 @@ void MainWindow::on_actionNewFile_triggered_tab0() {
       create_new_file();
     };
 
-    auto &&dont_save_func = [&create_new_file]() { create_new_file(); };
-
-    openSavingMessageBox(save_func, dont_save_func, []() {});
+    openSavingMessageBox(save_func, create_new_file, []() {});
   } else {
     create_new_file();
   }
 }
 
 void MainWindow::on_actionOpen_triggered_tab0() {
-  QString old_file_name;
+  QString old_file_name = _file_names[0];
   auto &&open_func = [this, &old_file_name]() {
     auto &&file_name = _file_names[0];
     file_name = getOpenFileName(this, "C:/", "XML files (*.xml)");
@@ -298,7 +268,6 @@ void MainWindow::on_actionOpen_triggered_tab0() {
       } else {
         setWindowTitle(_app_name);
       }
-      updateMainPage();
       return;
     }
 
@@ -318,18 +287,22 @@ void MainWindow::on_actionOpen_triggered_tab0() {
     } else {
       setWindowTitle(file_name + ": " + _app_name);
     }
-    updateMainPage();
   };
-  if (*_com_mgrs_states[0] != _com_mgrs[0]->GetState()) {
+  if (*_com_mgrs_states[0] !=
+      _com_mgrs[0]->GetState()) { // there's unsaved changes
     auto &&save_func = [this, &old_file_name, &open_func]() {
       on_actionSave_triggered_tab0();
-      if (_file_names[0].isEmpty()) // saving was canceled
+      if (_file_names[0].isEmpty()) { // saving was canceled
+        if (!old_file_name.isEmpty()) {
+          _file_names[0] = old_file_name;
+          setWindowTitle(_file_names[0] + ": " + _app_name);
+        }
         return;
-      old_file_name = _file_names[0];
+      }
       open_func();
     };
-    auto &&dont_save_func = [&open_func]() { open_func(); };
-    openSavingMessageBox(save_func, dont_save_func, []() {});
+
+    openSavingMessageBox(save_func, open_func, []() {});
   } else {
     open_func();
   }
@@ -345,6 +318,7 @@ void MainWindow::on_actionSave_triggered_tab0() {
       return;
     }
   }
+
   auto model = dynamic_cast<QStandardItemModel *>(ui->treeView->model());
   bool success = saveXMLToFile(this, file_name, model);
   if (!success) {
@@ -372,20 +346,18 @@ void MainWindow::on_actionSaveAs_triggered_tab0() {
 }
 
 void MainWindow::on_actionNewFile_triggered_tab1() {
-  QString old_file_name;
+  auto &&new_file_func = [this]() {
+    _file_names[1].clear();
+    setWindowTitle(_app_name);
+    ui->scrollAreaWidgetContents->Clear();
+    _com_mgrs[1]->ClearCommands();
+    _com_mgrs_states[1].reset(
+        new CommandManager::State(_com_mgrs[1]->GetState()));
+  };
+
   if (*_com_mgrs_states[1] != _com_mgrs[1]->GetState()) {
-    QMessageBox msg_box;
-    msg_box.setWindowTitle("Внимание");
-    msg_box.setText("Сохранить изменения?");
-    msg_box.addButton("Сохранить", QMessageBox::YesRole);
-    msg_box.addButton("Не сохранять", QMessageBox::NoRole);
-    msg_box.addButton("Отменить", QMessageBox::RejectRole);
-    msg_box.setIcon(QMessageBox::Warning);
-    switch (msg_box.exec()) {
-    case 0: { // save
-      // save and new file
-      if (!_file_names[1].isEmpty())
-        old_file_name = _file_names[1];
+    QString old_file_name = _file_names[1];
+    auto &&save_func = [this, &old_file_name, &new_file_func]() {
       on_actionSave_triggered_tab1();
       if (_file_names[1].isEmpty()) { // saving was canceled
         if (!old_file_name.isEmpty()) {
@@ -394,108 +366,71 @@ void MainWindow::on_actionNewFile_triggered_tab1() {
         }
         return;
       }
-      _file_names[1].clear();
-      setWindowTitle(_app_name);
-      _com_mgrs[1]->ClearCommands();
-      _com_mgrs_states[1].reset(
-          new CommandManager::State(_com_mgrs[1]->GetState()));
-      ui->scrollAreaWidgetContents->Clear();
-      break;
-    }
-    case 1: { // don't save
-      _file_names[1].clear();
-      setWindowTitle(_app_name);
-      _com_mgrs[1]->ClearCommands();
-      _com_mgrs_states[1].reset(
-          new CommandManager::State(_com_mgrs[1]->GetState()));
-      ui->scrollAreaWidgetContents->Clear();
-      break;
-    }
-    case 2: { // cancel
-      return;
-      break;
-    }
-    default: {
-      assert(false);
-      return;
-    }
-    }
+      new_file_func();
+    };
+    openSavingMessageBox(save_func, new_file_func, []() {});
+  } else {
+    new_file_func();
   }
-  _file_names[1].clear();
-  setWindowTitle(_app_name);
-  _com_mgrs[1]->ClearCommands();
-  _com_mgrs_states[1].reset(
-      new CommandManager::State(_com_mgrs[1]->GetState()));
-  ui->scrollAreaWidgetContents->Clear();
 }
 
 void MainWindow::on_actionOpen_triggered_tab1() {
-  QString old_file_name;
-  if (*_com_mgrs_states[1] != _com_mgrs[1]->GetState()) {
-    QMessageBox msg_box;
-    msg_box.setWindowTitle("Внимание");
-    msg_box.setText("Сохранить изменения?");
-    msg_box.addButton("Сохранить", QMessageBox::YesRole);
-    msg_box.addButton("Не сохранять", QMessageBox::NoRole);
-    msg_box.addButton("Отменить", QMessageBox::RejectRole);
-    msg_box.setIcon(QMessageBox::Warning);
-    switch (msg_box.exec()) {
-    case 0: { // save
-      // save and new file
-      on_actionSave_triggered_tab1();
-      if (_file_names[1].isEmpty()) // saving was canceled
-        return;
-      old_file_name = _file_names[1];
-      break;
-    }
-    case 1: { // don't save
-      break;
-    }
-    case 2: { // cancel
-      return;
-      break;
-    }
-    default: {
-      assert(false);
+  QString old_file_name = _file_names[1];
+  auto &&open_func = [this, &old_file_name]() {
+    auto &&file_name = _file_names[1];
+    file_name = getOpenFileName(this, "C:/", "YAML files (*.yaml)");
+    if (file_name.isEmpty()) {
+      if (!old_file_name.isEmpty()) {
+        file_name = old_file_name;
+        setWindowTitle(file_name + ": " + _app_name);
+      } else {
+        setWindowTitle(_app_name);
+      }
       return;
     }
-    }
-  }
 
-  auto &&file_name = _file_names[1];
-  file_name = getOpenFileName(this, "C:/", "YAML files (*.yaml)");
-  if (file_name.isEmpty()) {
-    if (!old_file_name.isEmpty()) {
-      file_name = old_file_name;
-      setWindowTitle(file_name + ": " + _app_name);
-    } else {
+    ui->scrollAreaWidgetContents->Clear();
+    bool success =
+        getYAMLFromFile(this, file_name, ui->scrollAreaWidgetContents);
+    if (!success) {
+      _file_names[0].clear();
       setWindowTitle(_app_name);
+      return;
+    } else {
+      setWindowTitle(file_name + ": " + _app_name);
     }
-    updateMainPage();
-    return;
-  }
+    _com_mgrs[1]->ClearCommands();
+    _com_mgrs_states[1].reset(
+        new CommandManager::State(_com_mgrs[1]->GetState()));
+  };
+  if (*_com_mgrs_states[1] !=
+      _com_mgrs[1]->GetState()) { // there's unsaved changes
+    auto &&save_func = [this, &old_file_name, &open_func]() {
+      on_actionSave_triggered_tab1();
+      if (_file_names[1].isEmpty()) { // saving was canceled
+        if (!old_file_name.isEmpty()) {
+          _file_names[1] = old_file_name;
+          setWindowTitle(_file_names[1] + ": " + _app_name);
+        }
+        return;
+      }
+      open_func();
+    };
 
-  ui->scrollAreaWidgetContents->Clear();
-  bool success = getYAMLFromFile(this, file_name, ui->scrollAreaWidgetContents);
-  if (!success) {
-    _file_names[0].clear();
-    setWindowTitle(_app_name);
-    return;
+    openSavingMessageBox(save_func, open_func, []() {});
   } else {
-    setWindowTitle(file_name + ": " + _app_name);
+    open_func();
   }
-  _com_mgrs[1]->ClearCommands();
-  _com_mgrs_states[1].reset(
-      new CommandManager::State(_com_mgrs[1]->GetState()));
 }
 
 void MainWindow::on_actionSave_triggered_tab1() {
   auto &&file_name = _file_names[1];
-  file_name = getSaveFileName(this, "C:/*.yaml", "YAML files (*.yaml)");
   if (file_name.isEmpty()) {
-    setWindowTitle(_app_name);
-    updateMainPage();
-    return;
+    file_name = getSaveFileName(this, "C:/*.yaml", "YAML files (*.yaml)");
+    if (file_name.isEmpty()) {
+      setWindowTitle(_app_name);
+      return;
+    }
   }
 
   bool success = saveYAMLToFile(this, file_name);
@@ -511,23 +446,15 @@ void MainWindow::on_actionSave_triggered_tab1() {
 }
 
 void MainWindow::on_actionSaveAs_triggered_tab1() {
-  auto &&file_name = _file_names[1];
-  file_name = getSaveFileName(this, "C:/*.yaml", "YAML files (*.yaml)");
-  if (file_name.isEmpty()) {
-    updateMainPage();
-    return;
+  auto old_file_name = _file_names[1];
+  _file_names[1].clear();
+  on_actionSave_triggered_tab1();
+  if (_file_names[1].isEmpty()) {
+    if (!old_file_name.isEmpty()) {
+      setWindowTitle(old_file_name + ": " + _app_name);
+      _file_names[1] = old_file_name;
+    }
   }
-
-  bool success = saveYAMLToFile(this, file_name);
-  if (!success) {
-    _file_names[1].clear();
-    setWindowTitle(_app_name);
-    return;
-  } else {
-    setWindowTitle(file_name + ": " + _app_name);
-  }
-  _com_mgrs_states[1].reset(
-      new CommandManager::State(_com_mgrs[1]->GetState()));
 }
 
 bool MainWindow::event(QEvent *e) {

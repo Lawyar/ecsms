@@ -16,6 +16,10 @@ FieldModel &FieldModel::operator=(const FieldModel &other) {
   _blocks = other._blocks;
   _connections = other._connections;
   _nodes = other._nodes;
+
+  IModel::operator=(other);
+
+  return *this;
 }
 
 const QMap<NodeId, std::vector<NodeId>> &FieldModel::GetConnectionMap() const {
@@ -154,6 +158,8 @@ void FieldModel::Clear() {
   assert(_blocks.empty());
   assert(_nodes.empty());
   assert(_connections.empty());
+
+  IModel::Clear();
 }
 
 FieldModel::Memento FieldModel::Save() const {
