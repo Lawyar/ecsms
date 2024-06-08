@@ -466,46 +466,37 @@ bool MainWindow::event(QEvent *e) {
 void MainWindow::closeEvent(QCloseEvent *event) {
   if (*_com_mgrs_states[0] != _com_mgrs[0]->GetState() ||
       *_com_mgrs_states[1] != _com_mgrs[1]->GetState()) {
-    QMessageBox msg_box;
-    msg_box.setWindowTitle("Внимание");
-    msg_box.setText("Сохранить изменения?");
-    msg_box.addButton("Сохранить", QMessageBox::YesRole);
-    msg_box.addButton("Не сохранять", QMessageBox::NoRole);
-    msg_box.addButton("Отменить", QMessageBox::RejectRole);
-    msg_box.setIcon(QMessageBox::Warning);
-    switch (msg_box.exec()) {
-    case 0: { // save
-      // save and close
+    auto &&save_func = [this, &event]() {
+      auto old_file_name_0 = _file_names[0];
       if (*_com_mgrs_states[0] != _com_mgrs[0]->GetState()) {
         on_actionSave_triggered_tab0();
         if (_file_names[0].isEmpty()) { // saving was canceled
+          if (!old_file_name_0.isEmpty()) {
+            _file_names[0] = old_file_name_0;
+            setWindowTitle(_file_names[0] + ": " + _app_name);
+          }
           event->ignore();
-          break;
+          return;
         }
       }
+
+      auto old_file_name_1 = _file_names[1];
       if (*_com_mgrs_states[1] != _com_mgrs[1]->GetState()) {
         on_actionSave_triggered_tab1();
         if (_file_names[1].isEmpty()) { // saving was canceled
+          if (!old_file_name_1.isEmpty()) {
+            _file_names[1] = old_file_name_1;
+            setWindowTitle(_file_names[1] + ": " + _app_name);
+          }
           event->ignore();
-          break;
+          return;
         }
       }
       event->accept();
-      break;
-    }
-    case 1: { // don't save
-      event->accept();
-      break;
-    }
-    case 2: { // cancel
-      event->ignore();
-      break;
-    }
-    default: {
-      assert(false);
-      return;
-    }
-    }
+    };
+    auto &&dont_save_func = [&event]() { event->accept(); };
+    auto &&cancel_func = [&event]() { event->ignore(); };
+    openSavingMessageBox(save_func, dont_save_func, cancel_func);
   } else {
     event->accept();
   }
