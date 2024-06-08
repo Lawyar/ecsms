@@ -38,8 +38,6 @@ class PipelineRegistry {
   using ConsumerAndProducerConnectionFactory =
       std::function<ConsumerAndProducerConnection(size_t)>;
 
-  static void Init();
-
   static PipelineRegistry& Instance();
 
   void reset();
@@ -95,6 +93,8 @@ class PipelineRegistry {
 
  private:
   PipelineRegistry();
+
+  static void Init();
 
   template <typename ProducerT>
   void registerProducerConnection(const std::string& key);
@@ -196,8 +196,7 @@ void PipelineRegistry::registerConsumerAndProducerFactory(
 
 template <typename ProducerT>
 void PipelineRegistry::registerProducerConnection(const std::string& key) {
-  if (m_producerConnections.find(key) != m_producerConnections.end() ||
-      m_consumerConnections.find(key) != m_consumerConnections.end())
+  if (m_producerConnections.find(key) != m_producerConnections.end())
     throw PipelineRegistryException("connection has already been added");
 
   m_producerConnections[key] = [](size_t connectionSize) {
@@ -208,11 +207,10 @@ void PipelineRegistry::registerProducerConnection(const std::string& key) {
 
 template <typename ConsumerT>
 void PipelineRegistry::registerConsumerConnection(const std::string& key) {
-  if (m_producerConnections.find(key) != m_producerConnections.end() ||
-      m_consumerConnections.find(key) != m_consumerConnections.end())
+  if (m_consumerConnections.find(key) != m_consumerConnections.end())
     throw PipelineRegistryException("connection has already been added");
 
-  m_producerConnections[key] = [](size_t connectionSize) {
+  m_consumerConnections[key] = [](size_t connectionSize) {
     return std::make_shared<
         InOutStageConnection<typename ConsumerT::consumptionT>>(connectionSize);
   };

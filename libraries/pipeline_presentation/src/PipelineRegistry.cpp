@@ -13,10 +13,6 @@ decltype(PipelineRegistry::globalRegistry) PipelineRegistry::globalRegistry;
 PipelineRegistry::PipelineRegistry() {}
 
 void PipelineRegistry::Init() {
-  if (initialized)
-    throw PipelineRegistryException(
-        "pipeline registry has already been initialized");
-
   initialized = true;
 
   globalRegistry.registerConsumer<DoubleVisualizer>(
@@ -30,8 +26,7 @@ void PipelineRegistry::Init() {
 
 PipelineRegistry& PipelineRegistry::Instance() {
   if (!initialized)
-    throw PipelineRegistryException(
-        "pipeline registry should be initialized before calling PipelineRegistry::Instance");
+    Init();
   return globalRegistry;
 }
 

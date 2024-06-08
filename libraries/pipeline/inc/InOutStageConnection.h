@@ -266,9 +266,9 @@ std::optional<size_t> InOutStageConnection<T>::findTaskIndexToConsume(
     size_t minTaskId) {
   uint64_t taskId;
   if (strategy == ConsumptionStrategy::fifo)
-    taskId = 0;
-  else if (strategy == ConsumptionStrategy::lifo)
     taskId = std::numeric_limits<uint64_t>::max();
+  else if (strategy == ConsumptionStrategy::lifo)
+    taskId = 0;
 
   std::optional<size_t> taskIndex = std::nullopt;
 
@@ -280,7 +280,7 @@ std::optional<size_t> InOutStageConnection<T>::findTaskIndexToConsume(
              m_tasks[i]->taskId > taskId) ||
             (strategy == ConsumptionStrategy::fifo &&
              m_tasks[i]->taskId < taskId)) {
-          taskIndex = int(i);
+          taskIndex = i;
           taskId = m_tasks[i]->taskId;
         }
       }

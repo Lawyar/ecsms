@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 #include <thread>
+#include <optional>
 
 class IPipelineStage {
  public:
@@ -21,19 +22,20 @@ class IPipelineStage {
 
   std::string getName();
 
-  template <typename T, typename... TArgs>
-  void setStageParameters(TArgs&&...);
+  void setId(const std::string_view);
+  std::optional<std::string> getId();
+
+  void setParentId(const std::string_view);
+  std::optional<std::string> getParentId();
 
  protected:
-  virtual void set(std::any);
-
   virtual void setConsumerId(size_t consumerId) = 0;
 
  protected:
   std::string m_stageName;
+
+ private:
+  std::optional<std::string> m_id;
+  std::optional<std::string> m_parentId;
 };
 
-template <typename T, typename... TArgs>
-void IPipelineStage::setStageParameters(TArgs&&... args) {
-  set(T{std::forward<Args>(args)...});
-}

@@ -12,9 +12,9 @@
 
 class YamlToPipeline {
  public:
-  static Pipeline load(const std::filesystem::path& path);
+  static std::shared_ptr<Pipeline> fromFile(const std::filesystem::path& path);
 
-  static Pipeline load(const std::string& input);
+  static std::shared_ptr<Pipeline> fromString(const std::string& input);
 
  private:
   struct PipelineStage {
@@ -25,11 +25,11 @@ class YamlToPipeline {
     std::optional<ConsumptionStrategy> consumptionStrategy;
   };
 
-  static std::vector<PipelineStage> parse(const std::vector<YAML::Node>& nodes);
+  static std::vector<PipelineStage> parse(const YAML::Node& node);
 
   static PipelineStage parseStage(const YAML::Node& node);
 
-  static Pipeline toPipeline(const std::vector<PipelineStage>& stages);
+  static std::shared_ptr<Pipeline> toPipeline(const std::vector<PipelineStage>& stages);
 
   static std::shared_ptr<IPipelineStage> constructProducer(
       const PipelineRegistry& registry,

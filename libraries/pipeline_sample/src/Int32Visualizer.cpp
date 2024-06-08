@@ -10,6 +10,6 @@ Int32Visualizer::Int32Visualizer(ConsumptionStrategy strategy,
 }
 
 void Int32Visualizer::consume(std::shared_ptr<int32_t> inData) {
-  cout << *inData << endl;
+  cout << "Int32Visualizer: " << *inData << endl;
   releaseConsumptionData(inData);
 }

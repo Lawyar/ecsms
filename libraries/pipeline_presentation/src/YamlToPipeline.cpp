@@ -7,25 +7,27 @@ using namespace std;
 using namespace string_literals;
 namespace fs = filesystem;
 
-Pipeline YamlToPipeline::load(const fs::path& path) {
-  auto nodes = YAML::LoadAllFromFile(path.string());
-  auto stages = parse(nodes);
+shared_ptr<Pipeline> YamlToPipeline::fromFile(const fs::path& path) {
+  auto node = YAML::LoadFile(path.string());
+  auto stages = parse(node);
 
   return toPipeline(stages);
 }
 
-Pipeline YamlToPipeline::load(const string& input) {
-  auto nodes = YAML::LoadAll(input);
-  auto stages = parse(nodes);
+shared_ptr<Pipeline> YamlToPipeline::fromString(const string& input) {
+  auto node = YAML::Load(input);
+  auto stages = parse(node);
 
   return toPipeline(stages);
 }
 
 vector<YamlToPipeline::PipelineStage> YamlToPipeline::parse(
-    const vector<YAML::Node>& nodes) {
+    const YAML::Node& node) {
   vector<PipelineStage> stages;
-  for (const auto& stageNode : nodes) {
-    stages.push_back(parseStage(stageNode));
+  for (const auto& stageNode : node) {
+    auto stage = parseStage(stageNode.second);
+    stage.stageName = stageNode.first.as<string>();
+    stages.push_back(stage);
   }
 
   return stages;
@@ -33,7 +35,6 @@ vector<YamlToPipeline::PipelineStage> YamlToPipeline::parse(
 
 YamlToPipeline::PipelineStage YamlToPipeline::parseStage(
     const YAML::Node& stageNode) {
-  string stageName = stageNode.Scalar();
   optional<string> stageId;
   optional<PipelineStageType> stageType;
   optional<string> parentStageId;
@@ -63,12 +64,13 @@ YamlToPipeline::PipelineStage YamlToPipeline::parseStage(
     throw YamlToPipelineException(
         "yaml representation of stage doesn't contain 'type' field"s);
 
-  return {stageName, stageId.value(), stageType.value(), parentStageId,
+  return {"", stageId.value(), stageType.value(), parentStageId,
           strategy};
 }
 
-Pipeline YamlToPipeline::toPipeline(const vector<PipelineStage>& stages) {
-  Pipeline p;
+shared_ptr<Pipeline> YamlToPipeline::toPipeline(
+    const vector<PipelineStage>& stages) {
+  auto p = make_shared<Pipeline>();
   const auto& registry = PipelineRegistry::Instance();
   try {
     map<string, shared_ptr<StageConnection>> connections;
@@ -97,10 +99,10 @@ Pipeline YamlToPipeline::toPipeline(const vector<PipelineStage>& stages) {
         }
       }
 
-      p.addStage(stage);
+      p->addStage(stage);
     }
     for (auto& [key, connection] : connections)
-      p.addConnection(connection);
+      p->addConnection(connection);
   } catch (PipelineRegistryException& ex) {
     throw YamlToPipelineException(ex.what());
   }
@@ -140,6 +142,8 @@ shared_ptr<IPipelineStage> YamlToPipeline::constructProducer(
   auto connection =
       registry.constructProducerConnection(name, defaultConnectionSize);
   auto stage = registry.constructProducer(name, connection);
+  stage->setId(id);
+
   connectionsMap[id] = connection;
 
   return stage;
@@ -180,6 +184,8 @@ shared_ptr<IPipelineStage> YamlToPipeline::constructConsumer(
   auto connection = connectionsMap[parent];
 
   auto stage = registry.constructConsumer(name, strategy.value(), connection);
+  stage->setId(id);
+  stage->setParentId(parent);
 
   return stage;
 }
@@ -224,6 +230,8 @@ shared_ptr<IPipelineStage> YamlToPipeline::constructConsumerAndProducer(
 
   auto stage = registry.constructConsumerAndProducer(
       name, strategy.value(), inConnection, outConnection);
+  stage->setId(id);
+  stage->setParentId(parent);
   connectionsMap[id] = outConnection;
 
   return stage;

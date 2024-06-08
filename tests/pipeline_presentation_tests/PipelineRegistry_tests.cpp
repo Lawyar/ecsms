@@ -98,6 +98,8 @@ TEST(PipelineRegistry_tests, PipelineRegistry_registerProducerWorks) {
 
 TEST(PipelineRegistry_tests, PipelineRegistry_constructProducerWorks) {
   auto& registry = PipelineRegistry::Instance();
+  registry.reset();
+
   registry.registerProducer<TestProducerStage>(
       TestProducerStage::stageName);
   auto connection =
@@ -119,6 +121,7 @@ TEST(PipelineRegistry_tests, PipelineRegistry_constructProducerWorks) {
 
 TEST(PipelineRegistry_tests, PipelineRegistry_registerProducerFactoryWorks) {
   auto& registry = PipelineRegistry::Instance();
+  registry.reset();
 
   string s = "abcdef";
   int i = 128;
