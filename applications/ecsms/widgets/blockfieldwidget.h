@@ -34,13 +34,17 @@ protected:
   void paintEvent(QPaintEvent *event) override;
 
 private:
+  void actualizeBlock(BlockId id);
+
+private:
   std::shared_ptr<CommandManager> _cm;
   NameMaker _block_name_maker;
   std::unique_ptr<IController> _controller;
   int _current_block = -1;
   FieldModel _field_model;
   SelectionModel _selection_model;
-  LineModel _line_model;
+  PhantomLineModel _line_model;
+  PhantomRectangleModel _rect_model;
   VisualizationModel _vis_model;
 };
 

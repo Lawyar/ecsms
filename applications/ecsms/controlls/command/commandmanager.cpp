@@ -36,3 +36,17 @@ void CommandManager::Undo() {
     _commands[_executed_command_count]->UnExecute();
   }
 }
+
+void CommandManager::AddExecuted(std::unique_ptr<ICommand> command) {
+  if (HasCommandsToRedo()) {
+    _commands.erase(_commands.begin() + _executed_command_count,
+                    _commands.end());
+  }
+  _commands.push_back(std::move(command));
+  ++_executed_command_count;
+}
+
+CommandManager::State CommandManager::GetState() const {
+  State res{_executed_command_count, _commands};
+  return res;
+}

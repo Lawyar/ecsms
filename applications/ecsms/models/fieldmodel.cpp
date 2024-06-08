@@ -7,6 +7,21 @@
 #include "../utility/containerutility.h"
 #include "nodetype.h"
 
+FieldModel &FieldModel::operator=(const FieldModel &other) {
+  if (&other == this)
+    return *this;
+
+  Clear();
+
+  _blocks = other._blocks;
+  _connections = other._connections;
+  _nodes = other._nodes;
+
+  IModel::operator=(other);
+
+  return *this;
+}
+
 const QMap<NodeId, std::vector<NodeId>> &FieldModel::GetConnectionMap() const {
   return _connections;
 }
@@ -50,6 +65,7 @@ void FieldModel::SetBlockData(const BlockId &block, BlockData bd) {
     _blocks[block].pos = bd.pos;
     Notify(std ::make_shared<UpdateBlockEvent>(block, _blocks[block]));
   }
+  _blocks[block].size = bd.size;
   _blocks[block].offset = bd.offset;
   _blocks[block].text = bd.text;
 }
@@ -73,8 +89,11 @@ void FieldModel::AddConnection(const NodeId &start, const NodeId &end) {
 }
 
 void FieldModel::RemoveConnection(const NodeId &start, const NodeId &end) {
-  _connections[start].erase(
-      std::find(_connections[start].begin(), _connections[start].end(), end));
+  auto &&vec = _connections[start];
+  auto &&iter_to_remove = std::find(vec.begin(), vec.end(), end);
+  if (iter_to_remove != vec.end())
+    vec.erase(iter_to_remove);
+
   if (_connections[start].empty())
     _connections.remove(start);
 
@@ -133,10 +152,14 @@ void FieldModel::RemoveBlock(const BlockId &block) {
   Notify(std::make_shared<RemoveBlockEvent>(block));
 }
 
-void FieldModel::RemoveAll() {
-  for (auto &&block : _blocks.keys()) {
-    this->RemoveBlock(block);
-  }
+void FieldModel::Clear() { 
+  for (auto &&block_id : _blocks.keys())
+    RemoveBlock(block_id);
+  assert(_blocks.empty());
+  assert(_nodes.empty());
+  assert(_connections.empty());
+
+  IModel::Clear();
 }
 
 FieldModel::Memento FieldModel::Save() const {

@@ -82,6 +82,13 @@ ConnectNodeWidget *BlockWidget::GetRightNode() { return _right_node; }
 
 QPoint BlockWidget::CoordToBlockField(QPoint p) const { return mapToParent(p); }
 
+QSize BlockWidget::GetSize(const QString &text) {
+  QString labelText = prepareStringForLabel(text);
+  QFontMetrics metrics(_font);
+  QRect rect = metrics.boundingRect(labelText);
+  return {rect.width(), rect.height()};
+}
+
 QPoint BlockWidget::GetLeftNodeOffset(const QString &text) {
   QString labelText = prepareStringForLabel(text);
   QFontMetrics metrics(_font);

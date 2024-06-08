@@ -3,8 +3,22 @@
 
 #include <QDebug>
 
+SelectionModel &SelectionModel::operator=(const SelectionModel &other) {
+  if (&other == this)
+    return *this;
+
+  Clear();
+
+  _map_of_selected_nodes = other._map_of_selected_nodes;
+  _selected_blocks = other._selected_blocks;
+
+  IModel::operator=(other);
+  
+  return *this;
+}
+
 const QMap<NodeId, std::vector<NodeId>> &
-SelectionModel::GetSelectionMap() const {
+SelectionModel::GetSelectedConnections() const {
   return _map_of_selected_nodes;
 }
 
@@ -41,9 +55,10 @@ void SelectionModel::AddSelection(const NodeId &start, const NodeId &end) {
 }
 
 void SelectionModel::RemoveSelection(const NodeId &start, const NodeId &end) {
-  _map_of_selected_nodes[start].erase(
-      std::find(_map_of_selected_nodes[start].begin(),
-                _map_of_selected_nodes[start].end(), end));
+  auto &&iter_to_remove = std::find(_map_of_selected_nodes[start].begin(),
+                                  _map_of_selected_nodes[start].end(), end);
+  if (iter_to_remove != _map_of_selected_nodes[start].end())
+    _map_of_selected_nodes[start].erase(iter_to_remove);
   if (_map_of_selected_nodes[start].empty())
     _map_of_selected_nodes.remove(start);
 
@@ -54,6 +69,7 @@ void SelectionModel::Clear() {
   _map_of_selected_nodes.clear();
   _selected_blocks.clear();
   Notify(std::make_shared<RepaintEvent>());
+  IModel::Clear();
 }
 
 SelectionModel::Memento SelectionModel::Save() const {

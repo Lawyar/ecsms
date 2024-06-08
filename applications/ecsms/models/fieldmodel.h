@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../widgets/connectnodewidget.h"
-#include "../namemaker/namemaker.h"
 #include "../namemaker/id.h"
+#include "../namemaker/namemaker.h"
+#include "../widgets/connectnodewidget.h"
 #include "imodel.h"
 
 #include <QMap>
@@ -12,6 +12,7 @@ class FieldModel : public IModel {
 public:
   struct BlockData {
     QPoint pos;
+    QSize size;
     std::map<NodeType, QPoint> offset;
     QString text;
   };
@@ -23,6 +24,7 @@ public:
   public:
     Memento(const Memento &) = delete;
     Memento(Memento &&) = default;
+
     Memento &operator=(const Memento &) = delete;
     Memento &operator=(Memento &&) = delete;
 
@@ -39,6 +41,8 @@ public:
 public:
   FieldModel() = default;
 
+  FieldModel &operator=(const FieldModel &other);
+
   const QMap<NodeId, std::vector<NodeId>> &GetConnectionMap() const;
   QMap<NodeId, std::vector<NodeId>> GetNodeConnections(NodeId node) const;
 
@@ -50,17 +54,18 @@ public:
 
   const QMap<NodeId, NodeData> &GetNodes() const;
   std::optional<NodeData> GetNodeData(const NodeId &node) const;
-  
+
   void AddConnection(const NodeId &start, const NodeId &end);
   void RemoveConnection(const NodeId &start, const NodeId &end);
   bool IsNodeConnected(const NodeId &node) const;
   void AddBlock(const BlockId &block, const BlockData &bd,
                 const QMap<NodeType, NodeData> &node_data_map);
   void RemoveBlock(const BlockId &block);
-  void RemoveAll();
+  
+  void Clear();
 
   Memento Save() const;
-  void Load(const Memento & m);
+  void Load(const Memento &m);
 
 private:
   QMap<NodeId, std::vector<NodeId>> _connections;

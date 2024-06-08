@@ -1,5 +1,19 @@
 #include "visualizationmodel.h"
-#include "../events/repaintevent.h"
+#include "../events/visualmodelupdateevent.h"
+
+VisualizationModel &
+VisualizationModel::operator=(const VisualizationModel &other) {
+  if (&other != this)
+    return *this;
+
+  Clear();
+
+  _center_coord = other._center_coord;
+
+  IModel::operator=(other);
+
+  return *this;
+}
 
 QPoint VisualizationModel::MapToVisualization(QPoint model_point) const {
   return model_point + _center_coord;
@@ -12,11 +26,12 @@ QPoint VisualizationModel::MapToModel(QPoint vis_point) const {
 QPoint VisualizationModel::GetCenterCoord() const { return _center_coord; }
 
 void VisualizationModel::SetNewCoordCenter(QPoint new_center_coord) {
-  _center_coord = new_center_coord / _mouse_sensetivity;
-  Notify(std::make_shared<RepaintEvent>());
+  _center_coord = new_center_coord;
+  Notify(std::make_shared<VisualModelUpdateEvent>());
 }
 
-void VisualizationModel::SetMouseSensetivity(unsigned int mouse_sensetivity) {
-  if (mouse_sensetivity > 0)
-    _mouse_sensetivity = mouse_sensetivity;
+void VisualizationModel::Clear() { 
+  _center_coord = {0, 0}; 
+  Notify(std::make_shared<VisualModelUpdateEvent>());
+  IModel::Clear();
 }

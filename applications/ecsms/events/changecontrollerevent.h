@@ -2,7 +2,7 @@
 
 #include "event.h"
 
-enum ControllerType { defaultController, drawLineController };
+enum ControllerType { defaultController, drawLineController, drawRectangleController };
 
 class ChangeControllerEvent : public Event {
 public:

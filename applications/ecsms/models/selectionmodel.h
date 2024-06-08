@@ -10,13 +10,18 @@
 class SelectionModel : public IModel {
 public:
   SelectionModel() = default;
-  const QMap<NodeId, std::vector<NodeId>> &GetSelectionMap() const;
+
+  SelectionModel &operator=(const SelectionModel &other);
+
+  const QMap<NodeId, std::vector<NodeId>> &GetSelectedConnections() const;
   const std::set<BlockId> &GetSelectedBlocks() const;
+
   void AddSelection(const BlockId &block);
   void RemoveSelection(const BlockId &block);
   void RemoveSelectionWithNode(const NodeId &node);
   void AddSelection(const NodeId &start, const NodeId &end);
   void RemoveSelection(const NodeId &start, const NodeId &end);
+
   void Clear();
   class Memento;
   Memento Save() const;

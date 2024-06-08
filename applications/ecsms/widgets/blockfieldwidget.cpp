@@ -1,7 +1,9 @@
 #define _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
 
 #include "blockfieldwidget.h"
 #include "../controlls/controllerprocedure.h"
+#include "../controlls/drawrectanglecontroller.h"
 #include "../events/addblockevent.h"
 #include "../events/changeactivenodeevent.h"
 #include "../events/changecontrollerevent.h"
@@ -12,6 +14,7 @@
 #include "../models/nodetype.h"
 #include "../models/visualizationmodel.h"
 #include "../namemaker/namemaker.h"
+#include "../utility/selectionutility.h"
 #include "connectnodewidget.h"
 
 #include <QCoreApplication>
@@ -22,7 +25,7 @@
 #include <cmath>
 #include <set>
 
-static void drawArrow(QPainter &p, QLine line, float arrow_head_length,
+static void drawArrow(QPainter &p, QLineF line, float arrow_head_length,
                       float arrow_head_angle) {
   auto b = arrow_head_length, alpha = arrow_head_angle / 2;
   auto c = b / cos(alpha);
@@ -48,14 +51,15 @@ BlockFieldWidget::BlockFieldWidget(QWidget *parent) : QWidget(parent) {
   _field_model.Subscribe(this);
   _selection_model.Subscribe(this);
   _line_model.Subscribe(this);
+  _rect_model.Subscribe(this);
   _vis_model.Subscribe(this);
-  setCursor(Qt::CursorShape::OpenHandCursor);
 }
 
 void BlockFieldWidget::SetCommandManager(std::shared_ptr<CommandManager> cm) {
   _cm = cm;
   _controller.reset(new DefaultController(_field_model, _selection_model,
-                                          _line_model, _vis_model, *_cm));
+                                          _line_model, _rect_model, _vis_model,
+                                          *_cm));
 }
 
 void BlockFieldWidget::AddBlock() {
@@ -92,7 +96,13 @@ void BlockFieldWidget::Update(std::shared_ptr<Event> e) {
     }
     case defaultController: {
       _controller.reset(new DefaultController(_field_model, _selection_model,
-                                              _line_model, _vis_model, *_cm));
+                                              _line_model, _rect_model,
+                                              _vis_model, *_cm));
+      break;
+    }
+    case drawRectangleController: {
+      _controller.reset(new DrawRectangleController(
+          _rect_model, _field_model, _selection_model, _vis_model));
       break;
     }
     default: {
@@ -118,22 +128,13 @@ void BlockFieldWidget::Update(std::shared_ptr<Event> e) {
     auto &&block_data = add_block_e->GetBlockData();
     auto &&block = new BlockWidget(add_block_e->GetId(), _controller,
                                    block_data.text, this);
-    block->move(block_data.pos);
     block->show();
-    repaint();
+    actualizeBlock(add_block_e->GetId());
     break;
   }
   case updateBlockEvent: {
     auto &&update_block_e = std::static_pointer_cast<UpdateBlockEvent>(e);
-    auto &&block = FindById(update_block_e->GetBlock());
-    if (!block) {
-      assert(false);
-      return;
-    }
-    auto &&block_data = update_block_e->GetBlockData();
-    block->move(block_data.pos);
-    qobject_cast<BlockWidget *>(block)->SetText(block_data.text);
-    repaint();
+    actualizeBlock(update_block_e->GetBlock());
     break;
   }
   case removeBlockEvent: {
@@ -144,6 +145,17 @@ void BlockFieldWidget::Update(std::shared_ptr<Event> e) {
       return;
     }
     delete block_w;
+    repaint();
+    break;
+  }
+  case visualModelUpdateEvent: {
+    // move all blocks to their curr pos + center coord
+    auto &&blocks_map = _field_model.GetBlocks();
+    for (auto &&pair_iter = blocks_map.begin(); pair_iter != blocks_map.end();
+         ++pair_iter) {
+      auto &&block_id = pair_iter.key();
+      actualizeBlock(block_id);
+    }
     repaint();
     break;
   }
@@ -174,9 +186,19 @@ QWidget *BlockFieldWidget::FindById(Id id) {
   return res;
 }
 
-void BlockFieldWidget::Clear() {
-  _selection_model.Clear();
-  _field_model.RemoveAll();
+void BlockFieldWidget::Clear() { 
+  _cm->ClearCommands();
+  _selection_model = SelectionModel();
+  _line_model = PhantomLineModel();
+  _rect_model = PhantomRectangleModel();
+  _vis_model = VisualizationModel();
+  _field_model = FieldModel();
+
+  _field_model.Subscribe(this);
+  _selection_model.Subscribe(this);
+  _line_model.Subscribe(this);
+  _rect_model.Subscribe(this);
+  _vis_model.Subscribe(this);
 }
 
 void BlockFieldWidget::GoToFirstBlock() {
@@ -229,82 +251,58 @@ void BlockFieldWidget::leaveEvent(QEvent *event) {
 
 void BlockFieldWidget::mouseReleaseEvent(QMouseEvent *event) {
   if (event->button() == Qt::LeftButton || event->button() == Qt::MiddleButton)
-    setCursor(Qt::CursorShape::OpenHandCursor);
+    setCursor(Qt::CursorShape::ArrowCursor);
   _controller->onMouseReleaseEvent(this, event);
 }
 
 void BlockFieldWidget::paintEvent(QPaintEvent *event) {
   QPainter p(this);
   p.eraseRect(rect());
-  p.setBackground(QBrush(Qt::white));
 
-  // move all blocks to their curr pos + center coord
-  // todo : cysch otsyuda
-  auto &&blocks_map = _field_model.GetBlocks();
-  for (auto &&pair_iter = blocks_map.begin(); pair_iter != blocks_map.end();
-       ++pair_iter) {
-    auto &&blockId = pair_iter.key();
-    auto &&blockData = pair_iter.value();
-    if (auto &&widget = FindById(blockId)) {
-      auto &&newPos = _vis_model.MapToVisualization(blockData.pos);
-      widget->move(newPos);
-    } else
-      assert(false);
+  // draw phantom rectangle
+  auto &&model_p1 = _rect_model.GetP1();
+  auto &&model_p2 = _rect_model.GetP2();
+  if (model_p1 && model_p2) {
+    setCursor(Qt::CursorShape::ArrowCursor);
+    p.setPen(QPen(Qt::blue, 1, Qt::SolidLine));
+    QRect rect = {_vis_model.MapToVisualization(*model_p1),
+                  _vis_model.MapToVisualization(*model_p2)};
+    p.drawRect(rect);
+  } else {
+    p.eraseRect(rect());
   }
 
   /*-DRAW SELECTED AND NOT SELECTED LINES-*/
   std::vector<QLineF> unselected_lines, selected_lines;
-  auto &&_connection_map = _field_model.GetConnectionMap();
-  for (auto &&start_id : _connection_map.keys()) {
-    for (auto &&end_id : _connection_map[start_id]) {
-      auto &&start_data = _field_model.GetNodeData(start_id);
-      if (!start_data) {
-        assert(false);
-        return;
-      }
+  auto func = [this, &unselected_lines,
+               &selected_lines](QPoint model_start_pos, NodeId start_id,
+                                QPoint model_end_pos, NodeId end_id) {
+    auto &&connects_with_start =
+        _selection_model.GetSelectedConnections()[start_id];
+    auto &&iter = std::find(connects_with_start.begin(),
+                            connects_with_start.end(), end_id);
 
-      auto &&end_data = _field_model.GetNodeData(end_id);
-      if (!end_data) {
-        assert(false);
-        return;
-      }
-
-      NodeType start_type = start_data->node_type;
-      NodeType end_type = end_data->node_type;
-
-      QPoint model_start_pos, model_end_pos;
-      if (auto &&start_pd = _field_model.GetBlockData(start_id.GetParentId())) {
-        model_start_pos = start_pd->pos + start_pd->offset[start_type];
-      }
-
-      if (auto &&end_pd = _field_model.GetBlockData(end_id.GetParentId())) {
-        model_end_pos = end_pd->pos + end_pd->offset[end_type];
-      }
-
-      auto &&connects_with_start = _selection_model.GetSelectionMap()[start_id];
-      auto &&iter = std::find(connects_with_start.begin(),
-                              connects_with_start.end(), end_id);
-
-      QPoint vis_start_pos = _vis_model.MapToVisualization(model_start_pos);
-      QPoint vis_end_pos = _vis_model.MapToVisualization(model_end_pos);
-      QLine line(vis_start_pos, vis_end_pos);
-      if (iter != connects_with_start.end()) {
-        selected_lines.push_back(line);
-        p.setPen(QPen(Qt::green, 3, Qt::SolidLine));
-        drawArrow(p, line, 10, M_PI / 3);
-      } else {
-        unselected_lines.push_back(line);
-        p.setPen(QPen(Qt::red, 3, Qt::SolidLine));
-        drawArrow(p, line, 10, M_PI / 3);
-      }
+    QPoint vis_start_pos = _vis_model.MapToVisualization(model_start_pos);
+    QPoint vis_end_pos = _vis_model.MapToVisualization(model_end_pos);
+    QLine line(vis_start_pos, vis_end_pos);
+    if (iter != connects_with_start.end()) {
+      selected_lines.push_back(line);
+    } else {
+      unselected_lines.push_back(line);
     }
+  };
+
+  forEachConnection(_field_model, func);
+
+  for (auto &&[brush, lines] :
+       std::vector<std::pair<QBrush, std::vector<QLineF>>>(
+           {{Qt::green, selected_lines}, {Qt::red, unselected_lines}})) {
+    p.setPen(QPen(brush, 3, Qt::SolidLine));
+    p.drawLines(lines.data(), lines.size());
+    for (auto &&line : lines)
+      drawArrow(p, line, 10, M_PI / 3);
   }
 
-  p.setPen(QPen(Qt::green, 3, Qt::SolidLine));
-  p.drawLines(selected_lines.data(), selected_lines.size());
-
-  p.setPen(QPen(Qt::red, 3, Qt::SolidLine));
-  p.drawLines(unselected_lines.data(), unselected_lines.size());
   /*-------------------------------------*/
 
   /*-DRAW FRAME FOR SELECTED BLOCKS-*/
@@ -332,4 +330,26 @@ void BlockFieldWidget::paintEvent(QPaintEvent *event) {
     p.drawLine(line);
     drawArrow(p, line, 10, M_PI / 3);
   }
+}
+
+void BlockFieldWidget::actualizeBlock(BlockId id) {
+  auto &&block = FindById(id);
+  if (!block) {
+    assert(false);
+    return;
+  }
+  auto &&block_data = _field_model.GetBlockData(id);
+  if (!block_data) {
+    assert(false);
+    return;
+  }
+  auto &&newPos = _vis_model.MapToVisualization(block_data->pos);
+  block->move(newPos);
+
+  if (auto blockWidget = qobject_cast<BlockWidget *>(block))
+    blockWidget->SetText(block_data->text);
+  else
+    assert(false);
+
+  repaint();
 }

@@ -25,6 +25,7 @@ public:
   ConnectNodeWidget *GetLeftNode();
   ConnectNodeWidget *GetRightNode();
   QPoint CoordToBlockField(QPoint p) const;
+  static QSize GetSize(const QString &text);
   static QPoint GetLeftNodeOffset(const QString &text);
   static QPoint GetRightNodeOffset(const QString &text);
   static int GetNodesRadius();

@@ -1,7 +1,8 @@
 #pragma once
 
 #include "../models/fieldmodel.h"
-#include "../models/linemodel.h"
+#include "../models/phantomlinemodel.h"
+#include "../models/phantomrectanglemodel.h"
 #include "../models/selectionmodel.h"
 #include "../models/visualizationmodel.h"
 #include "activenodeslock.h"
@@ -13,8 +14,9 @@
 class DefaultController : public IController {
 public:
   DefaultController(FieldModel &field_model, SelectionModel &selection_model,
-                    LineModel &line_model, VisualizationModel &vis_model,
-                    CommandManager &cm);
+                    PhantomLineModel &phantom_line_model,
+                    PhantomRectangleModel &phantom_rectangle_model,
+                    VisualizationModel &vis_model, CommandManager &cm);
   virtual void onMouseMoveEvent(QWidget *widget, QMouseEvent *event) override;
   virtual void onMousePressEvent(QWidget *widget, QMouseEvent *event) override;
   virtual void onKeyPressEvent(QWidget *widget, QKeyEvent *event) override;
@@ -30,9 +32,10 @@ private:
 private:
   FieldModel &_field_model;
   SelectionModel &_selection_model;
-  LineModel &_line_model;
+  PhantomLineModel &_phantom_line_model;
+  PhantomRectangleModel &_phantom_rectangle_model;
   VisualizationModel &_vis_model;
   CommandManager &_cm;
-  std::optional<QPoint> _old_mouse_pos, _old_block_pos, _old_field_pos;
+  std::optional<QPoint> _old_mouse_pos, _old_block_model_pos, _old_field_pos;
   std::unique_ptr<ActiveNodesLock> _active_nodes_lock;
 };

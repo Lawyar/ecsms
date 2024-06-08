@@ -10,6 +10,7 @@ set(SOURCE_LIST
     controlls/command/attrtextchangedcommand.h controlls/command/attrtextchangedcommand.cpp
     controlls/command/commandmanager.h controlls/command/commandmanager.cpp
     controlls/command/icommand.h
+    controlls/command/macrocommand.h controlls/command/macrocommand.cpp
     controlls/command/moveblockcommand.h controlls/command/moveblockcommand.cpp
     controlls/command/removeattributecommand.h controlls/command/removeattributecommand.cpp
     controlls/command/removecommand.h controlls/command/removecommand.cpp
@@ -18,6 +19,7 @@ set(SOURCE_LIST
     controlls/controllerprocedure.h
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
+    controlls/drawrectanglecontroller.h controlls/drawrectanglecontroller.cpp
     controlls/icontroller.h
     delegate/qlineeditdelegate.cpp delegate/qlineeditdelegate.h
     events/addblockevent.h events/addblockevent.cpp
@@ -25,12 +27,14 @@ set(SOURCE_LIST
     events/changecontrollerevent.h events/changecontrollerevent.cpp
     events/drawevent.h events/drawevent.cpp
     events/event.h
-    events/updateblockevent.h events/updateblockevent.cpp
     events/removeblockevent.h events/removeblockevent.cpp
     events/repaintevent.h events/repaintevent.cpp
+    events/visualmodelupdateevent.h events/visualmodelupdateevent.cpp
+    events/updateblockevent.h events/updateblockevent.cpp
     models/fieldmodel.h models/fieldmodel.cpp
     models/imodel.h
-    models/linemodel.h models/linemodel.cpp
+    models/phantomlinemodel.h models/phantomlinemodel.cpp
+    models/phantomrectanglemodel.h models/phantomrectanglemodel.cpp
     models/nodetype.h
     models/selectionmodel.h models/selectionmodel.cpp
     models/visualizationmodel.h models/visualizationmodel.cpp
@@ -39,6 +43,7 @@ set(SOURCE_LIST
     observer/iobserver.h
     utility/mainwindowutility.h
     utility/containerutility.h
+    utility/selectionutility.h
     utility/tagutility.h
     widgets/blockfieldwidget.cpp widgets/blockfieldwidget.h
     widgets/blockwidget.cpp widgets/blockwidget.h

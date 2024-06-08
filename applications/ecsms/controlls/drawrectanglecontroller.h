@@ -1,19 +1,16 @@
 #pragma once
 
-#include "../widgets/connectnodewidget.h"
 #include "../models/fieldmodel.h"
-#include "../models/phantomlinemodel.h"
+#include "../models/phantomrectanglemodel.h"
+#include "../models/selectionmodel.h"
 #include "../models/visualizationmodel.h"
-#include "activenodeslock.h"
-#include "command/commandmanager.h"
 #include "icontroller.h"
 
-#include <memory>
-
-class DrawLineController : public IController {
+class DrawRectangleController : public IController {
 public:
-  DrawLineController(FieldModel &field_model, PhantomLineModel &line_model,
-                     const VisualizationModel &vis_model, CommandManager &cm);
+  DrawRectangleController(PhantomRectangleModel &rect_model,
+                          FieldModel &field_model, SelectionModel &select_model,
+                          VisualizationModel &vis_model);
   virtual void onMouseMoveEvent(QWidget *widget, QMouseEvent *event) override;
   virtual void onMousePressEvent(QWidget *widget, QMouseEvent *event) override;
   virtual void onKeyPressEvent(QWidget *widget, QKeyEvent *event) override;
@@ -23,14 +20,8 @@ public:
                                    QMouseEvent *event) override;
 
 private:
-  void onFieldMousePress();
-  void onConnectNodeMousePress(NodeId node_id);
-
-private:
+  PhantomRectangleModel &_rect_model;
   FieldModel &_field_model;
-  PhantomLineModel &_line_model;
-  const VisualizationModel &_vis_model;
-  CommandManager &_cm;
-  std::unique_ptr<ActiveNodesLock> _active_because_drawing,
-      _active_because_entered;
+  SelectionModel &_select_model;
+  VisualizationModel &_vis_model;
 };
