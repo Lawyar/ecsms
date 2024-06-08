@@ -1,0 +1,429 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.11.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Experimental / Simulation Control System for Mobile Communications: Класс IFile</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Experimental / Simulation Control System for Mobile Communications
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.11.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Открытые члены</a> &#124;
+<a href="class_i_file-members.html">Полный список членов класса</a>  </div>
+  <div class="headertitle"><div class="title">Класс IFile<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Интерфейс для взаимодействия с удаленным файлом.  
+ <a href="#details">Подробнее...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_i_file_8h_source.html">IFile.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Открытые члены</h2></td></tr>
+<tr class="memitem:abebf6b62a3296401aa0650e4bd244c7c" id="r_abebf6b62a3296401aa0650e4bd244c7c"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abebf6b62a3296401aa0650e4bd244c7c">~IFile</a> ()=default</td></tr>
+<tr class="separator:abebf6b62a3296401aa0650e4bd244c7c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac92b07daa431913f3ed2bd6028830eb6" id="r_ac92b07daa431913f3ed2bd6028830eb6"><td class="memItemLeft" align="right" valign="top">virtual std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac92b07daa431913f3ed2bd6028830eb6">GetFileName</a> () const =0</td></tr>
+<tr class="memdesc:ac92b07daa431913f3ed2bd6028830eb6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Получить имя файла  <br /></td></tr>
+<tr class="separator:ac92b07daa431913f3ed2bd6028830eb6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a31335109a45fd1aef813f9c615800814" id="r_a31335109a45fd1aef813f9c615800814"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a31335109a45fd1aef813f9c615800814">Open</a> (<a class="el" href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64">FileOpenMode</a> openMode)=0</td></tr>
+<tr class="separator:a31335109a45fd1aef813f9c615800814"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba8f7ceb0ea4f31761b5fc083cf72a26" id="r_aba8f7ceb0ea4f31761b5fc083cf72a26"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aba8f7ceb0ea4f31761b5fc083cf72a26">Close</a> ()=0</td></tr>
+<tr class="separator:aba8f7ceb0ea4f31761b5fc083cf72a26"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa7d4b3dcf221e11e0e7e1c2732cb77bc" id="r_aa7d4b3dcf221e11e0e7e1c2732cb77bc"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa7d4b3dcf221e11e0e7e1c2732cb77bc">ReadBytes</a> (char *buffer, size_t bytesCount, size_t *numberOfBytesReadPtr=nullptr)=0</td></tr>
+<tr class="separator:aa7d4b3dcf221e11e0e7e1c2732cb77bc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab5831cb9294e5dc1a688b040f1e97351" id="r_ab5831cb9294e5dc1a688b040f1e97351"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:ab5831cb9294e5dc1a688b040f1e97351"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#ab5831cb9294e5dc1a688b040f1e97351">ReadBytes</a> (size_t elementsCount, std::vector&lt; T &gt; &amp;arr, size_t *numberOfElementsReadPtr=nullptr)</td></tr>
+<tr class="separator:ab5831cb9294e5dc1a688b040f1e97351"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2999be55dd634863a97cae517f137c2" id="r_ae2999be55dd634863a97cae517f137c2"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae2999be55dd634863a97cae517f137c2">WriteBytes</a> (const char *data, size_t len, size_t *numberOfBytesWrittenPtr=nullptr)=0</td></tr>
+<tr class="separator:ae2999be55dd634863a97cae517f137c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa0271ab60e6816407b9cf101f6292906" id="r_aa0271ab60e6816407b9cf101f6292906"><td class="memTemplParams" colspan="2">template&lt;class T &gt; </td></tr>
+<tr class="memitem:aa0271ab60e6816407b9cf101f6292906"><td class="memTemplItemLeft" align="right" valign="top">bool&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="#aa0271ab60e6816407b9cf101f6292906">WriteBytes</a> (const std::vector&lt; T &gt; &amp;data, size_t *numberOfElementsWrittenPtr=nullptr)</td></tr>
+<tr class="separator:aa0271ab60e6816407b9cf101f6292906"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Подробное описание</h2>
+<div class="textblock"><p>Интерфейс для взаимодействия с удаленным файлом. </p>
+<dl class="section warning"><dt>Предупреждения</dt><dd>Все неконстантные методы интерфейса должны вызываться в рамках транзакции, иначе будут возвращать признак ошибки. </dd></dl>
+</div><h2 class="groupheader">Конструктор(ы)</h2>
+<a id="abebf6b62a3296401aa0650e4bd244c7c" name="abebf6b62a3296401aa0650e4bd244c7c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abebf6b62a3296401aa0650e4bd244c7c">&#9670;&#160;</a></span>~IFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual IFile::~IFile </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Методы</h2>
+<a id="aba8f7ceb0ea4f31761b5fc083cf72a26" name="aba8f7ceb0ea4f31761b5fc083cf72a26"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aba8f7ceb0ea4f31761b5fc083cf72a26">&#9670;&#160;</a></span>Close()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool IFile::Close </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Закрыть файл. Файл, оставшийся открытым в конце транзакции, будет закрыт автоматически. </p><dl class="section return"><dt>Возвращает</dt><dd><code>true</code>, если удалось закрыть файл, иначе <code>false</code>. </dd></dl>
+
+</div>
+</div>
+<a id="ac92b07daa431913f3ed2bd6028830eb6" name="ac92b07daa431913f3ed2bd6028830eb6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac92b07daa431913f3ed2bd6028830eb6">&#9670;&#160;</a></span>GetFileName()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual std::string IFile::GetFileName </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Получить имя файла </p>
+
+</div>
+</div>
+<a id="a31335109a45fd1aef813f9c615800814" name="a31335109a45fd1aef813f9c615800814"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a31335109a45fd1aef813f9c615800814">&#9670;&#160;</a></span>Open()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool IFile::Open </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64">FileOpenMode</a></td>          <td class="paramname"><span class="paramname"><em>openMode</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Открыть файл </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">openMode</td><td>Режим открытия </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd><code>true</code>, если удалось открыть файл, иначе <code>false</code>. </dd></dl>
+
+</div>
+</div>
+<a id="aa7d4b3dcf221e11e0e7e1c2732cb77bc" name="aa7d4b3dcf221e11e0e7e1c2732cb77bc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa7d4b3dcf221e11e0e7e1c2732cb77bc">&#9670;&#160;</a></span>ReadBytes() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool IFile::ReadBytes </td>
+          <td>(</td>
+          <td class="paramtype">char *</td>          <td class="paramname"><span class="paramname"><em>buffer</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>bytesCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *</td>          <td class="paramname"><span class="paramname"><em>numberOfBytesReadPtr</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Попытаться прочесть байты </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">buffer</td><td>Буфер, в который требуется прочитать байты. </td></tr>
+    <tr><td class="paramname">bytesCount</td><td>Количество байт, которое требуется попытаться прочесть. </td></tr>
+    <tr><td class="paramname">numberOfBytesReadPtr</td><td>Переменная, в которую запишется количество успешно прочитанных байтов. Если было прочитано менее, чем bytesCount байтов, это может свидельствовать о том, что файл закончился, или о том, что произошла ошибка. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd><code>true</code>, если удалось прочесть байты, иначе <code>false</code>. </dd></dl>
+
+</div>
+</div>
+<a id="ab5831cb9294e5dc1a688b040f1e97351" name="ab5831cb9294e5dc1a688b040f1e97351"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab5831cb9294e5dc1a688b040f1e97351">&#9670;&#160;</a></span>ReadBytes() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool IFile::ReadBytes </td>
+          <td>(</td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>elementsCount</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>arr</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *</td>          <td class="paramname"><span class="paramname"><em>numberOfElementsReadPtr</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Попытаться прочесть объекты </p><dl class="tparams"><dt>Параметры шаблона</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>Простой тип данных, который имеет смысл записывать в базу данных (Например, если структура имеет указатели, которые хранят адреса на выделенную память, то записывать эти адреса в базу данных не имеет смысла, поскольку эти адреса в рамках другого запуска программы будут указывать на другую область в памяти) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">elementsCount</td><td>Количество элементов, которое требуется попытаться прочесть. </td></tr>
+    <tr><td class="paramname">arr</td><td>Массив, в который требуется прочитать объекты. Результат будет дописан в конец этого буфера. Если в массив было записано менее, чем elementsCount элементов, это может свидельствовать о том, что файл закончился, или о том, что произошла ошибка. </td></tr>
+    <tr><td class="paramname">numberOfElementsReadPtr</td><td>Переменная, в которую запишется количество успешно прочитанных байтов. Если было прочитано менее, чем bytesCount байтов, это может свидельствовать о том, что файл закончился, или о том, что произошла ошибка. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd><code>true</code>, если удалось прочесть объекты, иначе <code>false</code>. </dd></dl>
+
+</div>
+</div>
+<a id="ae2999be55dd634863a97cae517f137c2" name="ae2999be55dd634863a97cae517f137c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2999be55dd634863a97cae517f137c2">&#9670;&#160;</a></span>WriteBytes() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool IFile::WriteBytes </td>
+          <td>(</td>
+          <td class="paramtype">const char *</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>len</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *</td>          <td class="paramname"><span class="paramname"><em>numberOfBytesWrittenPtr</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Попытаться записать байты </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>Массив байтов, который требуется записать. </td></tr>
+    <tr><td class="paramname">len</td><td>Длина этого массива </td></tr>
+    <tr><td class="paramname">numberOfBytesWrittenPtr</td><td>Переменная, в которую запишется количество успешно записанных байтов. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd><code>true</code>, если удалось запись байты, иначе <code>false</code>. </dd></dl>
+
+</div>
+</div>
+<a id="aa0271ab60e6816407b9cf101f6292906" name="aa0271ab60e6816407b9cf101f6292906"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0271ab60e6816407b9cf101f6292906">&#9670;&#160;</a></span>WriteBytes() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<div class="memtemplate">
+template&lt;class T &gt; </div>
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool IFile::WriteBytes </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; T &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>data</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">size_t *</td>          <td class="paramname"><span class="paramname"><em>numberOfElementsWrittenPtr</em></span><span class="paramdefsep"> = </span><span class="paramdefval">nullptr</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Попытаться записать данные. </p><dl class="tparams"><dt>Параметры шаблона</dt><dd>
+  <table class="tparams">
+    <tr><td class="paramname">T</td><td>Простой тип данных, который имеет смысл записывать в базу данных (Например, если структура имеет указатели, которые хранят адреса на выделенную память, то записывать эти адреса в базу данных не имеет смысла, поскольку эти адреса в рамках другого запуска программы будут указывать на другую область в памяти) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">data</td><td>Вектор с данными. </td></tr>
+    <tr><td class="paramname">len</td><td>Длина этого массива </td></tr>
+    <tr><td class="paramname">numberOfBytesWrittenPtr</td><td>Переменная, в которую запишется количество успешно записанных байтов. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd><code>true</code>, если удалось запись данные, иначе <code>false</code>. </dd></dl>
+
+</div>
+</div>
+<hr/>Объявления и описания членов класса находятся в файле:<ul>
+<li>libraries/database_library/inc/<a class="el" href="_i_file_8h_source.html">IFile.h</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.11.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

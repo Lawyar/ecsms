@@ -1,0 +1,180 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.11.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Experimental / Simulation Control System for Mobile Communications: Исходный файл libraries/database_library/inc/IConnection.h</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Experimental / Simulation Control System for Mobile Communications
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.11.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_bc0718b08fb2015b8e59c47b2805f60c.html">libraries</a></li><li class="navelem"><a class="el" href="dir_c9490ed204ab91e349c09912c0a9c531.html">database_library</a></li><li class="navelem"><a class="el" href="dir_f65eecab335f68fe76dfd2e5192c8f5b.html">inc</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">IConnection.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_i_connection_8h.html">См. документацию.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="_s_q_l_data_type_8h.html">DataType/SQLDataType.h</a>&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;<a class="code" href="_i_execute_result_8h.html">IExecuteResult.h</a>&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;<a class="code" href="_i_file_8h.html">IFile.h</a>&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span> </div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="comment">//------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">//---</span></div>
+<div class="foldopen" id="foldopen00015" data-start="{" data-end="};">
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525">   15</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525">ConnectionStatus</a> {</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  <a class="code hl_enumvalue" href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525aa60852f204ed8028c1c58808b746d115">Ok</a>,     </div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>  <a class="code hl_enumvalue" href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525a7ff3e75ce6aca348bc513ed3d5882946">Bad</a>,    </div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  <a class="code hl_enumvalue" href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525a88183b946cc5f0e8c96b2e66e1c74a7e">Unknown</a> </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>};</div>
+</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span> </div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="_i_connection_8h.html#a2359ebb9fc13b28d2e5d217ee1fb7e45">   22</a></span><span class="keyword">using </span><a class="code hl_typedef" href="_i_connection_8h.html#a2359ebb9fc13b28d2e5d217ee1fb7e45">ExecuteArgType</a> = std::variant&lt;std::string, std::vector&lt;char&gt;&gt;;</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span><span class="comment">//------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span><span class="comment">//---</span></div>
+<div class="foldopen" id="foldopen00033" data-start="{" data-end="};">
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno"><a class="line" href="class_i_connection.html">   33</a></span><span class="keyword">class </span><a class="code hl_class" href="class_i_connection.html">IConnection</a> {</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="class_i_connection.html#ad1c78f7f02b93d498d352ed5a2a5cd31">   36</a></span>  <span class="keyword">virtual</span> <a class="code hl_function" href="class_i_connection.html#ad1c78f7f02b93d498d352ed5a2a5cd31">~IConnection</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="class_i_connection.html#ade9db4be7f56fc90dba65cdd74030206">   41</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_connection.html#ade9db4be7f56fc90dba65cdd74030206">IsValid</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="class_i_connection.html#a4f7a020a52b16f41e5c4fef3e28b51b0">   43</a></span>  <span class="keyword">virtual</span> <a class="code hl_enumeration" href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525">ConnectionStatus</a> <a class="code hl_function" href="class_i_connection.html#a4f7a020a52b16f41e5c4fef3e28b51b0">GetStatus</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span> </div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="class_i_connection.html#a63bdfaadc874a2fd7976f24c86fe1159">   53</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_8h.html#a21af00ecb7dced71df7039ae9b0290e9">IExecuteResultPtr</a> <a class="code hl_function" href="class_i_connection.html#a63bdfaadc874a2fd7976f24c86fe1159">Execute</a>(<span class="keyword">const</span> std::string &amp;query) = 0;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno"><a class="line" href="class_i_connection.html#a2f751912b95c6a89b4b034cf5af11c8d">   57</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> <a class="code hl_function" href="class_i_connection.html#a2f751912b95c6a89b4b034cf5af11c8d">BeginTransaction</a>() = 0;</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno"><a class="line" href="class_i_connection.html#a43905cb5260c9bfc411de223bed7c832">   60</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> <a class="code hl_function" href="class_i_connection.html#a43905cb5260c9bfc411de223bed7c832">CommitTransaction</a>() = 0;</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno"><a class="line" href="class_i_connection.html#a2720067e99839f1e206aa294b18f481c">   63</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> <a class="code hl_function" href="class_i_connection.html#a2720067e99839f1e206aa294b18f481c">RollbackTransaction</a>() = 0;</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span> </div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno"><a class="line" href="class_i_connection.html#a4e72df384d56958a412c423ede3e3072">   74</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_file_8h.html#a783ca0f822eaed016dd500828feba547">IFilePtr</a> <a class="code hl_function" href="class_i_connection.html#a4e72df384d56958a412c423ede3e3072">CreateRemoteFile</a>() = 0;</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno"><a class="line" href="class_i_connection.html#a4d909b0bc6d3fa9b026a8e144465e096">   83</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_connection.html#a4d909b0bc6d3fa9b026a8e144465e096">DeleteRemoteFile</a>(<span class="keyword">const</span> std::string &amp;filename) = 0;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="class_i_connection.html#aa04ea2debb963255ed7179a3123d147a">   93</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_file_8h.html#a783ca0f822eaed016dd500828feba547">IFilePtr</a> <a class="code hl_function" href="class_i_connection.html#aa04ea2debb963255ed7179a3123d147a">GetRemoteFile</a>(<span class="keyword">const</span> std::string &amp;filename) = 0;</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span> </div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00119" name="l00119"></a><span class="lineno">  119</span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_8h.html#a21af00ecb7dced71df7039ae9b0290e9">IExecuteResultPtr</a></div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="class_i_connection.html#a7e3bb51cb5a4eda6310c4c7ff34c9aad">  120</a></span>  <a class="code hl_function" href="class_i_connection.html#a7e3bb51cb5a4eda6310c4c7ff34c9aad">Execute</a>(<span class="keyword">const</span> std::string &amp;singleCommand,</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span>          <span class="keyword">const</span> std::vector&lt;ExecuteArgType&gt; &amp;args,</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>          <span class="keyword">const</span> <a class="code hl_enumeration" href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1">ResultFormat</a> resultFormat = <a class="code hl_enumvalue" href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1a9dffbf69ffba8bc38bc4e01abf4b1675">ResultFormat::Text</a>,</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>          <span class="keyword">const</span> std::vector&lt;SQLDataType&gt; &amp;types = {}) = 0;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>};</div>
+</div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span> </div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno"><a class="line" href="_i_connection_8h.html#ae29955203ca34698f744895c1b2471d5">  127</a></span><span class="keyword">using </span><a class="code hl_typedef" href="_i_connection_8h.html#ae29955203ca34698f744895c1b2471d5">IConnectionPtr</a> = std::shared_ptr&lt;IConnection&gt;;</div>
+<div class="ttc" id="a_i_connection_8h_html_a2359ebb9fc13b28d2e5d217ee1fb7e45"><div class="ttname"><a href="_i_connection_8h.html#a2359ebb9fc13b28d2e5d217ee1fb7e45">ExecuteArgType</a></div><div class="ttdeci">std::variant&lt; std::string, std::vector&lt; char &gt; &gt; ExecuteArgType</div><div class="ttdoc">Тип аргумента для выполнения метода Execute.</div><div class="ttdef"><b>Definition</b> IConnection.h:22</div></div>
+<div class="ttc" id="a_i_connection_8h_html_a94c42ef79c93cb9672927fc1e1be6525"><div class="ttname"><a href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525">ConnectionStatus</a></div><div class="ttdeci">ConnectionStatus</div><div class="ttdoc">Статус соединения</div><div class="ttdef"><b>Definition</b> IConnection.h:15</div></div>
+<div class="ttc" id="a_i_connection_8h_html_a94c42ef79c93cb9672927fc1e1be6525a7ff3e75ce6aca348bc513ed3d5882946"><div class="ttname"><a href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525a7ff3e75ce6aca348bc513ed3d5882946">ConnectionStatus::Bad</a></div><div class="ttdeci">@ Bad</div><div class="ttdoc">Ошибка установки соединения</div></div>
+<div class="ttc" id="a_i_connection_8h_html_a94c42ef79c93cb9672927fc1e1be6525a88183b946cc5f0e8c96b2e66e1c74a7e"><div class="ttname"><a href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525a88183b946cc5f0e8c96b2e66e1c74a7e">ConnectionStatus::Unknown</a></div><div class="ttdeci">@ Unknown</div><div class="ttdoc">Неизвестный статус</div></div>
+<div class="ttc" id="a_i_connection_8h_html_a94c42ef79c93cb9672927fc1e1be6525aa60852f204ed8028c1c58808b746d115"><div class="ttname"><a href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525aa60852f204ed8028c1c58808b746d115">ConnectionStatus::Ok</a></div><div class="ttdeci">@ Ok</div><div class="ttdoc">Соединение успешно установлено</div></div>
+<div class="ttc" id="a_i_connection_8h_html_ae29955203ca34698f744895c1b2471d5"><div class="ttname"><a href="_i_connection_8h.html#ae29955203ca34698f744895c1b2471d5">IConnectionPtr</a></div><div class="ttdeci">std::shared_ptr&lt; IConnection &gt; IConnectionPtr</div><div class="ttdoc">Указатель на IConnection.</div><div class="ttdef"><b>Definition</b> IConnection.h:127</div></div>
+<div class="ttc" id="a_i_execute_result_8h_html"><div class="ttname"><a href="_i_execute_result_8h.html">IExecuteResult.h</a></div></div>
+<div class="ttc" id="a_i_execute_result_8h_html_a21af00ecb7dced71df7039ae9b0290e9"><div class="ttname"><a href="_i_execute_result_8h.html#a21af00ecb7dced71df7039ae9b0290e9">IExecuteResultPtr</a></div><div class="ttdeci">std::shared_ptr&lt; IExecuteResult &gt; IExecuteResultPtr</div><div class="ttdoc">Указатель на IExecuteResult.</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:180</div></div>
+<div class="ttc" id="a_i_execute_result_8h_html_a8330adb55551cc99fca507f7a1054ea1"><div class="ttname"><a href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1">ResultFormat</a></div><div class="ttdeci">ResultFormat</div><div class="ttdoc">Формат данных в результате.</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:17</div></div>
+<div class="ttc" id="a_i_execute_result_8h_html_a8330adb55551cc99fca507f7a1054ea1a9dffbf69ffba8bc38bc4e01abf4b1675"><div class="ttname"><a href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1a9dffbf69ffba8bc38bc4e01abf4b1675">ResultFormat::Text</a></div><div class="ttdeci">@ Text</div><div class="ttdoc">Формат представлен в виде текстовых данных</div></div>
+<div class="ttc" id="a_i_execute_result_status_8h_html_a1ad92e3fac98289f260539a1a120dbb8"><div class="ttname"><a href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a></div><div class="ttdeci">std::shared_ptr&lt; IExecuteResultStatus &gt; IExecuteResultStatusPtr</div><div class="ttdoc">Указатель на IExecuteResultStatus.</div><div class="ttdef"><b>Definition</b> IExecuteResultStatus.h:53</div></div>
+<div class="ttc" id="a_i_file_8h_html"><div class="ttname"><a href="_i_file_8h.html">IFile.h</a></div></div>
+<div class="ttc" id="a_i_file_8h_html_a783ca0f822eaed016dd500828feba547"><div class="ttname"><a href="_i_file_8h.html#a783ca0f822eaed016dd500828feba547">IFilePtr</a></div><div class="ttdeci">std::shared_ptr&lt; IFile &gt; IFilePtr</div><div class="ttdoc">Указатель на IFile.</div><div class="ttdef"><b>Definition</b> IFile.h:138</div></div>
+<div class="ttc" id="a_s_q_l_data_type_8h_html"><div class="ttname"><a href="_s_q_l_data_type_8h.html">SQLDataType.h</a></div></div>
+<div class="ttc" id="aclass_i_connection_html"><div class="ttname"><a href="class_i_connection.html">IConnection</a></div><div class="ttdoc">Интерфейс соединения.</div><div class="ttdef"><b>Definition</b> IConnection.h:33</div></div>
+<div class="ttc" id="aclass_i_connection_html_a2720067e99839f1e206aa294b18f481c"><div class="ttname"><a href="class_i_connection.html#a2720067e99839f1e206aa294b18f481c">IConnection::RollbackTransaction</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr RollbackTransaction()=0</div></div>
+<div class="ttc" id="aclass_i_connection_html_a2f751912b95c6a89b4b034cf5af11c8d"><div class="ttname"><a href="class_i_connection.html#a2f751912b95c6a89b4b034cf5af11c8d">IConnection::BeginTransaction</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr BeginTransaction()=0</div></div>
+<div class="ttc" id="aclass_i_connection_html_a43905cb5260c9bfc411de223bed7c832"><div class="ttname"><a href="class_i_connection.html#a43905cb5260c9bfc411de223bed7c832">IConnection::CommitTransaction</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr CommitTransaction()=0</div></div>
+<div class="ttc" id="aclass_i_connection_html_a4d909b0bc6d3fa9b026a8e144465e096"><div class="ttname"><a href="class_i_connection.html#a4d909b0bc6d3fa9b026a8e144465e096">IConnection::DeleteRemoteFile</a></div><div class="ttdeci">virtual bool DeleteRemoteFile(const std::string &amp;filename)=0</div></div>
+<div class="ttc" id="aclass_i_connection_html_a4e72df384d56958a412c423ede3e3072"><div class="ttname"><a href="class_i_connection.html#a4e72df384d56958a412c423ede3e3072">IConnection::CreateRemoteFile</a></div><div class="ttdeci">virtual IFilePtr CreateRemoteFile()=0</div></div>
+<div class="ttc" id="aclass_i_connection_html_a4f7a020a52b16f41e5c4fef3e28b51b0"><div class="ttname"><a href="class_i_connection.html#a4f7a020a52b16f41e5c4fef3e28b51b0">IConnection::GetStatus</a></div><div class="ttdeci">virtual ConnectionStatus GetStatus() const =0</div><div class="ttdoc">Получить статус соединения</div></div>
+<div class="ttc" id="aclass_i_connection_html_a63bdfaadc874a2fd7976f24c86fe1159"><div class="ttname"><a href="class_i_connection.html#a63bdfaadc874a2fd7976f24c86fe1159">IConnection::Execute</a></div><div class="ttdeci">virtual IExecuteResultPtr Execute(const std::string &amp;query)=0</div></div>
+<div class="ttc" id="aclass_i_connection_html_a7e3bb51cb5a4eda6310c4c7ff34c9aad"><div class="ttname"><a href="class_i_connection.html#a7e3bb51cb5a4eda6310c4c7ff34c9aad">IConnection::Execute</a></div><div class="ttdeci">virtual IExecuteResultPtr Execute(const std::string &amp;singleCommand, const std::vector&lt; ExecuteArgType &gt; &amp;args, const ResultFormat resultFormat=ResultFormat::Text, const std::vector&lt; SQLDataType &gt; &amp;types={})=0</div></div>
+<div class="ttc" id="aclass_i_connection_html_aa04ea2debb963255ed7179a3123d147a"><div class="ttname"><a href="class_i_connection.html#aa04ea2debb963255ed7179a3123d147a">IConnection::GetRemoteFile</a></div><div class="ttdeci">virtual IFilePtr GetRemoteFile(const std::string &amp;filename)=0</div></div>
+<div class="ttc" id="aclass_i_connection_html_ad1c78f7f02b93d498d352ed5a2a5cd31"><div class="ttname"><a href="class_i_connection.html#ad1c78f7f02b93d498d352ed5a2a5cd31">IConnection::~IConnection</a></div><div class="ttdeci">virtual ~IConnection()=default</div><div class="ttdoc">Деструктор</div></div>
+<div class="ttc" id="aclass_i_connection_html_ade9db4be7f56fc90dba65cdd74030206"><div class="ttname"><a href="class_i_connection.html#ade9db4be7f56fc90dba65cdd74030206">IConnection::IsValid</a></div><div class="ttdeci">virtual bool IsValid() const =0</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.11.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

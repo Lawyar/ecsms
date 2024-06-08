@@ -1,0 +1,766 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.11.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Experimental / Simulation Control System for Mobile Communications: Класс IExecutorEAV</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Experimental / Simulation Control System for Mobile Communications
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.11.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#nested-classes">Классы</a> &#124;
+<a href="#pub-types">Открытые типы</a> &#124;
+<a href="#pub-methods">Открытые члены</a> &#124;
+<a href="class_i_executor_e_a_v-members.html">Полный список членов класса</a>  </div>
+  <div class="headertitle"><div class="title">Класс IExecutorEAV<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Интерфейс исполнителя запросов EAV.  
+ <a href="#details">Подробнее...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_i_executor_e_a_v_8h_source.html">IExecutorEAV.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Классы</h2></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_i_executor_e_a_v_1_1_attr_value.html">AttrValue</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Структура для хранения пары: атрибут и его значение  <a href="struct_i_executor_e_a_v_1_1_attr_value.html#details">Подробнее...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Открытые типы</h2></td></tr>
+<tr class="memitem:a50bb4e51ee0ae1d0e810a3a5c521789a" id="r_a50bb4e51ee0ae1d0e810a3a5c521789a"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> = std::string</td></tr>
+<tr class="separator:a50bb4e51ee0ae1d0e810a3a5c521789a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af5d984a8c30c7b3073d02e8fc750a1e5" id="r_af5d984a8c30c7b3073d02e8fc750a1e5"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> = int</td></tr>
+<tr class="separator:af5d984a8c30c7b3073d02e8fc750a1e5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9dcb0e8d7c5746e5e759c4292b14e55e" id="r_a9dcb0e8d7c5746e5e759c4292b14e55e"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> = <a class="el" href="_i_s_q_l_type_text_8h.html#a5b777ac0e19746a9b22208f21acc3c54">ISQLTypeTextPtr</a></td></tr>
+<tr class="memdesc:a9dcb0e8d7c5746e5e759c4292b14e55e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Тип для названия атрибута.  <br /></td></tr>
+<tr class="separator:a9dcb0e8d7c5746e5e759c4292b14e55e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a45bd09e5709f765164415311077b4b37" id="r_a45bd09e5709f765164415311077b4b37"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a45bd09e5709f765164415311077b4b37">ValueType</a> = <a class="el" href="_i_s_q_l_type_8h.html#a420c52b5120b390492a376154924d679">ISQLTypePtr</a></td></tr>
+<tr class="memdesc:a45bd09e5709f765164415311077b4b37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Тип значения атрибута  <br /></td></tr>
+<tr class="separator:a45bd09e5709f765164415311077b4b37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ace14e4a49c5b543f0438679809512b17" id="r_ace14e4a49c5b543f0438679809512b17"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ace14e4a49c5b543f0438679809512b17">EAVRegisterEntries</a> = std::map&lt;<a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a>, std::vector&lt;<a class="el" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a>&gt;&gt;</td></tr>
+<tr class="separator:ace14e4a49c5b543f0438679809512b17"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Открытые члены</h2></td></tr>
+<tr class="memitem:ad0b88fe643bd57ffedff15eb86a9af03" id="r_ad0b88fe643bd57ffedff15eb86a9af03"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0b88fe643bd57ffedff15eb86a9af03">~IExecutorEAV</a> ()=default</td></tr>
+<tr class="memdesc:ad0b88fe643bd57ffedff15eb86a9af03"><td class="mdescLeft">&#160;</td><td class="mdescRight">Деструктор  <br /></td></tr>
+<tr class="separator:ad0b88fe643bd57ffedff15eb86a9af03"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f62311c5d7eb13c6888e27a63762036" id="r_a2f62311c5d7eb13c6888e27a63762036"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f62311c5d7eb13c6888e27a63762036">SetRegisteredEntities</a> (const <a class="el" href="#ace14e4a49c5b543f0438679809512b17">EAVRegisterEntries</a> &amp;entries, bool createTables)=0</td></tr>
+<tr class="separator:a2f62311c5d7eb13c6888e27a63762036"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acdbcb658f2a50f8a89fbd92d835e559f" id="r_acdbcb658f2a50f8a89fbd92d835e559f"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="#ace14e4a49c5b543f0438679809512b17">EAVRegisterEntries</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acdbcb658f2a50f8a89fbd92d835e559f">GetRegisteredEntities</a> () const =0</td></tr>
+<tr class="separator:acdbcb658f2a50f8a89fbd92d835e559f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a80e9c17757022afe7934e5fbf5523813" id="r_a80e9c17757022afe7934e5fbf5523813"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="class_i_executor_e_a_v_naming_rules.html">IExecutorEAVNamingRules</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a80e9c17757022afe7934e5fbf5523813">GetNamingRules</a> () const =0</td></tr>
+<tr class="separator:a80e9c17757022afe7934e5fbf5523813"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a65c22312ec34638a59fc282ee9213882" id="r_a65c22312ec34638a59fc282ee9213882"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a65c22312ec34638a59fc282ee9213882">CreateNewEntity</a> (const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, <a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> &amp;result)=0</td></tr>
+<tr class="separator:a65c22312ec34638a59fc282ee9213882"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a271032f0762d78d111f60cab24673667" id="r_a271032f0762d78d111f60cab24673667"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a271032f0762d78d111f60cab24673667">GetEntityIds</a> (const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, std::vector&lt; <a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> &gt; &amp;result)=0</td></tr>
+<tr class="separator:a271032f0762d78d111f60cab24673667"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac1760545a24829b7b29106d0c6f5d730" id="r_ac1760545a24829b7b29106d0c6f5d730"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac1760545a24829b7b29106d0c6f5d730">GetAttributeNames</a> (const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, <a class="el" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a> sqlDataType, std::vector&lt; <a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &gt; &amp;result)=0</td></tr>
+<tr class="separator:ac1760545a24829b7b29106d0c6f5d730"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad255b066dd30abc19ddbe5ed3243efea" id="r_ad255b066dd30abc19ddbe5ed3243efea"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad255b066dd30abc19ddbe5ed3243efea">FindEntitiesByAttrValues</a> (const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, const std::vector&lt; <a class="el" href="struct_i_executor_e_a_v_1_1_attr_value.html">AttrValue</a> &gt; &amp;attrValues, std::vector&lt; <a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> &gt; &amp;result)=0</td></tr>
+<tr class="separator:ad255b066dd30abc19ddbe5ed3243efea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7fc5ed3474baa092deafbd0f2397daf4" id="r_a7fc5ed3474baa092deafbd0f2397daf4"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7fc5ed3474baa092deafbd0f2397daf4">Insert</a> (const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, <a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> entityId, const <a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;attrName, const <a class="el" href="#a45bd09e5709f765164415311077b4b37">ValueType</a> &amp;value)=0</td></tr>
+<tr class="separator:a7fc5ed3474baa092deafbd0f2397daf4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae34093ec4c46e744ace5b9daa4078a44" id="r_ae34093ec4c46e744ace5b9daa4078a44"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae34093ec4c46e744ace5b9daa4078a44">Update</a> (const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, <a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> entityId, const <a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;attrName, const <a class="el" href="#a45bd09e5709f765164415311077b4b37">ValueType</a> &amp;value)=0</td></tr>
+<tr class="separator:ae34093ec4c46e744ace5b9daa4078a44"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a27bd69dac9f7894b910397004dde68fa" id="r_a27bd69dac9f7894b910397004dde68fa"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27bd69dac9f7894b910397004dde68fa">InsertOrUpdate</a> (const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, <a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> entityId, const <a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;attrName, const <a class="el" href="#a45bd09e5709f765164415311077b4b37">ValueType</a> &amp;value)=0</td></tr>
+<tr class="separator:a27bd69dac9f7894b910397004dde68fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8ec1f56bd7cdc1a29bfd620e34581e07" id="r_a8ec1f56bd7cdc1a29bfd620e34581e07"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8ec1f56bd7cdc1a29bfd620e34581e07">GetValue</a> (const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, <a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> entityId, const <a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;attrName, <a class="el" href="#a45bd09e5709f765164415311077b4b37">ValueType</a> value)=0</td></tr>
+<tr class="separator:a8ec1f56bd7cdc1a29bfd620e34581e07"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac114e4fe83db980c0865763f2220126d" id="r_ac114e4fe83db980c0865763f2220126d"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac114e4fe83db980c0865763f2220126d">GetAttributeValues</a> (const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, <a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> entityId, std::map&lt; <a class="el" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a>, std::vector&lt; <a class="el" href="struct_i_executor_e_a_v_1_1_attr_value.html">AttrValue</a> &gt; &gt; &amp;attrValuesByType)=0</td></tr>
+<tr class="separator:ac114e4fe83db980c0865763f2220126d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Подробное описание</h2>
+<div class="textblock"><p>Интерфейс исполнителя запросов EAV. </p>
+<p>Он предоставляет базовые запросы, которые могут оказаться полезными при работе с базой данных, представленной схемой EAV.</p>
+<p>Правила именования таблиц для базы данных определяются интерфейсом <a class="el" href="class_i_executor_e_a_v_naming_rules.html" title="Интерфейс, определяющий правила именования таблиц для IExecutorEAV.">IExecutorEAVNamingRules</a>.</p>
+<p>Метод <a class="el" href="#a2f62311c5d7eb13c6888e27a63762036">SetRegisteredEntities</a> может создать таблицы по указанным правилам, если передать в него флаг <code>createTables</code> = <code>true</code>. Остальные методы не создают таблицы, а пользуются существующими, созданными этим методом. При отсутствии таких таблиц команды будут выдавать ошибку.</p>
+<p>Все методы класса не открывают и не закрывают транзакции. Таким образом, можно в вызывающем коде открыть транзакцию, вызвать один или несколько методов класса, после чего зафиксировать (или отменить) транзакцию, применив (или не применив) разом несколько изменений.</p>
+<p>(Если вызывающий код не открывает транзакцию, то каждый метод класса будет работать в рамках одной или нескольких транзакций (зависит от реализации конкретного метода)) </p>
+</div><h2 class="groupheader">Определения типов</h2>
+<a id="a9dcb0e8d7c5746e5e759c4292b14e55e" name="a9dcb0e8d7c5746e5e759c4292b14e55e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9dcb0e8d7c5746e5e759c4292b14e55e">&#9670;&#160;</a></span>AttrName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">IExecutorEAV::AttrName</a> = <a class="el" href="_i_s_q_l_type_text_8h.html#a5b777ac0e19746a9b22208f21acc3c54">ISQLTypeTextPtr</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Тип для названия атрибута. </p>
+
+</div>
+</div>
+<a id="ace14e4a49c5b543f0438679809512b17" name="ace14e4a49c5b543f0438679809512b17"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ace14e4a49c5b543f0438679809512b17">&#9670;&#160;</a></span>EAVRegisterEntries</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#ace14e4a49c5b543f0438679809512b17">IExecutorEAV::EAVRegisterEntries</a> = std::map&lt;<a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a>, std::vector&lt;<a class="el" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a>&gt;&gt;</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Реестр EAV-сущностей. Одна запись в реестре хранит информацию о названии сущностей, а также о типах атрибутов, которые она использует. </p>
+
+</div>
+</div>
+<a id="af5d984a8c30c7b3073d02e8fc750a1e5" name="af5d984a8c30c7b3073d02e8fc750a1e5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af5d984a8c30c7b3073d02e8fc750a1e5">&#9670;&#160;</a></span>EntityId</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">IExecutorEAV::EntityId</a> = int</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Тип для идентификатора сущности. Числовой идентификатор конкретной сущности в её таблице сущностей. </p>
+
+</div>
+</div>
+<a id="a50bb4e51ee0ae1d0e810a3a5c521789a" name="a50bb4e51ee0ae1d0e810a3a5c521789a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a50bb4e51ee0ae1d0e810a3a5c521789a">&#9670;&#160;</a></span>EntityName</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">IExecutorEAV::EntityName</a> = std::string</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Тип для названия сущности. Осмысленное название сущности. </p>
+
+</div>
+</div>
+<a id="a45bd09e5709f765164415311077b4b37" name="a45bd09e5709f765164415311077b4b37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a45bd09e5709f765164415311077b4b37">&#9670;&#160;</a></span>ValueType</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">using <a class="el" href="#a45bd09e5709f765164415311077b4b37">IExecutorEAV::ValueType</a> = <a class="el" href="_i_s_q_l_type_8h.html#a420c52b5120b390492a376154924d679">ISQLTypePtr</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Тип значения атрибута </p>
+
+</div>
+</div>
+<h2 class="groupheader">Конструктор(ы)</h2>
+<a id="ad0b88fe643bd57ffedff15eb86a9af03" name="ad0b88fe643bd57ffedff15eb86a9af03"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad0b88fe643bd57ffedff15eb86a9af03">&#9670;&#160;</a></span>~IExecutorEAV()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual IExecutorEAV::~IExecutorEAV </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Деструктор </p>
+
+</div>
+</div>
+<h2 class="groupheader">Методы</h2>
+<a id="a65c22312ec34638a59fc282ee9213882" name="a65c22312ec34638a59fc282ee9213882"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a65c22312ec34638a59fc282ee9213882">&#9670;&#160;</a></span>CreateNewEntity()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IExecutorEAV::CreateNewEntity </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>entityName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>result</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Создать новую сущность данного вида </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">entityName</td><td>Название сущности </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Идентификатор новой сущности </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<a id="ad255b066dd30abc19ddbe5ed3243efea" name="ad255b066dd30abc19ddbe5ed3243efea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad255b066dd30abc19ddbe5ed3243efea">&#9670;&#160;</a></span>FindEntitiesByAttrValues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IExecutorEAV::FindEntitiesByAttrValues </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>entityName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="struct_i_executor_e_a_v_1_1_attr_value.html">AttrValue</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>attrValues</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>result</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Найти сущности, у которых есть все из указанных пар атрибут-значение </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">entityName</td><td>Название сущности </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">attrValues</td><td>Массив пар атрибут-значение. В качестве значения может быть передана пустая переменная. Тогда произведен поиск таких атрибутов сущности, у которых значение не задано. </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Массив идентификаторов сущности, у которых есть все из указанных пар атрибут-значение. Массив прочищается перед записью результата. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<a id="ac1760545a24829b7b29106d0c6f5d730" name="ac1760545a24829b7b29106d0c6f5d730"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac1760545a24829b7b29106d0c6f5d730">&#9670;&#160;</a></span>GetAttributeNames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IExecutorEAV::GetAttributeNames </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>entityName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a></td>          <td class="paramname"><span class="paramname"><em>sqlDataType</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>result</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Получить все наименования атрибутов указанного типа, которые использует данная сущность </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">entityName</td><td>Название сущности </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">sqlDataType</td><td>Тип атрибута </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Массив наименований атрибутов. В случае успеха массив прочищается перед записью результата. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<a id="ac114e4fe83db980c0865763f2220126d" name="ac114e4fe83db980c0865763f2220126d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac114e4fe83db980c0865763f2220126d">&#9670;&#160;</a></span>GetAttributeValues()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IExecutorEAV::GetAttributeValues </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>entityName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a></td>          <td class="paramname"><span class="paramname"><em>entityId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::map&lt; <a class="el" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a>, std::vector&lt; <a class="el" href="struct_i_executor_e_a_v_1_1_attr_value.html">AttrValue</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>attrValuesByType</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Получить значения всех атрибутов сущности. Для определения типов атрибутов метод использует GetRegisteredEntities. Таким образом, метод не вернет информацию о незарегистрированных типах атрибутов, если они есть. </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">entityName</td><td>Название сущности </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">entityId</td><td>Идентификатор сущности </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">attrValuesByType</td><td>Мапа, в которой ключем является тип атрибута, а значением - массив структур, содержащих название атрибута и его значение. Метод возвращает также те пары атрибут-значение, в которых значение не задано: тогда значение будет представлено пустой SQL-переменной. В случае успеха метод очищает вектор перед вставкой. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<a id="a271032f0762d78d111f60cab24673667" name="a271032f0762d78d111f60cab24673667"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a271032f0762d78d111f60cab24673667">&#9670;&#160;</a></span>GetEntityIds()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IExecutorEAV::GetEntityIds </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>entityName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>result</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Получить все идентификаторы сущности данного вида </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">entityName</td><td>Название сущности </td></tr>
+    <tr><td class="paramdir">[out]</td><td class="paramname">result</td><td>Массив идентификаторов сущности. В случае успеха массив прочищается перед записью результата. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<a id="a80e9c17757022afe7934e5fbf5523813" name="a80e9c17757022afe7934e5fbf5523813"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80e9c17757022afe7934e5fbf5523813">&#9670;&#160;</a></span>GetNamingRules()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="class_i_executor_e_a_v_naming_rules.html">IExecutorEAVNamingRules</a> &amp; IExecutorEAV::GetNamingRules </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Получить объект, определяющий правила именования таблиц </p><dl class="section return"><dt>Возвращает</dt><dd>Объект, определяющий правила именования таблиц </dd></dl>
+
+</div>
+</div>
+<a id="acdbcb658f2a50f8a89fbd92d835e559f" name="acdbcb658f2a50f8a89fbd92d835e559f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acdbcb658f2a50f8a89fbd92d835e559f">&#9670;&#160;</a></span>GetRegisteredEntities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const <a class="el" href="#ace14e4a49c5b543f0438679809512b17">EAVRegisterEntries</a> &amp; IExecutorEAV::GetRegisteredEntities </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Получить зарегистрированные сущности </p><dl class="section return"><dt>Возвращает</dt><dd>Контейнер с соответствиями "название сущности" - "типы атрибутов,
+        которые она использует" </dd></dl>
+
+</div>
+</div>
+<a id="a8ec1f56bd7cdc1a29bfd620e34581e07" name="a8ec1f56bd7cdc1a29bfd620e34581e07"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8ec1f56bd7cdc1a29bfd620e34581e07">&#9670;&#160;</a></span>GetValue()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IExecutorEAV::GetValue </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>entityName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a></td>          <td class="paramname"><span class="paramname"><em>entityId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>attrName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#a45bd09e5709f765164415311077b4b37">ValueType</a></td>          <td class="paramname"><span class="paramname"><em>value</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Получить значение атрибута сущности. Если у данной сущности в таблице атрибутов есть атрибут данного типа с данным названием, однако в таблице значений для данного идентификатора сущности и данного атрибута нет значения, то метод НЕ вернет ошибку, а вернет пустую переменную. </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramdir"></td><td class="paramname">entityName</td><td>Название сущности </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">entityId</td><td>Идентфикатор сущности </td></tr>
+    <tr><td class="paramdir"></td><td class="paramname">attrName</td><td>Наименование атрибута </td></tr>
+    <tr><td class="paramdir">[in,out]</td><td class="paramname">value</td><td>Ненулевая пустая переменная, по типу которой будет определен тип атрибута, и в которую запишется результат. Если будет передана непустая (<a class="el" href="class_i_s_q_l_type.html#a69af20e27b981a386cf03a3f72cf90c7">ISQLType::IsEmpty</a>) переменная, то вернется ошибка. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<a id="a7fc5ed3474baa092deafbd0f2397daf4" name="a7fc5ed3474baa092deafbd0f2397daf4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7fc5ed3474baa092deafbd0f2397daf4">&#9670;&#160;</a></span>Insert()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IExecutorEAV::Insert </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>entityName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a></td>          <td class="paramname"><span class="paramname"><em>entityId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>attrName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="#a45bd09e5709f765164415311077b4b37">ValueType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>value</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Вставить значение для атрибута сущности в таблицу значений, а также вставить название атрибутов в таблицу атрибутов, если его там ещё не было. </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entityName</td><td>Название сущности </td></tr>
+    <tr><td class="paramname">entityId</td><td>Идентфикатор сущности. При передаче несуществующего идентификатора вернется ошибка. </td></tr>
+    <tr><td class="paramname">attrName</td><td>Наименование атрибута. При передаче названия несуществующего атрибута будет добавлен новый атрибут с таким названием. </td></tr>
+    <tr><td class="paramname">value</td><td>Значение атрибута. Это обязательно должна быть непустая (<a class="el" href="class_i_s_q_l_type.html#a69af20e27b981a386cf03a3f72cf90c7">ISQLType::IsEmpty</a>) и ненулевая переменная, в противном случае запрос не будет выполнен и вернется ошибка. (Смысл EAV в том, что мы не храним null, так что бессмысленно вставлять пустые значения, символизирующие null) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<a id="a27bd69dac9f7894b910397004dde68fa" name="a27bd69dac9f7894b910397004dde68fa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a27bd69dac9f7894b910397004dde68fa">&#9670;&#160;</a></span>InsertOrUpdate()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IExecutorEAV::InsertOrUpdate </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>entityName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a></td>          <td class="paramname"><span class="paramname"><em>entityId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>attrName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="#a45bd09e5709f765164415311077b4b37">ValueType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>value</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Обновить значение для атрибута сущности в таблице значений или вставить значение атрибута в таблицу значений, если такого значения ещё не было. А также вставить название атрибута в таблицу атрибутов, если его там ещё не было. </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entityName</td><td>Название сущности </td></tr>
+    <tr><td class="paramname">entityId</td><td>Идентфикатор сущности. При передаче несуществующего идентификатора вернется ошибка. </td></tr>
+    <tr><td class="paramname">attrName</td><td>Наименование атрибута. При передаче названия несуществующего атрибута будет добавлен новый атрибут с таким названием. </td></tr>
+    <tr><td class="paramname">value</td><td>Значение атрибута. Это обязательно должна быть ненулевая переменная, иначе запрос не будет выполнен и вернется ошибка. Если значение атрибута пустое (<a class="el" href="class_i_s_q_l_type.html#a69af20e27b981a386cf03a3f72cf90c7">ISQLType::IsEmpty</a>), то значение не будет вставлено в таблицу значений (если его не было), или будет удалено из таблицы значений (если оно было). (Смысл EAV в том, что мы не храним null) Вне зависимости от того, пришла пустая или непустая (<a class="el" href="class_i_s_q_l_type.html#a69af20e27b981a386cf03a3f72cf90c7">ISQLType::IsEmpty</a>) переменная value, атрибут будет добавлен в таблицу атрибутов (если его там ещё не было). </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<a id="a2f62311c5d7eb13c6888e27a63762036" name="a2f62311c5d7eb13c6888e27a63762036"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f62311c5d7eb13c6888e27a63762036">&#9670;&#160;</a></span>SetRegisteredEntities()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IExecutorEAV::SetRegisteredEntities </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#ace14e4a49c5b543f0438679809512b17">EAVRegisterEntries</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>entries</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>createTables</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Регистрация EAV-сущностей для дальнешей работы с классом. </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entries</td><td>Контейнер с соответствиями "название сущности" - "типы
+               атрибутов, которые она использует" </td></tr>
+    <tr><td class="paramname">createTables</td><td>Требуется ли пытаться создать таблицы по зарегистрированным сущностям </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<a id="ae34093ec4c46e744ace5b9daa4078a44" name="ae34093ec4c46e744ace5b9daa4078a44"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae34093ec4c46e744ace5b9daa4078a44">&#9670;&#160;</a></span>Update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IExecutorEAV::Update </td>
+          <td>(</td>
+          <td class="paramtype">const <a class="el" href="#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>entityName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a></td>          <td class="paramname"><span class="paramname"><em>entityId</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>attrName</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="#a45bd09e5709f765164415311077b4b37">ValueType</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>value</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Обновить значение для атрибута сущности в таблице значений. </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">entityName</td><td>Название сущности </td></tr>
+    <tr><td class="paramname">entityId</td><td>Идентфикатор сущности. При передаче несуществующего идентификатора вернется ошибка. </td></tr>
+    <tr><td class="paramname">attrName</td><td>Наименование атрибута. При передаче несуществующего названия вернется ошибка. </td></tr>
+    <tr><td class="paramname">value</td><td>Значение атрибута. Это обязательно должна быть ненулевая переменная, иначе запрос не будет выполнен и вернется ошибка. Если значение атрибута пустое (<a class="el" href="class_i_s_q_l_type.html#a69af20e27b981a386cf03a3f72cf90c7">ISQLType::IsEmpty</a>), то значение атрибута сущности будет удалено из таблицы значений (если оно там есть). (Смысл EAV в том, что мы не храним null, так что попытка занулить значение приводит к его удалению) </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<hr/>Объявления и описания членов класса находятся в файле:<ul>
+<li>libraries/database_library/inc/<a class="el" href="_i_executor_e_a_v_8h_source.html">IExecutorEAV.h</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.11.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

@@ -1,0 +1,477 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.11.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Experimental / Simulation Control System for Mobile Communications: Класс IConnection</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Experimental / Simulation Control System for Mobile Communications
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.11.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Открытые члены</a> &#124;
+<a href="#pro-methods">Защищенные члены</a> &#124;
+<a href="class_i_connection-members.html">Полный список членов класса</a>  </div>
+  <div class="headertitle"><div class="title">Класс IConnection<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Интерфейс соединения.  
+ <a href="#details">Подробнее...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_i_connection_8h_source.html">IConnection.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Открытые члены</h2></td></tr>
+<tr class="memitem:ad1c78f7f02b93d498d352ed5a2a5cd31" id="r_ad1c78f7f02b93d498d352ed5a2a5cd31"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad1c78f7f02b93d498d352ed5a2a5cd31">~IConnection</a> ()=default</td></tr>
+<tr class="memdesc:ad1c78f7f02b93d498d352ed5a2a5cd31"><td class="mdescLeft">&#160;</td><td class="mdescRight">Деструктор  <br /></td></tr>
+<tr class="separator:ad1c78f7f02b93d498d352ed5a2a5cd31"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ade9db4be7f56fc90dba65cdd74030206" id="r_ade9db4be7f56fc90dba65cdd74030206"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade9db4be7f56fc90dba65cdd74030206">IsValid</a> () const =0</td></tr>
+<tr class="separator:ade9db4be7f56fc90dba65cdd74030206"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f7a020a52b16f41e5c4fef3e28b51b0" id="r_a4f7a020a52b16f41e5c4fef3e28b51b0"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525">ConnectionStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4f7a020a52b16f41e5c4fef3e28b51b0">GetStatus</a> () const =0</td></tr>
+<tr class="memdesc:a4f7a020a52b16f41e5c4fef3e28b51b0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Получить статус соединения  <br /></td></tr>
+<tr class="separator:a4f7a020a52b16f41e5c4fef3e28b51b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a63bdfaadc874a2fd7976f24c86fe1159" id="r_a63bdfaadc874a2fd7976f24c86fe1159"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_8h.html#a21af00ecb7dced71df7039ae9b0290e9">IExecuteResultPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a63bdfaadc874a2fd7976f24c86fe1159">Execute</a> (const std::string &amp;query)=0</td></tr>
+<tr class="separator:a63bdfaadc874a2fd7976f24c86fe1159"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f751912b95c6a89b4b034cf5af11c8d" id="r_a2f751912b95c6a89b4b034cf5af11c8d"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f751912b95c6a89b4b034cf5af11c8d">BeginTransaction</a> ()=0</td></tr>
+<tr class="separator:a2f751912b95c6a89b4b034cf5af11c8d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a43905cb5260c9bfc411de223bed7c832" id="r_a43905cb5260c9bfc411de223bed7c832"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a43905cb5260c9bfc411de223bed7c832">CommitTransaction</a> ()=0</td></tr>
+<tr class="separator:a43905cb5260c9bfc411de223bed7c832"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2720067e99839f1e206aa294b18f481c" id="r_a2720067e99839f1e206aa294b18f481c"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2720067e99839f1e206aa294b18f481c">RollbackTransaction</a> ()=0</td></tr>
+<tr class="separator:a2720067e99839f1e206aa294b18f481c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4e72df384d56958a412c423ede3e3072" id="r_a4e72df384d56958a412c423ede3e3072"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_file_8h.html#a783ca0f822eaed016dd500828feba547">IFilePtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e72df384d56958a412c423ede3e3072">CreateRemoteFile</a> ()=0</td></tr>
+<tr class="separator:a4e72df384d56958a412c423ede3e3072"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4d909b0bc6d3fa9b026a8e144465e096" id="r_a4d909b0bc6d3fa9b026a8e144465e096"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4d909b0bc6d3fa9b026a8e144465e096">DeleteRemoteFile</a> (const std::string &amp;filename)=0</td></tr>
+<tr class="separator:a4d909b0bc6d3fa9b026a8e144465e096"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa04ea2debb963255ed7179a3123d147a" id="r_aa04ea2debb963255ed7179a3123d147a"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_file_8h.html#a783ca0f822eaed016dd500828feba547">IFilePtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa04ea2debb963255ed7179a3123d147a">GetRemoteFile</a> (const std::string &amp;filename)=0</td></tr>
+<tr class="separator:aa04ea2debb963255ed7179a3123d147a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Защищенные члены</h2></td></tr>
+<tr class="memitem:a7e3bb51cb5a4eda6310c4c7ff34c9aad" id="r_a7e3bb51cb5a4eda6310c4c7ff34c9aad"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_execute_result_8h.html#a21af00ecb7dced71df7039ae9b0290e9">IExecuteResultPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e3bb51cb5a4eda6310c4c7ff34c9aad">Execute</a> (const std::string &amp;singleCommand, const std::vector&lt; <a class="el" href="_i_connection_8h.html#a2359ebb9fc13b28d2e5d217ee1fb7e45">ExecuteArgType</a> &gt; &amp;args, const <a class="el" href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1">ResultFormat</a> resultFormat=<a class="el" href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1a9dffbf69ffba8bc38bc4e01abf4b1675">ResultFormat::Text</a>, const std::vector&lt; <a class="el" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a> &gt; &amp;types={})=0</td></tr>
+<tr class="separator:a7e3bb51cb5a4eda6310c4c7ff34c9aad"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Подробное описание</h2>
+<div class="textblock"><p>Интерфейс соединения. </p>
+<p>При многопоточной работе с БД рекомендуется для каждого потока создавать свой объект соединения (в противном случае потоки будут выстраиваться в очередь). </p>
+</div><h2 class="groupheader">Конструктор(ы)</h2>
+<a id="ad1c78f7f02b93d498d352ed5a2a5cd31" name="ad1c78f7f02b93d498d352ed5a2a5cd31"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad1c78f7f02b93d498d352ed5a2a5cd31">&#9670;&#160;</a></span>~IConnection()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual IConnection::~IConnection </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Деструктор </p>
+
+</div>
+</div>
+<h2 class="groupheader">Методы</h2>
+<a id="a2f751912b95c6a89b4b034cf5af11c8d" name="a2f751912b95c6a89b4b034cf5af11c8d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f751912b95c6a89b4b034cf5af11c8d">&#9670;&#160;</a></span>BeginTransaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IConnection::BeginTransaction </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Открыть транзакцию </p><dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<a id="a43905cb5260c9bfc411de223bed7c832" name="a43905cb5260c9bfc411de223bed7c832"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a43905cb5260c9bfc411de223bed7c832">&#9670;&#160;</a></span>CommitTransaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IConnection::CommitTransaction </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Закрыть транзакцию с применением изменений </p><dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<a id="a4e72df384d56958a412c423ede3e3072" name="a4e72df384d56958a412c423ede3e3072"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4e72df384d56958a412c423ede3e3072">&#9670;&#160;</a></span>CreateRemoteFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_file_8h.html#a783ca0f822eaed016dd500828feba547">IFilePtr</a> IConnection::CreateRemoteFile </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Создать большой бинарный объект. Метод может вызываться как внутри транзакции, так и не в ней. При вызове внутри транзакции действуют обычные правила транзакции: если транзакция не была завершена фиксацией или была завершена отменой, то файл не создатся. </p><dl class="section warning"><dt>Предупреждения</dt><dd>Последующая работа с большим бинарным объектом возможна только в рамках транзакции. </dd></dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Интерфейс для взаимодействия с большим бинарным объектом. </dd></dl>
+
+</div>
+</div>
+<a id="a4d909b0bc6d3fa9b026a8e144465e096" name="a4d909b0bc6d3fa9b026a8e144465e096"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4d909b0bc6d3fa9b026a8e144465e096">&#9670;&#160;</a></span>DeleteRemoteFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool IConnection::DeleteRemoteFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>filename</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Удалить большой бинарный объект. Метод может вызываться как в рамках транзакции, так и не в них. При вызове внутри транзакции действуют обычные правила транзакции: если транзакция не была завершена фиксацией или была завершена отменой, то файл не удалится. </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>Идентификатор большого бинарного объекта, который требуется удалить. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd><code>true</code>, если удалось ли удалить файл, иначе <code>false</code>. </dd></dl>
+
+</div>
+</div>
+<a id="a63bdfaadc874a2fd7976f24c86fe1159" name="a63bdfaadc874a2fd7976f24c86fe1159"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a63bdfaadc874a2fd7976f24c86fe1159">&#9670;&#160;</a></span>Execute() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_8h.html#a21af00ecb7dced71df7039ae9b0290e9">IExecuteResultPtr</a> IConnection::Execute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>query</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Выполнить запрос. Запрос может содержать несколько SQL команд, тогда они автоматически будут выполнены в рамках одной транзакции, кроме случаев, когда команды для разбиения на транзакции не присутствуют явно (посредством добавления команд BEGIN/COMMIT в текст запроса query или посредством вызова методом BeginTransaction/CommitTransaction). </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">query</td><td>Строка, содержащая SQL запрос. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Результат выполнения запроса </dd></dl>
+
+</div>
+</div>
+<a id="a7e3bb51cb5a4eda6310c4c7ff34c9aad" name="a7e3bb51cb5a4eda6310c4c7ff34c9aad"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7e3bb51cb5a4eda6310c4c7ff34c9aad">&#9670;&#160;</a></span>Execute() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_8h.html#a21af00ecb7dced71df7039ae9b0290e9">IExecuteResultPtr</a> IConnection::Execute </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>singleCommand</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="_i_connection_8h.html#a2359ebb9fc13b28d2e5d217ee1fb7e45">ExecuteArgType</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>args</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const <a class="el" href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1">ResultFormat</a></td>          <td class="paramname"><span class="paramname"><em>resultFormat</em></span><span class="paramdefsep"> = </span><span class="paramdefval"><a class="el" href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1a9dffbf69ffba8bc38bc4e01abf4b1675">ResultFormat::Text</a></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>types</em></span><span class="paramdefsep"> = </span><span class="paramdefval">{}</span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p><a class="anchor" id="IConnection_Execute_Binary"></a>Выполнить запрос с аргументами. Запрос не может содержать более одной SQL-команды. </p><dl class="todo"><dt><b><a class="el" href="todo.html#_todo000002">Необходимо сделать</a></b></dt><dd>На данный момент данная перегрузка не доступна для внешнего пользователя интерфейса. </dd></dl>
+<dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">singleCommand</td><td>Строка в запросом. Аргументы в запросе обозначаются знаком доллара с последующим номером аргумента, начиная с единицы. Строка не может содержать более одной SQL-команды. Пример запроса: "INSERT INTO table VALUES($1, $2);". </td></tr>
+    <tr><td class="paramname">args</td><td>Массив аргументов, каждый из которых может быть либо текстовой строкой, либо массивом байт. </td></tr>
+    <tr><td class="paramname">resultFormat</td><td>Формат, в котором будет представлен результат (бинарный или текстовый) </td></tr>
+    <tr><td class="paramname">types</td><td>Массив типов аргументов. Если передан пустой массив, то типы аргументов будут вычислены автоматически. Иначе будет предпринята попытка привести аргументы к требуемым типам. В качестве типа аргумента может быть указан неизвестный тип (<a class="el" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6a88183b946cc5f0e8c96b2e66e1c74a7e">SQLDataType::Unknown</a>) - в этом случае тип этого аргумента будет вычислен автоматически. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Возвращает</dt><dd>Результат выполнения запроса. </dd></dl>
+
+</div>
+</div>
+<a id="aa04ea2debb963255ed7179a3123d147a" name="aa04ea2debb963255ed7179a3123d147a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa04ea2debb963255ed7179a3123d147a">&#9670;&#160;</a></span>GetRemoteFile()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_file_8h.html#a783ca0f822eaed016dd500828feba547">IFilePtr</a> IConnection::GetRemoteFile </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>filename</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Получить большой бинарный объект. </p><dl class="params"><dt>Аргументы</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">filename</td><td>Идентификатор большого бинарного объекта на сервере. </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section warning"><dt>Предупреждения</dt><dd>Последующая работа с большим бинарным объектом возможна только в рамках транзакции. </dd></dl>
+<dl class="section return"><dt>Возвращает</dt><dd><code>nullptr</code> в случае, если передан идентификатор, который не соответствует правилам именования, или если соединение невалидно. В противном случае функция возвращает ненулевой указатель. При этом полученный файл может не существовать - это проверяется на этапе его открытия методом <a class="el" href="class_i_file.html#a31335109a45fd1aef813f9c615800814">IFile::Open</a>. </dd></dl>
+
+</div>
+</div>
+<a id="a4f7a020a52b16f41e5c4fef3e28b51b0" name="a4f7a020a52b16f41e5c4fef3e28b51b0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f7a020a52b16f41e5c4fef3e28b51b0">&#9670;&#160;</a></span>GetStatus()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_connection_8h.html#a94c42ef79c93cb9672927fc1e1be6525">ConnectionStatus</a> IConnection::GetStatus </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Получить статус соединения </p>
+
+</div>
+</div>
+<a id="ade9db4be7f56fc90dba65cdd74030206" name="ade9db4be7f56fc90dba65cdd74030206"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ade9db4be7f56fc90dba65cdd74030206">&#9670;&#160;</a></span>IsValid()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual bool IConnection::IsValid </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Проверить, валидно ли соединение </p><dl class="section return"><dt>Возвращает</dt><dd><code>true</code>, если соединение валидно, иначе <code>false</code>. </dd></dl>
+
+</div>
+</div>
+<a id="a2720067e99839f1e206aa294b18f481c" name="a2720067e99839f1e206aa294b18f481c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2720067e99839f1e206aa294b18f481c">&#9670;&#160;</a></span>RollbackTransaction()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> IConnection::RollbackTransaction </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Отменить транзакцию (без применения изменений) </p><dl class="section return"><dt>Возвращает</dt><dd>Статус выполнения операции </dd></dl>
+
+</div>
+</div>
+<hr/>Объявления и описания членов класса находятся в файле:<ul>
+<li>libraries/database_library/inc/<a class="el" href="_i_connection_8h_source.html">IConnection.h</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.11.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

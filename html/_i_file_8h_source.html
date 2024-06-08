@@ -1,0 +1,191 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.11.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Experimental / Simulation Control System for Mobile Communications: Исходный файл libraries/database_library/inc/IFile.h</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Experimental / Simulation Control System for Mobile Communications
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.11.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_bc0718b08fb2015b8e59c47b2805f60c.html">libraries</a></li><li class="navelem"><a class="el" href="dir_c9490ed204ab91e349c09912c0a9c531.html">database_library</a></li><li class="navelem"><a class="el" href="dir_f65eecab335f68fe76dfd2e5192c8f5b.html">inc</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">IFile.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_i_file_8h.html">См. документацию.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;type_traits&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="comment">//------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">//---</span></div>
+<div class="foldopen" id="foldopen00013" data-start="{" data-end="};">
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64">   13</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64">FileOpenMode</a> {</div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span>  <a class="code hl_enumvalue" href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64a7a1a5f3e79fdc91edf2f5ead9d66abb4">Read</a>, </div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>  <a class="code hl_enumvalue" href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64a1129c0e4d43f2d121652a7302712cff6">Write</a>, </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <a class="code hl_enumvalue" href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64a3ac4692f3935a49a0b243eecf529faa9">Append</a> </div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>};</div>
+</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span><span class="comment">//------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span><span class="comment">//---</span></div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="class_i_file.html">   34</a></span><span class="keyword">class </span><a class="code hl_class" href="class_i_file.html">IFile</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno"><a class="line" href="class_i_file.html#abebf6b62a3296401aa0650e4bd244c7c">   36</a></span>  <span class="keyword">virtual</span> <a class="code hl_function" href="class_i_file.html#abebf6b62a3296401aa0650e4bd244c7c">~IFile</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="class_i_file.html#ac92b07daa431913f3ed2bd6028830eb6">   40</a></span>  <span class="keyword">virtual</span> std::string <a class="code hl_function" href="class_i_file.html#ac92b07daa431913f3ed2bd6028830eb6">GetFileName</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="class_i_file.html#a31335109a45fd1aef813f9c615800814">   44</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_file.html#a31335109a45fd1aef813f9c615800814">Open</a>(<a class="code hl_enumeration" href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64">FileOpenMode</a> openMode) = 0;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="class_i_file.html#aba8f7ceb0ea4f31761b5fc083cf72a26">   48</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_file.html#aba8f7ceb0ea4f31761b5fc083cf72a26">Close</a>() = 0;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span> </div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno"><a class="line" href="class_i_file.html#aa7d4b3dcf221e11e0e7e1c2732cb77bc">   59</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_file.html#aa7d4b3dcf221e11e0e7e1c2732cb77bc">ReadBytes</a>(<span class="keywordtype">char</span> *buffer, <span class="keywordtype">size_t</span> bytesCount,</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>                         <span class="keywordtype">size_t</span> *numberOfBytesReadPtr = <span class="keyword">nullptr</span>) = 0;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>  <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="foldopen" id="foldopen00082" data-start="{" data-end="}">
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno"><a class="line" href="class_i_file.html#ab5831cb9294e5dc1a688b040f1e97351">   82</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_file.html#ab5831cb9294e5dc1a688b040f1e97351">ReadBytes</a>(<span class="keywordtype">size_t</span> elementsCount, std::vector&lt;T&gt; &amp;arr,</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>                 <span class="keywordtype">size_t</span> *numberOfElementsReadPtr = <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keyword">static_assert</span>(std::is_pod_v&lt;T&gt;);</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span> </div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> oldSize = arr.size();</div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>    arr.resize(oldSize + elementsCount);</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span> </div>
+<div class="line"><a id="l00089" name="l00089"></a><span class="lineno">   89</span>    <span class="keywordtype">size_t</span> numberOfBytesRead = 0;</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">bool</span> result = <a class="code hl_function" href="class_i_file.html#aa7d4b3dcf221e11e0e7e1c2732cb77bc">ReadBytes</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(arr.data() + oldSize),</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>                            elementsCount * <span class="keyword">sizeof</span>(T), &amp;numberOfBytesRead);</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span> </div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> numberOfElementsRead = numberOfBytesRead / <span class="keyword">sizeof</span>(T);</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>    <span class="keywordflow">if</span> (numberOfElementsReadPtr)</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>      *numberOfElementsReadPtr = numberOfElementsRead;</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span> </div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    arr.resize(oldSize + numberOfElementsRead);</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>  }</div>
+</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span> </div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno"><a class="line" href="class_i_file.html#ae2999be55dd634863a97cae517f137c2">  107</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_file.html#ae2999be55dd634863a97cae517f137c2">WriteBytes</a>(<span class="keyword">const</span> <span class="keywordtype">char</span> *data, <span class="keywordtype">size_t</span> len,</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>                          <span class="keywordtype">size_t</span> *numberOfBytesWrittenPtr = <span class="keyword">nullptr</span>) = 0;</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno">  120</span>  <span class="keyword">template</span> &lt;<span class="keyword">class</span> T&gt;</div>
+<div class="foldopen" id="foldopen00121" data-start="{" data-end="}">
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno"><a class="line" href="class_i_file.html#aa0271ab60e6816407b9cf101f6292906">  121</a></span>  <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_file.html#aa0271ab60e6816407b9cf101f6292906">WriteBytes</a>(<span class="keyword">const</span> std::vector&lt;T&gt; &amp;data,</div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span>                  <span class="keywordtype">size_t</span> *numberOfElementsWrittenPtr = <span class="keyword">nullptr</span>) {</div>
+<div class="line"><a id="l00123" name="l00123"></a><span class="lineno">  123</span>    <span class="keyword">static_assert</span>(std::is_pod_v&lt;T&gt;);</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span> </div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno">  125</span>    <span class="keywordtype">size_t</span> numberOfBytesWritten;</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>    <span class="keywordtype">bool</span> result = <a class="code hl_function" href="class_i_file.html#ae2999be55dd634863a97cae517f137c2">WriteBytes</a>(<span class="keyword">reinterpret_cast&lt;</span><span class="keyword">const </span><span class="keywordtype">char</span> *<span class="keyword">&gt;</span>(data.data()),</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                             data.size() * <span class="keyword">sizeof</span>(T), &amp;numberOfBytesWritten);</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span>    <span class="keyword">const</span> <span class="keywordtype">size_t</span> numberOfElementsWritten = numberOfBytesWritten / <span class="keyword">sizeof</span>(T);</div>
+<div class="line"><a id="l00130" name="l00130"></a><span class="lineno">  130</span>    <span class="keywordflow">if</span> (numberOfElementsWrittenPtr)</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno">  131</span>      *numberOfElementsWrittenPtr = numberOfElementsWritten;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span>    <span class="keywordflow">return</span> result;</div>
+<div class="line"><a id="l00134" name="l00134"></a><span class="lineno">  134</span>  }</div>
+</div>
+<div class="line"><a id="l00135" name="l00135"></a><span class="lineno">  135</span>};</div>
+</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno">  136</span> </div>
+<div class="line"><a id="l00138" name="l00138"></a><span class="lineno"><a class="line" href="_i_file_8h.html#a783ca0f822eaed016dd500828feba547">  138</a></span><span class="keyword">using </span><a class="code hl_typedef" href="_i_file_8h.html#a783ca0f822eaed016dd500828feba547">IFilePtr</a> = std::shared_ptr&lt;IFile&gt;;</div>
+<div class="ttc" id="a_i_file_8h_html_a783ca0f822eaed016dd500828feba547"><div class="ttname"><a href="_i_file_8h.html#a783ca0f822eaed016dd500828feba547">IFilePtr</a></div><div class="ttdeci">std::shared_ptr&lt; IFile &gt; IFilePtr</div><div class="ttdoc">Указатель на IFile.</div><div class="ttdef"><b>Definition</b> IFile.h:138</div></div>
+<div class="ttc" id="a_i_file_8h_html_a7c1960f51161059a852f79a6a8ecbe64"><div class="ttname"><a href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64">FileOpenMode</a></div><div class="ttdeci">FileOpenMode</div><div class="ttdoc">Режим открытия файла</div><div class="ttdef"><b>Definition</b> IFile.h:13</div></div>
+<div class="ttc" id="a_i_file_8h_html_a7c1960f51161059a852f79a6a8ecbe64a1129c0e4d43f2d121652a7302712cff6"><div class="ttname"><a href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64a1129c0e4d43f2d121652a7302712cff6">FileOpenMode::Write</a></div><div class="ttdeci">@ Write</div></div>
+<div class="ttc" id="a_i_file_8h_html_a7c1960f51161059a852f79a6a8ecbe64a3ac4692f3935a49a0b243eecf529faa9"><div class="ttname"><a href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64a3ac4692f3935a49a0b243eecf529faa9">FileOpenMode::Append</a></div><div class="ttdeci">@ Append</div></div>
+<div class="ttc" id="a_i_file_8h_html_a7c1960f51161059a852f79a6a8ecbe64a7a1a5f3e79fdc91edf2f5ead9d66abb4"><div class="ttname"><a href="_i_file_8h.html#a7c1960f51161059a852f79a6a8ecbe64a7a1a5f3e79fdc91edf2f5ead9d66abb4">FileOpenMode::Read</a></div><div class="ttdeci">@ Read</div></div>
+<div class="ttc" id="aclass_i_file_html"><div class="ttname"><a href="class_i_file.html">IFile</a></div><div class="ttdoc">Интерфейс для взаимодействия с удаленным файлом.</div><div class="ttdef"><b>Definition</b> IFile.h:34</div></div>
+<div class="ttc" id="aclass_i_file_html_a31335109a45fd1aef813f9c615800814"><div class="ttname"><a href="class_i_file.html#a31335109a45fd1aef813f9c615800814">IFile::Open</a></div><div class="ttdeci">virtual bool Open(FileOpenMode openMode)=0</div></div>
+<div class="ttc" id="aclass_i_file_html_aa0271ab60e6816407b9cf101f6292906"><div class="ttname"><a href="class_i_file.html#aa0271ab60e6816407b9cf101f6292906">IFile::WriteBytes</a></div><div class="ttdeci">bool WriteBytes(const std::vector&lt; T &gt; &amp;data, size_t *numberOfElementsWrittenPtr=nullptr)</div><div class="ttdef"><b>Definition</b> IFile.h:121</div></div>
+<div class="ttc" id="aclass_i_file_html_aa7d4b3dcf221e11e0e7e1c2732cb77bc"><div class="ttname"><a href="class_i_file.html#aa7d4b3dcf221e11e0e7e1c2732cb77bc">IFile::ReadBytes</a></div><div class="ttdeci">virtual bool ReadBytes(char *buffer, size_t bytesCount, size_t *numberOfBytesReadPtr=nullptr)=0</div></div>
+<div class="ttc" id="aclass_i_file_html_ab5831cb9294e5dc1a688b040f1e97351"><div class="ttname"><a href="class_i_file.html#ab5831cb9294e5dc1a688b040f1e97351">IFile::ReadBytes</a></div><div class="ttdeci">bool ReadBytes(size_t elementsCount, std::vector&lt; T &gt; &amp;arr, size_t *numberOfElementsReadPtr=nullptr)</div><div class="ttdef"><b>Definition</b> IFile.h:82</div></div>
+<div class="ttc" id="aclass_i_file_html_aba8f7ceb0ea4f31761b5fc083cf72a26"><div class="ttname"><a href="class_i_file.html#aba8f7ceb0ea4f31761b5fc083cf72a26">IFile::Close</a></div><div class="ttdeci">virtual bool Close()=0</div></div>
+<div class="ttc" id="aclass_i_file_html_abebf6b62a3296401aa0650e4bd244c7c"><div class="ttname"><a href="class_i_file.html#abebf6b62a3296401aa0650e4bd244c7c">IFile::~IFile</a></div><div class="ttdeci">virtual ~IFile()=default</div></div>
+<div class="ttc" id="aclass_i_file_html_ac92b07daa431913f3ed2bd6028830eb6"><div class="ttname"><a href="class_i_file.html#ac92b07daa431913f3ed2bd6028830eb6">IFile::GetFileName</a></div><div class="ttdeci">virtual std::string GetFileName() const =0</div><div class="ttdoc">Получить имя файла</div></div>
+<div class="ttc" id="aclass_i_file_html_ae2999be55dd634863a97cae517f137c2"><div class="ttname"><a href="class_i_file.html#ae2999be55dd634863a97cae517f137c2">IFile::WriteBytes</a></div><div class="ttdeci">virtual bool WriteBytes(const char *data, size_t len, size_t *numberOfBytesWrittenPtr=nullptr)=0</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.11.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

@@ -1,0 +1,380 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.11.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Experimental / Simulation Control System for Mobile Communications: Класс ISQLTypeConverter</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Experimental / Simulation Control System for Mobile Communications
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.11.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="summary">
+<a href="#pub-methods">Открытые члены</a> &#124;
+<a href="class_i_s_q_l_type_converter-members.html">Полный список членов класса</a>  </div>
+  <div class="headertitle"><div class="title">Класс ISQLTypeConverter<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+</div><!--header-->
+<div class="contents">
+
+<p>Интерфейс конвертера в SQL-тип данных  
+ <a href="#details">Подробнее...</a></p>
+
+<p><code>#include &lt;<a class="el" href="_i_s_q_l_type_converter_8h_source.html">ISQLTypeConverter.h</a>&gt;</code></p>
+<table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
+Открытые члены</h2></td></tr>
+<tr class="memitem:afa4423141ed7eff215b166a061e5e152" id="r_afa4423141ed7eff215b166a061e5e152"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa4423141ed7eff215b166a061e5e152">~ISQLTypeConverter</a> ()=default</td></tr>
+<tr class="memdesc:afa4423141ed7eff215b166a061e5e152"><td class="mdescLeft">&#160;</td><td class="mdescRight">Деструктор  <br /></td></tr>
+<tr class="separator:afa4423141ed7eff215b166a061e5e152"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c3610e9841b74339cb83f46fe8c0487" id="r_a4c3610e9841b74339cb83f46fe8c0487"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_s_q_l_type_8h.html#a420c52b5120b390492a376154924d679">ISQLTypePtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c3610e9841b74339cb83f46fe8c0487">GetSQLVariable</a> (<a class="el" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a> type) const =0</td></tr>
+<tr class="separator:a4c3610e9841b74339cb83f46fe8c0487"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae5cf6249132c5f6ad2dc75643d4b20c4" id="r_ae5cf6249132c5f6ad2dc75643d4b20c4"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_s_q_l_type_integer_8h.html#a5a789028a9ccee62a7b95b68c2588fb2">ISQLTypeIntegerPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae5cf6249132c5f6ad2dc75643d4b20c4">GetSQLTypeInteger</a> (const std::optional&lt; <a class="el" href="class_strong_type.html">StrongType</a>&lt; int &gt; &gt; &amp;value=std::nullopt) const =0</td></tr>
+<tr class="memdesc:ae5cf6249132c5f6ad2dc75643d4b20c4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Получить SQL-Integer переменную  <br /></td></tr>
+<tr class="separator:ae5cf6249132c5f6ad2dc75643d4b20c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5336f0d379525b19a9dfb564b4113d88" id="r_a5336f0d379525b19a9dfb564b4113d88"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_s_q_l_type_text_8h.html#a5b777ac0e19746a9b22208f21acc3c54">ISQLTypeTextPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5336f0d379525b19a9dfb564b4113d88">GetSQLTypeText</a> () const =0</td></tr>
+<tr class="memdesc:a5336f0d379525b19a9dfb564b4113d88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Получить SQL-Text переменную  <br /></td></tr>
+<tr class="separator:a5336f0d379525b19a9dfb564b4113d88"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad4ab57af0855d61b99433b23ac3114a5" id="r_ad4ab57af0855d61b99433b23ac3114a5"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_s_q_l_type_text_8h.html#a5b777ac0e19746a9b22208f21acc3c54">ISQLTypeTextPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad4ab57af0855d61b99433b23ac3114a5">GetSQLTypeText</a> (std::string &amp;&amp;value) const =0</td></tr>
+<tr class="separator:ad4ab57af0855d61b99433b23ac3114a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aab5f1db00b8a2716a9dcfed0cf32ac56" id="r_aab5f1db00b8a2716a9dcfed0cf32ac56"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_s_q_l_type_byte_array_8h.html#aedefafee5196083b75e1dc41056df212">ISQLTypeByteArrayPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aab5f1db00b8a2716a9dcfed0cf32ac56">GetSQLTypeByteArray</a> () const =0</td></tr>
+<tr class="memdesc:aab5f1db00b8a2716a9dcfed0cf32ac56"><td class="mdescLeft">&#160;</td><td class="mdescRight">Получить SQL-ByteArray переменную  <br /></td></tr>
+<tr class="separator:aab5f1db00b8a2716a9dcfed0cf32ac56"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad207e66704871b2c54d686261b9035d5" id="r_ad207e66704871b2c54d686261b9035d5"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_s_q_l_type_byte_array_8h.html#aedefafee5196083b75e1dc41056df212">ISQLTypeByteArrayPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad207e66704871b2c54d686261b9035d5">GetSQLTypeByteArray</a> (std::vector&lt; char &gt; &amp;&amp;value) const =0</td></tr>
+<tr class="separator:ad207e66704871b2c54d686261b9035d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b0bfbeaaf13547a2a0b99b5f37ea538" id="r_a5b0bfbeaaf13547a2a0b99b5f37ea538"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_s_q_l_type_remote_file_id_8h.html#a777e024e524f6e71ffbe85601e1a156c">ISQLTypeRemoteFileIdPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b0bfbeaaf13547a2a0b99b5f37ea538">GetSQLTypeRemoteFileId</a> () const =0</td></tr>
+<tr class="memdesc:a5b0bfbeaaf13547a2a0b99b5f37ea538"><td class="mdescLeft">&#160;</td><td class="mdescRight">Получить SQL-RemoteFileId переменную  <br /></td></tr>
+<tr class="separator:a5b0bfbeaaf13547a2a0b99b5f37ea538"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2994e11dda139ca371e34550ff5c37a5" id="r_a2994e11dda139ca371e34550ff5c37a5"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="_i_s_q_l_type_remote_file_id_8h.html#a777e024e524f6e71ffbe85601e1a156c">ISQLTypeRemoteFileIdPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2994e11dda139ca371e34550ff5c37a5">GetSQLTypeRemoteFileId</a> (const std::string &amp;id) const =0</td></tr>
+<tr class="memdesc:a2994e11dda139ca371e34550ff5c37a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Получить SQL-RemoteFileId переменную по идентификатору удаленного файла  <br /></td></tr>
+<tr class="separator:a2994e11dda139ca371e34550ff5c37a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table>
+<a name="details" id="details"></a><h2 class="groupheader">Подробное описание</h2>
+<div class="textblock"><p>Интерфейс конвертера в SQL-тип данных </p>
+</div><h2 class="groupheader">Конструктор(ы)</h2>
+<a id="afa4423141ed7eff215b166a061e5e152" name="afa4423141ed7eff215b166a061e5e152"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa4423141ed7eff215b166a061e5e152">&#9670;&#160;</a></span>~ISQLTypeConverter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual ISQLTypeConverter::~ISQLTypeConverter </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Деструктор </p>
+
+</div>
+</div>
+<h2 class="groupheader">Методы</h2>
+<a id="aab5f1db00b8a2716a9dcfed0cf32ac56" name="aab5f1db00b8a2716a9dcfed0cf32ac56"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aab5f1db00b8a2716a9dcfed0cf32ac56">&#9670;&#160;</a></span>GetSQLTypeByteArray() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_s_q_l_type_byte_array_8h.html#aedefafee5196083b75e1dc41056df212">ISQLTypeByteArrayPtr</a> ISQLTypeConverter::GetSQLTypeByteArray </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Получить SQL-ByteArray переменную </p>
+
+</div>
+</div>
+<a id="ad207e66704871b2c54d686261b9035d5" name="ad207e66704871b2c54d686261b9035d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad207e66704871b2c54d686261b9035d5">&#9670;&#160;</a></span>GetSQLTypeByteArray() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_s_q_l_type_byte_array_8h.html#aedefafee5196083b75e1dc41056df212">ISQLTypeByteArrayPtr</a> ISQLTypeConverter::GetSQLTypeByteArray </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; char &gt; &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>value</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Получить SQL-ByteArray переменную по массиву байт (поскольку копирование может быть затратным и ненужным, используется перемещение) </p>
+
+</div>
+</div>
+<a id="ae5cf6249132c5f6ad2dc75643d4b20c4" name="ae5cf6249132c5f6ad2dc75643d4b20c4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae5cf6249132c5f6ad2dc75643d4b20c4">&#9670;&#160;</a></span>GetSQLTypeInteger()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_s_q_l_type_integer_8h.html#a5a789028a9ccee62a7b95b68c2588fb2">ISQLTypeIntegerPtr</a> ISQLTypeConverter::GetSQLTypeInteger </td>
+          <td>(</td>
+          <td class="paramtype">const std::optional&lt; <a class="el" href="class_strong_type.html">StrongType</a>&lt; int &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>value</em></span><span class="paramdefsep"> = </span><span class="paramdefval">std::nullopt</span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Получить SQL-Integer переменную </p>
+
+</div>
+</div>
+<a id="a5b0bfbeaaf13547a2a0b99b5f37ea538" name="a5b0bfbeaaf13547a2a0b99b5f37ea538"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b0bfbeaaf13547a2a0b99b5f37ea538">&#9670;&#160;</a></span>GetSQLTypeRemoteFileId() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_s_q_l_type_remote_file_id_8h.html#a777e024e524f6e71ffbe85601e1a156c">ISQLTypeRemoteFileIdPtr</a> ISQLTypeConverter::GetSQLTypeRemoteFileId </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Получить SQL-RemoteFileId переменную </p>
+
+</div>
+</div>
+<a id="a2994e11dda139ca371e34550ff5c37a5" name="a2994e11dda139ca371e34550ff5c37a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2994e11dda139ca371e34550ff5c37a5">&#9670;&#160;</a></span>GetSQLTypeRemoteFileId() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_s_q_l_type_remote_file_id_8h.html#a777e024e524f6e71ffbe85601e1a156c">ISQLTypeRemoteFileIdPtr</a> ISQLTypeConverter::GetSQLTypeRemoteFileId </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>id</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Получить SQL-RemoteFileId переменную по идентификатору удаленного файла </p>
+
+</div>
+</div>
+<a id="a5336f0d379525b19a9dfb564b4113d88" name="a5336f0d379525b19a9dfb564b4113d88"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5336f0d379525b19a9dfb564b4113d88">&#9670;&#160;</a></span>GetSQLTypeText() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_s_q_l_type_text_8h.html#a5b777ac0e19746a9b22208f21acc3c54">ISQLTypeTextPtr</a> ISQLTypeConverter::GetSQLTypeText </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Получить SQL-Text переменную </p>
+
+</div>
+</div>
+<a id="ad4ab57af0855d61b99433b23ac3114a5" name="ad4ab57af0855d61b99433b23ac3114a5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad4ab57af0855d61b99433b23ac3114a5">&#9670;&#160;</a></span>GetSQLTypeText() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_s_q_l_type_text_8h.html#a5b777ac0e19746a9b22208f21acc3c54">ISQLTypeTextPtr</a> ISQLTypeConverter::GetSQLTypeText </td>
+          <td>(</td>
+          <td class="paramtype">std::string &amp;&amp;</td>          <td class="paramname"><span class="paramname"><em>value</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Получить SQL-Text переменную по строке (поскольку копирование может быть затратным и ненужным, используется перемещение) </p>
+
+</div>
+</div>
+<a id="a4c3610e9841b74339cb83f46fe8c0487" name="a4c3610e9841b74339cb83f46fe8c0487"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c3610e9841b74339cb83f46fe8c0487">&#9670;&#160;</a></span>GetSQLVariable()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual <a class="el" href="_i_s_q_l_type_8h.html#a420c52b5120b390492a376154924d679">ISQLTypePtr</a> ISQLTypeConverter::GetSQLVariable </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a></td>          <td class="paramname"><span class="paramname"><em>type</em></span></td><td>)</td>
+          <td> const</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Получить пустую SQL-переменную \type Тип данных SQL-переменной </p>
+
+</div>
+</div>
+<hr/>Объявления и описания членов класса находятся в файле:<ul>
+<li>libraries/database_library/inc/DataType/<a class="el" href="_i_s_q_l_type_converter_8h_source.html">ISQLTypeConverter.h</a></li>
+</ul>
+</div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.11.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

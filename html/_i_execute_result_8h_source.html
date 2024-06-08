@@ -1,0 +1,244 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.11.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Experimental / Simulation Control System for Mobile Communications: Исходный файл libraries/database_library/inc/IExecuteResult.h</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Experimental / Simulation Control System for Mobile Communications
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.11.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_bc0718b08fb2015b8e59c47b2805f60c.html">libraries</a></li><li class="navelem"><a class="el" href="dir_c9490ed204ab91e349c09912c0a9c531.html">database_library</a></li><li class="navelem"><a class="el" href="dir_f65eecab335f68fe76dfd2e5192c8f5b.html">inc</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">IExecuteResult.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_i_execute_result_8h.html">См. документацию.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="_s_q_l_data_type_8h.html">DataType/SQLDataType.h</a>&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;<a class="code" href="_i_execute_result_status_8h.html">IExecuteResultStatus.h</a>&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span> </div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;optional&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;string&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;variant&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="comment">//------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span><span class="comment">//---</span></div>
+<div class="foldopen" id="foldopen00017" data-start="{" data-end="};">
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno"><a class="line" href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1">   17</a></span><span class="keyword">enum class</span> <a class="code hl_enumeration" href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1">ResultFormat</a> {</div>
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>  <a class="code hl_enumvalue" href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1a9dffbf69ffba8bc38bc4e01abf4b1675">Text</a>, </div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>  <a class="code hl_enumvalue" href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1a6ce976e8f061b2b5cfe4d0c50c3405dd">Binary</a>, </div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>  <a class="code hl_enumvalue" href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1a4bbb8f967da6d1a610596d7257179c2b">Invalid</a> </div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>};</div>
+</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span> </div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span><span class="comment">//------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span><span class="comment">//---</span></div>
+<div class="foldopen" id="foldopen00028" data-start="{" data-end="};">
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno"><a class="line" href="class_i_execute_result.html">   28</a></span><span class="keyword">class </span><a class="code hl_class" href="class_i_execute_result.html">IExecuteResult</a> {</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span><span class="keyword">public</span>:</div>
+<div class="foldopen" id="foldopen00034" data-start="{" data-end="};">
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html">   34</a></span>  <span class="keyword">class </span><a class="code hl_class" href="class_i_execute_result_1_1_cell_type.html">CellType</a> {</div>
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span>    std::optional&lt;std::variant&lt;std::string, std::vector&lt;char&gt;, nullptr_t&gt;&gt;</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        m_value; </div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span> </div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>  <span class="keyword">public</span>:</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#a1449a99a46d1d9e30b2836223e42b0eb">   40</a></span>    <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#a1449a99a46d1d9e30b2836223e42b0eb">CellType</a>() : m_value() {}</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#a09abd1f65bbcb7e5fc98fc81cddfb34f">   42</a></span>    <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#a09abd1f65bbcb7e5fc98fc81cddfb34f">CellType</a>(nullptr_t) : m_value(nullptr) {}</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#a44a9b85e9abb133e63a42fbcdc4286c4">   44</a></span>    <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#a44a9b85e9abb133e63a42fbcdc4286c4">CellType</a>(<span class="keyword">const</span> std::string &amp;str) : m_value(str) {}</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#a9506bef4baf11fde9eb018f20200e016">   47</a></span>    <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#a9506bef4baf11fde9eb018f20200e016">CellType</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_i_execute_result_1_1_cell_type.html">CellType</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#a4802bf5585d8de7aa7a7fc7a59856c8b">   49</a></span>    <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#a4802bf5585d8de7aa7a7fc7a59856c8b">CellType</a>(<a class="code hl_class" href="class_i_execute_result_1_1_cell_type.html">CellType</a> &amp;&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#a0504c1dc86a76556b333f4009a41628c">   51</a></span>    <a class="code hl_class" href="class_i_execute_result_1_1_cell_type.html">CellType</a> &amp;<a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#a0504c1dc86a76556b333f4009a41628c">operator=</a>(<span class="keyword">const</span> <a class="code hl_class" href="class_i_execute_result_1_1_cell_type.html">CellType</a> &amp;) = <span class="keyword">delete</span>;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#a45ab1cb0cb2e8452a409a57a8228b3f9">   53</a></span>    <a class="code hl_class" href="class_i_execute_result_1_1_cell_type.html">CellType</a> &amp;<a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#a45ab1cb0cb2e8452a409a57a8228b3f9">operator=</a>(<a class="code hl_class" href="class_i_execute_result_1_1_cell_type.html">CellType</a> &amp;&amp;) = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#abf1366658d542870ca1661e8e936dea2">   58</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#abf1366658d542870ca1661e8e936dea2">HasValue</a>()<span class="keyword"> const </span>{ <span class="keywordflow">return</span> !!m_value; }</div>
+<div class="foldopen" id="foldopen00062" data-start="{" data-end="}">
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#a652a16161606da42006a5749753c8430">   62</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#a652a16161606da42006a5749753c8430">HasString</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>      <span class="keywordflow">return</span> m_value &amp;&amp; std::holds_alternative&lt;std::string&gt;(*m_value);</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>    }</div>
+</div>
+<div class="foldopen" id="foldopen00067" data-start="{" data-end="}">
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#ad2c97df486655d392ef49fc7b1ed13cc">   67</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#ad2c97df486655d392ef49fc7b1ed13cc">HasNull</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>      <span class="keywordflow">return</span> m_value &amp;&amp; std::holds_alternative&lt;nullptr_t&gt;(*m_value);</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>    }</div>
+</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span> </div>
+<div class="foldopen" id="foldopen00076" data-start="{" data-end="}">
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#a2b395a0aa44d55f60eed741cf10f56c1">   76</a></span>    std::string <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#a2b395a0aa44d55f60eed741cf10f56c1">ExtractString</a>() {</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>      std::string result;</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>      <span class="keywordflow">if</span> (<a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#a652a16161606da42006a5749753c8430">HasString</a>()) {</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>        result = std::move(std::get&lt;std::string&gt;(*m_value));</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>        m_value = std::nullopt;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>      }</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>      <span class="keywordflow">return</span> std::move(result);</div>
+<div class="line"><a id="l00083" name="l00083"></a><span class="lineno">   83</span>    }</div>
+</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span> </div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno">   85</span>  <span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#abaf1817fa7dca8156c072b3a9938f92d">   90</a></span>    <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#abaf1817fa7dca8156c072b3a9938f92d">CellType</a>(<span class="keyword">const</span> std::vector&lt;char&gt; &amp;arr) : m_value(arr) {}</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span> </div>
+<div class="foldopen" id="foldopen00095" data-start="{" data-end="}">
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#ac55344d29732977c204c332ebc7ec971">   95</a></span>    <span class="keywordtype">bool</span> <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#ac55344d29732977c204c332ebc7ec971">HasByteArray</a>()<span class="keyword"> const </span>{</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>      <span class="keywordflow">return</span> m_value &amp;&amp; std::holds_alternative&lt;std::vector&lt;char&gt;&gt;(*m_value);</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span>    }</div>
+</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="foldopen" id="foldopen00105" data-start="{" data-end="}">
+<div class="line"><a id="l00105" name="l00105"></a><span class="lineno"><a class="line" href="class_i_execute_result_1_1_cell_type.html#a4fa1734b366a60c43bb9bd74128591f0">  105</a></span>    std::vector&lt;char&gt; <a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#a4fa1734b366a60c43bb9bd74128591f0">ExtractByteArray</a>() {</div>
+<div class="line"><a id="l00106" name="l00106"></a><span class="lineno">  106</span>      std::vector&lt;char&gt; result;</div>
+<div class="line"><a id="l00107" name="l00107"></a><span class="lineno">  107</span>      <span class="keywordflow">if</span> (<a class="code hl_function" href="class_i_execute_result_1_1_cell_type.html#ac55344d29732977c204c332ebc7ec971">HasByteArray</a>()) {</div>
+<div class="line"><a id="l00108" name="l00108"></a><span class="lineno">  108</span>        result = std::move(std::get&lt;std::vector&lt;char&gt;&gt;(*m_value));</div>
+<div class="line"><a id="l00109" name="l00109"></a><span class="lineno">  109</span>        m_value = std::nullopt;</div>
+<div class="line"><a id="l00110" name="l00110"></a><span class="lineno">  110</span>      }</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>      <span class="keywordflow">return</span> std::move(result);</div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno">  112</span>    }</div>
+</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>  };</div>
+</div>
+<div class="line"><a id="l00114" name="l00114"></a><span class="lineno">  114</span> </div>
+<div class="line"><a id="l00115" name="l00115"></a><span class="lineno">  115</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00116" name="l00116"></a><span class="lineno"><a class="line" href="class_i_execute_result.html#ac9ef90931a84407cb44a87b5ecf7f08b">  116</a></span>  <span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keywordtype">size_t</span> <a class="code hl_variable" href="class_i_execute_result.html#ac9ef90931a84407cb44a87b5ecf7f08b">InvalidIndex</a> = (size_t)(-1); </div>
+<div class="line"><a id="l00117" name="l00117"></a><span class="lineno">  117</span> </div>
+<div class="line"><a id="l00118" name="l00118"></a><span class="lineno">  118</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00120" name="l00120"></a><span class="lineno"><a class="line" href="class_i_execute_result.html#a526820bea87df7e234485ac5bdaceb7b">  120</a></span>  <span class="keyword">virtual</span> <a class="code hl_function" href="class_i_execute_result.html#a526820bea87df7e234485ac5bdaceb7b">~IExecuteResult</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00121" name="l00121"></a><span class="lineno">  121</span> </div>
+<div class="line"><a id="l00122" name="l00122"></a><span class="lineno">  122</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00131" name="l00131"></a><span class="lineno"><a class="line" href="class_i_execute_result.html#aff01a55ed9263753a87aa507215736d6">  131</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> <a class="code hl_function" href="class_i_execute_result.html#aff01a55ed9263753a87aa507215736d6">GetCurrentExecuteStatus</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00132" name="l00132"></a><span class="lineno">  132</span> </div>
+<div class="line"><a id="l00133" name="l00133"></a><span class="lineno">  133</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00136" name="l00136"></a><span class="lineno"><a class="line" href="class_i_execute_result.html#a5b3389c87cb0330cd1d6da0e09698e60">  136</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code hl_function" href="class_i_execute_result.html#a5b3389c87cb0330cd1d6da0e09698e60">GetRowCount</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00139" name="l00139"></a><span class="lineno"><a class="line" href="class_i_execute_result.html#aeb343193dd3b4c6abd6d25ebb9c408a0">  139</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code hl_function" href="class_i_execute_result.html#aeb343193dd3b4c6abd6d25ebb9c408a0">GetColCount</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00140" name="l00140"></a><span class="lineno">  140</span> </div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno"><a class="line" href="class_i_execute_result.html#a12deb25b90ae0858bd112d4b734fcce2">  146</a></span>  <span class="keyword">virtual</span> std::string <a class="code hl_function" href="class_i_execute_result.html#a12deb25b90ae0858bd112d4b734fcce2">GetColName</a>(<span class="keywordtype">size_t</span> columnIndex) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00160" name="l00160"></a><span class="lineno"><a class="line" href="class_i_execute_result.html#a9adda4dc3f47bf9baaa1ff5d565264da">  160</a></span>  <span class="keyword">virtual</span> <span class="keywordtype">size_t</span> <a class="code hl_function" href="class_i_execute_result.html#a9adda4dc3f47bf9baaa1ff5d565264da">GetColIndex</a>(<span class="keyword">const</span> std::string &amp;columnName) = 0;</div>
+<div class="line"><a id="l00161" name="l00161"></a><span class="lineno">  161</span> </div>
+<div class="line"><a id="l00167" name="l00167"></a><span class="lineno"><a class="line" href="class_i_execute_result.html#aa507eb81041f6f8cc67bbcc6a148a5cb">  167</a></span>  <span class="keyword">virtual</span> <a class="code hl_enumeration" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a> <a class="code hl_function" href="class_i_execute_result.html#aa507eb81041f6f8cc67bbcc6a148a5cb">GetColType</a>(<span class="keywordtype">size_t</span> columnIndex) <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00168" name="l00168"></a><span class="lineno">  168</span> </div>
+<div class="line"><a id="l00176" name="l00176"></a><span class="lineno"><a class="line" href="class_i_execute_result.html#a828faa27b8545de8611c14c2f8a97baa">  176</a></span>  <span class="keyword">virtual</span> <a class="code hl_class" href="class_i_execute_result_1_1_cell_type.html">CellType</a> <a class="code hl_function" href="class_i_execute_result.html#a828faa27b8545de8611c14c2f8a97baa">GetValue</a>(<span class="keywordtype">size_t</span> rowIndex, <span class="keywordtype">size_t</span> columnIndex) = 0;</div>
+<div class="line"><a id="l00177" name="l00177"></a><span class="lineno">  177</span>};</div>
+</div>
+<div class="line"><a id="l00178" name="l00178"></a><span class="lineno">  178</span> </div>
+<div class="line"><a id="l00180" name="l00180"></a><span class="lineno"><a class="line" href="_i_execute_result_8h.html#a21af00ecb7dced71df7039ae9b0290e9">  180</a></span><span class="keyword">using </span><a class="code hl_typedef" href="_i_execute_result_8h.html#a21af00ecb7dced71df7039ae9b0290e9">IExecuteResultPtr</a> = std::shared_ptr&lt;IExecuteResult&gt;;</div>
+<div class="ttc" id="a_i_execute_result_8h_html_a21af00ecb7dced71df7039ae9b0290e9"><div class="ttname"><a href="_i_execute_result_8h.html#a21af00ecb7dced71df7039ae9b0290e9">IExecuteResultPtr</a></div><div class="ttdeci">std::shared_ptr&lt; IExecuteResult &gt; IExecuteResultPtr</div><div class="ttdoc">Указатель на IExecuteResult.</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:180</div></div>
+<div class="ttc" id="a_i_execute_result_8h_html_a8330adb55551cc99fca507f7a1054ea1"><div class="ttname"><a href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1">ResultFormat</a></div><div class="ttdeci">ResultFormat</div><div class="ttdoc">Формат данных в результате.</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:17</div></div>
+<div class="ttc" id="a_i_execute_result_8h_html_a8330adb55551cc99fca507f7a1054ea1a4bbb8f967da6d1a610596d7257179c2b"><div class="ttname"><a href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1a4bbb8f967da6d1a610596d7257179c2b">ResultFormat::Invalid</a></div><div class="ttdeci">@ Invalid</div><div class="ttdoc">Невалидный формат данных</div></div>
+<div class="ttc" id="a_i_execute_result_8h_html_a8330adb55551cc99fca507f7a1054ea1a6ce976e8f061b2b5cfe4d0c50c3405dd"><div class="ttname"><a href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1a6ce976e8f061b2b5cfe4d0c50c3405dd">ResultFormat::Binary</a></div><div class="ttdeci">@ Binary</div><div class="ttdoc">Формат представлен в виде бинарных данных</div></div>
+<div class="ttc" id="a_i_execute_result_8h_html_a8330adb55551cc99fca507f7a1054ea1a9dffbf69ffba8bc38bc4e01abf4b1675"><div class="ttname"><a href="_i_execute_result_8h.html#a8330adb55551cc99fca507f7a1054ea1a9dffbf69ffba8bc38bc4e01abf4b1675">ResultFormat::Text</a></div><div class="ttdeci">@ Text</div><div class="ttdoc">Формат представлен в виде текстовых данных</div></div>
+<div class="ttc" id="a_i_execute_result_status_8h_html"><div class="ttname"><a href="_i_execute_result_status_8h.html">IExecuteResultStatus.h</a></div></div>
+<div class="ttc" id="a_i_execute_result_status_8h_html_a1ad92e3fac98289f260539a1a120dbb8"><div class="ttname"><a href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a></div><div class="ttdeci">std::shared_ptr&lt; IExecuteResultStatus &gt; IExecuteResultStatusPtr</div><div class="ttdoc">Указатель на IExecuteResultStatus.</div><div class="ttdef"><b>Definition</b> IExecuteResultStatus.h:53</div></div>
+<div class="ttc" id="a_s_q_l_data_type_8h_html"><div class="ttname"><a href="_s_q_l_data_type_8h.html">SQLDataType.h</a></div></div>
+<div class="ttc" id="a_s_q_l_data_type_8h_html_a13207d76f4d666ce97b1f3244f674ab6"><div class="ttname"><a href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a></div><div class="ttdeci">SQLDataType</div><div class="ttdoc">Тип данных в базе данных</div><div class="ttdef"><b>Definition</b> SQLDataType.h:9</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html">IExecuteResult::CellType</a></div><div class="ttdoc">Ячейка таблицы.</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:34</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_a0504c1dc86a76556b333f4009a41628c"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#a0504c1dc86a76556b333f4009a41628c">IExecuteResult::CellType::operator=</a></div><div class="ttdeci">CellType &amp; operator=(const CellType &amp;)=delete</div><div class="ttdoc">Оператор присваивания копированием</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_a09abd1f65bbcb7e5fc98fc81cddfb34f"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#a09abd1f65bbcb7e5fc98fc81cddfb34f">IExecuteResult::CellType::CellType</a></div><div class="ttdeci">CellType(nullptr_t)</div><div class="ttdoc">Конструктор от nullptr.</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:42</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_a1449a99a46d1d9e30b2836223e42b0eb"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#a1449a99a46d1d9e30b2836223e42b0eb">IExecuteResult::CellType::CellType</a></div><div class="ttdeci">CellType()</div><div class="ttdoc">Конструктор</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:40</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_a2b395a0aa44d55f60eed741cf10f56c1"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#a2b395a0aa44d55f60eed741cf10f56c1">IExecuteResult::CellType::ExtractString</a></div><div class="ttdeci">std::string ExtractString()</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:76</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_a44a9b85e9abb133e63a42fbcdc4286c4"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#a44a9b85e9abb133e63a42fbcdc4286c4">IExecuteResult::CellType::CellType</a></div><div class="ttdeci">CellType(const std::string &amp;str)</div><div class="ttdoc">Конструктор от строки</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:44</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_a45ab1cb0cb2e8452a409a57a8228b3f9"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#a45ab1cb0cb2e8452a409a57a8228b3f9">IExecuteResult::CellType::operator=</a></div><div class="ttdeci">CellType &amp; operator=(CellType &amp;&amp;)=default</div><div class="ttdoc">Оператор присваивания перемещением</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_a4802bf5585d8de7aa7a7fc7a59856c8b"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#a4802bf5585d8de7aa7a7fc7a59856c8b">IExecuteResult::CellType::CellType</a></div><div class="ttdeci">CellType(CellType &amp;&amp;)=default</div><div class="ttdoc">Конструктор перемещения</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_a4fa1734b366a60c43bb9bd74128591f0"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#a4fa1734b366a60c43bb9bd74128591f0">IExecuteResult::CellType::ExtractByteArray</a></div><div class="ttdeci">std::vector&lt; char &gt; ExtractByteArray()</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:105</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_a652a16161606da42006a5749753c8430"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#a652a16161606da42006a5749753c8430">IExecuteResult::CellType::HasString</a></div><div class="ttdeci">bool HasString() const</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:62</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_a9506bef4baf11fde9eb018f20200e016"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#a9506bef4baf11fde9eb018f20200e016">IExecuteResult::CellType::CellType</a></div><div class="ttdeci">CellType(const CellType &amp;)=delete</div><div class="ttdoc">Конструктор копирования</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_abaf1817fa7dca8156c072b3a9938f92d"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#abaf1817fa7dca8156c072b3a9938f92d">IExecuteResult::CellType::CellType</a></div><div class="ttdeci">CellType(const std::vector&lt; char &gt; &amp;arr)</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:90</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_abf1366658d542870ca1661e8e936dea2"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#abf1366658d542870ca1661e8e936dea2">IExecuteResult::CellType::HasValue</a></div><div class="ttdeci">bool HasValue() const</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:58</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_ac55344d29732977c204c332ebc7ec971"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#ac55344d29732977c204c332ebc7ec971">IExecuteResult::CellType::HasByteArray</a></div><div class="ttdeci">bool HasByteArray() const</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:95</div></div>
+<div class="ttc" id="aclass_i_execute_result_1_1_cell_type_html_ad2c97df486655d392ef49fc7b1ed13cc"><div class="ttname"><a href="class_i_execute_result_1_1_cell_type.html#ad2c97df486655d392ef49fc7b1ed13cc">IExecuteResult::CellType::HasNull</a></div><div class="ttdeci">bool HasNull() const</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:67</div></div>
+<div class="ttc" id="aclass_i_execute_result_html"><div class="ttname"><a href="class_i_execute_result.html">IExecuteResult</a></div><div class="ttdoc">Интерфейс для взаимодействия с результатом запроса к базе данных.</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:28</div></div>
+<div class="ttc" id="aclass_i_execute_result_html_a12deb25b90ae0858bd112d4b734fcce2"><div class="ttname"><a href="class_i_execute_result.html#a12deb25b90ae0858bd112d4b734fcce2">IExecuteResult::GetColName</a></div><div class="ttdeci">virtual std::string GetColName(size_t columnIndex) const =0</div></div>
+<div class="ttc" id="aclass_i_execute_result_html_a526820bea87df7e234485ac5bdaceb7b"><div class="ttname"><a href="class_i_execute_result.html#a526820bea87df7e234485ac5bdaceb7b">IExecuteResult::~IExecuteResult</a></div><div class="ttdeci">virtual ~IExecuteResult()=default</div><div class="ttdoc">Деструктор</div></div>
+<div class="ttc" id="aclass_i_execute_result_html_a5b3389c87cb0330cd1d6da0e09698e60"><div class="ttname"><a href="class_i_execute_result.html#a5b3389c87cb0330cd1d6da0e09698e60">IExecuteResult::GetRowCount</a></div><div class="ttdeci">virtual size_t GetRowCount() const =0</div></div>
+<div class="ttc" id="aclass_i_execute_result_html_a828faa27b8545de8611c14c2f8a97baa"><div class="ttname"><a href="class_i_execute_result.html#a828faa27b8545de8611c14c2f8a97baa">IExecuteResult::GetValue</a></div><div class="ttdeci">virtual CellType GetValue(size_t rowIndex, size_t columnIndex)=0</div></div>
+<div class="ttc" id="aclass_i_execute_result_html_a9adda4dc3f47bf9baaa1ff5d565264da"><div class="ttname"><a href="class_i_execute_result.html#a9adda4dc3f47bf9baaa1ff5d565264da">IExecuteResult::GetColIndex</a></div><div class="ttdeci">virtual size_t GetColIndex(const std::string &amp;columnName)=0</div></div>
+<div class="ttc" id="aclass_i_execute_result_html_aa507eb81041f6f8cc67bbcc6a148a5cb"><div class="ttname"><a href="class_i_execute_result.html#aa507eb81041f6f8cc67bbcc6a148a5cb">IExecuteResult::GetColType</a></div><div class="ttdeci">virtual SQLDataType GetColType(size_t columnIndex) const =0</div></div>
+<div class="ttc" id="aclass_i_execute_result_html_ac9ef90931a84407cb44a87b5ecf7f08b"><div class="ttname"><a href="class_i_execute_result.html#ac9ef90931a84407cb44a87b5ecf7f08b">IExecuteResult::InvalidIndex</a></div><div class="ttdeci">static constexpr size_t InvalidIndex</div><div class="ttdoc">Невалидный индекс</div><div class="ttdef"><b>Definition</b> IExecuteResult.h:116</div></div>
+<div class="ttc" id="aclass_i_execute_result_html_aeb343193dd3b4c6abd6d25ebb9c408a0"><div class="ttname"><a href="class_i_execute_result.html#aeb343193dd3b4c6abd6d25ebb9c408a0">IExecuteResult::GetColCount</a></div><div class="ttdeci">virtual size_t GetColCount() const =0</div></div>
+<div class="ttc" id="aclass_i_execute_result_html_aff01a55ed9263753a87aa507215736d6"><div class="ttname"><a href="class_i_execute_result.html#aff01a55ed9263753a87aa507215736d6">IExecuteResult::GetCurrentExecuteStatus</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr GetCurrentExecuteStatus() const =0</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.11.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>

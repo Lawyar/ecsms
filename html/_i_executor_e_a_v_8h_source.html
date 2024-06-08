@@ -1,0 +1,217 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="ru">
+<head>
+<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+<meta http-equiv="X-UA-Compatible" content="IE=11"/>
+<meta name="generator" content="Doxygen 1.11.0"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Experimental / Simulation Control System for Mobile Communications: Исходный файл libraries/database_library/inc/IExecutorEAV.h</title>
+<link href="tabs.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="jquery.js"></script>
+<script type="text/javascript" src="dynsections.js"></script>
+<script type="text/javascript" src="clipboard.js"></script>
+<link href="navtree.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="resize.js"></script>
+<script type="text/javascript" src="cookie.js"></script>
+<link href="search/search.css" rel="stylesheet" type="text/css"/>
+<script type="text/javascript" src="search/searchdata.js"></script>
+<script type="text/javascript" src="search/search.js"></script>
+<link href="doxygen.css" rel="stylesheet" type="text/css" />
+</head>
+<body>
+<div id="top"><!-- do not remove this div, it is closed by doxygen! -->
+<div id="titlearea">
+<table cellspacing="0" cellpadding="0">
+ <tbody>
+ <tr id="projectrow">
+  <td id="projectalign">
+   <div id="projectname">Experimental / Simulation Control System for Mobile Communications
+   </div>
+  </td>
+ </tr>
+ </tbody>
+</table>
+</div>
+<!-- end header part -->
+<!-- Создано системой Doxygen 1.11.0 -->
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+var searchBox = new SearchBox("searchBox", "search/",'.html');
+/* @license-end */
+</script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() { codefold.init(0); });
+/* @license-end */
+</script>
+<script type="text/javascript" src="menudata.js"></script>
+<script type="text/javascript" src="menu.js"></script>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function() {
+  initMenu('',true,false,'search.php','Поиск',false);
+  $(function() { init_search(); });
+});
+/* @license-end */
+</script>
+<div id="main-nav"></div>
+<script type="text/javascript">
+/* @license magnet:?xt=urn:btih:d3d9a9a6595521f9666a5e94cc830dab83b65699&amp;dn=expat.txt MIT */
+$(function(){ initResizable(false); });
+/* @license-end */
+</script>
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+     onmouseover="return searchBox.OnSearchSelectShow()"
+     onmouseout="return searchBox.OnSearchSelectHide()"
+     onkeydown="return searchBox.OnSearchSelectKey(event)">
+</div>
+
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+<div id="MSearchResults">
+<div class="SRPage">
+<div id="SRIndex">
+<div id="SRResults"></div>
+<div class="SRStatus" id="Loading">Загрузка...</div>
+<div class="SRStatus" id="Searching">Поиск...</div>
+<div class="SRStatus" id="NoMatches">Не найдено</div>
+</div>
+</div>
+</div>
+</div>
+
+<div id="nav-path" class="navpath">
+  <ul>
+<li class="navelem"><a class="el" href="dir_bc0718b08fb2015b8e59c47b2805f60c.html">libraries</a></li><li class="navelem"><a class="el" href="dir_c9490ed204ab91e349c09912c0a9c531.html">database_library</a></li><li class="navelem"><a class="el" href="dir_f65eecab335f68fe76dfd2e5192c8f5b.html">inc</a></li>  </ul>
+</div>
+</div><!-- top -->
+<div id="doc-content">
+<div class="header">
+  <div class="headertitle"><div class="title">IExecutorEAV.h</div></div>
+</div><!--header-->
+<div class="contents">
+<a href="_i_executor_e_a_v_8h.html">См. документацию.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#pragma once</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span> </div>
+<div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span><span class="preprocessor">#include &lt;<a class="code" href="_i_s_q_l_type_8h.html">DataType/ISQLType.h</a>&gt;</span></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;<a class="code" href="_i_s_q_l_type_text_8h.html">DataType/ISQLTypeText.h</a>&gt;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;<a class="code" href="_i_connection_8h.html">IConnection.h</a>&gt;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &lt;<a class="code" href="_i_execute_result_8h.html">IExecuteResult.h</a>&gt;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span> </div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span><span class="preprocessor">#include &lt;map&gt;</span></div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span><span class="preprocessor">#include &lt;vector&gt;</span></div>
+<div class="line"><a id="l00011" name="l00011"></a><span class="lineno">   11</span> </div>
+<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">class </span><a class="code hl_class" href="class_i_executor_e_a_v_naming_rules.html">IExecutorEAVNamingRules</a>;</div>
+<div class="line"><a id="l00013" name="l00013"></a><span class="lineno">   13</span> </div>
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span><span class="comment">//------------------------------------------------------------------------------</span></div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span><span class="comment">//---</span></div>
+<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html">   39</a></span><span class="keyword">class </span><a class="code hl_class" href="class_i_executor_e_a_v.html">IExecutorEAV</a> {</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">   43</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> = std::string;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#af5d984a8c30c7b3073d02e8fc750a1e5">   46</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="class_i_executor_e_a_v.html#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> = int;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#a9dcb0e8d7c5746e5e759c4292b14e55e">   48</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="class_i_executor_e_a_v.html#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> = <a class="code hl_typedef" href="_i_s_q_l_type_text_8h.html#a5b777ac0e19746a9b22208f21acc3c54">ISQLTypeTextPtr</a>;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#a45bd09e5709f765164415311077b4b37">   50</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="class_i_executor_e_a_v.html#a45bd09e5709f765164415311077b4b37">ValueType</a> = <a class="code hl_typedef" href="_i_s_q_l_type_8h.html#a420c52b5120b390492a376154924d679">ISQLTypePtr</a>;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span> </div>
+<div class="foldopen" id="foldopen00053" data-start="{" data-end="};">
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno"><a class="line" href="struct_i_executor_e_a_v_1_1_attr_value.html">   53</a></span>  <span class="keyword">struct </span><a class="code hl_struct" href="struct_i_executor_e_a_v_1_1_attr_value.html">AttrValue</a> {</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno"><a class="line" href="struct_i_executor_e_a_v_1_1_attr_value.html#a0f08e592feaf6c221f5f31e5c20b6105">   54</a></span>    <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> <a class="code hl_variable" href="struct_i_executor_e_a_v_1_1_attr_value.html#a0f08e592feaf6c221f5f31e5c20b6105">attrName</a>; </div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno"><a class="line" href="struct_i_executor_e_a_v_1_1_attr_value.html#a8bb04626fdbec198ea25fbc66ca7ede3">   55</a></span>    <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a45bd09e5709f765164415311077b4b37">ValueType</a> <a class="code hl_variable" href="struct_i_executor_e_a_v_1_1_attr_value.html#a8bb04626fdbec198ea25fbc66ca7ede3">value</a>;   </div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>  };</div>
+</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#ace14e4a49c5b543f0438679809512b17">   61</a></span>  <span class="keyword">using </span><a class="code hl_typedef" href="class_i_executor_e_a_v.html#ace14e4a49c5b543f0438679809512b17">EAVRegisterEntries</a> = std::map&lt;EntityName, std::vector&lt;SQLDataType&gt;&gt;;</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span> </div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#ad0b88fe643bd57ffedff15eb86a9af03">   65</a></span>  <span class="keyword">virtual</span> <a class="code hl_function" href="class_i_executor_e_a_v.html#ad0b88fe643bd57ffedff15eb86a9af03">~IExecutorEAV</a>() = <span class="keywordflow">default</span>;</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span> </div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a></div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#a2f62311c5d7eb13c6888e27a63762036">   75</a></span>  <a class="code hl_function" href="class_i_executor_e_a_v.html#a2f62311c5d7eb13c6888e27a63762036">SetRegisteredEntities</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#ace14e4a49c5b543f0438679809512b17">EAVRegisterEntries</a> &amp;entries,</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>                        <span class="keywordtype">bool</span> createTables) = 0;</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#acdbcb658f2a50f8a89fbd92d835e559f">   80</a></span>  <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#ace14e4a49c5b543f0438679809512b17">EAVRegisterEntries</a> &amp;<a class="code hl_function" href="class_i_executor_e_a_v.html#acdbcb658f2a50f8a89fbd92d835e559f">GetRegisteredEntities</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span> </div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00085" name="l00085"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#a80e9c17757022afe7934e5fbf5523813">   85</a></span>  <span class="keyword">virtual</span> <span class="keyword">const</span> <a class="code hl_class" href="class_i_executor_e_a_v_naming_rules.html">IExecutorEAVNamingRules</a> &amp;<a class="code hl_function" href="class_i_executor_e_a_v.html#a80e9c17757022afe7934e5fbf5523813">GetNamingRules</a>() <span class="keyword">const</span> = 0;</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span> </div>
+<div class="line"><a id="l00087" name="l00087"></a><span class="lineno">   87</span>public</div>
+<div class="line"><a id="l00088" name="l00088"></a><span class="lineno">   88</span>    : <span class="comment">// Методы для создания новых сущностей и поиска уже существующих сущностей</span></div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#a65c22312ec34638a59fc282ee9213882">   93</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> <a class="code hl_function" href="class_i_executor_e_a_v.html#a65c22312ec34638a59fc282ee9213882">CreateNewEntity</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName,</div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>                                                  <a class="code hl_typedef" href="class_i_executor_e_a_v.html#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> &amp;result) = 0;</div>
+<div class="line"><a id="l00101" name="l00101"></a><span class="lineno">  101</span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a></div>
+<div class="line"><a id="l00102" name="l00102"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#a271032f0762d78d111f60cab24673667">  102</a></span>  <a class="code hl_function" href="class_i_executor_e_a_v.html#a271032f0762d78d111f60cab24673667">GetEntityIds</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, std::vector&lt;EntityId&gt; &amp;result) = 0;</div>
+<div class="line"><a id="l00111" name="l00111"></a><span class="lineno">  111</span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a></div>
+<div class="line"><a id="l00112" name="l00112"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#ac1760545a24829b7b29106d0c6f5d730">  112</a></span>  <a class="code hl_function" href="class_i_executor_e_a_v.html#ac1760545a24829b7b29106d0c6f5d730">GetAttributeNames</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, <a class="code hl_enumeration" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a> sqlDataType,</div>
+<div class="line"><a id="l00113" name="l00113"></a><span class="lineno">  113</span>                    std::vector&lt;AttrName&gt; &amp;result) = 0;</div>
+<div class="line"><a id="l00124" name="l00124"></a><span class="lineno">  124</span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a></div>
+<div class="line"><a id="l00125" name="l00125"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#ad255b066dd30abc19ddbe5ed3243efea">  125</a></span>  <a class="code hl_function" href="class_i_executor_e_a_v.html#ad255b066dd30abc19ddbe5ed3243efea">FindEntitiesByAttrValues</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName,</div>
+<div class="line"><a id="l00126" name="l00126"></a><span class="lineno">  126</span>                           <span class="keyword">const</span> std::vector&lt;AttrValue&gt; &amp;attrValues,</div>
+<div class="line"><a id="l00127" name="l00127"></a><span class="lineno">  127</span>                           std::vector&lt;EntityId&gt; &amp;result) = 0;</div>
+<div class="line"><a id="l00128" name="l00128"></a><span class="lineno">  128</span> </div>
+<div class="line"><a id="l00129" name="l00129"></a><span class="lineno">  129</span><span class="keyword">public</span>: <span class="comment">// Методы для вставки/обновления данных</span></div>
+<div class="line"><a id="l00145" name="l00145"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#a7fc5ed3474baa092deafbd0f2397daf4">  145</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> <a class="code hl_function" href="class_i_executor_e_a_v.html#a7fc5ed3474baa092deafbd0f2397daf4">Insert</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName,</div>
+<div class="line"><a id="l00146" name="l00146"></a><span class="lineno">  146</span>                                         <a class="code hl_typedef" href="class_i_executor_e_a_v.html#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> entityId,</div>
+<div class="line"><a id="l00147" name="l00147"></a><span class="lineno">  147</span>                                         <span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;attrName,</div>
+<div class="line"><a id="l00148" name="l00148"></a><span class="lineno">  148</span>                                         <span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a45bd09e5709f765164415311077b4b37">ValueType</a> &amp;value) = 0;</div>
+<div class="line"><a id="l00163" name="l00163"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#ae34093ec4c46e744ace5b9daa4078a44">  163</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> <a class="code hl_function" href="class_i_executor_e_a_v.html#ae34093ec4c46e744ace5b9daa4078a44">Update</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName,</div>
+<div class="line"><a id="l00164" name="l00164"></a><span class="lineno">  164</span>                                         <a class="code hl_typedef" href="class_i_executor_e_a_v.html#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> entityId,</div>
+<div class="line"><a id="l00165" name="l00165"></a><span class="lineno">  165</span>                                         <span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;attrName,</div>
+<div class="line"><a id="l00166" name="l00166"></a><span class="lineno">  166</span>                                         <span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a45bd09e5709f765164415311077b4b37">ValueType</a> &amp;value) = 0;</div>
+<div class="line"><a id="l00188" name="l00188"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#a27bd69dac9f7894b910397004dde68fa">  188</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> <a class="code hl_function" href="class_i_executor_e_a_v.html#a27bd69dac9f7894b910397004dde68fa">InsertOrUpdate</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName,</div>
+<div class="line"><a id="l00189" name="l00189"></a><span class="lineno">  189</span>                                                 <a class="code hl_typedef" href="class_i_executor_e_a_v.html#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> entityId,</div>
+<div class="line"><a id="l00190" name="l00190"></a><span class="lineno">  190</span>                                                 <span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;attrName,</div>
+<div class="line"><a id="l00191" name="l00191"></a><span class="lineno">  191</span>                                                 <span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a45bd09e5709f765164415311077b4b37">ValueType</a> &amp;value) = 0;</div>
+<div class="line"><a id="l00192" name="l00192"></a><span class="lineno">  192</span> </div>
+<div class="line"><a id="l00193" name="l00193"></a><span class="lineno">  193</span><span class="keyword">public</span>: <span class="comment">// Методы для получения данных</span></div>
+<div class="line"><a id="l00207" name="l00207"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#a8ec1f56bd7cdc1a29bfd620e34581e07">  207</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> <a class="code hl_function" href="class_i_executor_e_a_v.html#a8ec1f56bd7cdc1a29bfd620e34581e07">GetValue</a>(<span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName,</div>
+<div class="line"><a id="l00208" name="l00208"></a><span class="lineno">  208</span>                                           <a class="code hl_typedef" href="class_i_executor_e_a_v.html#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> entityId,</div>
+<div class="line"><a id="l00209" name="l00209"></a><span class="lineno">  209</span>                                           <span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a9dcb0e8d7c5746e5e759c4292b14e55e">AttrName</a> &amp;attrName,</div>
+<div class="line"><a id="l00210" name="l00210"></a><span class="lineno">  210</span>                                           <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a45bd09e5709f765164415311077b4b37">ValueType</a> value) = 0;</div>
+<div class="line"><a id="l00225" name="l00225"></a><span class="lineno"><a class="line" href="class_i_executor_e_a_v.html#ac114e4fe83db980c0865763f2220126d">  225</a></span>  <span class="keyword">virtual</span> <a class="code hl_typedef" href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a> <a class="code hl_function" href="class_i_executor_e_a_v.html#ac114e4fe83db980c0865763f2220126d">GetAttributeValues</a>(</div>
+<div class="line"><a id="l00226" name="l00226"></a><span class="lineno">  226</span>      <span class="keyword">const</span> <a class="code hl_typedef" href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">EntityName</a> &amp;entityName, <a class="code hl_typedef" href="class_i_executor_e_a_v.html#af5d984a8c30c7b3073d02e8fc750a1e5">EntityId</a> entityId,</div>
+<div class="line"><a id="l00227" name="l00227"></a><span class="lineno">  227</span>      std::map&lt;<a class="code hl_enumeration" href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a>, std::vector&lt;AttrValue&gt;&gt; &amp;attrValuesByType) = 0;</div>
+<div class="line"><a id="l00228" name="l00228"></a><span class="lineno">  228</span>};</div>
+</div>
+<div class="line"><a id="l00229" name="l00229"></a><span class="lineno">  229</span> </div>
+<div class="line"><a id="l00231" name="l00231"></a><span class="lineno"><a class="line" href="_i_executor_e_a_v_8h.html#a3fa0b40e34f098163bf3f526cce647cf">  231</a></span><span class="keyword">using </span><a class="code hl_typedef" href="_i_executor_e_a_v_8h.html#a3fa0b40e34f098163bf3f526cce647cf">IExecutorEAVPtr</a> = std::shared_ptr&lt;IExecutorEAV&gt;;</div>
+<div class="ttc" id="a_i_connection_8h_html"><div class="ttname"><a href="_i_connection_8h.html">IConnection.h</a></div></div>
+<div class="ttc" id="a_i_execute_result_8h_html"><div class="ttname"><a href="_i_execute_result_8h.html">IExecuteResult.h</a></div></div>
+<div class="ttc" id="a_i_execute_result_status_8h_html_a1ad92e3fac98289f260539a1a120dbb8"><div class="ttname"><a href="_i_execute_result_status_8h.html#a1ad92e3fac98289f260539a1a120dbb8">IExecuteResultStatusPtr</a></div><div class="ttdeci">std::shared_ptr&lt; IExecuteResultStatus &gt; IExecuteResultStatusPtr</div><div class="ttdoc">Указатель на IExecuteResultStatus.</div><div class="ttdef"><b>Definition</b> IExecuteResultStatus.h:53</div></div>
+<div class="ttc" id="a_i_executor_e_a_v_8h_html_a3fa0b40e34f098163bf3f526cce647cf"><div class="ttname"><a href="_i_executor_e_a_v_8h.html#a3fa0b40e34f098163bf3f526cce647cf">IExecutorEAVPtr</a></div><div class="ttdeci">std::shared_ptr&lt; IExecutorEAV &gt; IExecutorEAVPtr</div><div class="ttdoc">Тип указателя на исполнитель EAV-запросов</div><div class="ttdef"><b>Definition</b> IExecutorEAV.h:231</div></div>
+<div class="ttc" id="a_i_s_q_l_type_8h_html"><div class="ttname"><a href="_i_s_q_l_type_8h.html">ISQLType.h</a></div></div>
+<div class="ttc" id="a_i_s_q_l_type_8h_html_a420c52b5120b390492a376154924d679"><div class="ttname"><a href="_i_s_q_l_type_8h.html#a420c52b5120b390492a376154924d679">ISQLTypePtr</a></div><div class="ttdeci">std::shared_ptr&lt; ISQLType &gt; ISQLTypePtr</div><div class="ttdoc">Тип указателя на ISQLType.</div><div class="ttdef"><b>Definition</b> ISQLType.h:61</div></div>
+<div class="ttc" id="a_i_s_q_l_type_text_8h_html"><div class="ttname"><a href="_i_s_q_l_type_text_8h.html">ISQLTypeText.h</a></div></div>
+<div class="ttc" id="a_i_s_q_l_type_text_8h_html_a5b777ac0e19746a9b22208f21acc3c54"><div class="ttname"><a href="_i_s_q_l_type_text_8h.html#a5b777ac0e19746a9b22208f21acc3c54">ISQLTypeTextPtr</a></div><div class="ttdeci">std::shared_ptr&lt; ISQLTypeText &gt; ISQLTypeTextPtr</div><div class="ttdoc">Тип указателя на ISQLTypeText.</div><div class="ttdef"><b>Definition</b> ISQLTypeText.h:36</div></div>
+<div class="ttc" id="a_s_q_l_data_type_8h_html_a13207d76f4d666ce97b1f3244f674ab6"><div class="ttname"><a href="_s_q_l_data_type_8h.html#a13207d76f4d666ce97b1f3244f674ab6">SQLDataType</a></div><div class="ttdeci">SQLDataType</div><div class="ttdoc">Тип данных в базе данных</div><div class="ttdef"><b>Definition</b> SQLDataType.h:9</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html"><div class="ttname"><a href="class_i_executor_e_a_v.html">IExecutorEAV</a></div><div class="ttdoc">Интерфейс исполнителя запросов EAV.</div><div class="ttdef"><b>Definition</b> IExecutorEAV.h:39</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_a271032f0762d78d111f60cab24673667"><div class="ttname"><a href="class_i_executor_e_a_v.html#a271032f0762d78d111f60cab24673667">IExecutorEAV::GetEntityIds</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr GetEntityIds(const EntityName &amp;entityName, std::vector&lt; EntityId &gt; &amp;result)=0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_a27bd69dac9f7894b910397004dde68fa"><div class="ttname"><a href="class_i_executor_e_a_v.html#a27bd69dac9f7894b910397004dde68fa">IExecutorEAV::InsertOrUpdate</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr InsertOrUpdate(const EntityName &amp;entityName, EntityId entityId, const AttrName &amp;attrName, const ValueType &amp;value)=0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_a2f62311c5d7eb13c6888e27a63762036"><div class="ttname"><a href="class_i_executor_e_a_v.html#a2f62311c5d7eb13c6888e27a63762036">IExecutorEAV::SetRegisteredEntities</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr SetRegisteredEntities(const EAVRegisterEntries &amp;entries, bool createTables)=0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_a45bd09e5709f765164415311077b4b37"><div class="ttname"><a href="class_i_executor_e_a_v.html#a45bd09e5709f765164415311077b4b37">IExecutorEAV::ValueType</a></div><div class="ttdeci">ISQLTypePtr ValueType</div><div class="ttdoc">Тип значения атрибута</div><div class="ttdef"><b>Definition</b> IExecutorEAV.h:50</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_a50bb4e51ee0ae1d0e810a3a5c521789a"><div class="ttname"><a href="class_i_executor_e_a_v.html#a50bb4e51ee0ae1d0e810a3a5c521789a">IExecutorEAV::EntityName</a></div><div class="ttdeci">std::string EntityName</div><div class="ttdef"><b>Definition</b> IExecutorEAV.h:43</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_a65c22312ec34638a59fc282ee9213882"><div class="ttname"><a href="class_i_executor_e_a_v.html#a65c22312ec34638a59fc282ee9213882">IExecutorEAV::CreateNewEntity</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr CreateNewEntity(const EntityName &amp;entityName, EntityId &amp;result)=0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_a7fc5ed3474baa092deafbd0f2397daf4"><div class="ttname"><a href="class_i_executor_e_a_v.html#a7fc5ed3474baa092deafbd0f2397daf4">IExecutorEAV::Insert</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr Insert(const EntityName &amp;entityName, EntityId entityId, const AttrName &amp;attrName, const ValueType &amp;value)=0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_a80e9c17757022afe7934e5fbf5523813"><div class="ttname"><a href="class_i_executor_e_a_v.html#a80e9c17757022afe7934e5fbf5523813">IExecutorEAV::GetNamingRules</a></div><div class="ttdeci">virtual const IExecutorEAVNamingRules &amp; GetNamingRules() const =0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_a8ec1f56bd7cdc1a29bfd620e34581e07"><div class="ttname"><a href="class_i_executor_e_a_v.html#a8ec1f56bd7cdc1a29bfd620e34581e07">IExecutorEAV::GetValue</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr GetValue(const EntityName &amp;entityName, EntityId entityId, const AttrName &amp;attrName, ValueType value)=0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_a9dcb0e8d7c5746e5e759c4292b14e55e"><div class="ttname"><a href="class_i_executor_e_a_v.html#a9dcb0e8d7c5746e5e759c4292b14e55e">IExecutorEAV::AttrName</a></div><div class="ttdeci">ISQLTypeTextPtr AttrName</div><div class="ttdoc">Тип для названия атрибута.</div><div class="ttdef"><b>Definition</b> IExecutorEAV.h:48</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_ac114e4fe83db980c0865763f2220126d"><div class="ttname"><a href="class_i_executor_e_a_v.html#ac114e4fe83db980c0865763f2220126d">IExecutorEAV::GetAttributeValues</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr GetAttributeValues(const EntityName &amp;entityName, EntityId entityId, std::map&lt; SQLDataType, std::vector&lt; AttrValue &gt; &gt; &amp;attrValuesByType)=0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_ac1760545a24829b7b29106d0c6f5d730"><div class="ttname"><a href="class_i_executor_e_a_v.html#ac1760545a24829b7b29106d0c6f5d730">IExecutorEAV::GetAttributeNames</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr GetAttributeNames(const EntityName &amp;entityName, SQLDataType sqlDataType, std::vector&lt; AttrName &gt; &amp;result)=0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_acdbcb658f2a50f8a89fbd92d835e559f"><div class="ttname"><a href="class_i_executor_e_a_v.html#acdbcb658f2a50f8a89fbd92d835e559f">IExecutorEAV::GetRegisteredEntities</a></div><div class="ttdeci">virtual const EAVRegisterEntries &amp; GetRegisteredEntities() const =0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_ace14e4a49c5b543f0438679809512b17"><div class="ttname"><a href="class_i_executor_e_a_v.html#ace14e4a49c5b543f0438679809512b17">IExecutorEAV::EAVRegisterEntries</a></div><div class="ttdeci">std::map&lt; EntityName, std::vector&lt; SQLDataType &gt; &gt; EAVRegisterEntries</div><div class="ttdef"><b>Definition</b> IExecutorEAV.h:61</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_ad0b88fe643bd57ffedff15eb86a9af03"><div class="ttname"><a href="class_i_executor_e_a_v.html#ad0b88fe643bd57ffedff15eb86a9af03">IExecutorEAV::~IExecutorEAV</a></div><div class="ttdeci">virtual ~IExecutorEAV()=default</div><div class="ttdoc">Деструктор</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_ad255b066dd30abc19ddbe5ed3243efea"><div class="ttname"><a href="class_i_executor_e_a_v.html#ad255b066dd30abc19ddbe5ed3243efea">IExecutorEAV::FindEntitiesByAttrValues</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr FindEntitiesByAttrValues(const EntityName &amp;entityName, const std::vector&lt; AttrValue &gt; &amp;attrValues, std::vector&lt; EntityId &gt; &amp;result)=0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_ae34093ec4c46e744ace5b9daa4078a44"><div class="ttname"><a href="class_i_executor_e_a_v.html#ae34093ec4c46e744ace5b9daa4078a44">IExecutorEAV::Update</a></div><div class="ttdeci">virtual IExecuteResultStatusPtr Update(const EntityName &amp;entityName, EntityId entityId, const AttrName &amp;attrName, const ValueType &amp;value)=0</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_html_af5d984a8c30c7b3073d02e8fc750a1e5"><div class="ttname"><a href="class_i_executor_e_a_v.html#af5d984a8c30c7b3073d02e8fc750a1e5">IExecutorEAV::EntityId</a></div><div class="ttdeci">int EntityId</div><div class="ttdef"><b>Definition</b> IExecutorEAV.h:46</div></div>
+<div class="ttc" id="aclass_i_executor_e_a_v_naming_rules_html"><div class="ttname"><a href="class_i_executor_e_a_v_naming_rules.html">IExecutorEAVNamingRules</a></div><div class="ttdoc">Интерфейс, определяющий правила именования таблиц для IExecutorEAV.</div><div class="ttdef"><b>Definition</b> IExecutorEAVNamingRules.h:10</div></div>
+<div class="ttc" id="astruct_i_executor_e_a_v_1_1_attr_value_html"><div class="ttname"><a href="struct_i_executor_e_a_v_1_1_attr_value.html">IExecutorEAV::AttrValue</a></div><div class="ttdoc">Структура для хранения пары: атрибут и его значение</div><div class="ttdef"><b>Definition</b> IExecutorEAV.h:53</div></div>
+<div class="ttc" id="astruct_i_executor_e_a_v_1_1_attr_value_html_a0f08e592feaf6c221f5f31e5c20b6105"><div class="ttname"><a href="struct_i_executor_e_a_v_1_1_attr_value.html#a0f08e592feaf6c221f5f31e5c20b6105">IExecutorEAV::AttrValue::attrName</a></div><div class="ttdeci">AttrName attrName</div><div class="ttdoc">Название атрибута</div><div class="ttdef"><b>Definition</b> IExecutorEAV.h:54</div></div>
+<div class="ttc" id="astruct_i_executor_e_a_v_1_1_attr_value_html_a8bb04626fdbec198ea25fbc66ca7ede3"><div class="ttname"><a href="struct_i_executor_e_a_v_1_1_attr_value.html#a8bb04626fdbec198ea25fbc66ca7ede3">IExecutorEAV::AttrValue::value</a></div><div class="ttdeci">ValueType value</div><div class="ttdoc">Значение атрибута</div><div class="ttdef"><b>Definition</b> IExecutorEAV.h:55</div></div>
+</div><!-- fragment --></div><!-- contents -->
+<!-- start footer part -->
+<hr class="footer"/><address class="footer"><small>
+Создано системой&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.11.0
+</small></address>
+</div><!-- doc-content -->
+</body>
+</html>
