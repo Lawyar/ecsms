@@ -14,7 +14,7 @@ class TestConsumerStage : public ConsumerStage<int> {
   static constexpr auto stageName = "TestConsumerStage";
   using consumptionT = int;
 
-  TestConsumerStage(ConsumerStrategy consumptionStrategy,
+  TestConsumerStage(ConsumptionStrategy consumptionStrategy,
                     std::weak_ptr<InStageConnection<int>> inConnection)
       : ConsumerStage(stageName, consumptionStrategy, inConnection) {}
 
@@ -54,7 +54,7 @@ TEST(Pipeline_tests, addStageWorks) {
 
   auto connection = make_shared<
       InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
-  auto stage = make_shared<TestConsumerStage>(ConsumerStrategy::consumeNewest, connection);
+  auto stage = make_shared<TestConsumerStage>(ConsumptionStrategy::lifo, connection);
 
   p.addConnection(connection);
   p.addStage(stage);
@@ -72,7 +72,7 @@ TEST(Pipeline_tests, getStageWorks) {
   auto connection = make_shared<
       InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto stage =
-      make_shared<TestConsumerStage>(ConsumerStrategy::consumeNewest, connection);
+      make_shared<TestConsumerStage>(ConsumptionStrategy::lifo, connection);
 
   p.addConnection(connection);
   p.addStage(stage);
@@ -88,7 +88,7 @@ TEST(Pipeline_tests, getStageThrowsOnUnexisting) {
   auto connection = make_shared<
       InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto stage =
-      make_shared<TestConsumerStage>(ConsumerStrategy::consumeNewest, connection);
+      make_shared<TestConsumerStage>(ConsumptionStrategy::lifo, connection);
 
   p.addConnection(connection);
   p.addStage(stage);
@@ -103,7 +103,7 @@ TEST(Pipeline_tests, singleConsumerConsumes) {
       InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto producer = make_shared<TestProducerStage>(connection);
   auto consumer =
-      make_shared<TestConsumerStage>(ConsumerStrategy::consumeOldest, connection);
+      make_shared<TestConsumerStage>(ConsumptionStrategy::fifo, connection);
 
   p.addConnection(connection);
   p.addStage(producer);
@@ -139,13 +139,13 @@ TEST(Pipeline_tests, multipleConsumersConsume) {
       InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto producer = make_shared<TestProducerStage>(connection);
   auto consumer1 =
-      make_shared<TestConsumerStage>(ConsumerStrategy::consumeOldest, connection);
+      make_shared<TestConsumerStage>(ConsumptionStrategy::fifo, connection);
   auto consumer2 =
-      make_shared<TestConsumerStage>(ConsumerStrategy::consumeOldest, connection);
+      make_shared<TestConsumerStage>(ConsumptionStrategy::fifo, connection);
   auto consumer3 =
-      make_shared<TestConsumerStage>(ConsumerStrategy::consumeOldest, connection);
+      make_shared<TestConsumerStage>(ConsumptionStrategy::fifo, connection);
   auto consumer4 =
-      make_shared<TestConsumerStage>(ConsumerStrategy::consumeOldest, connection);
+      make_shared<TestConsumerStage>(ConsumptionStrategy::fifo, connection);
 
   p.addConnection(connection);
   p.addStage(producer);

@@ -13,7 +13,7 @@ class TestConsumerStage : public ConsumerStage<int> {
   static constexpr auto stageName = "TestConsumerStage";
   using consumptionT = int;
 
-  TestConsumerStage(ConsumerStrategy consumptionStrategy,
+  TestConsumerStage(ConsumptionStrategy consumptionStrategy,
                     std::shared_ptr<InStageConnection<int>> inConnection,
                     string s,
                     int i)
@@ -21,7 +21,7 @@ class TestConsumerStage : public ConsumerStage<int> {
         additionalField_1(move(s)),
         additionalField_2(i) {}
 
-  TestConsumerStage(ConsumerStrategy consumptionStrategy,
+  TestConsumerStage(ConsumptionStrategy consumptionStrategy,
                     std::shared_ptr<InStageConnection<int>> inConnection)
       : TestConsumerStage(consumptionStrategy, inConnection, "", 0) {}
 
@@ -59,7 +59,7 @@ class TestConsumerAndProducerStage : public ConsumerAndProducerStage<int, int> {
   using productionT = int;
 
   TestConsumerAndProducerStage(
-      ConsumerStrategy consumptionStrategy,
+      ConsumptionStrategy consumptionStrategy,
       std::shared_ptr<InStageConnection<int>> inConnection,
       std::shared_ptr<OutStageConnection<int>> outConnection,
       string s,
@@ -72,7 +72,7 @@ class TestConsumerAndProducerStage : public ConsumerAndProducerStage<int, int> {
         additionalField_2(i) {}
 
   TestConsumerAndProducerStage(
-      ConsumerStrategy consumptionStrategy,
+      ConsumptionStrategy consumptionStrategy,
       std::shared_ptr<InStageConnection<int>> inConnection,
       std::shared_ptr<OutStageConnection<int>> outConnection)
       : TestConsumerAndProducerStage(consumptionStrategy,
@@ -98,6 +98,8 @@ TEST(PipelineRegistry_tests, PipelineRegistry_registerProducerWorks) {
 
 TEST(PipelineRegistry_tests, PipelineRegistry_constructProducerWorks) {
   auto& registry = PipelineRegistry::Instance();
+  registry.reset();
+
   registry.registerProducer<TestProducerStage>(
       TestProducerStage::stageName);
   auto connection =
@@ -119,6 +121,7 @@ TEST(PipelineRegistry_tests, PipelineRegistry_constructProducerWorks) {
 
 TEST(PipelineRegistry_tests, PipelineRegistry_registerProducerFactoryWorks) {
   auto& registry = PipelineRegistry::Instance();
+  registry.reset();
 
   string s = "abcdef";
   int i = 128;

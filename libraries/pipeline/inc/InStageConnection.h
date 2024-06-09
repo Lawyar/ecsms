@@ -3,7 +3,7 @@
 #include "PipelineException.h"
 #include "StageConnection.h"
 #include "StageTask.h"
-#include "TaskRetrieveStrategy.h"
+#include "ConsumptionStrategy.h"
 
 #include <algorithm>
 #include <vector>
@@ -15,7 +15,7 @@ class InStageConnection : public virtual StageConnection {
 
   virtual std::shared_ptr<StageTask<T>> getConsumerTask(
       size_t consumerId,
-      ConsumerStrategy strategy,
+      ConsumptionStrategy strategy,
       size_t minTaskId) = 0;
 
   virtual void releaseConsumerTask(std::shared_ptr<T> taskData,

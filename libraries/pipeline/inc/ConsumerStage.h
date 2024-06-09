@@ -1,29 +1,27 @@
 #pragma once
 
-#include "GenericPipelineStage.h"
+#include "PipelineStage.h"
 
 template <typename In>
-class ConsumerStage : public GenericPipelineStage<In, void> {
+class ConsumerStage : public PipelineStage<In, void> {
  public:
   ConsumerStage(const std::string_view stageName,
-                ConsumerStrategy,
+                ConsumptionStrategy,
                 std::weak_ptr<InStageConnection<In>>);
 
  private:
-  virtual void consume(std::shared_ptr<In> data) = 0;
-
   void consumeAndProduce(std::shared_ptr<In> data,
-                         std::shared_ptr<void>) override;
+                         std::shared_ptr<void>) final;
 
-  void releaseProducerTask(std::shared_ptr<void>, bool) = delete;
+  virtual void consume(std::shared_ptr<In> data) = 0;
 };
 
 template <typename In>
 ConsumerStage<In>::ConsumerStage(
     const std::string_view stageName,
-    ConsumerStrategy consumerStrategy,
+    ConsumptionStrategy consumerStrategy,
     std::weak_ptr<InStageConnection<In>> inConnection)
-    : GenericPipelineStage<In, void>(
+    : PipelineStage<In, void>(
           stageName,
           consumerStrategy,
           inConnection,

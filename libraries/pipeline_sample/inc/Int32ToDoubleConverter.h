@@ -8,7 +8,7 @@ class Int32ToDoubleConverter
     : public ConsumerAndProducerStage<int32_t, double> {
  public:
   Int32ToDoubleConverter(
-      ConsumerStrategy strategy,
+      ConsumptionStrategy strategy,
       std::shared_ptr<InStageConnection<int32_t>> inConnection,
       std::shared_ptr<OutStageConnection<double>> outConnection);
 

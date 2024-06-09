@@ -5,12 +5,12 @@
 using namespace std;
 
 DoubleVisualizer::DoubleVisualizer(
-    ConsumerStrategy strategy,
+    ConsumptionStrategy strategy,
     std::shared_ptr<InStageConnection<double>> connection)
     : ConsumerStage(stageName, strategy, connection) {
 }
 
 void DoubleVisualizer::consume(std::shared_ptr<double> inData) {
-  cout << *inData << endl;
+  cout << "DoubleVisualizer: " << *inData << endl;
   releaseConsumptionData(inData);
 }

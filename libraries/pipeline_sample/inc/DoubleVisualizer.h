@@ -5,7 +5,7 @@
 
 class DoubleVisualizer : public ConsumerStage<double> {
  public:
-  DoubleVisualizer(ConsumerStrategy strategy,
+  DoubleVisualizer(ConsumptionStrategy strategy,
                    std::shared_ptr<InStageConnection<double>>);
 
   void consume(std::shared_ptr<double> inData) override;

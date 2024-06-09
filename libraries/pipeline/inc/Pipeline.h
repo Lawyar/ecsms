@@ -7,6 +7,8 @@
 
 class Pipeline {
  public:
+  Pipeline();
+
   ~Pipeline();
 
   void run();

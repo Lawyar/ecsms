@@ -1,5 +1,5 @@
 add_library(pipeline
-    inc/GenericPipelineStage.h
+    inc/PipelineStage.h
     inc/ConsumerStage.h
     inc/InOutStageConnection.h
     inc/InStageConnection.h
@@ -10,13 +10,15 @@ add_library(pipeline
     inc/ProducerStage.h
     inc/StageConnection.h
     inc/StageTask.h
-    inc/TaskRetrieveStrategy.h
+    inc/ConsumptionStrategy.h
     inc/PipelineException.h
     inc/PipelineStageType.h
     inc/StageTaskState.h
+    inc/PipelineHelpers.h
     
     src/Pipeline.cpp
-    src/IPipelineStage.cpp)
+    src/IPipelineStage.cpp
+    src/PipelineHelpers.cpp)
 
 target_link_libraries(pipeline PUBLIC common)
 target_include_directories(pipeline PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
