@@ -29,7 +29,8 @@ class PipelineStage : public IPipelineStage {
   std::optional<ConsumptionStrategy> getConsumptionStrategy() const override;
 
  protected:
-  void setConsumerId(size_t consumerId);
+  virtual void consumeAndProduce(std::shared_ptr<In> inData,
+                                 std::shared_ptr<Out> outData) = 0;
 
   std::shared_ptr<In> getConsumptionData();
   void releaseConsumptionData(std::shared_ptr<In> taskData);
@@ -37,8 +38,7 @@ class PipelineStage : public IPipelineStage {
   std::shared_ptr<Out> getProductionData();
   void releaseProductionData(std::shared_ptr<Out> taskData, bool produced);
 
-  virtual void consumeAndProduce(std::shared_ptr<In> inData,
-                                 std::shared_ptr<Out> outData) = 0;
+  void setConsumerId(size_t consumerId);
 
  private:
   void releaseTasksOnError(std::shared_ptr<In> inData,
