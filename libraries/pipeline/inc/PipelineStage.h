@@ -1,31 +1,35 @@
 #pragma once
 
+#include "ConsumptionStrategy.h"
 #include "IPipelineStage.h"
 #include "InStageConnection.h"
 #include "OutStageConnection.h"
 #include "PipelineException.h"
 #include "SteadyClock.h"
-#include "ConsumptionStrategy.h"
 
 #include <iostream>
 #include <optional>
 
 template <typename In, typename Out>
-class GenericPipelineStage : public IPipelineStage {
+class PipelineStage : public IPipelineStage {
  public:
-  GenericPipelineStage(const std::string_view stageName,
+  PipelineStage(const std::string_view stageName,
                        std::optional<ConsumptionStrategy>,
                        std::weak_ptr<InStageConnection<In>>,
                        std::weak_ptr<OutStageConnection<Out>>);
 
-  ~GenericPipelineStage() override;
+  ~PipelineStage() override;
 
   void run() override;
 
   void shutdown() override;
 
+  PipelineStageType getStageType() const override;
+
+  std::optional<ConsumptionStrategy> getConsumptionStrategy() const override;
+
  protected:
-  void setConsumerId(size_t consumerId) override;
+  void setConsumerId(size_t consumerId);
 
   std::shared_ptr<In> getConsumptionData();
   void releaseConsumptionData(std::shared_ptr<In> taskData);
@@ -40,15 +44,15 @@ class GenericPipelineStage : public IPipelineStage {
   void releaseTasksOnError(std::shared_ptr<In> inData,
                            std::shared_ptr<Out> outData);
 
-  bool inConnectionIsShutdown();
+  bool inConnectionIsShutdown() const;
 
-  bool outConnectionIsShutdown();
+  bool outConnectionIsShutdown() const;
 
  private:
   std::atomic_bool m_shutdownSignaled;
   std::thread m_thread;
 
-  const std::optional<ConsumptionStrategy> m_consumerStrategy;
+  std::optional<ConsumptionStrategy> m_consumptionStrategy;
   std::optional<size_t> m_consumerId;
   size_t m_lastConusmedTaskId;
 
@@ -57,14 +61,14 @@ class GenericPipelineStage : public IPipelineStage {
 };
 
 template <typename In, typename Out>
-GenericPipelineStage<In, Out>::GenericPipelineStage(
+PipelineStage<In, Out>::PipelineStage(
     const std::string_view stageName,
     std::optional<ConsumptionStrategy> consumerStrategy,
     std::weak_ptr<InStageConnection<In>> inConnection,
     std::weak_ptr<OutStageConnection<Out>> outConnection)
     : IPipelineStage(stageName),
       m_shutdownSignaled{false},
-      m_consumerStrategy(consumerStrategy),
+      m_consumptionStrategy(consumerStrategy),
       m_consumerId(std::nullopt),
       m_inConnection(inConnection),
       m_outConnection(outConnection),
@@ -81,12 +85,12 @@ GenericPipelineStage<In, Out>::GenericPipelineStage(
 }
 
 template <typename In, typename Out>
-GenericPipelineStage<In, Out>::~GenericPipelineStage() {
+PipelineStage<In, Out>::~PipelineStage() {
   shutdown();
 }
 
 template <typename In, typename Out>
-void GenericPipelineStage<In, Out>::run() {
+void PipelineStage<In, Out>::run() {
   if (!m_inConnection.expired() && !m_consumerId.has_value())
     throw PipelineException(std::string("consumerId not set for stage ") +
                             getName());
@@ -120,7 +124,7 @@ void GenericPipelineStage<In, Out>::run() {
 }
 
 template <typename In, typename Out>
-void GenericPipelineStage<In, Out>::shutdown() {
+void PipelineStage<In, Out>::shutdown() {
   m_shutdownSignaled = true;
 
   if (m_thread.joinable())
@@ -128,7 +132,25 @@ void GenericPipelineStage<In, Out>::shutdown() {
 }
 
 template <typename In, typename Out>
-void GenericPipelineStage<In, Out>::setConsumerId(size_t consumerId) {
+PipelineStageType PipelineStage<In, Out>::getStageType() const {
+  if (!m_inConnection.expired() && !m_outConnection.expired())
+    return PipelineStageType::producerConsumer;
+  else if (m_inConnection.expired())
+    return PipelineStageType::producer;
+  else if (m_outConnection.expired())
+    return PipelineStageType::consumer;
+
+  throw PipelineException("cannot determine PipelineStageType");
+}
+
+template <typename In, typename Out>
+std::optional<ConsumptionStrategy>
+PipelineStage<In, Out>::getConsumptionStrategy() const {
+  return m_consumptionStrategy;
+}
+
+template <typename In, typename Out>
+void PipelineStage<In, Out>::setConsumerId(size_t consumerId) {
   if (m_inConnection.expired())
     throw PipelineException("m_inConnection expired");
 
@@ -136,11 +158,12 @@ void GenericPipelineStage<In, Out>::setConsumerId(size_t consumerId) {
 }
 
 template <typename In, typename Out>
-std::shared_ptr<In> GenericPipelineStage<In, Out>::getConsumptionData() {
+std::shared_ptr<In> PipelineStage<In, Out>::getConsumptionData() {
   std::shared_ptr<In> inData;
   if (auto in = m_inConnection.lock(); in != nullptr) {
-    auto inTask = in->getConsumerTask(
-        m_consumerId.value(), m_consumerStrategy.value(), m_lastConusmedTaskId);
+    auto inTask =
+        in->getConsumerTask(m_consumerId.value(), m_consumptionStrategy.value(),
+                            m_lastConusmedTaskId);
     if (!inTask)
       return nullptr;
 
@@ -152,7 +175,7 @@ std::shared_ptr<In> GenericPipelineStage<In, Out>::getConsumptionData() {
 }
 
 template <typename In, typename Out>
-void GenericPipelineStage<In, Out>::releaseConsumptionData(
+void PipelineStage<In, Out>::releaseConsumptionData(
     std::shared_ptr<In> taskData) {
   if (!taskData)
     throw std::invalid_argument("taskData is null");
@@ -164,7 +187,7 @@ void GenericPipelineStage<In, Out>::releaseConsumptionData(
 }
 
 template <typename In, typename Out>
-std::shared_ptr<Out> GenericPipelineStage<In, Out>::getProductionData() {
+std::shared_ptr<Out> PipelineStage<In, Out>::getProductionData() {
   std::shared_ptr<Out> outData;
 
   if (auto out = m_outConnection.lock(); out != nullptr) {
@@ -179,7 +202,7 @@ std::shared_ptr<Out> GenericPipelineStage<In, Out>::getProductionData() {
 }
 
 template <typename In, typename Out>
-void GenericPipelineStage<In, Out>::releaseProductionData(
+void PipelineStage<In, Out>::releaseProductionData(
     std::shared_ptr<Out> taskData,
     bool produced) {
   if (!taskData)
@@ -194,7 +217,7 @@ void GenericPipelineStage<In, Out>::releaseProductionData(
 }
 
 template <typename In, typename Out>
-void GenericPipelineStage<In, Out>::releaseTasksOnError(
+void PipelineStage<In, Out>::releaseTasksOnError(
     std::shared_ptr<In> inData,
     std::shared_ptr<Out> outData) {
   if (inData && !m_inConnection.expired())
@@ -205,7 +228,7 @@ void GenericPipelineStage<In, Out>::releaseTasksOnError(
 }
 
 template <typename In, typename Out>
-bool GenericPipelineStage<In, Out>::inConnectionIsShutdown() {
+bool PipelineStage<In, Out>::inConnectionIsShutdown() const {
   auto in = m_inConnection.lock();
   if (in != nullptr && in->isShutdown())
     return true;
@@ -214,7 +237,7 @@ bool GenericPipelineStage<In, Out>::inConnectionIsShutdown() {
 }
 
 template <typename In, typename Out>
-bool GenericPipelineStage<In, Out>::outConnectionIsShutdown() {
+bool PipelineStage<In, Out>::outConnectionIsShutdown() const {
   auto out = m_outConnection.lock();
   if (out != nullptr && out->isShutdown())
     return true;

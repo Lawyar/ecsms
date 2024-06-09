@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GenericPipelineStage.h"
+#include "PipelineStage.h"
 
 template <typename In, typename Out>
-class ConsumerAndProducerStage : public GenericPipelineStage<In, Out> {
+class ConsumerAndProducerStage : public PipelineStage<In, Out> {
 public:
   ConsumerAndProducerStage(
       const std::string &stageName, ConsumptionStrategy consumerStrategy,
@@ -16,7 +16,7 @@ ConsumerAndProducerStage<In, Out>::ConsumerAndProducerStage(
     const std::string &stageName, ConsumptionStrategy consumerStrategy,
     std::shared_ptr<InStageConnection<In>> inConnection,
     std::shared_ptr<OutStageConnection<Out>> outConnection)
-    : GenericPipelineStage<In, Out>(stageName, consumerStrategy,
+    : PipelineStage<In, Out>(stageName, consumerStrategy,
                                         inConnection, outConnection) {
   if (!inConnection)
     throw std::invalid_argument("inConnection is null");

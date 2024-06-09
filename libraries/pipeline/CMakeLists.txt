@@ -1,5 +1,5 @@
 add_library(pipeline
-    inc/GenericPipelineStage.h
+    inc/PipelineStage.h
     inc/ConsumerStage.h
     inc/InOutStageConnection.h
     inc/InStageConnection.h
@@ -22,9 +22,3 @@ add_library(pipeline
 
 target_link_libraries(pipeline PUBLIC common)
 target_include_directories(pipeline PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
-
-include(FetchContent)
-
-find_package(yaml-cpp CONFIG REQUIRED)
-target_link_libraries(pipeline PUBLIC yaml-cpp::yaml-cpp)
-

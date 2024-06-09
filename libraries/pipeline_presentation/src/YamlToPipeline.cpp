@@ -1,29 +1,28 @@
 #include "YamlToPipeline.h"
 #include "PipelineHelpers.h"
 #include "PipelineRegistry.h"
-#include "YamlToPipelineException.h"
+#include "YamlConversionException.h"
 
 using namespace std;
 using namespace string_literals;
 namespace fs = filesystem;
 
-shared_ptr<Pipeline> YamlToPipeline::fromFile(const fs::path& path) {
+shared_ptr<Pipeline> YamlToPipeline::parseFromFile(const fs::path& path) {
   auto node = YAML::LoadFile(path.string());
   auto stages = parse(node);
 
   return toPipeline(stages);
 }
 
-shared_ptr<Pipeline> YamlToPipeline::fromString(const string& input) {
+shared_ptr<Pipeline> YamlToPipeline::parseFromString(const string& input) {
   auto node = YAML::Load(input);
   auto stages = parse(node);
 
   return toPipeline(stages);
 }
 
-vector<YamlToPipeline::PipelineStage> YamlToPipeline::parse(
-    const YAML::Node& node) {
-  vector<PipelineStage> stages;
+vector<YamlPipelineStage> YamlToPipeline::parse(const YAML::Node& node) {
+  vector<YamlPipelineStage> stages;
   for (const auto& stageNode : node) {
     auto stage = parseStage(stageNode.second);
     stage.stageName = stageNode.first.as<string>();
@@ -33,8 +32,7 @@ vector<YamlToPipeline::PipelineStage> YamlToPipeline::parse(
   return stages;
 }
 
-YamlToPipeline::PipelineStage YamlToPipeline::parseStage(
-    const YAML::Node& stageNode) {
+YamlPipelineStage YamlToPipeline::parseStage(const YAML::Node& stageNode) {
   optional<string> stageId;
   optional<PipelineStageType> stageType;
   optional<string> parentStageId;
@@ -53,23 +51,22 @@ YamlToPipeline::PipelineStage YamlToPipeline::parseStage(
     else if (key == "strategy")
       strategy = PipelineHelpers::strategyFromString(value);
     else
-      throw YamlToPipelineException("unknown key "s + key);
+      throw YamlConversionException("unknown key "s + key);
   }
 
   if (!stageId.has_value())
-    throw YamlToPipelineException(
+    throw YamlConversionException(
         "yaml representation of stage doesn't contain 'id' field"s);
 
   if (!stageType.has_value())
-    throw YamlToPipelineException(
+    throw YamlConversionException(
         "yaml representation of stage doesn't contain 'type' field"s);
 
-  return {"", stageId.value(), stageType.value(), parentStageId,
-          strategy};
+  return {"", stageId.value(), stageType.value(), parentStageId, strategy};
 }
 
 shared_ptr<Pipeline> YamlToPipeline::toPipeline(
-    const vector<PipelineStage>& stages) {
+    const vector<YamlPipelineStage>& stages) {
   auto p = make_shared<Pipeline>();
   const auto& registry = PipelineRegistry::Instance();
   try {
@@ -104,7 +101,7 @@ shared_ptr<Pipeline> YamlToPipeline::toPipeline(
     for (auto& [key, connection] : connections)
       p->addConnection(connection);
   } catch (PipelineRegistryException& ex) {
-    throw YamlToPipelineException(ex.what());
+    throw YamlConversionException(ex.what());
   }
 
   return p;
@@ -112,7 +109,7 @@ shared_ptr<Pipeline> YamlToPipeline::toPipeline(
 
 shared_ptr<IPipelineStage> YamlToPipeline::constructProducer(
     const PipelineRegistry& registry,
-    const PipelineStage& yamlStage,
+    const YamlPipelineStage& yamlStage,
     map<string, shared_ptr<StageConnection>>& connectionsMap) {
   const auto& name = yamlStage.stageName;
   const auto& id = yamlStage.stageId;
@@ -121,21 +118,21 @@ shared_ptr<IPipelineStage> YamlToPipeline::constructProducer(
   auto strategy = yamlStage.consumptionStrategy;
 
   if (parentId.has_value())
-    throw YamlToPipelineException(
+    throw YamlConversionException(
         "parentId is not supported in producer stage");
 
   if (strategy.has_value())
-    throw YamlToPipelineException(
+    throw YamlConversionException(
         "strategy is not supported in producer stage");
 
   auto names = registry.getStageNames();
   if (find(names.begin(), names.end(), name) == names.end())
-    throw YamlToPipelineException("stage with name "s + name +
+    throw YamlConversionException("stage with name "s + name +
                                   "was not registered in PipelineRegistry");
 
   auto expectedType = registry.getStageType(name);
   if (type != expectedType)
-    throw YamlToPipelineException(
+    throw YamlConversionException(
         "type of stage in registry differs from stage type in yaml "
         "representation");
 
@@ -151,7 +148,7 @@ shared_ptr<IPipelineStage> YamlToPipeline::constructProducer(
 
 shared_ptr<IPipelineStage> YamlToPipeline::constructConsumer(
     const PipelineRegistry& registry,
-    const PipelineStage& yamlStage,
+    const YamlPipelineStage& yamlStage,
     map<string, shared_ptr<StageConnection>>& connectionsMap) {
   const auto& name = yamlStage.stageName;
   const auto& id = yamlStage.stageId;
@@ -160,25 +157,25 @@ shared_ptr<IPipelineStage> YamlToPipeline::constructConsumer(
   auto strategy = yamlStage.consumptionStrategy;
 
   if (!parentId.has_value())
-    throw YamlToPipelineException("consumer stage must have parentId field");
+    throw YamlConversionException("consumer stage must have parentId field");
 
   if (!strategy.has_value())
-    throw YamlToPipelineException("consumer stage must have strategy field");
+    throw YamlConversionException("consumer stage must have strategy field");
 
   auto names = registry.getStageNames();
   if (find(names.begin(), names.end(), name) == names.end())
-    throw YamlToPipelineException("stage with name "s + name +
+    throw YamlConversionException("stage with name "s + name +
                                   "was not registered in PipelineRegistry");
 
   auto expectedType = registry.getStageType(name);
   if (type != expectedType)
-    throw YamlToPipelineException(
+    throw YamlConversionException(
         "type of stage in registry differs from stage type in yaml "
         "representation");
 
   auto& parent = parentId.value();
   if (connectionsMap.find(parent) == connectionsMap.end())
-    throw YamlToPipelineException(
+    throw YamlConversionException(
         "error: parent stage was not declared or declared after "
         "consumer stage");
   auto connection = connectionsMap[parent];
@@ -192,7 +189,7 @@ shared_ptr<IPipelineStage> YamlToPipeline::constructConsumer(
 
 shared_ptr<IPipelineStage> YamlToPipeline::constructConsumerAndProducer(
     const PipelineRegistry& registry,
-    const PipelineStage& yamlStage,
+    const YamlPipelineStage& yamlStage,
     map<string, shared_ptr<StageConnection>>& connectionsMap) {
   const auto& name = yamlStage.stageName;
   const auto& id = yamlStage.stageId;
@@ -201,27 +198,27 @@ shared_ptr<IPipelineStage> YamlToPipeline::constructConsumerAndProducer(
   auto strategy = yamlStage.consumptionStrategy;
 
   if (!parentId.has_value())
-    throw YamlToPipelineException(
+    throw YamlConversionException(
         "producerConsumer stage must have parentId field");
 
   if (!strategy.has_value())
-    throw YamlToPipelineException(
+    throw YamlConversionException(
         "producerConsumer stage must have strategy field");
 
   auto names = registry.getStageNames();
   if (find(names.begin(), names.end(), name) == names.end())
-    throw YamlToPipelineException("stage with name "s + name +
+    throw YamlConversionException("stage with name "s + name +
                                   "was not registered in PipelineRegistry");
 
   auto expectedType = registry.getStageType(name);
   if (type != expectedType)
-    throw YamlToPipelineException(
+    throw YamlConversionException(
         "type of stage in registry differs from stage type in yaml "
         "representation");
 
   auto& parent = parentId.value();
   if (connectionsMap.find(parent) == connectionsMap.end())
-    throw YamlToPipelineException(
+    throw YamlConversionException(
         "error: parent stage was not declared or declared after "
         "consumer stage");
   auto inConnection = connectionsMap[parent];

@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GenericPipelineStage.h"
+#include "PipelineStage.h"
 
 template <typename Out>
-class ProducerStage : public GenericPipelineStage<void, Out> {
+class ProducerStage : public PipelineStage<void, Out> {
  public:
   ProducerStage(const std::string_view stageName,
                 std::weak_ptr<OutStageConnection<Out>> outConnection);
@@ -21,7 +21,7 @@ template <typename Out>
 ProducerStage<Out>::ProducerStage(
     const std::string_view stageName,
     std::weak_ptr<OutStageConnection<Out>> outConnection)
-    : GenericPipelineStage<void, Out>(stageName,
+    : PipelineStage<void, Out>(stageName,
                                       nullopt,
                                       std::weak_ptr<InStageConnection<void>>(),
                                       outConnection) {

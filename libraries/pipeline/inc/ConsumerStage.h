@@ -1,9 +1,9 @@
 #pragma once
 
-#include "GenericPipelineStage.h"
+#include "PipelineStage.h"
 
 template <typename In>
-class ConsumerStage : public GenericPipelineStage<In, void> {
+class ConsumerStage : public PipelineStage<In, void> {
  public:
   ConsumerStage(const std::string_view stageName,
                 ConsumptionStrategy,
@@ -12,10 +12,11 @@ class ConsumerStage : public GenericPipelineStage<In, void> {
  private:
   void consumeAndProduce(std::shared_ptr<In> data,
                          std::shared_ptr<void>) override;
-                         
+
   virtual void consume(std::shared_ptr<In> data) = 0;
 
-  void releaseProducerTask(std::shared_ptr<void>, bool) = delete;
+  std::shared_ptr<void> getProductionData() = delete;
+  void releaseProductionData(std::shared_ptr<void>, bool) = delete;
 };
 
 template <typename In>
@@ -23,7 +24,7 @@ ConsumerStage<In>::ConsumerStage(
     const std::string_view stageName,
     ConsumptionStrategy consumerStrategy,
     std::weak_ptr<InStageConnection<In>> inConnection)
-    : GenericPipelineStage<In, void>(
+    : PipelineStage<In, void>(
           stageName,
           consumerStrategy,
           inConnection,

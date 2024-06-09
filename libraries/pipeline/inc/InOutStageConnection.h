@@ -23,7 +23,7 @@ class InOutStageConnection : public InStageConnection<T>,
 
   void shutdown() override;
 
-  bool isShutdown() override;
+  bool isShutdown() const override;
 
   std::shared_ptr<StageTask<T>> getProducerTask() override;
 
@@ -111,7 +111,7 @@ void InOutStageConnection<T>::shutdown() {
 }
 
 template <typename T>
-bool InOutStageConnection<T>::isShutdown() {
+bool InOutStageConnection<T>::isShutdown() const {
   return m_shutdownSignaled;
 }
 

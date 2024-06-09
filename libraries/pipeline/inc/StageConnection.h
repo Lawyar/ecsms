@@ -6,5 +6,5 @@ public:
 
   virtual void shutdown() = 0;
 
-  virtual bool isShutdown() = 0;
+  virtual bool isShutdown() const = 0;
 };

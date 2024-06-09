@@ -55,7 +55,7 @@ class YamlToPipeline_test : public Test {
 decltype(YamlToPipeline_test::PipelineFile) YamlToPipeline_test::PipelineFile;
 
 TEST_F(YamlToPipeline_test, YamlToPipeline_fromStringWorks) {
-  auto pipeline = YamlToPipeline::fromString(PipelineStr);
+  auto pipeline = YamlToPipeline::parseFromString(PipelineStr);
   const auto& stages = pipeline->getStages();
 
   ASSERT_EQ(stages.size(), 4);
@@ -77,7 +77,7 @@ TEST_F(YamlToPipeline_test, YamlToPipeline_fromStringWorks) {
 }
 
 TEST_F(YamlToPipeline_test, YamlToPipeline_fromFileWorks) {
-  auto pipeline = YamlToPipeline::fromFile(PipelineFilePath);
+  auto pipeline = YamlToPipeline::parseFromFile(PipelineFilePath);
   const auto& stages = pipeline->getStages();
 
   ASSERT_EQ(stages.size(), 4);
@@ -99,14 +99,14 @@ TEST_F(YamlToPipeline_test, YamlToPipeline_fromFileWorks) {
 }
 
 TEST_F(YamlToPipeline_test, YamlToPipeline_fromStrinRunnable) {
-  auto pipeline = YamlToPipeline::fromString(PipelineStr);
+  auto pipeline = YamlToPipeline::parseFromString(PipelineStr);
   pipeline->run();
   SteadyClock::waitForMs(100);
   pipeline->shutdown();
 }
 
 TEST_F(YamlToPipeline_test, YamlToPipeline_fromFileRunnable) {
-  auto pipeline = YamlToPipeline::fromFile(PipelineFilePath);
+  auto pipeline = YamlToPipeline::parseFromFile(PipelineFilePath);
   pipeline->run();
   SteadyClock::waitForMs(100);
   pipeline->shutdown();

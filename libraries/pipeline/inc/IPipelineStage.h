@@ -2,13 +2,14 @@
 
 #include "PipelineStageType.h"
 #include "StageConnection.h"
+#include "ConsumptionStrategy.h"
 
 #include <any>
 #include <atomic>
 #include <memory>
+#include <optional>
 #include <string>
 #include <thread>
-#include <optional>
 
 class IPipelineStage {
  public:
@@ -20,16 +21,17 @@ class IPipelineStage {
 
   virtual void shutdown() = 0;
 
-  std::string getName();
+  std::string getName() const;
 
-  void setId(const std::string_view);
-  std::optional<std::string> getId();
+  void setId(const std::string_view id);
+  std::optional<std::string> getId() const;
 
-  void setParentId(const std::string_view);
-  std::optional<std::string> getParentId();
+  void setParentId(const std::string_view parentId);
+  std::optional<std::string> getParentId() const;
 
- protected:
-  virtual void setConsumerId(size_t consumerId) = 0;
+  virtual PipelineStageType getStageType() const = 0;
+
+  virtual std::optional<ConsumptionStrategy> getConsumptionStrategy() const = 0;
 
  protected:
   std::string m_stageName;
@@ -38,4 +40,3 @@ class IPipelineStage {
   std::optional<std::string> m_id;
   std::optional<std::string> m_parentId;
 };
-
