@@ -54,3 +54,5 @@ void Pipeline::shutdown() {
   for (auto& it : m_stages)
     it->shutdown();
 }
+
+Pipeline::Pipeline() {}

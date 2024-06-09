@@ -14,9 +14,9 @@ template <typename In, typename Out>
 class PipelineStage : public IPipelineStage {
  public:
   PipelineStage(const std::string_view stageName,
-                       std::optional<ConsumptionStrategy>,
-                       std::weak_ptr<InStageConnection<In>>,
-                       std::weak_ptr<OutStageConnection<Out>>);
+                std::optional<ConsumptionStrategy>,
+                std::weak_ptr<InStageConnection<In>>,
+                std::weak_ptr<OutStageConnection<Out>>);
 
   ~PipelineStage() override;
 
@@ -217,9 +217,8 @@ void PipelineStage<In, Out>::releaseProductionData(
 }
 
 template <typename In, typename Out>
-void PipelineStage<In, Out>::releaseTasksOnError(
-    std::shared_ptr<In> inData,
-    std::shared_ptr<Out> outData) {
+void PipelineStage<In, Out>::releaseTasksOnError(std::shared_ptr<In> inData,
+                                                 std::shared_ptr<Out> outData) {
   if (inData && !m_inConnection.expired())
     releaseConsumptionData(inData);
 

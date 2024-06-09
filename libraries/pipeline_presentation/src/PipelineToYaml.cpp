@@ -118,14 +118,14 @@ void PipelineToYaml::emit(
     emitter << YAML::Value << stage.stageId;
     emitter << YAML::Key << "type";
     emitter << YAML::Value << PipelineHelpers::toString(stage.stageType);
-    if (stage.parentStageId.has_value()) {
-      emitter << YAML::Key << "parentId";
-      emitter << YAML::Value << stage.parentStageId.value();
-    }
     if (stage.consumptionStrategy.has_value()) {
       emitter << YAML::Key << "strategy";
       emitter << YAML::Value
               << PipelineHelpers::toString(stage.consumptionStrategy.value());
+    }
+    if (stage.parentStageId.has_value()) {
+      emitter << YAML::Key << "parentId";
+      emitter << YAML::Value << stage.parentStageId.value();
     }
     emitter << YAML::EndMap;
     emitter << YAML::EndMap;

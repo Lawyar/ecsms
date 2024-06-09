@@ -13,8 +13,6 @@ class ProducerStage : public PipelineStage<void, Out> {
 
   void consumeAndProduce(std::shared_ptr<void>,
                          std::shared_ptr<Out> outData) final;
-
-  void releaseConsumerTask(std::shared_ptr<void>) = delete;
 };
 
 template <typename Out>

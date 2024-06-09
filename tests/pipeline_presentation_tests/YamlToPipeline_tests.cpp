@@ -6,24 +6,24 @@
 #include "SteadyClock.h"
 #include "YamlToPipeline.h"
 
-using namespace std;
-namespace fs = filesystem;
-using namespace testing;
+    using namespace std;
+    namespace fs = filesystem;
+    using namespace testing;
 
 class YamlToPipeline_test : public Test {
  public:
   static void SetUpTestSuite() {
     PipelineFile.open(PipelineFilePath);
-    PipelineFile.write(PipelineStr, strlen(PipelineStr));
+    PipelineFile.write(ExpectedPipelineStr, strlen(ExpectedPipelineStr));
     PipelineFile.flush();
   }
 
   static void TearDownTestSuite() {
     PipelineFile.close();
     fs::remove(PipelineFilePath);
-  }
+  } 
 
-  static constexpr auto PipelineStr =
+  static constexpr auto ExpectedPipelineStr =
       "Int32RandomGenerator:\n"
       "  id: \"Int 32 generator\"\n"
       "  type: producer\n"
@@ -55,7 +55,7 @@ class YamlToPipeline_test : public Test {
 decltype(YamlToPipeline_test::PipelineFile) YamlToPipeline_test::PipelineFile;
 
 TEST_F(YamlToPipeline_test, YamlToPipeline_fromStringWorks) {
-  auto pipeline = YamlToPipeline::parseFromString(PipelineStr);
+  auto pipeline = YamlToPipeline::parseFromString(ExpectedPipelineStr);
   const auto& stages = pipeline->getStages();
 
   ASSERT_EQ(stages.size(), 4);
@@ -99,7 +99,7 @@ TEST_F(YamlToPipeline_test, YamlToPipeline_fromFileWorks) {
 }
 
 TEST_F(YamlToPipeline_test, YamlToPipeline_fromStrinRunnable) {
-  auto pipeline = YamlToPipeline::parseFromString(PipelineStr);
+  auto pipeline = YamlToPipeline::parseFromString(ExpectedPipelineStr);
   pipeline->run();
   SteadyClock::waitForMs(100);
   pipeline->shutdown();

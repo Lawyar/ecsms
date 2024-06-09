@@ -11,12 +11,9 @@ class ConsumerStage : public PipelineStage<In, void> {
 
  private:
   void consumeAndProduce(std::shared_ptr<In> data,
-                         std::shared_ptr<void>) override;
+                         std::shared_ptr<void>) final;
 
   virtual void consume(std::shared_ptr<In> data) = 0;
-
-  std::shared_ptr<void> getProductionData() = delete;
-  void releaseProductionData(std::shared_ptr<void>, bool) = delete;
 };
 
 template <typename In>
