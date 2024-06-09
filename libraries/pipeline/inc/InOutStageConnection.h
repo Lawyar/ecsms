@@ -6,9 +6,9 @@
 #include "StageTaskState.h"
 
 #include <atomic>
-#include <optional>
 #include <condition_variable>
 #include <mutex>
+#include <optional>
 #include <vector>
 
 template <typename T>
@@ -31,10 +31,9 @@ class InOutStageConnection : public InStageConnection<T>,
                            size_t taskId,
                            bool produced) override;
 
-  std::shared_ptr<StageTask<T>> getConsumerTask(
-      size_t consumerId,
-      ConsumptionStrategy strategy,
-      size_t minTaskId) override;
+  std::shared_ptr<StageTask<T>> getConsumerTask(size_t consumerId,
+                                                ConsumptionStrategy strategy,
+                                                size_t minTaskId) override;
 
   void releaseConsumerTask(std::shared_ptr<T> taskData,
                            size_t consumerId) override;
@@ -44,7 +43,8 @@ class InOutStageConnection : public InStageConnection<T>,
  private:
   void setTaskState(size_t taskId, StageTaskState);
 
-  std::optional<size_t> findTaskIndexToProduce(std::unique_lock<std::mutex>& lock);
+  std::optional<size_t> findTaskIndexToProduce(
+      std::unique_lock<std::mutex>& lock);
 
   std::optional<size_t> findTaskIndexToConsume(
       std::unique_lock<std::mutex>& lock,
@@ -60,19 +60,17 @@ class InOutStageConnection : public InStageConnection<T>,
   static constexpr size_t maxConsumersCount = 32u;
 
   std::vector<std::shared_ptr<StageTask<T>>> m_tasks;
-  std::vector<std::vector<StageTaskState>> m_tasksConsumingStates;
-  std::vector<bool> m_tasksProducingStates;
-
-  size_t m_consumersCount;
-
-  std::shared_ptr<StageTask<T>> m_producingTask;
-  size_t m_producingTaskId;
 
   std::shared_ptr<StageTask<T>> m_consumingTasks[maxConsumersCount];
   size_t m_consumingTasksId[maxConsumersCount];
+  size_t m_consumersCount;
+  std::vector<std::vector<StageTaskState>> m_consumersStates;
+
+  std::shared_ptr<StageTask<T>> m_producingTask;
+  size_t m_producingId;
+  std::vector<bool> m_producersStates;
 
   std::mutex m_mutex;
-
   std::condition_variable m_waitConsumerTaskCv;
   std::condition_variable m_waitProducerTaskCv;
   std::atomic_bool m_shutdownSignaled;
@@ -82,13 +80,13 @@ template <typename T>
 InOutStageConnection<T>::InOutStageConnection(
     std::vector<std::shared_ptr<T>> data)
     : m_tasks(data.size()),
-      m_tasksConsumingStates(
-          data.size(),
-          std::vector<StageTaskState>(maxConsumersCount, StageTaskState::empty)),
-      m_tasksProducingStates(data.size(), false),
       m_consumersCount(0),
+      m_consumersStates(data.size(),
+                        std::vector<StageTaskState>(maxConsumersCount,
+                                                    StageTaskState::empty)),
       m_producingTask(nullptr),
-      m_producingTaskId(0),
+      m_producingId(0),
+      m_producersStates(data.size(), false),
       m_shutdownSignaled(false) {
   for (size_t i = 0; i < data.size(); ++i)
     m_tasks[i] = std::make_shared<StageTask<T>>(data[i]);
@@ -125,11 +123,11 @@ std::shared_ptr<StageTask<T>> InOutStageConnection<T>::getProducerTask() {
   auto index = taskIndex.value();
 
   for (size_t i = 0; i < m_consumersCount; ++i)
-    m_tasksConsumingStates[index][i] = StageTaskState::empty;
+    m_consumersStates[index][i] = StageTaskState::empty;
 
-  m_tasksProducingStates[index] = true;
+  m_producersStates[index] = true;
   m_producingTask = m_tasks[index];
-  m_producingTaskId = index;
+  m_producingId = index;
 
   return m_producingTask;
 }
@@ -143,7 +141,7 @@ void InOutStageConnection<T>::releaseProducerTask(std::shared_ptr<T> taskData,
   size_t taskIndex = 0;
 
   if (m_producingTask && m_producingTask->data == taskData) {
-    taskIndex = m_producingTaskId;
+    taskIndex = m_producingId;
   } else {
     for (size_t i = 0; i < m_tasks.size(); ++i) {
       if (m_tasks[i]->data == taskData) {
@@ -163,7 +161,7 @@ void InOutStageConnection<T>::releaseProducerTask(std::shared_ptr<T> taskData,
     setTaskState(taskIndex, StageTaskState::empty);
   }
 
-  m_tasksProducingStates[taskIndex] = false;
+  m_producersStates[taskIndex] = false;
 }
 
 template <typename T>
@@ -173,12 +171,13 @@ std::shared_ptr<StageTask<T>> InOutStageConnection<T>::getConsumerTask(
     size_t minTaskId) {
   std::unique_lock lock{m_mutex};
 
-  auto taskIndex = findTaskIndexToConsume(lock, consumerId, strategy, minTaskId);
+  auto taskIndex =
+      findTaskIndexToConsume(lock, consumerId, strategy, minTaskId);
   if (taskIndex == std::nullopt)
     return nullptr;
   auto index = taskIndex.value();
 
-  m_tasksConsumingStates[index][consumerId] = StageTaskState::consuming;
+  m_consumersStates[index][consumerId] = StageTaskState::consuming;
 
   m_consumingTasks[consumerId] = m_tasks[index];
   m_consumingTasksId[consumerId] = index;
@@ -212,7 +211,7 @@ void InOutStageConnection<T>::releaseConsumerTask(std::shared_ptr<T> taskData,
     if (taskId < 0)
       throw PipelineException("invalid taskData");
 
-    m_tasksConsumingStates[taskId][consumerId] = StageTaskState::empty;
+    m_consumersStates[taskId][consumerId] = StageTaskState::empty;
   }
 
   m_waitProducerTaskCv.notify_one();
@@ -274,7 +273,7 @@ std::optional<size_t> InOutStageConnection<T>::findTaskIndexToConsume(
 
   while (taskIndex < 0 && !m_shutdownSignaled) {
     for (size_t i = 0; i < m_tasks.size(); ++i) {
-      if (m_tasksConsumingStates[i][consumerId] == StageTaskState::producing &&
+      if (m_consumersStates[i][consumerId] == StageTaskState::producing &&
           m_tasks[i]->taskId > minTaskId) {
         if ((strategy == ConsumptionStrategy::lifo &&
              m_tasks[i]->taskId > taskId) ||
@@ -304,11 +303,11 @@ std::vector<std::shared_ptr<T>> InOutStageConnection<T>::initData(size_t size) {
 
 template <typename T>
 bool InOutStageConnection<T>::taskLocked(size_t taskId) {
-  if (m_tasksProducingStates[taskId])
+  if (m_producersStates[taskId])
     return true;
 
   for (auto i = 0u; i < m_consumersCount; i++) {
-    auto& state = m_tasksConsumingStates[taskId][i];
+    auto& state = m_consumersStates[taskId][i];
 
     if (state == StageTaskState::consuming)
       return true;
@@ -321,5 +320,5 @@ template <typename T>
 void InOutStageConnection<T>::setTaskState(size_t taskId,
                                            StageTaskState state) {
   for (auto i = 0u; i < m_consumersCount; i++)
-    m_tasksConsumingStates[taskId][i] = state;
+    m_consumersStates[taskId][i] = state;
 }
