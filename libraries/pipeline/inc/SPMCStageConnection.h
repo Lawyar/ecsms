@@ -11,15 +11,16 @@
 #include <optional>
 #include <vector>
 
+// single producer multiple consumers connection
 template <typename T>
-class InOutStageConnection : public InStageConnection<T>,
+class SPMCStageConnection : public InStageConnection<T>,
                              public OutStageConnection<T> {
  public:
-  InOutStageConnection(std::vector<std::shared_ptr<T>> data);
+  SPMCStageConnection(std::vector<std::shared_ptr<T>> data);
 
-  InOutStageConnection(size_t connectionSize);
+  SPMCStageConnection(size_t connectionSize);
 
-  ~InOutStageConnection() override;
+  ~SPMCStageConnection() override;
 
   void shutdown() override;
 
@@ -27,16 +28,17 @@ class InOutStageConnection : public InStageConnection<T>,
 
   std::shared_ptr<StageTask<T>> getProducerTask() override;
 
-  void releaseProducerTask(std::shared_ptr<T> taskData,
-                           size_t taskId,
-                           bool produced) override;
+  void taskProduced(std::shared_ptr<T> taskData,
+                    size_t taskId,
+                    bool produced) override;
 
   std::shared_ptr<StageTask<T>> getConsumerTask(size_t consumerId,
                                                 ConsumptionStrategy strategy,
                                                 size_t minTaskId) override;
 
-  void releaseConsumerTask(std::shared_ptr<T> taskData,
-                           size_t consumerId) override;
+  void taskConsumed(std::shared_ptr<T> taskData,
+                    size_t consumerId,
+                    bool consumed) override;
 
   size_t connectConsumer() override;
 
@@ -77,7 +79,7 @@ class InOutStageConnection : public InStageConnection<T>,
 };
 
 template <typename T>
-InOutStageConnection<T>::InOutStageConnection(
+SPMCStageConnection<T>::SPMCStageConnection(
     std::vector<std::shared_ptr<T>> data)
     : m_tasks(data.size()),
       m_consumersCount(0),
@@ -93,28 +95,28 @@ InOutStageConnection<T>::InOutStageConnection(
 }
 
 template <typename T>
-InOutStageConnection<T>::InOutStageConnection(size_t connectionSize)
-    : InOutStageConnection(initData(connectionSize)) {}
+SPMCStageConnection<T>::SPMCStageConnection(size_t connectionSize)
+    : SPMCStageConnection(initData(connectionSize)) {}
 
 template <typename T>
-InOutStageConnection<T>::~InOutStageConnection() {
+SPMCStageConnection<T>::~SPMCStageConnection() {
   shutdown();
 }
 
 template <typename T>
-void InOutStageConnection<T>::shutdown() {
+void SPMCStageConnection<T>::shutdown() {
   m_shutdownSignaled = true;
   m_waitConsumerTaskCv.notify_all();
   m_waitProducerTaskCv.notify_all();
 }
 
 template <typename T>
-bool InOutStageConnection<T>::isShutdown() const {
+bool SPMCStageConnection<T>::isShutdown() const {
   return m_shutdownSignaled;
 }
 
 template <typename T>
-std::shared_ptr<StageTask<T>> InOutStageConnection<T>::getProducerTask() {
+std::shared_ptr<StageTask<T>> SPMCStageConnection<T>::getProducerTask() {
   std::unique_lock lock{m_mutex};
 
   auto taskIndex = findTaskIndexToProduce(lock);
@@ -133,9 +135,9 @@ std::shared_ptr<StageTask<T>> InOutStageConnection<T>::getProducerTask() {
 }
 
 template <typename T>
-void InOutStageConnection<T>::releaseProducerTask(std::shared_ptr<T> taskData,
-                                                  size_t taskId,
-                                                  bool produced) {
+void SPMCStageConnection<T>::taskProduced(std::shared_ptr<T> taskData,
+                                           size_t taskId,
+                                           bool produced) {
   std::unique_lock lock{m_mutex};
 
   size_t taskIndex = 0;
@@ -153,8 +155,7 @@ void InOutStageConnection<T>::releaseProducerTask(std::shared_ptr<T> taskData,
 
   if (produced) {
     m_tasks[taskIndex]->taskId = taskId;
-    setTaskState(taskIndex, StageTaskState::producing);
-
+    setTaskState(taskIndex, StageTaskState::produced);
     m_waitConsumerTaskCv.notify_all();
   } else {
     m_tasks[taskIndex]->taskId = 0;
@@ -165,7 +166,7 @@ void InOutStageConnection<T>::releaseProducerTask(std::shared_ptr<T> taskData,
 }
 
 template <typename T>
-std::shared_ptr<StageTask<T>> InOutStageConnection<T>::getConsumerTask(
+std::shared_ptr<StageTask<T>> SPMCStageConnection<T>::getConsumerTask(
     size_t consumerId,
     ConsumptionStrategy strategy,
     size_t minTaskId) {
@@ -177,7 +178,7 @@ std::shared_ptr<StageTask<T>> InOutStageConnection<T>::getConsumerTask(
     return nullptr;
   auto index = taskIndex.value();
 
-  m_consumersStates[index][consumerId] = StageTaskState::consuming;
+  m_consumersStates[index][consumerId] = StageTaskState::consumed;
 
   m_consumingTasks[consumerId] = m_tasks[index];
   m_consumingTasksId[consumerId] = index;
@@ -186,8 +187,9 @@ std::shared_ptr<StageTask<T>> InOutStageConnection<T>::getConsumerTask(
 }
 
 template <typename T>
-void InOutStageConnection<T>::releaseConsumerTask(std::shared_ptr<T> taskData,
-                                                  size_t consumerId) {
+void SPMCStageConnection<T>::taskConsumed(std::shared_ptr<T> taskData,
+                                           size_t consumerId,
+                                           bool consumed) {
   if (consumerId >= m_consumersCount)
     throw std::invalid_argument(std::string("invalid consumerId:)") +
                                 std::to_string(consumerId));
@@ -211,14 +213,15 @@ void InOutStageConnection<T>::releaseConsumerTask(std::shared_ptr<T> taskData,
     if (taskId < 0)
       throw PipelineException("invalid taskData");
 
-    m_consumersStates[taskId][consumerId] = StageTaskState::empty;
+    if (consumed)
+      m_consumersStates[taskId][consumerId] = StageTaskState::empty;
   }
 
   m_waitProducerTaskCv.notify_one();
 }
 
 template <typename T>
-size_t InOutStageConnection<T>::connectConsumer() {
+size_t SPMCStageConnection<T>::connectConsumer() {
   if (m_consumersCount == maxConsumersCount)
     throw PipelineException(
         "Cannot connect consumer: the consumers' limit has been reached");
@@ -233,7 +236,7 @@ size_t InOutStageConnection<T>::connectConsumer() {
 }
 
 template <typename T>
-std::optional<size_t> InOutStageConnection<T>::findTaskIndexToProduce(
+std::optional<size_t> SPMCStageConnection<T>::findTaskIndexToProduce(
     std::unique_lock<std::mutex>& lock) {
   std::optional<size_t> taskIndex = std::nullopt;
 
@@ -258,7 +261,7 @@ std::optional<size_t> InOutStageConnection<T>::findTaskIndexToProduce(
 }
 
 template <typename T>
-std::optional<size_t> InOutStageConnection<T>::findTaskIndexToConsume(
+std::optional<size_t> SPMCStageConnection<T>::findTaskIndexToConsume(
     std::unique_lock<std::mutex>& lock,
     size_t consumerId,
     ConsumptionStrategy strategy,
@@ -273,7 +276,7 @@ std::optional<size_t> InOutStageConnection<T>::findTaskIndexToConsume(
 
   while (taskIndex < 0 && !m_shutdownSignaled) {
     for (size_t i = 0; i < m_tasks.size(); ++i) {
-      if (m_consumersStates[i][consumerId] == StageTaskState::producing &&
+      if (m_consumersStates[i][consumerId] == StageTaskState::produced &&
           m_tasks[i]->taskId > minTaskId) {
         if ((strategy == ConsumptionStrategy::lifo &&
              m_tasks[i]->taskId > taskId) ||
@@ -293,7 +296,7 @@ std::optional<size_t> InOutStageConnection<T>::findTaskIndexToConsume(
 }
 
 template <typename T>
-std::vector<std::shared_ptr<T>> InOutStageConnection<T>::initData(size_t size) {
+std::vector<std::shared_ptr<T>> SPMCStageConnection<T>::initData(size_t size) {
   std::vector<std::shared_ptr<T>> data(size);
   for (auto& el : data)
     el = std::make_shared<T>();
@@ -302,14 +305,14 @@ std::vector<std::shared_ptr<T>> InOutStageConnection<T>::initData(size_t size) {
 }
 
 template <typename T>
-bool InOutStageConnection<T>::taskLocked(size_t taskId) {
+bool SPMCStageConnection<T>::taskLocked(size_t taskId) {
   if (m_producersStates[taskId])
     return true;
 
   for (auto i = 0u; i < m_consumersCount; i++) {
     auto& state = m_consumersStates[taskId][i];
 
-    if (state == StageTaskState::consuming)
+    if (state == StageTaskState::consumed)
       return true;
   }
 
@@ -317,7 +320,7 @@ bool InOutStageConnection<T>::taskLocked(size_t taskId) {
 }
 
 template <typename T>
-void InOutStageConnection<T>::setTaskState(size_t taskId,
+void SPMCStageConnection<T>::setTaskState(size_t taskId,
                                            StageTaskState state) {
   for (auto i = 0u; i < m_consumersCount; i++)
     m_consumersStates[taskId][i] = state;

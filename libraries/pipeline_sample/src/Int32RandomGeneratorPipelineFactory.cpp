@@ -6,7 +6,7 @@ using namespace std;
 
 shared_ptr<Pipeline> Int32RandomGeneratorPipelineFactory::create() {
   auto pipeline = make_shared<Pipeline>();
-  auto connection = make_shared<InOutStageConnection<int32_t>>(connectionCapacity);
+  auto connection = make_shared<SPMCStageConnection<int32_t>>(connectionCapacity);
 
   auto producer =
       make_shared<Int32RandomGenerator>(connection);

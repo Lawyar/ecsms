@@ -1,9 +1,9 @@
 #pragma once
 
+#include "ConsumptionStrategy.h"
 #include "PipelineException.h"
 #include "StageConnection.h"
 #include "StageTask.h"
-#include "ConsumptionStrategy.h"
 
 #include <algorithm>
 #include <vector>
@@ -18,6 +18,7 @@ class InStageConnection : public virtual StageConnection {
       ConsumptionStrategy strategy,
       size_t minTaskId) = 0;
 
-  virtual void releaseConsumerTask(std::shared_ptr<T> taskData,
-                                   size_t consumerId) = 0;
+  virtual void taskConsumed(std::shared_ptr<T> taskData,
+                            size_t consumerId,
+                            bool consumed = true) = 0;
 };

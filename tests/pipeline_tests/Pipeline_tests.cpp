@@ -4,7 +4,7 @@
 #include "Pipeline.h"
 #include "ConsumerStage.h"
 #include "ProducerStage.h"
-#include "InOutStageConnection.h"
+#include "SPMCStageConnection.h"
 
 using namespace std;
 using namespace testing;
@@ -21,7 +21,7 @@ class TestConsumerStage : public ConsumerStage<int> {
   MOCK_METHOD(void, consume, (shared_ptr<int> inData), (override));
 
   void consumeImpl(shared_ptr<int> outData) {
-    releaseConsumptionData(outData);
+    dataConsumed(outData);
   }
 };
 
@@ -35,9 +35,9 @@ class TestProducerStage : public ProducerStage<int> {
 
   MOCK_METHOD(void, produce, (shared_ptr<int> outData), (override));
 
-  void produceImpl(shared_ptr<int> outData, int outValue, bool produced) {
+  void produceImpl(shared_ptr<int> outData, int outValue) {
     *outData = outValue;
-    releaseProductionData(outData, produced);
+    dataProduced(outData);
   }
 };
 
@@ -53,7 +53,7 @@ TEST(Pipeline_tests, addStageWorks) {
   Pipeline p;
 
   auto connection = make_shared<
-      InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
+      SPMCStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto stage = make_shared<TestConsumerStage>(ConsumptionStrategy::lifo, connection);
 
   p.addConnection(connection);
@@ -70,7 +70,7 @@ TEST(Pipeline_tests, getStageWorks) {
   Pipeline p;
 
   auto connection = make_shared<
-      InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
+      SPMCStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto stage =
       make_shared<TestConsumerStage>(ConsumptionStrategy::lifo, connection);
 
@@ -86,7 +86,7 @@ TEST(Pipeline_tests, getStageThrowsOnUnexisting) {
   Pipeline p;
 
   auto connection = make_shared<
-      InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
+      SPMCStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto stage =
       make_shared<TestConsumerStage>(ConsumptionStrategy::lifo, connection);
 
@@ -100,7 +100,7 @@ TEST(Pipeline_tests, singleConsumerConsumes) {
   Pipeline p;
 
   auto connection = make_shared<
-      InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
+      SPMCStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto producer = make_shared<TestProducerStage>(connection);
   auto consumer =
       make_shared<TestConsumerStage>(ConsumptionStrategy::fifo, connection);
@@ -115,7 +115,7 @@ TEST(Pipeline_tests, singleConsumerConsumes) {
   vector<int> consumedValues;
   EXPECT_CALL(*producer, produce(_)).WillRepeatedly([&](shared_ptr<int> out) {
     int value = productionValue++;
-    producer->produceImpl(out, value, true);
+    producer->produceImpl(out, value);
     producedValues.push_back(value);
   });
   EXPECT_CALL(*consumer, consume(_)).WillRepeatedly([&](shared_ptr<int> in) {
@@ -136,7 +136,7 @@ TEST(Pipeline_tests, multipleConsumersConsume) {
   Pipeline p;
 
   auto connection = make_shared<
-      InOutStageConnection<typename TestConsumerStage::consumptionT>>(32);
+      SPMCStageConnection<typename TestConsumerStage::consumptionT>>(32);
   auto producer = make_shared<TestProducerStage>(connection);
   auto consumer1 =
       make_shared<TestConsumerStage>(ConsumptionStrategy::fifo, connection);
@@ -164,7 +164,7 @@ TEST(Pipeline_tests, multipleConsumersConsume) {
   EXPECT_CALL(*producer, produce(_)).WillRepeatedly([&](shared_ptr<int> out) {
     int value = productionValue++;
     SteadyClock::waitForMs(10);
-    producer->produceImpl(out, value, true);
+    producer->produceImpl(out, value);
     producedValues.push_back(value);
   });
   EXPECT_CALL(*consumer1, consume(_)).WillRepeatedly([&](shared_ptr<int> in) {

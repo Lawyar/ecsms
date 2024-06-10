@@ -2,6 +2,6 @@
 
 enum class StageTaskState {
     empty,
-    producing,
-    consuming
+    produced,
+    consumed
 };

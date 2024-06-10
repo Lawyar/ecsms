@@ -12,5 +12,5 @@ DoubleVisualizer::DoubleVisualizer(
 
 void DoubleVisualizer::consume(std::shared_ptr<double> inData) {
   cout << "DoubleVisualizer: " << *inData << endl;
-  releaseConsumptionData(inData);
+  dataConsumed(inData);
 }

@@ -13,5 +13,5 @@ Int32RandomGenerator::Int32RandomGenerator(
 void Int32RandomGenerator::produce(std::shared_ptr<int32_t> outData) {
   this_thread::sleep_for(chrono::milliseconds(10));
   *outData = rand() % 100;
-  releaseProductionData(outData, true);
+  dataProduced(outData);
 }
