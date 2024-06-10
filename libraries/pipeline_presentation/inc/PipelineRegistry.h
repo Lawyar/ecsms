@@ -2,7 +2,7 @@
 
 #include "ConsumerStage.h"
 #include "IPipelineStage.h"
-#include "InOutStageConnection.h"
+#include "SPMCStageConnection.h"
 #include "InStageConnection.h"
 #include "OutStageConnection.h"
 #include "PipelineRegistryException.h"
@@ -201,7 +201,7 @@ void PipelineRegistry::registerProducerConnection(const std::string& key) {
 
   m_producerConnections[key] = [](size_t connectionSize) {
     return std::make_shared<
-        InOutStageConnection<typename ProducerT::productionT>>(connectionSize);
+        SPMCStageConnection<typename ProducerT::productionT>>(connectionSize);
   };
 }
 
@@ -212,6 +212,6 @@ void PipelineRegistry::registerConsumerConnection(const std::string& key) {
 
   m_consumerConnections[key] = [](size_t connectionSize) {
     return std::make_shared<
-        InOutStageConnection<typename ConsumerT::consumptionT>>(connectionSize);
+        SPMCStageConnection<typename ConsumerT::consumptionT>>(connectionSize);
   };
 }

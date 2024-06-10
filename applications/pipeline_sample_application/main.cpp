@@ -45,7 +45,7 @@ int main() {
 //      continue;
 //    }
 //
-//    InOutStageConnection<stages[i]::>
+//    SPMCStageConnection<stages[i]::>
 //  }
 //}
 
@@ -76,7 +76,7 @@ void observe() {
 
   if (selectedStageName == "Int32RandomGenerator") {
     auto connection =
-        make_shared<InOutStageConnection<typename Int32RandomGenerator::productionT>>(32);
+        make_shared<SPMCStageConnection<typename Int32RandomGenerator::productionT>>(32);
     Int32RandomGenerator stage(connection);
 
     selectedStageName = "Int32Visualizer";

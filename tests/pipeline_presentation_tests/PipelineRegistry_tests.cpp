@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 
 #include "ConsumerStage.h"
-#include "InOutStageConnection.h"
+#include "SPMCStageConnection.h"
 #include "PipelineRegistry.h"
 #include "ProducerAndConsumerStage.h"
 #include "ProducerStage.h"
@@ -25,7 +25,7 @@ class TestConsumerStage : public ConsumerStage<int> {
                     std::shared_ptr<InStageConnection<int>> inConnection)
       : TestConsumerStage(consumptionStrategy, inConnection, "", 0) {}
 
-  void consume(shared_ptr<int> inData) override { releaseConsumptionData(inData); }
+  void consume(shared_ptr<int> inData) override { dataConsumed(inData); }
 
   string additionalField_1;
   int additionalField_2;
@@ -45,7 +45,7 @@ class TestProducerStage : public ProducerStage<int> {
       : TestProducerStage(outConnection, "", 0) {}
 
   void produce(shared_ptr<int> outData) override {
-    releaseProductionData(outData, true);
+    dataProduced(outData, true);
   }
 
   string s;
@@ -83,8 +83,8 @@ class TestConsumerAndProducerStage : public ConsumerAndProducerStage<int, int> {
 
   void consumeAndProduce(shared_ptr<int> inData,
                          shared_ptr<int> outData) override {
-    releaseConsumptionData(inData);
-    releaseProductionData(outData, true);
+    dataConsumed(inData);
+    dataProduced(outData, true);
   }
 
   string additionalField_1;
@@ -110,7 +110,7 @@ TEST(PipelineRegistry_tests, PipelineRegistry_constructProducerWorks) {
   ASSERT_NE(stage, nullptr);
 
   auto connectionDynamic = dynamic_pointer_cast<
-      InOutStageConnection<typename TestProducerStage::productionT>>(
+      SPMCStageConnection<typename TestProducerStage::productionT>>(
       connection);
 
   auto stageDynamic = dynamic_pointer_cast<TestProducerStage>(stage);

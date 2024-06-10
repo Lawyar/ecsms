@@ -1,7 +1,7 @@
 add_library(pipeline
     inc/PipelineStage.h
     inc/ConsumerStage.h
-    inc/InOutStageConnection.h
+    inc/SPMCStageConnection.h
     inc/InStageConnection.h
     inc/OutStageConnection.h
     inc/Pipeline.h

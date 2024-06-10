@@ -1,6 +1,6 @@
 #pragma once
 
-#include "InOutStageConnection.h"
+#include "SPMCStageConnection.h"
 #include "Pipeline.h"
 
 #include <memory>

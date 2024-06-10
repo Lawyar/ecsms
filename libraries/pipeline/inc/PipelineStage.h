@@ -33,10 +33,10 @@ class PipelineStage : public IPipelineStage {
                                  std::shared_ptr<Out> outData) = 0;
 
   std::shared_ptr<In> getConsumptionData();
-  void releaseConsumptionData(std::shared_ptr<In> taskData);
+  void dataConsumed(std::shared_ptr<In> taskData, bool consumed = true);
 
   std::shared_ptr<Out> getProductionData();
-  void releaseProductionData(std::shared_ptr<Out> taskData, bool produced);
+  void dataProduced(std::shared_ptr<Out> taskData, bool produced = true);
 
   void setConsumerId(size_t consumerId);
 
@@ -175,13 +175,13 @@ std::shared_ptr<In> PipelineStage<In, Out>::getConsumptionData() {
 }
 
 template <typename In, typename Out>
-void PipelineStage<In, Out>::releaseConsumptionData(
-    std::shared_ptr<In> taskData) {
+void PipelineStage<In, Out>::dataConsumed(
+    std::shared_ptr<In> taskData, bool consumed) {
   if (!taskData)
     throw std::invalid_argument("taskData is null");
 
   if (auto in = m_inConnection.lock(); in != nullptr)
-    in->releaseConsumerTask(taskData, m_consumerId.value());
+    in->taskConsumed(taskData, m_consumerId.value(), consumed);
   else
     throw PipelineException("m_inConnection expired");
 }
@@ -202,16 +202,15 @@ std::shared_ptr<Out> PipelineStage<In, Out>::getProductionData() {
 }
 
 template <typename In, typename Out>
-void PipelineStage<In, Out>::releaseProductionData(
-    std::shared_ptr<Out> taskData,
-    bool produced) {
+void PipelineStage<In, Out>::dataProduced(
+    std::shared_ptr<Out> taskData, bool produced) {
   if (!taskData)
     throw std::invalid_argument("taskData is null");
 
   static size_t taskId = 1;
 
   if (auto out = m_outConnection.lock(); out != nullptr)
-    out->releaseProducerTask(taskData, taskId++, produced);
+    out->taskProduced(taskData, taskId++, produced);
   else
     throw PipelineException("m_outConnection expired");
 }
@@ -220,10 +219,10 @@ template <typename In, typename Out>
 void PipelineStage<In, Out>::releaseTasksOnError(std::shared_ptr<In> inData,
                                                  std::shared_ptr<Out> outData) {
   if (inData && !m_inConnection.expired())
-    releaseConsumptionData(inData);
+    dataConsumed(inData, false);
 
   if (outData && !m_outConnection.expired())
-    releaseProductionData(outData, false);
+    dataProduced(outData, false);
 }
 
 template <typename In, typename Out>
