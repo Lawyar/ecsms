@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>544</width>
-    <height>479</height>
+    <height>476</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -43,7 +43,7 @@
     <item row="0" column="0">
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="tab_0">
        <attribute name="title">
@@ -407,6 +407,52 @@
         </item>
        </layout>
       </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Анализ</string>
+       </attribute>
+       <widget class="QWidget" name="horizontalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>10</x>
+          <y>0</y>
+          <width>101</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
+         <item>
+          <widget class="QPushButton" name="comparebutton">
+           <property name="text">
+            <string>Compare</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="gridLayoutWidget_2">
+        <property name="geometry">
+         <rect>
+          <x>109</x>
+          <y>-1</y>
+          <width>431</width>
+          <height>431</height>
+         </rect>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_5">
+         <item row="0" column="0">
+          <widget class="QChartView" name="graphicsView"/>
+         </item>
+         <item row="1" column="0">
+          <widget class="QLabel" name="result">
+           <property name="text">
+            <string>Ожидание результата...</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </widget>
      </widget>
     </item>
    </layout>
@@ -556,6 +602,11 @@
    <extends>QWidget</extends>
    <header>widgets/blockfieldwidget.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>QChartView</class>
+   <extends>QGraphicsView</extends>
+   <header>QtCharts</header>
   </customwidget>
  </customwidgets>
  <resources>
