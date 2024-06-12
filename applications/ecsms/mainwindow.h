@@ -80,6 +80,9 @@ private slots:
   void on_pushButton_startPipeline_pressed();
   void on_pushButton_stopPipeline_pressed();
 
+  void on_comparebutton_clicked();
+  void on_groupbutton_clicked();
+
 private:
   void constructAndStartPipeline();
 
