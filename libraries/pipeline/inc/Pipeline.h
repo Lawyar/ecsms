@@ -25,6 +25,8 @@ class Pipeline {
 
   std::shared_ptr<IPipelineStage> getStage(const std::string_view);
 
+  std::shared_ptr<StageConnection> getConnectionForStage(const std::string_view) { return nullptr; }
+
  private:
   std::vector<std::shared_ptr<IPipelineStage>> m_stages;
   std::vector<std::shared_ptr<StageConnection>> m_connections;
