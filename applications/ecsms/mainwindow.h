@@ -75,6 +75,9 @@ private slots:
   void on_pushButton_pausePipeline_pressed();
   void on_pushButton_stopPipeline_pressed();
 
+  void on_comparebutton_clicked();
+  void on_groupbutton_clicked();
+
 private:
   QString _app_name = "ECSMS";
   Ui::MainWindow *ui;
