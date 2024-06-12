@@ -127,13 +127,13 @@ void DefaultController::onFieldMousePress(const QMouseEvent *event) {
   const QPoint model_point = _vis_model.MapToModel(vis_point);
 
   if (event->button() == Qt::MiddleButton) {
-    _selection_model.Clear();
+    _selection_model.ClearSelection();
     _old_field_pos = _vis_model.GetCenterCoord();
     _old_mouse_pos = vis_point;
   } else if (event->button() == Qt::LeftButton) {
     bool point_on_line = checkLine(_field_model, _selection_model, model_point);
     if (!point_on_line) {
-      _selection_model.Clear();
+      _selection_model.ClearSelection();
       _phantom_rectangle_model.SetP2(model_point);
     }
     return;
@@ -157,7 +157,7 @@ void DefaultController::onFieldKeyPress(const QKeyEvent *event) {
         }
       }
     }
-    _selection_model.Clear();
+    _selection_model.ClearSelection();
     _cm.Do(std::make_unique<RemoveCommand>(_field_model, selected_connections,
                                            selected_blocks));
   }

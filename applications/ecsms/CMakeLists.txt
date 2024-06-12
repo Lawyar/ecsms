@@ -64,3 +64,5 @@ target_link_libraries(ecsms PRIVATE
     Qt5::Gui
     Qt5::Widgets
 )
+
+target_link_libraries(ecsms PUBLIC yaml-cpp::yaml-cpp) # The library or executable that require yaml-cpp library

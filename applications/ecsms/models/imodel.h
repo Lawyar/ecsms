@@ -14,8 +14,7 @@ public:
     if (&other == this)
       return *this;
 
-    for (auto &&o : _observers)
-      Unsubscribe(o);
+    Clear();
 
     _observers = other._observers;
     return *this;
