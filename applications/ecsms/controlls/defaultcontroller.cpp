@@ -8,32 +8,36 @@
 #include <QDebug>
 
 DefaultController::DefaultController(
-    FieldModel &field_model, SelectionModel &selection_model,
-    PhantomLineModel &phantom_line_model,
-    PhantomRectangleModel &phantom_rectangle_model,
-    VisualizationModel &vis_model, CommandManager &cm)
-    : _field_model(field_model), _selection_model(selection_model),
+    FieldModel& field_model,
+    SelectionModel& selection_model,
+    PhantomLineModel& phantom_line_model,
+    PhantomRectangleModel& phantom_rectangle_model,
+    VisualizationModel& vis_model,
+    CommandManager& cm)
+    : _field_model(field_model),
+      _selection_model(selection_model),
       _phantom_line_model(phantom_line_model),
-      _phantom_rectangle_model(phantom_rectangle_model), _vis_model(vis_model),
+      _phantom_rectangle_model(phantom_rectangle_model),
+      _vis_model(vis_model),
       _cm(cm) {}
 
-void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
+void DefaultController::onMouseMoveEvent(QWidget* widget, QMouseEvent* event) {
   const QPoint vis_point = event->pos();
 
-  if (qobject_cast<BlockFieldWidget *>(widget)) {
+  if (qobject_cast<BlockFieldWidget*>(widget)) {
     if (event->buttons() == Qt::MiddleButton && _old_mouse_pos) {
       QPoint delta = vis_point - *_old_mouse_pos;
       _vis_model.SetNewCoordCenter(*_old_field_pos + delta);
     }
   }
 
-  else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
+  else if (auto&& block_w = qobject_cast<BlockWidget*>(widget)) {
     if (event->buttons() == Qt::LeftButton && _old_mouse_pos) {
       QPoint delta = vis_point - *_old_mouse_pos;
 
-      auto &&selected_blocks = _selection_model.GetSelectedBlocks();
-      for (auto &&selected_block_id : selected_blocks) {
-        auto &&block_data = _field_model.GetBlockData(selected_block_id);
+      auto&& selected_blocks = _selection_model.GetSelectedBlocks();
+      for (auto&& selected_block_id : selected_blocks) {
+        auto&& block_data = _field_model.GetBlockData(selected_block_id);
         if (!block_data) {
           assert(false);
           return;
@@ -45,14 +49,14 @@ void DefaultController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
   }
 }
 
-void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
+void DefaultController::onMousePressEvent(QWidget* widget, QMouseEvent* event) {
   const QPoint vis_point = event->pos();
 
-  if (qobject_cast<BlockFieldWidget *>(widget)) {
+  if (qobject_cast<BlockFieldWidget*>(widget)) {
     onFieldMousePress(event);
   }
 
-  else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
+  else if (auto&& block_w = qobject_cast<BlockWidget*>(widget)) {
     if (event->button() == Qt::LeftButton) {
       _old_mouse_pos = vis_point;
 
@@ -67,48 +71,49 @@ void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
   }
 
   else if (auto&& connect_node_w = qobject_cast<ConnectNodeWidget*>(widget);
-    connect_node_w && connect_node_w->GetNodeType() == NodeType::Outgoing) {
-    auto &&node_center =
+           connect_node_w &&
+           connect_node_w->GetNodeType() == NodeType::Outgoing) {
+    auto&& node_center =
         _vis_model.MapToModel(connect_node_w->getCenterCoordToBlockField());
     _phantom_line_model.SetBegin(connect_node_w->GetId(), node_center);
   }
 }
 
-void DefaultController::onKeyPressEvent(QWidget *widget, QKeyEvent *event) {
-  if (qobject_cast<BlockFieldWidget *>(widget)) {
+void DefaultController::onKeyPressEvent(QWidget* widget, QKeyEvent* event) {
+  if (qobject_cast<BlockFieldWidget*>(widget)) {
     onFieldKeyPress(event);
   }
 }
 
-void DefaultController::onEnterEvent(QWidget *widget, QEvent *event) {
-  if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
+void DefaultController::onEnterEvent(QWidget* widget, QEvent* event) {
+  if (auto&& block_w = qobject_cast<BlockWidget*>(widget)) {
     _active_nodes_lock.reset(new ActiveNodesLock(
         _field_model,
         {block_w->GetLeftNode()->GetId(), block_w->GetRightNode()->GetId()},
-        [this](const NodeId &node) {
+        [this](const NodeId& node) {
           return _field_model.IsNodeConnected(node);
         }));
   }
 }
 
-void DefaultController::onLeaveEvent(QWidget *widget, QEvent *event) {
-  if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
+void DefaultController::onLeaveEvent(QWidget* widget, QEvent* event) {
+  if (auto&& block_w = qobject_cast<BlockWidget*>(widget)) {
     _active_nodes_lock.reset();
   }
 }
 
-void DefaultController::onMouseReleaseEvent(QWidget *widget,
-                                            QMouseEvent *event) {
-  if (qobject_cast<BlockFieldWidget *>(widget)) {
+void DefaultController::onMouseReleaseEvent(QWidget* widget,
+                                            QMouseEvent* event) {
+  if (qobject_cast<BlockFieldWidget*>(widget)) {
     _old_field_pos = std::nullopt;
     _old_mouse_pos = std::nullopt;
   }
 
-  else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
-    auto delta = _vis_model.MapToModel(block_w->pos()) - * _old_block_model_pos;
+  else if (auto&& block_w = qobject_cast<BlockWidget*>(widget)) {
+    auto delta = _vis_model.MapToModel(block_w->pos()) - *_old_block_model_pos;
     std::vector<std::unique_ptr<ICommand>> move_coms_vec;
-    auto &&selected_blocks = _selection_model.GetSelectedBlocks();
-    for (auto &&selected_block_id : selected_blocks) {
+    auto&& selected_blocks = _selection_model.GetSelectedBlocks();
+    for (auto&& selected_block_id : selected_blocks) {
       auto block_data = _field_model.GetBlockData(selected_block_id);
       if (block_data && _old_block_model_pos &&
           *_old_block_model_pos != block_data->pos) {
@@ -123,7 +128,7 @@ void DefaultController::onMouseReleaseEvent(QWidget *widget,
   }
 }
 
-void DefaultController::onFieldMousePress(const QMouseEvent *event) {
+void DefaultController::onFieldMousePress(const QMouseEvent* event) {
   const QPoint vis_point = event->pos();
   const QPoint model_point = _vis_model.MapToModel(vis_point);
 
@@ -141,16 +146,16 @@ void DefaultController::onFieldMousePress(const QMouseEvent *event) {
   }
 }
 
-void DefaultController::onFieldKeyPress(const QKeyEvent *event) {
-  auto &&_connection_map = _field_model.GetConnectionMap();
-  auto &&_map_of_selected_nodes = _selection_model.GetSelectedConnections();
+void DefaultController::onFieldKeyPress(const QKeyEvent* event) {
+  auto&& _connection_map = _field_model.GetConnectionMap();
+  auto&& _map_of_selected_nodes = _selection_model.GetSelectedConnections();
   if (event->key() == Qt::Key::Key_Delete) {
     auto selected_connections = _selection_model.GetSelectedConnections();
     auto selected_blocks = _selection_model.GetSelectedBlocks();
     if (_active_nodes_lock) {
-      auto &&lock_nodes = _active_nodes_lock->GetLockedNodes();
-      for (auto &&block : selected_blocks) {
-        for (auto &&lock_node : lock_nodes) {
+      auto&& lock_nodes = _active_nodes_lock->GetLockedNodes();
+      for (auto&& block : selected_blocks) {
+        for (auto&& lock_node : lock_nodes) {
           if (lock_node.GetParentId() == block) {
             _active_nodes_lock.reset();
             break;

@@ -13,8 +13,7 @@ AddChildTagCommand::AddChildTagCommand(QModelIndex parent_index,
   for (auto &&parent_tag_index = parent_index.parent();
        parent_tag_index != QModelIndex();
        parent_tag_index = parent_tag_index.parent()) {
-    _rows.insert(_rows.begin(), parent_index.row());
-    parent_index = parent_index.parent();
+    _rows.insert(_rows.begin(), parent_tag_index.row());
   }
 }
 

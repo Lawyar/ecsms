@@ -1,8 +1,6 @@
 #include "selectionmodel.h"
 #include "../events/repaintevent.h"
 
-#include <QDebug>
-
 SelectionModel& SelectionModel::operator=(const SelectionModel& other) {
   if (&other == this)
     return *this;

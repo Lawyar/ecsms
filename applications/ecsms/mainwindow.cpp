@@ -698,16 +698,11 @@ void MainWindow::on_pushButton_new_child_row_tree_clicked() {
 
   auto selection_model = ui->treeView->selectionModel();
   auto parent_index = selection_model->currentIndex();
-  if (parent_index == QModelIndex())
-    return;
-
-  if (parent_index ==
-      QModelIndex())  // prevent error from adding child to invalid item
+  if (parent_index == QModelIndex()) // prevent error from adding child to invalid item
     return;
 
   // remove tag's text
-  auto parent_tag = tree_view_model->item(parent_index.row());
-  auto tag_text = parent_tag->text();
+  auto tag_text = parent_index.data().value<QString>();
   auto&& tag_text_vec = tag_text.split(": ");
   if (tag_text_vec.size() > 1) {
     _com_mgrs[0]->Do(std::make_unique<TagTextChangedCommand>(
