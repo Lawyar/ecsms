@@ -66,7 +66,8 @@ void DefaultController::onMousePressEvent(QWidget *widget, QMouseEvent *event) {
     }
   }
 
-  else if (auto &&connect_node_w = qobject_cast<ConnectNodeWidget *>(widget)) {
+  else if (auto&& connect_node_w = qobject_cast<ConnectNodeWidget*>(widget);
+    connect_node_w && connect_node_w->GetNodeType() == NodeType::Outgoing) {
     auto &&node_center =
         _vis_model.MapToModel(connect_node_w->getCenterCoordToBlockField());
     _phantom_line_model.SetBegin(connect_node_w->GetId(), node_center);
