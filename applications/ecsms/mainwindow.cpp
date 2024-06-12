@@ -17,6 +17,8 @@
 #include <QChartView>
 #include <QLabel>
 #include <QValueAxis>
+#include <QString>
+#include <QStringList>
 #include <QDebug>
 #include <QLineSeries>
 #include <QMessageBox>
@@ -751,86 +753,70 @@ void MainWindow::on_pushButton_stopPipeline_pressed() {
 void MainWindow::on_comparebutton_clicked() {
   QLineSeries* series1 = new QLineSeries();
   QLineSeries* series2 = new QLineSeries();
-  QValueAxis* axisX = new QValueAxis();
+  QCategoryAxis* axisX = new QCategoryAxis();
   QValueAxis* axisY = new QValueAxis();
 
   series1->setName("Test1");
   series2->setName("Test2");
 
-    // Заполняем серию данными
-    // Генерируем случайные точки для серии данных
-    //double trend = 0.5;  // Начальное значение тренда
-    //for (int i = 0; i < 10; ++i) {
-    //double x = i;  // X - последовательные значения
-    //double y =
-        //trend * x + QRandomGenerator::global()->bounded(
-                        //-6, 8);  // Y - линейный тренд плюс случайные колебания
-    //series1->append(x, y);
-    //trend += 0.05;  // Увеличиваем тренд для следующей точки
-    //}
-    series1->append(0, 5);
-    series1->append(1, 10);
-    series1->append(2, 3);
-    series1->append(3, 7);
-    series1->append(4, 12);
-    series1->append(5, 2);
-    series1->append(6, 9);
-
-    //double trend2 = 0.5;  // Начальное значение тренда
-    //for (int i = 0; i < 10; ++i) {
-    //double x = i;  // X - последовательные значения
-    //double y =
-        //trend * x + QRandomGenerator::global()->bounded(
-                        //-7, 9);  // Y - линейный тренд плюс случайные колебания
-    //series2->append(x, y);
-    //trend2 += 0.05;  // Увеличиваем тренд для следующей точки
-    //}
-
-    series2->append(0, 3);
-    series2->append(1, 7);
-    series2->append(2, 2);
-    series2->append(3, 10);
-    series2->append(4, 6);
-    series2->append(5, 9);
-    series2->append(6, 3);
-
-    // Выбираем цвет для серии
-    QColor randomColor;
-    randomColor.setRgb(rand() % 255, rand() % 255,
-                       rand() % 255);  // Устанавливаем случайный цвет
-    series1->setColor(randomColor);
-
-     QColor randomColor2;
-    randomColor2.setRgb(rand() % 255, rand() % 255, rand() % 255); 
-    series2->setColor(randomColor2);
-
-    // Добавляем серию в график
-    QChart* chart =
-        ui->graphicsView
-            ->chart();  // ui->chartView должен быть вашим QChartView
-    chart->addSeries(series1);
-    chart->addSeries(series2);
-    chart->setTitle("Анализ данных");
-
-    axisY->setTitleText("Значение элемента");
-    axisX->setTitleText("Индекс элемента");
-
-
-    // Для автоматического масштабирования графика
-    chart->createDefaultAxes();
-
-    chart->setAxisX(axisX, series1);
-    chart->setAxisY(axisY, series1);
-    chart->setAxisX(axisX, series2);
-    chart->setAxisY(axisY, series2);
-
-    chart->legend()->setVisible(true);
-    chart->legend()->setAlignment(Qt::AlignBottom);
-
-    ui->graphicsView->update();
-    
-    ui->result->setText("Данные не индентичны");
+  for (int i = 0; i <= 6; ++i) {
+    QString category = QString::number(i);
+    axisX->append(category, i);  // Добавляем категорию с индексом i
   }
+
+  series1->append(0, 5);
+  series1->append(1, 10);
+  series1->append(2, 3);
+  series1->append(3, 7);
+  series1->append(4, 12);
+  series1->append(5, 2);
+  series1->append(6, 9);
+
+  series2->append(0, 3);
+  series2->append(1, 7);
+  series2->append(2, 2);
+  series2->append(3, 10);
+  series2->append(4, 6);
+  series2->append(5, 9);
+  series2->append(6, 3);
+
+  // Выбираем цвет для серии
+  QColor randomColor;
+  randomColor.setRgb(rand() % 255, rand() % 255,
+                     rand() % 255);  // Устанавливаем случайный цвет
+  series1->setColor(randomColor);
+
+  QColor randomColor2;
+  randomColor2.setRgb(rand() % 255, rand() % 255, rand() % 255);
+  series2->setColor(randomColor2);
+
+  // Добавляем серию в график
+  QChart* chart =
+      ui->graphicsView->chart();  // ui->chartView должен быть вашим QChartView
+  chart->addSeries(series1);
+  chart->addSeries(series2);
+  chart->setTitle("Анализ данных");
+
+  axisY->setTitleText("Значение элемента");
+  axisX->setTitleText("Индекс элемента");
+
+  axisX->setLabelFormat("%i");
+
+  // Для автоматического масштабирования графика
+  chart->createDefaultAxes();
+
+  chart->setAxisX(axisX, series1);
+  chart->setAxisY(axisY, series1);
+  chart->setAxisX(axisX, series2);
+  chart->setAxisY(axisY, series2);
+
+  chart->legend()->setVisible(true);
+  chart->legend()->setAlignment(Qt::AlignBottom);
+
+  ui->graphicsView->update();
+
+  ui->result->setText("Данные не индентичны");
+}
 
 void MainWindow::on_groupbutton_clicked() {
 
