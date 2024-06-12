@@ -411,25 +411,6 @@
        <attribute name="title">
         <string>Анализ</string>
        </attribute>
-       <widget class="QWidget" name="horizontalLayoutWidget">
-        <property name="geometry">
-         <rect>
-          <x>10</x>
-          <y>0</y>
-          <width>101</width>
-          <height>431</height>
-         </rect>
-        </property>
-        <layout class="QHBoxLayout" name="horizontalLayout_4">
-         <item>
-          <widget class="QPushButton" name="comparebutton">
-           <property name="text">
-            <string>Compare</string>
-           </property>
-          </widget>
-         </item>
-        </layout>
-       </widget>
        <widget class="QWidget" name="gridLayoutWidget_2">
         <property name="geometry">
          <rect>
@@ -440,13 +421,46 @@
          </rect>
         </property>
         <layout class="QGridLayout" name="gridLayout_5">
-         <item row="0" column="0">
-          <widget class="QChartView" name="graphicsView"/>
-         </item>
          <item row="1" column="0">
           <widget class="QLabel" name="result">
            <property name="text">
             <string>Ожидание результата...</string>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QChartView" name="graphicsView"/>
+         </item>
+        </layout>
+       </widget>
+       <widget class="QWidget" name="verticalLayoutWidget">
+        <property name="geometry">
+         <rect>
+          <x>6</x>
+          <y>0</y>
+          <width>101</width>
+          <height>410</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_5">
+         <item>
+          <widget class="QPushButton" name="groupbutton">
+           <property name="text">
+            <string>Группировать</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="comparebutton">
+           <property name="text">
+            <string>Сравнить</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="info">
+           <property name="text">
+            <string/>
            </property>
           </widget>
          </item>

@@ -4,22 +4,34 @@
 #define ANALYTICS_H
 
 #include <vector>
+#include <string>
+#include <cmath>
+
+enum class ComparisonResult { 
+  Equal, 
+  Different 
+};
 
 class Analytics {
  public:
-  // Функция для сравнения данных
-  template <typename T>
-  void compareData(const std::vector<T>& data1, const std::vector<T>& data2);
+  static void calculateMean(const std::vector<unsigned char>& data);
+  static void calculateStandardDeviation(
+      const std::vector<unsigned char>& data);
+  static void Analytics::calculateCorrelationCoefficient(
+      const std::vector<unsigned char>& data1,
+      const std::vector<unsigned char>& data2,
+      double& result);
+  static ComparisonResult compareDataByAlgorithms(
+      const std::vector<unsigned char>& data1,
+      const std::vector<unsigned char>& data2,
+      double& simpleMeanResult,
+      double& movingAverageResult);
 
-  // Функция для конвертации данных в определенный формат
-  template <typename T>
-  void convertData(const std::vector<T>& data);
-
-  // Функция для группировки информации по определенным признакам
-  template <typename T>
-  void groupData(const std::vector<T>& data, int groupSize);
-
-  // Другие функции анализа данных
+ private:
+  static void calculateSimpleMean(const std::vector<unsigned char>& data,
+                                  double& result);
+  static void calculateMovingAverage(const std::vector<unsigned char>& data,
+                                     double& result);
 };
 
 #endif  // ANALYTICS_H
