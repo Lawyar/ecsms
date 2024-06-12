@@ -13,5 +13,6 @@ Int32Visualizer::Int32Visualizer(ConsumptionStrategy strategy,
 void Int32Visualizer::consume(std::shared_ptr<int32_t> inData) {
   std::ofstream file(stageName + std::string(".txt"));
   file << "Int32Visualizer: " << *inData << endl;
+  cout << "Int32Visualizer: " << *inData << endl;
   dataConsumed(inData);
 }

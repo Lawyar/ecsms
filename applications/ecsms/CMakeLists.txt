@@ -67,6 +67,3 @@ target_link_libraries(ecsms PRIVATE
 )
 
 target_link_libraries(ecsms PRIVATE pipeline_presentation)
-
-find_package(yaml-cpp REQUIRED)
-target_link_libraries(ecsms PRIVATE yaml-cpp::yaml-cpp)
