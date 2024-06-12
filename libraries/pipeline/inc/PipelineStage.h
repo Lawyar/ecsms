@@ -63,20 +63,20 @@ class PipelineStage : public IPipelineStage {
 template <typename In, typename Out>
 PipelineStage<In, Out>::PipelineStage(
     const std::string_view stageName,
-    std::optional<ConsumptionStrategy> consumerStrategy,
+    std::optional<ConsumptionStrategy> consumptionStrategy,
     std::weak_ptr<InStageConnection<In>> inConnection,
     std::weak_ptr<OutStageConnection<Out>> outConnection)
     : IPipelineStage(stageName),
       m_shutdownSignaled{false},
-      m_consumptionStrategy(consumerStrategy),
+      m_consumptionStrategy(consumptionStrategy),
       m_consumerId(std::nullopt),
       m_inConnection(inConnection),
       m_outConnection(outConnection),
       m_lastConusmedTaskId{0} {
-  if (!inConnection.expired() && !consumerStrategy.has_value())
+  if (!inConnection.expired() && !consumptionStrategy.has_value())
     throw std::invalid_argument("consumerStrategy is null");
 
-  if (inConnection.expired() && consumerStrategy.has_value())
+  if (inConnection.expired() && consumptionStrategy.has_value())
     throw std::invalid_argument(
         "consumerStrategy is presented without inConnection");
 
