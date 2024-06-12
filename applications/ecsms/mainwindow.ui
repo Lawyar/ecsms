@@ -338,7 +338,7 @@
             <property name="widgetResizable">
              <bool>true</bool>
             </property>
-            <widget class="BlockFieldWidget" name="scrollAreaWidgetContents">
+            <widget class="BlockFieldWidget" name="blockFieldWidget">
              <property name="geometry">
               <rect>
                <x>0</x>

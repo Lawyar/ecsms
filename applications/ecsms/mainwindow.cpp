@@ -7,6 +7,7 @@
 #include "controlls/command/removetagcommand.h"
 #include "controlls/command/tagtextchangedcommand.h"
 #include "delegate/qlineeditdelegate.h"
+#include "events/changecontrollerevent.h"
 #include "ui_mainwindow.h"
 #include "utility/mainwindowutility.h"
 #include "utility/tagutility.h"
@@ -87,7 +88,7 @@ MainWindow::MainWindow(QWidget* parent)
   ui->splitter_5->setStretchFactor(1, 1);
   ui->splitter_5->setStretchFactor(0, INT_MAX);
 
-  ui->scrollAreaWidgetContents->SetCommandManager(_com_mgrs[1]);
+  ui->blockFieldWidget->SetCommandManager(_com_mgrs[1]);
 
   _processes = std::vector<QProcess*>(2);
   for (auto&& p : _processes) {
@@ -360,7 +361,7 @@ void MainWindow::on_actionNewFile_triggered_tab1() {
   auto&& new_file_func = [this]() {
     _file_names[1].clear();
     setWindowTitle(_app_name);
-    ui->scrollAreaWidgetContents->Clear();
+    ui->blockFieldWidget->Clear();
     _com_mgrs[1]->ClearCommands();
     _com_mgrs_states[1].reset(
         new CommandManager::State(_com_mgrs[1]->GetState()));
@@ -402,14 +403,14 @@ void MainWindow::on_actionOpen_triggered_tab1() {
 
     FieldModel field_model;
     VisualizationModel vis_model;
-    ui->scrollAreaWidgetContents->Clear();
-    int counter = ui->scrollAreaWidgetContents->GetCounter();
+    ui->blockFieldWidget->Clear();
+    int counter = ui->blockFieldWidget->GetCounter();
     bool success =
         getYAMLFromFile(this, file_name, field_model, vis_model, counter);
-    ui->scrollAreaWidgetContents->SetCounter(counter);
+    ui->blockFieldWidget->SetCounter(counter);
 
-    ui->scrollAreaWidgetContents->LoadFieldModel(field_model.Save());
-    ui->scrollAreaWidgetContents->LoadVisualizationModel(vis_model.Save());
+    ui->blockFieldWidget->LoadFieldModel(field_model.Save());
+    ui->blockFieldWidget->LoadVisualizationModel(vis_model.Save());
 
     if (!success) {
       _file_names[0].clear();
@@ -452,10 +453,10 @@ void MainWindow::on_actionSave_triggered_tab1() {
     }
   }
 
-  bool success = saveYAMLToFile(
-      this, file_name, ui->scrollAreaWidgetContents->GetFieldModel(),
-      ui->scrollAreaWidgetContents->GetVisualizationModel(),
-      ui->scrollAreaWidgetContents->GetCounter());
+  bool success =
+      saveYAMLToFile(this, file_name, ui->blockFieldWidget->GetFieldModel(),
+                     ui->blockFieldWidget->GetVisualizationModel(),
+                     ui->blockFieldWidget->GetCounter());
   if (!success) {
     _file_names[1].clear();
     setWindowTitle(_app_name);
@@ -481,7 +482,7 @@ void MainWindow::on_actionSaveAs_triggered_tab1() {
 
 bool MainWindow::event(QEvent* e) {
   if (e->type() == QEvent::KeyPress)
-    return qobject_cast<QObject*>(ui->scrollAreaWidgetContents)->event(e);
+    return qobject_cast<QObject*>(ui->blockFieldWidget)->event(e);
   return QMainWindow::event(e);
 }
 
@@ -605,11 +606,11 @@ void MainWindow::on_actionUndo_triggered() {
 }
 
 void MainWindow::on_actionGoToFirstBlock_triggered() {
-  ui->scrollAreaWidgetContents->GoToFirstBlock();
+  ui->blockFieldWidget->GoToFirstBlock();
 }
 
 void MainWindow::on_actionGoToNextBlock_triggered() {
-  ui->scrollAreaWidgetContents->GoToNextBlock();
+  ui->blockFieldWidget->GoToNextBlock();
 }
 
 void MainWindow::on_treeView_clicked(const QModelIndex& index) {
@@ -751,19 +752,28 @@ void MainWindow::on_pushButton_minus_table_clicked() {
 }
 
 void MainWindow::on_listView_doubleClicked(const QModelIndex& index) {
-  ui->scrollAreaWidgetContents->AddBlock(index.data().value<QString>());
+  ui->blockFieldWidget->AddBlock(index.data().value<QString>());
 }
 
 void MainWindow::on_pushButton_startPipeline_pressed() {
   constructAndStartPipeline();
-  ui->pushButton_stopPipeline->setEnabled(_pipeline != nullptr);
-  ui->pushButton_startPipeline->setDisabled(_pipeline != nullptr);  
+  bool success = _pipeline != nullptr;
+
+  if (success) {
+    ui->blockFieldWidget->Update(
+        std::make_shared<ChangeControllerEvent>(emptyCotroller));
+  }
+
+  ui->pushButton_stopPipeline->setEnabled(success);
+  ui->pushButton_startPipeline->setDisabled(success);
 }
 
 void MainWindow::on_pushButton_stopPipeline_pressed() {
   ui->pushButton_stopPipeline->setDisabled(true);
   ui->pushButton_startPipeline->setEnabled(true);
   _pipeline.reset();
+  ui->blockFieldWidget->Update(
+      std::make_shared<ChangeControllerEvent>(defaultController));
 }
 
 // возвращает количество входных связей и выходных связей
@@ -809,10 +819,11 @@ static std::map<BlockId, Connections> createConnections(
   return res;
 }
 
-static std::vector<std::shared_ptr<IPipelineStage>> createStages(const std::map<BlockId, Connections>& connections,
-                         const FieldModel& field_model) {
+static std::vector<std::shared_ptr<IPipelineStage>> createStages(
+    const std::map<BlockId, Connections>& connections,
+    const FieldModel& field_model) {
   auto&& registry = PipelineRegistry::Instance();
-  
+
   std::vector<std::shared_ptr<IPipelineStage>> stages;
 
   auto&& blocks = field_model.GetBlocks();
@@ -850,7 +861,7 @@ static std::vector<std::shared_ptr<IPipelineStage>> createStages(const std::map<
 void MainWindow::constructAndStartPipeline() {
   _pipeline = std::make_shared<Pipeline>();
 
-  auto&& field_model = ui->scrollAreaWidgetContents->GetFieldModel();
+  auto&& field_model = ui->blockFieldWidget->GetFieldModel();
 
   try {
     auto&& connectionsMap = createConnections(field_model);

@@ -20,6 +20,7 @@ set(SOURCE_LIST
     controlls/defaultcontroller.h controlls/defaultcontroller.cpp
     controlls/drawlinecontroller.h controlls/drawlinecontroller.cpp
     controlls/drawrectanglecontroller.h controlls/drawrectanglecontroller.cpp
+    controlls/emptycontroller.h controlls/emptycontroller.cpp
     controlls/icontroller.h
     delegate/qlineeditdelegate.cpp delegate/qlineeditdelegate.h
     events/addblockevent.h events/addblockevent.cpp

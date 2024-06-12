@@ -4,6 +4,7 @@
 #include "blockfieldwidget.h"
 #include "../controlls/controllerprocedure.h"
 #include "../controlls/drawrectanglecontroller.h"
+#include "../controlls/emptycontroller.h"
 #include "../events/addblockevent.h"
 #include "../events/changeactivenodeevent.h"
 #include "../events/changecontrollerevent.h"
@@ -105,6 +106,10 @@ void BlockFieldWidget::Update(std::shared_ptr<Event> e) {
         case drawRectangleController: {
           _controller.reset(new DrawRectangleController(
               _rect_model, _field_model, _selection_model, _vis_model));
+          break;
+        }
+        case emptyCotroller: {
+          _controller.reset(new EmptyController());
           break;
         }
         default: {
@@ -237,13 +242,11 @@ const VisualizationModel& BlockFieldWidget::GetVisualizationModel() const {
 
 void BlockFieldWidget::LoadFieldModel(
     const FieldModel::Memento& field_model_memento) {
-  //_field_model.Subscribe(this);
   _field_model.Load(field_model_memento);
 }
 
 void BlockFieldWidget::LoadVisualizationModel(
     const VisualizationModel::Memento& vis_model_memento) {
-  //_vis_model.Subscribe(this);
   _vis_model.Load(vis_model_memento);
 }
 

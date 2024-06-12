@@ -16,13 +16,14 @@ class BlockFieldWidget : public QWidget, public IObserver {
  public:
   BlockFieldWidget(QWidget* parent = nullptr);
   void SetCommandManager(std::shared_ptr<CommandManager> cm);
-  void AddBlock(const QString & block_name);
+  void AddBlock(const QString& block_name);
   virtual void Update(std::shared_ptr<Event> e) override;
   std::unique_ptr<IController>& GetController();
   QWidget* FindById(Id id);
   void Clear();
   void GoToFirstBlock();
   void GoToNextBlock();
+
   const FieldModel& GetFieldModel() const;
   const VisualizationModel& GetVisualizationModel() const;
   void LoadFieldModel(const FieldModel::Memento& field_model_memento);
