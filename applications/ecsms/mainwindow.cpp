@@ -109,6 +109,16 @@ MainWindow::MainWindow(QWidget* parent)
                                _com_mgrs[0], ui->treeView));
 }
 
+bool MainWindow::isPipelineWorking() const {
+  return !!_pipeline;
+}
+
+void MainWindow::stopPipeline() {
+  _pipeline.reset();
+  ui->pushButton_stopPipeline->setDisabled(true);
+  ui->pushButton_startPipeline->setEnabled(true);
+}
+
 void MainWindow::fillBlocksList() {
   auto list_model = new QStandardItemModel(0, 0, ui->listView);
   ui->listView->setModel(list_model);
@@ -159,8 +169,10 @@ void MainWindow::on_menuFile_aboutToShow() {
 
 void MainWindow::on_menuEdit_aboutToShow() {
   auto&& curr_ind = ui->tabWidget->currentIndex();
-  ui->actionRedo->setEnabled(_com_mgrs[curr_ind]->HasCommandsToRedo());
-  ui->actionUndo->setEnabled(_com_mgrs[curr_ind]->HasCommandsToUndo());
+  ui->actionRedo->setEnabled(_com_mgrs[curr_ind]->HasCommandsToRedo() &&
+                             !isPipelineWorking());
+  ui->actionUndo->setEnabled(_com_mgrs[curr_ind]->HasCommandsToUndo() &&
+                             !isPipelineWorking());
 }
 
 void MainWindow::on_menuView_aboutToShow() {
@@ -362,6 +374,7 @@ void MainWindow::on_actionNewFile_triggered_tab1() {
     _file_names[1].clear();
     setWindowTitle(_app_name);
     ui->blockFieldWidget->Clear();
+    stopPipeline();
     _com_mgrs[1]->ClearCommands();
     _com_mgrs_states[1].reset(
         new CommandManager::State(_com_mgrs[1]->GetState()));
@@ -419,6 +432,7 @@ void MainWindow::on_actionOpen_triggered_tab1() {
     } else {
       setWindowTitle(file_name + ": " + _app_name);
     }
+    stopPipeline();
     _com_mgrs[1]->ClearCommands();
     _com_mgrs_states[1].reset(
         new CommandManager::State(_com_mgrs[1]->GetState()));
@@ -757,7 +771,7 @@ void MainWindow::on_listView_doubleClicked(const QModelIndex& index) {
 
 void MainWindow::on_pushButton_startPipeline_pressed() {
   constructAndStartPipeline();
-  bool success = _pipeline != nullptr;
+  bool success = isPipelineWorking();
 
   if (success) {
     ui->blockFieldWidget->Update(
@@ -769,9 +783,7 @@ void MainWindow::on_pushButton_startPipeline_pressed() {
 }
 
 void MainWindow::on_pushButton_stopPipeline_pressed() {
-  ui->pushButton_stopPipeline->setDisabled(true);
-  ui->pushButton_startPipeline->setEnabled(true);
-  _pipeline.reset();
+  stopPipeline();
   ui->blockFieldWidget->Update(
       std::make_shared<ChangeControllerEvent>(defaultController));
 }
@@ -877,6 +889,6 @@ void MainWindow::constructAndStartPipeline() {
     _pipeline->run();
   } catch (const std::exception& e) {
     QMessageBox::warning(this, "Ошибка", e.what());
-    _pipeline.reset();
+    stopPipeline();
   }
 }

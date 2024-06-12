@@ -25,6 +25,8 @@ public:
   ~MainWindow();
 
 private:
+  bool isPipelineWorking() const;
+  void stopPipeline();
   void fillBlocksList();
   void updateAllButtons();
   void updateMainPage();
