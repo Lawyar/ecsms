@@ -8,6 +8,8 @@
 #include <QProcess>
 #include <QStandardItemModel>
 
+class Pipeline;
+
 QT_BEGIN_NAMESPACE
 namespace Ui {
 class MainWindow;
@@ -23,6 +25,7 @@ public:
   ~MainWindow();
 
 private:
+  void fillBlocksList();
   void updateAllButtons();
   void updateMainPage();
 
@@ -76,11 +79,16 @@ private slots:
   void on_pushButton_stopPipeline_pressed();
 
 private:
+  void constructAndStartPipeline();
+
+ private:
   QString _app_name = "ECSMS";
   Ui::MainWindow *ui;
   std::vector<std::unique_ptr<CommandManager::State>> _com_mgrs_states;
   std::vector<std::shared_ptr<CommandManager>> _com_mgrs;
   std::vector<QProcess *> _processes;
   std::vector<QString> _file_names;
+
+  std::shared_ptr<Pipeline> _pipeline;
 };
 #endif // MAINWINDOW_H

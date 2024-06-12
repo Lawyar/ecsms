@@ -65,5 +65,7 @@ target_link_libraries(ecsms PRIVATE
     Qt5::Widgets
 )
 
-find_package(yaml-cpp CONFIG REQUIRED)
-target_link_libraries(ecsms PUBLIC yaml-cpp::yaml-cpp)
+target_link_libraries(ecsms PRIVATE pipeline_presentation)
+
+find_package(yaml-cpp REQUIRED)
+target_link_libraries(ecsms PRIVATE yaml-cpp::yaml-cpp)

@@ -13,6 +13,9 @@
 #include "widgets/blockfieldwidget.h"
 #include "widgets/blockwidget.h"
 
+#include <Pipeline.h>
+#include <PipelineRegistry.h>
+
 #include <QChart>
 #include <QChartView>
 #include <QDebug>
@@ -75,12 +78,8 @@ MainWindow::MainWindow(QWidget* parent)
   ui->splitter_3->setStretchFactor(0, INT_MAX);
   ui->splitter_3->setStretchFactor(1, 1);
 
-  auto list_model = new QStandardItemModel(0, 0, ui->listView);
-  ui->listView->setModel(list_model);
-  QStandardItem* parent_item = list_model->invisibleRootItem();
-  auto block_list_item = new QStandardItem("default_block");
-  block_list_item->setFlags(block_list_item->flags() ^ Qt::ItemIsEditable);
-  parent_item->appendRow(block_list_item);
+  // fill block's list
+  fillBlocksList();
 
   auto w = ui->tab_1->width();
   ui->splitter_4->setSizes({w / 5, w - w / 5});
@@ -107,6 +106,18 @@ MainWindow::MainWindow(QWidget* parent)
   ui->tableView->setItemDelegateForColumn(
       1, new QLineEditDelegate(ui->treeView, WhatValidate::Nothing,
                                _com_mgrs[0], ui->treeView));
+}
+
+void MainWindow::fillBlocksList() {
+  auto list_model = new QStandardItemModel(0, 0, ui->listView);
+  ui->listView->setModel(list_model);
+  QStandardItem* parent_item = list_model->invisibleRootItem();
+  auto&& reg_inst = PipelineRegistry::Instance();
+  for (auto&& block_name : reg_inst.getStageNames()) {
+    auto block_list_item = new QStandardItem(block_name.c_str());
+    block_list_item->setFlags(block_list_item->flags() & (~Qt::ItemIsEditable));
+    parent_item->appendRow(block_list_item);
+  }
 }
 
 MainWindow::~MainWindow() {
@@ -740,20 +751,122 @@ void MainWindow::on_pushButton_minus_table_clicked() {
 }
 
 void MainWindow::on_listView_doubleClicked(const QModelIndex& index) {
-  ui->scrollAreaWidgetContents->AddBlock();
+  ui->scrollAreaWidgetContents->AddBlock(index.data().value<QString>());
 }
 
 void MainWindow::on_pushButton_pausePipeline_pressed() {
   auto text = ui->pushButton_pausePipeline->text();
-  if (text == "||")
+  if (text == "||") {
     ui->pushButton_pausePipeline->setText("▶");
-  else {
+  } else {
     ui->pushButton_pausePipeline->setText("||");
     ui->pushButton_stopPipeline->setEnabled(true);
+    constructAndStartPipeline();
   }
 }
 
 void MainWindow::on_pushButton_stopPipeline_pressed() {
   ui->pushButton_stopPipeline->setEnabled(false);
   ui->pushButton_pausePipeline->setText("▶");
+}
+
+/// Возвращает количество входных связей и выходных связей
+static std::map<NodeType, size_t> getConnectionSizes(
+    const BlockId& block_id,
+    const FieldModel& field_model) {
+  std::map<NodeType, size_t> res;
+  for (auto&& node_type : {NodeType::Incoming, NodeType::Outgoing}) {
+    auto&& node_id = block_id.GetChildId(static_cast<PartId>(node_type));
+    auto node_connections = field_model.GetNodeConnections(node_id);
+    res[node_type] = node_connections[node_id].size();
+    res[node_type] += node_connections.size() - 1;
+  }
+
+  return res;
+}
+
+struct Connections {
+  std::shared_ptr<StageConnection> in;
+  std::shared_ptr<StageConnection> out;
+};
+
+static std::map<BlockId, Connections> createConnections(
+    const FieldModel& field_model) {
+  auto&& registry = PipelineRegistry::Instance();
+
+  std::map<BlockId, Connections> res;
+  auto&& connection_map = field_model.GetConnectionMap();
+  for (auto iter = connection_map.begin(); iter != connection_map.end();
+       ++iter) {
+    auto&& start_node_id = iter.key();
+    auto&& end_node_ids = iter.value();
+
+    auto block_name =
+        field_model.GetBlockData(start_node_id.GetParentId())->text;
+    auto outConnection = registry.constructProducerConnection(
+        block_name.toStdString(), end_node_ids.size());
+
+    res[start_node_id.GetParentId()].out = outConnection;
+    for (auto&& end_node_id : end_node_ids)
+      res[end_node_id.GetParentId()].in = outConnection;
+  }
+  return res;
+}
+
+static std::vector<std::shared_ptr<IPipelineStage>> createStages(const std::map<BlockId, Connections>& connections,
+                         const FieldModel& field_model) {
+  auto&& registry = PipelineRegistry::Instance();
+  
+  std::vector<std::shared_ptr<IPipelineStage>> stages;
+
+  auto&& blocks = field_model.GetBlocks();
+  for (auto iter = blocks.begin(); iter != blocks.end(); ++iter) {
+    auto&& block_id = iter.key();
+    auto&& block_data = iter.value();
+    auto&& block_name = block_data.text.toStdString();
+
+    std::shared_ptr<IPipelineStage> stage;
+    auto&& stageType = registry.getStageType(block_name);
+    switch (stageType) {
+      case PipelineStageType::consumer:
+        stage = registry.constructConsumer(
+            block_name, ConsumptionStrategy::fifo, connections.at(block_id).in);
+        break;
+      case PipelineStageType::producer:
+        stage = registry.constructProducer(block_name,
+                                           connections.at(block_id).out);
+        break;
+      case PipelineStageType::producerConsumer:
+        stage = registry.constructConsumerAndProducer(
+            block_name, ConsumptionStrategy::fifo, connections.at(block_id).in,
+            connections.at(block_id).out);
+        break;
+      default:
+        assert(false);
+        break;
+    }
+    stages.push_back(stage);
+  }
+
+  return stages;
+}
+
+void MainWindow::constructAndStartPipeline() {
+  auto&& registry = PipelineRegistry::Instance();
+  auto&& field_model = ui->scrollAreaWidgetContents->GetFieldModel();
+  auto&& connection_map = field_model.GetConnectionMap();
+  auto&& blocks = field_model.GetBlocks();
+
+  _pipeline = std::make_shared<Pipeline>();
+
+  auto&& connectionsMap = createConnections(field_model);
+  auto&& stages = createStages(connectionsMap, field_model);
+  for (auto&& [_, connections] : connectionsMap)
+    if (connections.out)
+      _pipeline->addConnection(connections.out);
+
+  for (auto&& stage : stages)
+    _pipeline->addStage(stage);
+
+  _pipeline->run();
 }

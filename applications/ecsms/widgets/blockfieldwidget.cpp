@@ -64,10 +64,10 @@ void BlockFieldWidget::SetCommandManager(std::shared_ptr<CommandManager> cm) {
                                           *_cm));
 }
 
-void BlockFieldWidget::AddBlock() {
-  controller::execute::AddBlock(_block_name_maker, _field_model,
-                                _selection_model,
-                                _vis_model.MapToModel(rect().center()), _cm);
+void BlockFieldWidget::AddBlock(const QString& block_name) {
+  controller::execute::AddBlock(
+      _block_name_maker, _field_model, _selection_model,
+      _vis_model.MapToModel(rect().center()), block_name, _cm);
 }
 
 void BlockFieldWidget::Update(std::shared_ptr<Event> e) {

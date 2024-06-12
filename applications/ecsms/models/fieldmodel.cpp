@@ -34,7 +34,7 @@ FieldModel::GetNodeConnections(NodeId node) const {
     auto &&connects = _connections[start];
     auto &&connect = std::find(connects.begin(), connects.end(), node);
     if (connect != connects.end())
-      res[start].push_back(*connect);
+      res[start].push_back(node);
   }
   return res;
 }
