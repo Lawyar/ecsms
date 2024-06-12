@@ -2,73 +2,79 @@
 #include "../widgets/blockfieldwidget.h"
 #include "command/addconnectioncommand.h"
 
-DrawLineController::DrawLineController(FieldModel &field_model,
-                                       PhantomLineModel &line_model,
-                                       const VisualizationModel &vis_model,
-                                       CommandManager &cm)
-    : _field_model(field_model), _line_model(line_model), _vis_model(vis_model),
+DrawLineController::DrawLineController(FieldModel& field_model,
+                                       PhantomLineModel& line_model,
+                                       const VisualizationModel& vis_model,
+                                       CommandManager& cm)
+    : _field_model(field_model),
+      _line_model(line_model),
+      _vis_model(vis_model),
       _cm(cm) {
-  auto &&node_id = _line_model.GetBeginNode();
+  auto&& node_id = _line_model.GetBeginNode();
   assert(node_id);
   _active_because_drawing.reset(new ActiveNodesLock(
-      _field_model, {*node_id}, [this](const NodeId &node) -> bool {
+      _field_model, {*node_id}, [this](const NodeId& node) -> bool {
         return _field_model.IsNodeConnected(node) ||
                _line_model.GetBeginNode() == node;
       }));
   _active_because_entered.reset(
-      new ActiveNodesLock(_field_model, {*node_id}, [this](const NodeId &node) {
+      new ActiveNodesLock(_field_model, {*node_id}, [this](const NodeId& node) {
         return _field_model.IsNodeConnected(node) ||
                _line_model.GetBeginNode() == node;
       }));
 }
 
-void DrawLineController::onMouseMoveEvent(QWidget *widget, QMouseEvent *event) {
+void DrawLineController::onMouseMoveEvent(QWidget* widget, QMouseEvent* event) {
   const QPoint vis_point = event->pos();
   const QPoint model_point = _vis_model.MapToModel(vis_point);
 
-  if (auto &&field_w = qobject_cast<BlockFieldWidget *>(widget)) {
+  if (auto&& field_w = qobject_cast<BlockFieldWidget*>(widget)) {
     _line_model.SetEnd(model_point);
-  } else if (auto &&block_w = qobject_cast<BlockWidget *>(widget)) {
+  } else if (auto&& block_w = qobject_cast<BlockWidget*>(widget)) {
     _line_model.SetEnd(block_w->CoordToBlockField(model_point));
-  } else if (auto &&connect_node_w =
-                 qobject_cast<ConnectNodeWidget *>(widget)) {
+  } else if (auto&& connect_node_w = qobject_cast<ConnectNodeWidget*>(widget)) {
     _line_model.SetEnd(connect_node_w->coordToBlockField(model_point));
   }
 }
 
-void DrawLineController::onMousePressEvent(QWidget *widget,
-                                           QMouseEvent *event) {
-  if (qobject_cast<BlockFieldWidget *>(widget)) {
+void DrawLineController::onMousePressEvent(QWidget* widget,
+                                           QMouseEvent* event) {
+  if (qobject_cast<BlockFieldWidget*>(widget)) {
     onFieldMousePress();
-  } else if (auto &&connect_node_w =
-                 qobject_cast<ConnectNodeWidget *>(widget)) {
-    auto &&connect_node_id = connect_node_w->GetId();
-    onConnectNodeMousePress(connect_node_id);
+  } else if (auto&& connect_node_w = qobject_cast<ConnectNodeWidget*>(widget)) {
+    if (connect_node_w->GetNodeType() == NodeType::Incoming) {
+      auto&& connect_node_id = connect_node_w->GetId();
+      onConnectNodeMousePress(connect_node_id);
+    } else {
+      onFieldMousePress();
+    }
   }
 }
 
-void DrawLineController::onKeyPressEvent(QWidget *widget, QKeyEvent *event) {}
+void DrawLineController::onKeyPressEvent(QWidget* widget, QKeyEvent* event) {}
 
-void DrawLineController::onEnterEvent(QWidget *widget, QEvent *event) {
-  if (auto &&connect_node_w = qobject_cast<ConnectNodeWidget *>(widget)) {
+void DrawLineController::onEnterEvent(QWidget* widget, QEvent* event) {
+  if (auto&& connect_node_w = qobject_cast<ConnectNodeWidget*>(widget);
+      connect_node_w && connect_node_w->GetNodeType() == NodeType::Incoming) {
     _active_because_entered.reset(new ActiveNodesLock(
-        _field_model, {connect_node_w->GetId()}, [this](const NodeId &node) {
+        _field_model, {connect_node_w->GetId()}, [this](const NodeId& node) {
           return _field_model.IsNodeConnected(node);
         }));
   }
 }
 
-void DrawLineController::onLeaveEvent(QWidget *widget, QEvent *event) {
-  if (auto &&connect_node_w = qobject_cast<ConnectNodeWidget *>(widget)) {
+void DrawLineController::onLeaveEvent(QWidget* widget, QEvent* event) {
+  if (auto&& connect_node_w = qobject_cast<ConnectNodeWidget*>(widget);
+      connect_node_w && connect_node_w->GetNodeType() == NodeType::Incoming) {
     _active_because_entered.reset();
   }
 }
 
-void DrawLineController::onMouseReleaseEvent(QWidget *widget,
-                                             QMouseEvent *event) {}
+void DrawLineController::onMouseReleaseEvent(QWidget* widget,
+                                             QMouseEvent* event) {}
 
 void DrawLineController::onFieldMousePress() {
-  if (auto &&selected_node = _line_model.GetBegin()) {
+  if (auto&& selected_node = _line_model.GetBegin()) {
     _line_model.SetBegin(std::nullopt, std::nullopt);
   }
 }

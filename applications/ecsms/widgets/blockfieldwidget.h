@@ -13,30 +13,39 @@ class ConnectNodeWidget;
 
 class BlockFieldWidget : public QWidget, public IObserver {
   Q_OBJECT
-public:
-  BlockFieldWidget(QWidget *parent = nullptr);
+ public:
+  BlockFieldWidget(QWidget* parent = nullptr);
   void SetCommandManager(std::shared_ptr<CommandManager> cm);
-  void AddBlock();
+  void AddBlock(const QString& block_name);
   virtual void Update(std::shared_ptr<Event> e) override;
-  std::unique_ptr<IController> &GetController();
-  QWidget *FindById(Id id);
+  std::unique_ptr<IController>& GetController();
+  QWidget* FindById(Id id);
   void Clear();
   void GoToFirstBlock();
   void GoToNextBlock();
 
-protected:
-  void mouseMoveEvent(QMouseEvent *event) override;
-  void mousePressEvent(QMouseEvent *event) override;
-  void keyPressEvent(QKeyEvent *event) override;
-  void enterEvent(QEvent *event) override;
-  void leaveEvent(QEvent *event) override;
-  void mouseReleaseEvent(QMouseEvent *event) override;
-  void paintEvent(QPaintEvent *event) override;
+  const FieldModel& GetFieldModel() const;
+  const VisualizationModel& GetVisualizationModel() const;
+  void LoadFieldModel(const FieldModel::Memento& field_model_memento);
+  void LoadVisualizationModel(
+      const VisualizationModel::Memento& vis_model_memento);
 
-private:
+  int GetCounter() const;
+  void SetCounter(int counter);
+
+ protected:
+  void mouseMoveEvent(QMouseEvent* event) override;
+  void mousePressEvent(QMouseEvent* event) override;
+  void keyPressEvent(QKeyEvent* event) override;
+  void enterEvent(QEvent* event) override;
+  void leaveEvent(QEvent* event) override;
+  void mouseReleaseEvent(QMouseEvent* event) override;
+  void paintEvent(QPaintEvent* event) override;
+
+ private:
   void actualizeBlock(BlockId id);
 
-private:
+ private:
   std::shared_ptr<CommandManager> _cm;
   NameMaker _block_name_maker;
   std::unique_ptr<IController> _controller;
@@ -48,4 +57,4 @@ private:
   VisualizationModel _vis_model;
 };
 
-#endif // BLOCKFIELD_H
+#endif  // BLOCKFIELD_H

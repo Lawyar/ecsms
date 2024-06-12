@@ -21,6 +21,7 @@ public:
   void RemoveSelectionWithNode(const NodeId &node);
   void AddSelection(const NodeId &start, const NodeId &end);
   void RemoveSelection(const NodeId &start, const NodeId &end);
+  void ClearSelection();
 
   void Clear();
   class Memento;

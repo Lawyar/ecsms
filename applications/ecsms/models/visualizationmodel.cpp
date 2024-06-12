@@ -35,3 +35,11 @@ void VisualizationModel::Clear() {
   Notify(std::make_shared<VisualModelUpdateEvent>());
   IModel::Clear();
 }
+
+VisualizationModel::Memento VisualizationModel::Save() const {
+  return VisualizationModel::Memento(_center_coord);
+}
+
+void VisualizationModel::Load(const VisualizationModel::Memento& m) {
+  SetNewCoordCenter(m._center_coord);
+}
