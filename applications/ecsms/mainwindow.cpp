@@ -754,23 +754,19 @@ void MainWindow::on_listView_doubleClicked(const QModelIndex& index) {
   ui->scrollAreaWidgetContents->AddBlock(index.data().value<QString>());
 }
 
-void MainWindow::on_pushButton_pausePipeline_pressed() {
-  auto text = ui->pushButton_pausePipeline->text();
-  if (text == "||") {
-    ui->pushButton_pausePipeline->setText("▶");
-  } else {
-    ui->pushButton_pausePipeline->setText("||");
-    ui->pushButton_stopPipeline->setEnabled(true);
-    constructAndStartPipeline();
-  }
+void MainWindow::on_pushButton_startPipeline_pressed() {
+  ui->pushButton_stopPipeline->setEnabled(true);
+  ui->pushButton_startPipeline->setDisabled(true);
+  constructAndStartPipeline();
 }
 
 void MainWindow::on_pushButton_stopPipeline_pressed() {
-  ui->pushButton_stopPipeline->setEnabled(false);
-  ui->pushButton_pausePipeline->setText("▶");
+  ui->pushButton_stopPipeline->setDisabled(true);
+  ui->pushButton_startPipeline->setEnabled(true);
+  _pipeline.reset();
 }
 
-/// Возвращает количество входных связей и выходных связей
+// возвращает количество входных связей и выходных связей
 static std::map<NodeType, size_t> getConnectionSizes(
     const BlockId& block_id,
     const FieldModel& field_model) {

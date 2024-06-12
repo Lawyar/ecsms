@@ -343,8 +343,8 @@
               <rect>
                <x>0</x>
                <y>0</y>
-               <width>98</width>
-               <height>28</height>
+               <width>234</width>
+               <height>201</height>
               </rect>
              </property>
              <property name="sizePolicy">
@@ -382,7 +382,7 @@
              </layout>
             </item>
             <item>
-             <widget class="QPushButton" name="pushButton_pausePipeline">
+             <widget class="QPushButton" name="pushButton_startPipeline">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                 <horstretch>0</horstretch>
@@ -396,6 +396,9 @@
             </item>
             <item>
              <widget class="QPushButton" name="pushButton_stopPipeline">
+              <property name="enabled">
+               <bool>false</bool>
+              </property>
               <property name="text">
                <string>STOP</string>
               </property>

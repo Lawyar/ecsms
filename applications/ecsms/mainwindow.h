@@ -75,7 +75,7 @@ private slots:
 
   void on_listView_doubleClicked(const QModelIndex &index);
 
-  void on_pushButton_pausePipeline_pressed();
+  void on_pushButton_startPipeline_pressed();
   void on_pushButton_stopPipeline_pressed();
 
 private:
