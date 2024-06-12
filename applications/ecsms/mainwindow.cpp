@@ -755,9 +755,9 @@ void MainWindow::on_listView_doubleClicked(const QModelIndex& index) {
 }
 
 void MainWindow::on_pushButton_startPipeline_pressed() {
-  ui->pushButton_stopPipeline->setEnabled(true);
-  ui->pushButton_startPipeline->setDisabled(true);
   constructAndStartPipeline();
+  ui->pushButton_stopPipeline->setEnabled(_pipeline != nullptr);
+  ui->pushButton_startPipeline->setDisabled(_pipeline != nullptr);  
 }
 
 void MainWindow::on_pushButton_stopPipeline_pressed() {
@@ -848,21 +848,24 @@ static std::vector<std::shared_ptr<IPipelineStage>> createStages(const std::map<
 }
 
 void MainWindow::constructAndStartPipeline() {
-  auto&& registry = PipelineRegistry::Instance();
-  auto&& field_model = ui->scrollAreaWidgetContents->GetFieldModel();
-  auto&& connection_map = field_model.GetConnectionMap();
-  auto&& blocks = field_model.GetBlocks();
-
   _pipeline = std::make_shared<Pipeline>();
 
-  auto&& connectionsMap = createConnections(field_model);
-  auto&& stages = createStages(connectionsMap, field_model);
-  for (auto&& [_, connections] : connectionsMap)
-    if (connections.out)
-      _pipeline->addConnection(connections.out);
+  auto&& field_model = ui->scrollAreaWidgetContents->GetFieldModel();
 
-  for (auto&& stage : stages)
-    _pipeline->addStage(stage);
+  try {
+    auto&& connectionsMap = createConnections(field_model);
+    auto&& stages = createStages(connectionsMap, field_model);
 
-  _pipeline->run();
+    for (auto&& [_, connections] : connectionsMap)
+      if (connections.out)
+        _pipeline->addConnection(connections.out);
+
+    for (auto&& stage : stages)
+      _pipeline->addStage(stage);
+
+    _pipeline->run();
+  } catch (const std::exception& e) {
+    QMessageBox::warning(this, "Ошибка", e.what());
+    _pipeline.reset();
+  }
 }
