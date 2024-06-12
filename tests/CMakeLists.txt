@@ -11,6 +11,6 @@ FetchContent_MakeAvailable(googletest)
 
 add_subdirectory(common_tests)
 add_subdirectory(pipeline_tests)
-add_subdirectory(pipeline_presentation_tests)
+add_subdirectory(pipeline_presentation_tests) 
 add_subdirectory(database_library_tests)
 add_subdirectory(analytics_tests)
