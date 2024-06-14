@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <optional>
 
 /// Интерфейс параметризуемого объекта
 /// Параметризация идет с помощью пар "ключ-значение",
@@ -25,7 +26,7 @@ class IParameterized {
   virtual void ApplyParameterValues() noexcept(false) = 0;
 
   /// Получить понятное название параметра
-  virtual std::wstring GetObviousParamName(const std::string& paramName) const = 0;
+  virtual std::optional<std::wstring> GetObviousParamName(const std::string& paramName) const = 0;
 
   /// Объект полностью (и корректно) параметризован
   virtual bool IsFullyParameterized() const = 0;

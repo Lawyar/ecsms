@@ -4,6 +4,7 @@
 #include <IExecutorEAV.h>
 #include <map>
 
+/// Параметризация общей части стадий чтения и записи в БД
 class DbParameterizedStage : public IParameterized {
   mutable std::map<std::string, std::string> m_keyValues;
   const std::vector<std::string> m_keys;
@@ -23,7 +24,7 @@ protected:
   virtual bool SetParameterValue(const std::string& paramName,
                                  const std::string& paramValue) override;
   /// Получить понятное название параметра
-  virtual std::wstring GetObviousParamName(
+  virtual std::optional<std::wstring> GetObviousParamName(
       const std::string& paramName) const override;
 
   /// Применить значения параметров
@@ -42,6 +43,4 @@ public:
   std::string GetEntityName() const;
   /// Получить название атрибута
   std::string GetAttributeName() const;
-  /// Получить идентификатор сущности
-  IExecutorEAV::EntityId GetEntityId() const;
 };

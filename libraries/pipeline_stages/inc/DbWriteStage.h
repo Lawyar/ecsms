@@ -5,17 +5,23 @@
 
 template <typename T>
 class DbWriteStage : public ConsumerStage<T>, public DbParameterizedStage {
+  IExecutorEAV::EntityId m_entityId = -1; ///< Идентификатор сущности, в которую пишем
+
  public:
   DbWriteStage(ConsumptionStrategy strategy,
                std::shared_ptr<InStageConnection<T>>);
 
   void consume(std::shared_ptr<T> inData) override;
 
+  /// Применить значения параметров
+  virtual void ApplyParameterValues() noexcept(false) override;
+
  public:
   virtual void ResetFile() override;
 
  public:
-  static constexpr auto stageName = "DbWriteStage";
+  static inline std::string stageName =
+      std::string(typeid(T).name()) + "ToDatabase";
   using consumptionT = T;
   using productionT = void;
 };
@@ -58,6 +64,13 @@ void DbWriteStage<T>::consume(std::shared_ptr<T> inData) {
 }
 
 template <typename T>
+inline void DbWriteStage<T>::ApplyParameterValues() noexcept(false)
+{
+  DbParameterizedStage::ApplyParameterValues();
+  // setId("EntityName: " + GetEntityName() + "; EntityId: " + std::to_string(m_entityId));
+}
+
+template <typename T>
 inline void DbWriteStage<T>::ResetFile() {
   m_file.reset();
 
@@ -68,13 +81,13 @@ inline void DbWriteStage<T>::ResetFile() {
   ISQLTypeRemoteFileIdPtr value =
       converter->GetSQLTypeRemoteFileId(m_file->GetFileName());
 
-  IExecutorEAV::EntityId entityId = -1;
-  if (auto status = m_executorEAV->CreateNewEntity(GetEntityName(), entityId);
+  m_entityId = -1;
+  if (auto status = m_executorEAV->CreateNewEntity(GetEntityName(), m_entityId);
       status->HasError())
     throw std::runtime_error(status->GetErrorMessage());
 
   if (auto status = m_executorEAV->Insert(
-          GetEntityName(), entityId,
+          GetEntityName(), m_entityId,
           converter->GetSQLTypeText(GetAttributeName()), value);
       status->HasError())
     throw std::runtime_error(status->GetErrorMessage());

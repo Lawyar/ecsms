@@ -27,8 +27,13 @@ void ParameterizedDlg::FillParameterValues() {
     QHBoxLayout* subLayout = new QHBoxLayout(this);
     mainLayout->addLayout(subLayout);
 
-    QString obviousParamName = QString::fromStdWString(
-        m_parameterized.GetObviousParamName(paramValue.paramName));
+    QString obviousParamName;
+    if (auto obviousParamNameOpt =
+            m_parameterized.GetObviousParamName(paramValue.paramName))
+      obviousParamName = QString::fromStdWString(*obviousParamNameOpt);
+
+    else
+      obviousParamName = "<Error : unknown parameter name>";
 
     QLabel* paramNameLabel = new QLabel(obviousParamName, this);
     QLineEdit* paramValueEdit =

@@ -25,14 +25,10 @@ void PipelineRegistry::Init() {
   globalRegistry.registerConsumerAndProducer<Int32ToDoubleConverter>(
       Int32ToDoubleConverter::stageName);
 
-  globalRegistry.registerProducer<DbReadStage<int>>(
-      std::string("Int") + DbReadStage<int>::stageName);
-  globalRegistry.registerProducer<DbReadStage<double>>(
-      std::string("Double") + DbReadStage<int>::stageName);
-  globalRegistry.registerConsumer<DbWriteStage<int>>(
-      std::string("Int") + DbWriteStage<int>::stageName);
-  globalRegistry.registerConsumer<DbWriteStage<double>>(
-      std::string("Double") + DbWriteStage<int>::stageName);
+  globalRegistry.registerProducer<DbReadStage<int>>(DbReadStage<int>::stageName);
+  globalRegistry.registerProducer<DbReadStage<double>>(DbReadStage<double>::stageName);
+  globalRegistry.registerConsumer<DbWriteStage<int>>(DbWriteStage<int>::stageName);
+  globalRegistry.registerConsumer<DbWriteStage<double>>(DbWriteStage<double>::stageName);
 }
 
 PipelineRegistry& PipelineRegistry::Instance() {
