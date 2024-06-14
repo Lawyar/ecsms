@@ -11,7 +11,7 @@ ParameterizedDlg::ParameterizedDlg(const QString& title,
     : QDialog(parent), m_parameterized(parameterized) {
   setWindowTitle(title);
   FillParameterValues();
-  m_enterButton = new QPushButton("Apply", this);
+  m_enterButton = new QPushButton("Применить", this);
   layout()->addWidget(m_enterButton);
   connect(m_enterButton, &QPushButton::clicked, this,
           &ParameterizedDlg::SetParameterFromWidgets);
