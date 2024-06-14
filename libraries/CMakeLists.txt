@@ -1,6 +1,6 @@
 add_subdirectory(common)
 add_subdirectory(pipeline)
-add_subdirectory(pipeline_sample)
+add_subdirectory(pipeline_stages)
 add_subdirectory(pipeline_presentation)
 add_subdirectory(database_library)
 

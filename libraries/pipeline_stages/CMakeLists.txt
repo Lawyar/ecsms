@@ -1,4 +1,4 @@
-add_library(pipeline_sample
+add_library(pipeline_stages
     inc/Int32RandomGenerator.h
     inc/Int32Visualizer.h
     inc/Int32ToDoubleConverter.h
@@ -11,5 +11,5 @@ add_library(pipeline_sample
     src/DoubleVisualizer.cpp
     src/Int32RandomGeneratorPipelineFactory.cpp)
 
-target_include_directories(pipeline_sample PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
-target_link_libraries(pipeline_sample PUBLIC pipeline)
+target_include_directories(pipeline_stages PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
+target_link_libraries(pipeline_stages PUBLIC pipeline)
