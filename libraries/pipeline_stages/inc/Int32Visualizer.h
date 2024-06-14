@@ -13,19 +13,19 @@ class Int32Visualizer : public ConsumerStage<int32_t>, public IParameterized {
   void consume(std::shared_ptr<int32_t> inData) override;
 
 public:
-  /// Получить параметры и их значения
+  /// РџРѕР»СѓС‡РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ Рё РёС… Р·РЅР°С‡РµРЅРёСЏ
   virtual std::vector<PatameterValue> GetPatameterValues() const override;
-  /// Установить значение параметра
+  /// РЈСЃС‚Р°РЅРѕРІРёС‚СЊ Р·РЅР°С‡РµРЅРёРµ РїР°СЂР°РјРµС‚СЂР°
   virtual bool SetParameterValue(const std::string& paramName,
                                  const std::string& paramValue) override;
-  /// Применить значения параметров. Возвращает ошибку через исключение.
+  /// РџСЂРёРјРµРЅРёС‚СЊ Р·РЅР°С‡РµРЅРёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ. Р’РѕР·РІСЂР°С‰Р°РµС‚ РѕС€РёР±РєСѓ С‡РµСЂРµР· РёСЃРєР»СЋС‡РµРЅРёРµ.
   virtual void ApplyParameterValues() noexcept(false) override;
 
-  /// Получить понятное название параметра
+  /// РџРѕР»СѓС‡РёС‚СЊ РїРѕРЅСЏС‚РЅРѕРµ РЅР°Р·РІР°РЅРёРµ РїР°СЂР°РјРµС‚СЂР°
   virtual std::optional<std::wstring> GetObviousParamName(
       const std::string& paramName) const override;
 
-  /// Объект полностью (и корректно) параметризован
+  /// РћР±СЉРµРєС‚ РїРѕР»РЅРѕСЃС‚СЊСЋ (Рё РєРѕСЂСЂРµРєС‚РЅРѕ) РїР°СЂР°РјРµС‚СЂРёР·РѕРІР°РЅ
   virtual bool IsFullyParameterized() const override;
 
  public:
