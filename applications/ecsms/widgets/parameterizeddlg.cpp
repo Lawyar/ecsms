@@ -3,8 +3,10 @@
 #include <QLayout>
 #include <QMessageBox>
 #include <QPushButton>
+#include <QEvent>
 
-ParameterizedDlg::ParameterizedDlg(const QString & title, IParameterized& parameterized,
+ParameterizedDlg::ParameterizedDlg(const QString& title,
+                                   IParameterized& parameterized,
                                    QWidget* parent)
     : QDialog(parent), m_parameterized(parameterized) {
   setWindowTitle(title);
@@ -13,6 +15,8 @@ ParameterizedDlg::ParameterizedDlg(const QString & title, IParameterized& parame
   layout()->addWidget(m_enterButton);
   connect(m_enterButton, &QPushButton::clicked, this,
           &ParameterizedDlg::SetParameterFromWidgets);
+
+  installEventFilter(this);
 }
 
 void ParameterizedDlg::FillParameterValues() {
@@ -47,6 +51,18 @@ void ParameterizedDlg::FillParameterValues() {
   }
 
   setLayout(mainLayout);
+}
+
+bool ParameterizedDlg::eventFilter(QObject* object, QEvent* e) {
+  if (e->type() == QEvent::EnterWhatsThisMode) {
+    e->accept();
+    QString helpString =
+        QString::fromStdWString(m_parameterized.GetHelpString());
+    if (!helpString.isEmpty())
+      QMessageBox::information(this, "Справка", helpString);
+    return true;
+  }
+  return QObject::eventFilter(object, e);
 }
 
 void ParameterizedDlg::SetParameterFromWidgets() {

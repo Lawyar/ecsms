@@ -16,6 +16,9 @@ class ParameterizedDlg : public QDialog {
  public slots:
   void SetParameterFromWidgets();
 
+private:
+  bool eventFilter(QObject* object, QEvent* e);
+
  private:
   IParameterized& m_parameterized;
 

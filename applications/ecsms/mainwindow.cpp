@@ -837,7 +837,7 @@ static bool ShowParameterizedDlgIfNeed(std::shared_ptr<IPipelineStage> stage) {
   if (auto&& id = stage->getId())
     title += ": " + *id;
 
-  ParameterizedDlg * dlg = new ParameterizedDlg(QString::fromStdString(title), *parameterized);
+  auto dlg = std::make_unique<ParameterizedDlg>(QString::fromStdString(title), *parameterized);
   return dlg->exec() == QDialog::Accepted;
 }
 

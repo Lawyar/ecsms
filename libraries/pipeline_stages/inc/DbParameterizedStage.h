@@ -32,6 +32,9 @@ protected:
   /// Объект полностью (и корректно) параметризован
   virtual bool IsFullyParameterized() const override;
 
+  /// Получить справочную информацию
+  virtual std::wstring GetHelpString() const;
+
 public:
   /// Установить переменную с большим бинарным объектом
   virtual void ResetFile() = 0;
