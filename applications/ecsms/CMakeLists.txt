@@ -49,6 +49,7 @@ set(SOURCE_LIST
     widgets/blockfieldwidget.cpp widgets/blockfieldwidget.h
     widgets/blockwidget.cpp widgets/blockwidget.h
     widgets/connectnodewidget.cpp widgets/connectnodewidget.h
+    widgets/parameterizeddlg.cpp widgets/parameterizeddlg.h
 )
 
 set(ONLY_SOURCE_LIST ${SOURCE_LIST})

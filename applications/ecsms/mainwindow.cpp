@@ -13,6 +13,7 @@
 #include "utility/tagutility.h"
 #include "widgets/blockfieldwidget.h"
 #include "widgets/blockwidget.h"
+#include "widgets/parameterizeddlg.h"
 
 #include <Pipeline.h>
 #include <PipelineRegistry.h>
@@ -698,7 +699,8 @@ void MainWindow::on_pushButton_new_child_row_tree_clicked() {
 
   auto selection_model = ui->treeView->selectionModel();
   auto parent_index = selection_model->currentIndex();
-  if (parent_index == QModelIndex()) // prevent error from adding child to invalid item
+  if (parent_index ==
+      QModelIndex())  // prevent error from adding child to invalid item
     return;
 
   // remove tag's text
@@ -826,6 +828,19 @@ static std::map<BlockId, Connections> createConnections(
   return res;
 }
 
+static bool ShowParameterizedDlgIfNeed(std::shared_ptr<IPipelineStage> stage) {
+  auto parameterized = std::dynamic_pointer_cast<IParameterized>(stage);
+  if (!parameterized)
+    return true;
+
+  std::string title = stage->getName();
+  if (auto&& id = stage->getId())
+    title += ": " + *id;
+
+  ParameterizedDlg * dlg = new ParameterizedDlg(QString::fromStdString(title), *parameterized);
+  return dlg->exec() == QDialog::Accepted;
+}
+
 static std::vector<std::shared_ptr<IPipelineStage>> createStages(
     const std::map<BlockId, Connections>& connections,
     const FieldModel& field_model) {
@@ -860,6 +875,8 @@ static std::vector<std::shared_ptr<IPipelineStage>> createStages(
         break;
     }
     stages.push_back(stage);
+    if (!ShowParameterizedDlgIfNeed(stage))
+        throw std::exception("Параметризация прервана");
   }
 
   return stages;

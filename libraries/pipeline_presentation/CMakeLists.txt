@@ -14,5 +14,5 @@ find_package(yaml-cpp CONFIG REQUIRED)
 target_link_libraries(pipeline_presentation PUBLIC yaml-cpp::yaml-cpp)
 
 target_link_libraries(pipeline_presentation PUBLIC pipeline)
-target_link_libraries(pipeline_presentation PUBLIC pipeline_sample)
+target_link_libraries(pipeline_presentation PUBLIC pipeline_stages)
 target_include_directories(pipeline_presentation PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/inc)
