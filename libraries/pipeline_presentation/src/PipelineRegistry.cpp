@@ -4,6 +4,8 @@
 #include "Int32RandomGenerator.h"
 #include "Int32ToDoubleConverter.h"
 #include "Int32Visualizer.h"
+#include "DbReadStage.h"
+#include "DbWriteStage.h"
 
 using namespace std;
 
@@ -22,6 +24,11 @@ void PipelineRegistry::Init() {
   globalRegistry.registerConsumer<Int32Visualizer>(Int32Visualizer::stageName);
   globalRegistry.registerConsumerAndProducer<Int32ToDoubleConverter>(
       Int32ToDoubleConverter::stageName);
+
+  globalRegistry.registerProducer<DbReadStage<int>>(DbReadStage<int>::stageName);
+  globalRegistry.registerProducer<DbReadStage<double>>(DbReadStage<double>::stageName);
+  globalRegistry.registerConsumer<DbWriteStage<int>>(DbWriteStage<int>::stageName);
+  globalRegistry.registerConsumer<DbWriteStage<double>>(DbWriteStage<double>::stageName);
 }
 
 PipelineRegistry& PipelineRegistry::Instance() {
