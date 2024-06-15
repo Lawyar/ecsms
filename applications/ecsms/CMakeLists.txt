@@ -52,6 +52,8 @@ set(SOURCE_LIST
     widgets/parameterizeddlg.cpp widgets/parameterizeddlg.h
 )
 
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
 set(ONLY_SOURCE_LIST ${SOURCE_LIST})
 
 qt5_add_resources(SOURCE_LIST resource.qrc)
