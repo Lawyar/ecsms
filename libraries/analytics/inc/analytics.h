@@ -14,7 +14,7 @@ enum class ComparisonResult {
 
 class Analytics {
  public:
-  static void calculateMean(const std::vector<unsigned char>& data);
+  static double calculateMean(const std::vector<unsigned char>& data);
   static void calculateStandardDeviation(
       const std::vector<unsigned char>& data);
   static void Analytics::calculateCorrelationCoefficient(
