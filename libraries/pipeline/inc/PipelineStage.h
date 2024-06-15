@@ -78,7 +78,7 @@ PipelineStage<In, Out>::PipelineStage(
 
   if (inConnection.expired() && consumptionStrategy.has_value())
     throw std::invalid_argument(
-        "consumerStrategy is presented without inConnection");
+        "inConnection expired");
 
   if (inConnection.expired() && outConnection.expired())
     throw std::invalid_argument("inConnection and outConnection are null");
@@ -92,8 +92,7 @@ PipelineStage<In, Out>::~PipelineStage() {
 template <typename In, typename Out>
 void PipelineStage<In, Out>::run() {
   if (!m_inConnection.expired() && !m_consumerId.has_value())
-    throw PipelineException(std::string("consumerId not set for stage ") +
-                            getName());
+    throw PipelineException(std::string("consumerId is null"));
 
   m_thread = std::thread([this] {
     while (!m_shutdownSignaled) {
