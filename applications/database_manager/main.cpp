@@ -1,7 +1,7 @@
 
 #include <iostream>
-#include <vector>
 #include <string>
+#include <vector>
 
 #include <IDatabaseManager.h>
 
@@ -19,34 +19,58 @@ void GetInputString(const std::string& what,
   res = readStr.empty() ? defaultValue : readStr;
 }
 
-void PrintPrompt()
-{
+void PrintPrompt() {
   std::cout << ">>> ";
 }
 
-void PrintHelp()
-{
-  
-}
+void PrintHelp() {}
 
-std::vector<std::string> split(const std::string & str, const std::string & delimiter) {
-  size_t pos_start = 0, pos_end, delim_len = delimiter.length();
-  std::string token;
+std::vector<std::string> Split(const std::string& str,
+                               const std::string& delim) {
   std::vector<std::string> res;
 
-  for ((pos_end = str.find(delimiter, pos_start)) != std::string::npos) {
-    token = str.substr(pos_start, pos_end - pos_start);
-    pos_start = pos_end + delim_len;
+  size_t start = 0;
+  for (size_t end = end = str.find(delim, start); end != std::string::npos;
+       end = str.find(delim, start)) {
+    std::string token = str.substr(start, end - start);
+    start = end + delim.size();
     res.push_back(token);
   }
 
-  res.push_back(str.substr(pos_start));
+  res.push_back(str.substr(start));
   return res;
 }
 
-void HandleCommand(const std::string & command)
-{
+void HandleCommand(IConnection& connection,
+                   IExecutorEAV& executorEAV,
+                   const std::string& command) {
+  const auto tokens = Split(command, " ");
+  if (tokens.empty())
+    return;
 
+  auto&& firstToken = tokens.front();
+  if (firstToken == "EAV") {
+  } else {
+    auto&& result = connection.Execute(command);
+    auto&& status = result->GetCurrentExecuteStatus();
+    if (status->HasError()) {
+      std::cout << status->GetErrorMessage();
+      return;
+    }
+
+    size_t rowCount = result->GetRowCount();
+    size_t colCount = result->GetColCount();
+    for (size_t j = 0; j < colCount; ++j)
+      std::cout << '\t' << result->GetColName(j);
+    std::cout << '\n';
+    for (size_t i = 0; i < rowCount; ++i) {
+      for (size_t j = 0; j < colCount; ++j) {
+        auto value = result->GetValue(i, j);
+        std::cout << '\t' << value.ExtractString();
+      }
+      std::cout << '\n';
+    }
+  }
 }
 
 int main() {
@@ -62,12 +86,26 @@ int main() {
   GetInputString("Username", "postgres", username);
   GetInputString("Password", "password", password);
 
+  auto&& dbManager = GetDatabaseManager();
+  auto&& connection =
+      dbManager.GetConnection("postgresql://" + username + ":" + password +
+                              "@" + server + ":" + port + "/" + database);
+  if (!connection || !connection->IsValid()) {
+    std::cout << "Bad connection" << std::endl;
+    return 1;
+  }
+
+  auto&& executorEAV = dbManager.GetExecutorEAV(connection);
+  if (!executorEAV) {
+    std::cout << "Bad executor EAV" << std::endl;
+    return 2;
+  }
+
   PrintHelp();
 
-  while (true)
-  {
+  while (true) {
     PrintPrompt();
     std::string command = ReadStringFromStdin();
-    HandleCommand(command);
+    HandleCommand(*connection, *executorEAV, command);
   }
 }
