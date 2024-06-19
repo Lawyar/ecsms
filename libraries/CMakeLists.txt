@@ -3,4 +3,4 @@ add_subdirectory(pipeline)
 add_subdirectory(pipeline_stages)
 add_subdirectory(pipeline_presentation)
 add_subdirectory(database_library)
-
+add_subdirectory(analytics)

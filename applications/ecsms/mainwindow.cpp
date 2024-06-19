@@ -20,6 +20,10 @@
 
 #include <QChart>
 #include <QChartView>
+#include <QLabel>
+#include <QValueAxis>
+#include <QString>
+#include <QStringList>
 #include <QDebug>
 #include <QLineSeries>
 #include <QMessageBox>
@@ -903,4 +907,63 @@ void MainWindow::constructAndStartPipeline() {
     QMessageBox::warning(this, "Ошибка", e.what());
     stopPipeline();
   }
+}
+
+void MainWindow::on_comparebutton_clicked() {
+  QLineSeries* series1 = new QLineSeries();
+  QLineSeries* series2 = new QLineSeries();
+  QValueAxis* axisX = new QValueAxis();
+  QValueAxis* axisY = new QValueAxis();
+
+  series1->setName("Test1");
+  series2->setName("Test2");
+
+  *series1 << QPointF(0, 5.0) << QPointF(1, 10.0) << QPointF(2, 3.3)
+   << QPointF(3, 7.2) << QPointF(4, 12.0) << QPointF(5, 2.0) << QPointF(6, 9.0);
+
+  *series2 << QPointF(0, 3.0) << QPointF(1, 7.0) << QPointF(2, 2.0) << QPointF(3, 10.0) 
+    << QPointF(4, 6.0) << QPointF(5, 9.0) << QPointF(6, 3.0);
+
+  // Выбираем цвет для серии
+  QColor randomColor;
+  randomColor.setRgb(rand() % 255, rand() % 255,
+                     rand() % 255);  // Устанавливаем случайный цвет
+  series1->setColor(randomColor);
+
+  QColor randomColor2;
+  randomColor2.setRgb(rand() % 255, rand() % 255, rand() % 255);
+  series2->setColor(randomColor2);
+
+  // Добавляем серию в график
+  QChart* chart =
+      ui->graphicsView->chart();  // ui->chartView должен быть вашим QChartView
+  chart->addSeries(series1);
+  chart->addSeries(series2);
+  chart->setTitle("Анализ данных");
+
+  axisY->setTitleText("Значение элемента");
+  axisX->setTitleText("Индекс элемента");
+
+  axisX->setLabelFormat("%d");
+
+  chart->createDefaultAxes();
+
+  // Для автоматического масштабирования графика
+
+  chart->setAxisX(axisX, series1);
+  chart->setAxisY(axisY, series1);
+  chart->setAxisX(axisX, series2);
+  chart->setAxisY(axisY, series2);
+
+  chart->legend()->setVisible(true);
+  chart->legend()->setAlignment(Qt::AlignBottom);
+
+
+  ui->graphicsView->update();
+
+  ui->result->setText("Данные не индентичны");
+}
+
+void MainWindow::on_groupbutton_clicked() {
+
 }
